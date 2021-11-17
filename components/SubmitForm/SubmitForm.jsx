@@ -2,6 +2,7 @@ import { useState } from "react";
 import { styled } from "@stitches/react";
 import { Input } from "../Input";
 import { Label } from "../Label";
+import { DropdownMenu } from "../DropdownMenu"; 
 
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
@@ -124,6 +125,7 @@ const SubmitForm = () => {
           onInputValueChange={(event) => setUrl(event.target.value)}
           margin="xxl"
         />
+        <DropdownMenu />
         <TextComponent
           labelText="Type of game"
           inputValue={form.game_type}
