@@ -4,7 +4,7 @@ import { blackA } from "@radix-ui/colors";
 
 const Input = styled("input", {
     all: "unset",
-    width: 200,
+    width: 400,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
