@@ -56,6 +56,7 @@ const TextComponent = ({
   labelText,
   inputValue,
   onInputValueChange = () => {},
+  ...rest
 }) => (
   <Flex css={cssFlex}>
     <Label htmlFor="video1" css={cssLabel}>
@@ -66,6 +67,7 @@ const TextComponent = ({
       id="video1"
       defaultValue={inputValue}
       onChange={(event) => onInputValueChange(event.target.value)} //(event) => console.log("inside input", event.target.value)}
+      {...rest}
     />
   </Flex>
 );
@@ -116,11 +118,11 @@ const SubmitForm = () => {
   return (
     <>
       <Flex css={cssLayout}>
-        <Input
-          type="text"
-          id="video1"
-          defaultValue={url}
-          onChange={(event) => setUrl(event.target.value)} //(event) => console.log("inside input", event.target.value)}
+        <TextComponent
+          labelText="Current URL"
+          inputValue={url}
+          onInputValueChange={(event) => setUrl(event.target.value)}
+          margin="xxl"
         />
         <TextComponent
           labelText="Type of game"
