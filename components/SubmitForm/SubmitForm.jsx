@@ -18,6 +18,14 @@ const TextComponent = ({ labelText, inputValue }) => (
 const SubmitForm = () => {
   return (
     <Flex css={cssLayout}>
+      <TextComponent labelText="Type of game" inputValue="National League" />
+      <TextComponent labelText="Check ID" inputValue="C000" />
+      <TextComponent labelText="USA Player *" inputValue="345" />
+      <TextComponent labelText="URSS Player *" inputValue="413" />
+      <TextComponent labelText="Game winner" inputValue="413" />
+      <TextComponent labelText="End Turn" inputValue="10" />
+      <TextComponent labelText="How did it end?" inputValue="DEFCON" />
+      <TextComponent labelText="Game date" inputValue="2021-11-17T09:49:22" />
       <TextComponent
         labelText="Video link 1"
         inputValue="http://www.brown.com/est-aut-aut-dicta-velit-possimus-expedita"
