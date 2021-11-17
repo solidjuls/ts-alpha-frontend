@@ -2,6 +2,33 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 
+const bodyInfo = {
+  game_type: "velit",
+  game_code: "ratione",
+  game_winner: "ipsa",
+  end_turn: 14,
+  end_mode: "necessitatibus",
+  game_date: "2021-11-17T09:49:22",
+  usa_player_id: "qui",
+  ussr_player_id: "accusantium",
+  video1: "http://www.brown.com/est-aut-aut-dicta-velit-possimus-expedita",
+  video2: "http://russel.com/eos-occaecati-culpa-nulla-libero.html",
+  video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
+};
+
+const callAPI = () => {
+  fetch("https://tsalpha.klckh.com/api/game-results", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodyInfo),
+  })
+    .then((res) => res.json())
+    .then((result) => console.log("result", result));
+};
+
 export default function Home() {
   return (
     <div className={styles.container}>
@@ -15,7 +42,7 @@ export default function Home() {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
-
+        <button onClick={callAPI}>Call submit API</button>
         <p className={styles.description}>
           Get started by editing{' '}
           <code className={styles.code}>pages/index.js</code>
