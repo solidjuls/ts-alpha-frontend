@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { styled } from "@stitches/react";
+import { styled, globalCss } from "@stitches/react";
 import { Input } from "../Input";
 import { Label } from "../Label";
+// Or import the input component
+import "react-day-picker/lib/style.css";
+import DayPickerInput from "react-day-picker/DayPickerInput";
+
+
 
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
@@ -104,6 +109,7 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
 
 const SubmitForm = () => {
   const [form, setForm] = useState(initialState);
+  const [date, setDate] = useState(new Date());
   const [sendInfo, setSendInfo] = useState("");
   const [responseInfo, setResponseInfo] = useState("");
   const [url, setUrl] = useState("https://tsalpha.klckh.com/api/game-results");
@@ -118,6 +124,14 @@ const SubmitForm = () => {
   return (
     <>
       <Flex css={cssLayout}>
+        <DayPickerInput
+        css={{ backgroundColor: 'red' }}
+          dayPickerProps={{
+            month: new Date(2018, 10),
+            showWeekNumbers: true,
+            todayButton: "Today",
+          }}
+        />
         <TextComponent
           labelText="Current URL"
           inputValue={url}
