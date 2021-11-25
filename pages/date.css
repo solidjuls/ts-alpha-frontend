@@ -1,0 +1,15 @@
+.DayPickerInput > input{
+    all: unset;
+    width: 400px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    padding: 0 10px;
+    height: 35px;
+    font-size: 15px;
+    line-height: 1;
+    color: black;
+    background-color: rgba(0, 0, 0, 0.09);
+    box-shadow: 0 0 0 1px black;
+}

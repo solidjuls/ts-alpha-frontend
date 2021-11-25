@@ -1,20 +1,17 @@
 import { styled } from "@stitches/react";
 import { blackA } from "@radix-ui/colors";
 
-// const Button = styled('button', {
-//   variants: {
-//     color: {
-//       violet: { backgroundColor: 'blueviolet' },
-//       gray: { backgroundColor: 'gainsboro' },
-//     },
-//   },
-// });
-
 const Input = styled("input", {
   variants: {
     margin: {
       xxl: { margin: 64 },
     },
+    border: {
+      dropdown: {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      }
+    }
   },
   all: "unset",
   width: 400,

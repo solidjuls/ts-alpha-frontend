@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { SubmitForm } from "../components/SubmitForm";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Home() {
   return (
@@ -32,3 +33,9 @@ export default function Home() {
     </div>
   );
 }
+
+export const getServerSideProps = async ({ locale }) => ({
+  props: {
+    ...(await serverSideTranslations(locale, ["common", "submit"])),
+  },
+});

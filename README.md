@@ -1,6 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
+You need node installed on your computer to run this project locally.
 
 First, run the development server:
 
@@ -15,7 +16,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Current endpoints
 
 By default, we set the URL on https://tsalpha.klckh.com/api/game-results, but it is configurable
-
 
 ## Deploy on Vercel
 

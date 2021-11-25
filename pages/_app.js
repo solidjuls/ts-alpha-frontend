@@ -1,5 +1,7 @@
 import "../styles/globals.css";
 import { IdProvider } from "@radix-ui/react-id";
+import { appWithTranslation } from "next-i18next";
+import "./date.css";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -9,4 +11,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp;
+export default appWithTranslation(MyApp);
