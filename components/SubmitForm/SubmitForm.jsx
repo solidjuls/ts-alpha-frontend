@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { styled } from "@stitches/react";
-import { useTranslation } from "next-i18next";
+import { FormattedMessage } from "react-intl";
 import { Input } from "../Input";
 import { Label } from "../Label";
 // Or import the input component
@@ -64,7 +64,7 @@ const TextComponent = ({
 }) => (
   <Flex css={cssFlex}>
     <Label htmlFor="video1" css={cssLabel}>
-      {labelText}
+      <FormattedMessage id={labelText} />
     </Label>
     <Input
       type="text"
@@ -112,7 +112,7 @@ const SubmitForm = () => {
   const [sendInfo, setSendInfo] = useState("");
   const [responseInfo, setResponseInfo] = useState("");
   const [url, setUrl] = useState("https://tsalpha.klckh.com/api/game-results");
-  const { t} = useTranslation('submit');
+  const t = ()=> {}
 
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
@@ -133,69 +133,69 @@ const SubmitForm = () => {
           }}
         />
         <TextComponent
-          labelText={t('currentURL')}
+          labelText='currentURL'
           inputValue={url}
           onInputValueChange={(event) => setUrl(event.target.value)}
           margin="xxl"
         />
         <TextComponent
-          labelText={t('typeOfGame')}
+          labelText='typeOfGame'
           inputValue={form.game_type}
           onInputValueChange={(value) => onInputValueChange("game_type", value)}
         />
         <TextComponent
-          labelText={t('checkID')}
+          labelText='checkID'
           inputValue={form.game_code}
           onInputValueChange={(value) => onInputValueChange("game_code", value)}
         />
         <TextComponent
-          labelText={t('playerUSA')}
+          labelText='playerUSA'
           inputValue={form.usa_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("usa_player_id", value)
           }
         />
         <TextComponent
-          labelText={t('playerURSS')}
+          labelText='playerURSS'
           inputValue={form.ussr_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("ussr_player_id", value)
           }
         />
         <TextComponent
-          labelText={t('gameWinner')}
+          labelText='gameWinner'
           inputValue={form.game_winner}
           onInputValueChange={(value) =>
             onInputValueChange("game_winner", value)
           }
         />
         <TextComponent
-          labelText={t('endTurn')}
+          labelText='endTurn'
           inputValue={form.end_turn}
           onInputValueChange={(value) => onInputValueChange("end_turn", value)}
         />
         <TextComponent
-          labelText={t('endType')}
+          labelText='endType'
           inputValue={form.end_mode}
           onInputValueChange={(value) => onInputValueChange("end_mode", value)}
         />
         <TextComponent
-          labelText={t('gameDate')}
+          labelText='gameDate'
           inputValue={form.game_date}
           onInputValueChange={(value) => onInputValueChange("game_date", value)}
         />
         <TextComponent
-          labelText={t('videoLink1')}
+          labelText='videoLink1'
           inputValue={form.video1}
           onInputValueChange={(value) => onInputValueChange("video1", value)}
         />
         <TextComponent
-          labelText={t('videoLink2')}
+          labelText='videoLink2'
           inputValue={form.video2}
           onInputValueChange={(value) => onInputValueChange("video2", value)}
         />
         <TextComponent
-          labelText={t('videoLink3')}
+          labelText='videoLink3'
           inputValue={form.video3}
           onInputValueChange={(value) => onInputValueChange("video3", value)}
         />
