@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { styled } from "@stitches/react";
-import { useTranslation } from "next-i18next";
+import { FormattedMessage } from "react-intl";
 import { Input } from "../Input";
 import { Label } from "../Label";
-// Or import the input component
+
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 
@@ -42,20 +42,6 @@ const initialState = {
   video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
 };
 
-const bodyInfo = {
-  game_type: "velit",
-  game_code: "ratione",
-  game_winner: "ipsa",
-  end_turn: 14,
-  end_mode: "necessitatibus",
-  game_date: "2021-11-17T09:49:22",
-  usa_player_id: "qui",
-  ussr_player_id: "accusantium",
-  video1: "http://www.brown.com/est-aut-aut-dicta-velit-possimus-expedita",
-  video2: "http://russel.com/eos-occaecati-culpa-nulla-libero.html",
-  video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
-};
-
 const TextComponent = ({
   labelText,
   inputValue,
@@ -64,14 +50,36 @@ const TextComponent = ({
 }) => (
   <Flex css={cssFlex}>
     <Label htmlFor="video1" css={cssLabel}>
-      {labelText}
+      <FormattedMessage id={labelText} />
     </Label>
     <Input
       type="text"
       id="video1"
       defaultValue={inputValue}
-      onChange={(event) => onInputValueChange(event.target.value)} //(event) => console.log("inside input", event.target.value)}
+      onChange={(event) => onInputValueChange(event.target.value)}
       {...rest}
+    />
+  </Flex>
+);
+
+const DateComponent = ({
+  labelText,
+  inputValue,
+  onInputValueChange = () => {},
+  ...rest
+}) => (
+  <Flex css={cssFlex}>
+    <Label htmlFor="gameDate" css={cssLabel}>
+      <FormattedMessage id={labelText} />
+    </Label>
+    <DayPickerInput
+      id="gameDate"
+      format="YYYY-MM-DD"
+      onDayChange={(value) => onInputValueChange(value)}
+      dayPickerProps={{
+        showWeekNumbers: true,
+        todayButton: "Today",
+      }}
     />
   </Flex>
 );
@@ -112,7 +120,7 @@ const SubmitForm = () => {
   const [sendInfo, setSendInfo] = useState("");
   const [responseInfo, setResponseInfo] = useState("");
   const [url, setUrl] = useState("https://tsalpha.klckh.com/api/game-results");
-  const { t} = useTranslation('submit');
+  const t = () => {};
 
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
@@ -124,78 +132,70 @@ const SubmitForm = () => {
   return (
     <>
       <Flex css={cssLayout}>
-        <DayPickerInput
-          css={{ backgroundColor: "red" }}
-          dayPickerProps={{
-            month: new Date(2018, 10),
-            showWeekNumbers: true,
-            todayButton: "Today",
-          }}
-        />
         <TextComponent
-          labelText={t('currentURL')}
+          labelText="currentURL"
           inputValue={url}
           onInputValueChange={(event) => setUrl(event.target.value)}
           margin="xxl"
         />
         <TextComponent
-          labelText={t('typeOfGame')}
+          labelText="typeOfGame"
           inputValue={form.game_type}
           onInputValueChange={(value) => onInputValueChange("game_type", value)}
         />
         <TextComponent
-          labelText={t('checkID')}
+          labelText="checkID"
           inputValue={form.game_code}
           onInputValueChange={(value) => onInputValueChange("game_code", value)}
         />
         <TextComponent
-          labelText={t('playerUSA')}
+          labelText="playerUSA"
           inputValue={form.usa_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("usa_player_id", value)
           }
         />
         <TextComponent
-          labelText={t('playerURSS')}
+          labelText="playerURSS"
           inputValue={form.ussr_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("ussr_player_id", value)
           }
         />
         <TextComponent
-          labelText={t('gameWinner')}
+          labelText="gameWinner"
           inputValue={form.game_winner}
           onInputValueChange={(value) =>
             onInputValueChange("game_winner", value)
           }
         />
         <TextComponent
-          labelText={t('endTurn')}
+          labelText="endTurn"
           inputValue={form.end_turn}
           onInputValueChange={(value) => onInputValueChange("end_turn", value)}
         />
         <TextComponent
-          labelText={t('endType')}
+          labelText="endType"
           inputValue={form.end_mode}
           onInputValueChange={(value) => onInputValueChange("end_mode", value)}
         />
-        <TextComponent
-          labelText={t('gameDate')}
+        <DateComponent
+          labelText="gameDate"
           inputValue={form.game_date}
           onInputValueChange={(value) => onInputValueChange("game_date", value)}
         />
         <TextComponent
-          labelText={t('videoLink1')}
+          labelText="videoLink1"
           inputValue={form.video1}
           onInputValueChange={(value) => onInputValueChange("video1", value)}
         />
         <TextComponent
-          labelText={t('videoLink2')}
+          labelText="videoLink2"
           inputValue={form.video2}
           onInputValueChange={(value) => onInputValueChange("video2", value)}
         />
         <TextComponent
-          labelText={t('videoLink3')}
+          labelText="videoLink3"
           inputValue={form.video3}
           onInputValueChange={(value) => onInputValueChange("video3", value)}
         />
