@@ -5,6 +5,7 @@ const Input = styled("input", {
   variants: {
     margin: {
       xxl: { margin: 64 },
+      url: { margin: "0 0 24px 0" },
     },
     border: {
       dropdown: {

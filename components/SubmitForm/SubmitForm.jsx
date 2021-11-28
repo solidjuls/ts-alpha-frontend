@@ -7,26 +7,28 @@ import { Label } from "../Label";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 
+const Form = styled("form")
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
 const Button = styled("button", {
   display: "inline-block",
-  padding: "0.3em 1.2em",
+  padding: "8px",
   margin: "0 0.3em 0.3em 0",
-  borderRadius: "2em",
+  borderRadius: "4px",
   boxSizing: " border-box",
   textDecoration: "none",
-  fontFamily: "'Roboto, sans-serif",
   margin: "8px",
   fontWeight: "300",
   color: "#FFFFFF",
   backgroundColor: "#4eb5f1",
   textAlign: "center",
   transition: " all 0.2s",
+  backgroundColor: "rgb(103, 58, 183)",
 });
-const cssLabel = { lineHeight: "35px", marginRight: 15 };
-const cssFlex = { padding: "0 20px", flexWrap: "wrap", alignItems: "center" };
-const cssLayout = { flexDirection: "column", alignItems: "center" };
+
+const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
+const cssFlexTextDateComponent = { marginBottom: "16px" };
+const cssLayout = { flexDirection: "column", alignItems: "flex-start" };
 
 const initialState = {
   game_type: "National League",
@@ -48,7 +50,7 @@ const TextComponent = ({
   onInputValueChange = () => {},
   ...rest
 }) => (
-  <Flex css={cssFlex}>
+  <Flex css={cssFlexTextDateComponent}>
     <Label htmlFor="video1" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -68,7 +70,7 @@ const DateComponent = ({
   onInputValueChange = () => {},
   ...rest
 }) => (
-  <Flex css={cssFlex}>
+  <Flex css={cssFlexTextDateComponent}>
     <Label htmlFor="gameDate" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -112,8 +114,7 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     .then((res) => res.json())
     .then((result) => responseCallback(result))
     .catch((err) => responseCallback(err));
-};
-
+}
 const SubmitForm = () => {
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
@@ -130,13 +131,13 @@ const SubmitForm = () => {
   };
 
   return (
-    <>
+    <Form>
       <Flex css={cssLayout}>
         <TextComponent
           labelText="currentURL"
           inputValue={url}
           onInputValueChange={(event) => setUrl(event.target.value)}
-          margin="xxl"
+          margin="url"
         />
         <TextComponent
           labelText="typeOfGame"
@@ -216,7 +217,7 @@ const SubmitForm = () => {
         <DisplayData labelText="Send" data={sendInfo} />
         <DisplayData labelText="Response" data={responseInfo} />
       </Flex>
-    </>
+    </Form>
   );
 };
 export { SubmitForm };
