@@ -7,7 +7,7 @@ import { Label } from "../Label";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 
-const Form = styled("form")
+const Form = styled("form", { alignItems: "center" });
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
 const Button = styled("button", {
@@ -114,7 +114,7 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     .then((res) => res.json())
     .then((result) => responseCallback(result))
     .catch((err) => responseCallback(err));
-}
+};
 const SubmitForm = () => {
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
