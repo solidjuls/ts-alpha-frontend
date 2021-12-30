@@ -6,6 +6,7 @@ const Input = styled("input", {
     margin: {
       xxl: { margin: 64 },
       url: { margin: "0 0 24px 0" },
+      login: { margin: "0 0 12px 0" },
     },
     border: {
       dropdown: {

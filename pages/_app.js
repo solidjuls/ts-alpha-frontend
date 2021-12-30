@@ -1,15 +1,21 @@
 import "../styles/globals.css";
 import { IdProvider } from "@radix-ui/react-id";
-import { IntlContextProvider } from "../contexts/IntlContext";
 import { SessionProvider } from "next-auth/react";
+
+import { IntlContextProvider } from "../contexts/IntlContext";
+import Layout from "components/Layout";
+
 import "./date.css";
+import "./stylesGlobal.css";
 
 function MyApp({ Component, pageProps }) {
   return (
     <IdProvider>
       <SessionProvider session={pageProps.session}>
         <IntlContextProvider>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </IntlContextProvider>
       </SessionProvider>
     </IdProvider>

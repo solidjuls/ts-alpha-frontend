@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 const HeaderContainer = styled("div", {
   display: "flex",
@@ -11,17 +12,21 @@ const HeaderContainer = styled("div", {
 
 const Logo = styled("div", {
   color: "white",
-})
+});
 const Text = styled("div", {
   color: "white",
 });
 
 const Header = () => {
+  const { data: session } = useSession();
+
   return (
     <HeaderContainer>
-      <Logo>Twilight Struggle Competition Hub</Logo>
+      <Link href="/" passHref>
+        <Logo>Twilight Struggle Competition Hub</Logo>
+      </Link>
       <Link href="/login" passHref>
-        <Text>Sign In</Text>
+        <Text>{session ? `Hi ${session?.user?.name}` : "Sign In"}</Text>
       </Link>
     </HeaderContainer>
   );

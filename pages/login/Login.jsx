@@ -12,7 +12,13 @@ const Form = styled("form", {
   display: "flex",
   flexDirection: "column",
   justifyItems: "center",
+  justifyContent: "center",
   alignItems: "center",
+  alignSelf: "center",
+  backgroundColor: "White", 
+  width: "640px",
+  height: "400px",
+  boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px"
 });
 
 const Content = styled("div", {
@@ -35,22 +41,23 @@ const Login = ({ providers }) => {
 
           <Content>
             <h1>Sign up</h1>
-            {/* 
             <Label htmlFor="mail">
               <FormattedMessage id="mail" />
-            </Label> */}
+            </Label>
             <Input
               type="text"
               id="mail"
+              margin="login"
               //   defaultValue={inputValue}
               //   onChange={(event) => onInputValueChange(event.target.value)}
             />
-            {/* <Label htmlFor="pwd">
+            <Label htmlFor="pwd">
               <FormattedMessage id="password" />
-            </Label> */}
+            </Label>
             <Input
               type="text"
               id="pwd"
+              margin="login"
               //   defaultValue={inputValue}
               //   onChange={(event) => onInputValueChange(event.target.value)}
               //   {...rest}
@@ -60,7 +67,7 @@ const Login = ({ providers }) => {
               <Button
                 onClick={(e) => {
                   e.preventDefault()
-                  signIn('credentials', { callbackUrl: '/foo' })
+                  signIn('credentials', { callbackUrl: '/submitform' })
                 }}
               >
                 Login
@@ -77,21 +84,3 @@ const Login = ({ providers }) => {
 };
 
 export default Login;
-// useEffect(() => {
-
-//   fetch("/api/login", {
-//     method: "POST",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({
-//       mail: "juli.arnalot@gmail.com",
-//       pwd: "itsl",
-//     }),
-//   })
-//     .then((res) => res.json())
-//     .then((res) => {
-//       console.log("login response", res);
-//     });
-// }, []);

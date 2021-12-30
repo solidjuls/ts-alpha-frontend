@@ -8,10 +8,16 @@ import { Label } from "components/Label";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 
-const Form = styled("form", { alignItems: "center" });
+const Form = styled("form", {
+  alignItems: "center",
+  backgroundColor: "White",
+  width: "640px",
+  alignSelf: "center",
+  //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
+  padding: "12px"
+});
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
-
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 const cssFlexTextDateComponent = { marginBottom: "16px" };
@@ -200,10 +206,10 @@ const SubmitForm = () => {
           Call submit API
         </Button>
       </Flex>
-      <Flex>
+      {/* <Flex>
         <DisplayData labelText="Send" data={sendInfo} />
         <DisplayData labelText="Response" data={responseInfo} />
-      </Flex>
+      </Flex> */}
     </Form>
   );
 };

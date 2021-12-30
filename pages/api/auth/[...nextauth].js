@@ -27,7 +27,7 @@ const options = {
     // },
     async redirect({ url, baseUrl }) {
       console.log("redirect", url, baseUrl);
-      return "/foo";
+      return "/";
     },
     async session({ session, user, token }) {
       // console.log("session", session, user, token);
@@ -75,7 +75,7 @@ export default NextAuth({
     // },
     async redirect({ url, baseUrl }) {
       console.log("redirect", url, baseUrl);
-      return "/";
+      return "/submitform";
     },
     async session({ session, user, token }) {
       // console.log("session", session, user, token);

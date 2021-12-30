@@ -13,5 +13,7 @@ module.exports = {
     videoLink1: "Video Link 1",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
+    mail: "Mail",
+    password: "Password"
   },
 };
