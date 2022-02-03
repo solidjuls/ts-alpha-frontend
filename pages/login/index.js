@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import { FormattedMessage } from "react-intl";
-import { getProviders } from "next-auth/react"
 
 import { styled } from "@stitches/react";
 
@@ -60,7 +59,7 @@ const Login = ({ providers, user }) => {
               type="text"
               id="pwd"
               margin="login"
-              //   defaultValue={inputValue}
+              // defaultValue={inputValue}
               //   onChange={(event) => onInputValueChange(event.target.value)}
               //   {...rest}
             />
@@ -76,7 +75,7 @@ const Login = ({ providers, user }) => {
               </Button>
             )}
             {session && (
-              <Button onClick={() => signOut(provider.id, { callbackUrl: '/foomat' })}>Sign out</Button>
+              <Button onClick={() => signOut('credentials', { callbackUrl: '/foomat' })}>Sign out</Button>
             )}
           </Content>
         </Form>
@@ -86,7 +85,6 @@ const Login = ({ providers, user }) => {
 
 // This is the recommended way for Next.js 9.3 or newer
 export async function getServerSideProps({ req }) {
-  // const providers = await getProviders();
   const user = await prisma.users.findFirst({
     where: {
       id: 2,

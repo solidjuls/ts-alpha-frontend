@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { styled } from "@stitches/react";
 import { FormattedMessage } from "react-intl";
+import { getSession } from "next-auth/react";
+
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
@@ -14,7 +16,7 @@ const Form = styled("form", {
   width: "640px",
   alignSelf: "center",
   //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-  padding: "12px"
+  padding: "12px",
 });
 const Flex = styled("div", { display: "flex" });
 const TextArea = styled("textarea", { height: "300px", width: "500px" });
@@ -213,5 +215,18 @@ const SubmitForm = () => {
     </Form>
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+  if (!session) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+  return { props: {}}
+}
 
 export default SubmitForm;
