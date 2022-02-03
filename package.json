@@ -14,13 +14,20 @@
     "@radix-ui/react-icons": "^1.0.3",
     "@radix-ui/react-label": "^0.1.1",
     "@stitches/react": "^1.2.5",
+    "@trpc/client": "^9.18.0",
+    "@trpc/next": "^9.18.0",
+    "@trpc/react": "^9.18.0",
+    "@trpc/server": "^9.18.0",
     "date-fns": "^2.26.0",
     "next": "12.0.4",
     "next-auth": "^4.1.2",
     "react": "17.0.2",
     "react-day-picker": "^7.4.10",
     "react-dom": "17.0.2",
-    "react-intl": "^5.22.0"
+    "react-intl": "^5.22.0",
+    "react-query": "^3.34.12",
+    "typescript": "^4.5.5",
+    "zod": "^3.11.6"
   },
   "devDependencies": {
     "eslint": "7",

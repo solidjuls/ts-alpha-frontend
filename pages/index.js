@@ -1,10 +1,12 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useSession } from "next-auth/react";
+import { trpc } from "utils/trpc";
 
 export default function Home() {
   const { data: session } = useSession();
-  console.log("home", session);
+  const checkingDDBB = trpc.useQuery(["user-get", { id: 4 }]);
+  console.log("home", checkingDDBB);
   return (
     <div className={styles.container}>
       <Head>

@@ -14,15 +14,15 @@ export default NextAuth({
       async authorize(credentials) {
         console.log("authorize", credentials);
 
-        const user = await prisma.users.findFirst({
-          where: {
-            id: 2,
-          },
-        });
-        console.log("users 1", user);
-        const userParsed = JSON.stringify(user, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
-        );
+        // const user = await prisma.users.findFirst({
+        //   where: {
+        //     id: 2,
+        //   },
+        // });
+        // console.log("users 1", user);
+        // const userParsed = JSON.stringify(user, (key, value) =>
+        //   typeof value === "bigint" ? value.toString() : value
+        // );
         
         const user = {
           name: "John Doe",
