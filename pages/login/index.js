@@ -36,8 +36,7 @@ const Login = ({ providers, user }) => {
   console.log("login session", session, user);
   return (
     <>
-      {Object.values(providers).map((provider) => (
-        <Form key={provider.name}>
+      <Form>
           <Head>
             <title>Sign Up</title>
           </Head>
@@ -81,24 +80,23 @@ const Login = ({ providers, user }) => {
             )}
           </Content>
         </Form>
-      ))}
     </>
   );
 };
 
 // This is the recommended way for Next.js 9.3 or newer
 export async function getServerSideProps({ req }) {
-  const providers = await getProviders();
-  console.log("prisma", prisma)
+  // const providers = await getProviders();
   const user = await prisma.users.findFirst({
     where: {
       id: 2,
     },
   });
+  console.log("users 1", user)
   const userParsed = JSON.stringify(user, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
 
   return {
-    props: { providers, user: userParsed },
+    props: { user: userParsed },
   };
 }
 

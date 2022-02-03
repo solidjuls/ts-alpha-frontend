@@ -53,6 +53,7 @@ export default NextAuth({
   providers: [
     CredentialsProvider({
       debug: true,
+      id: 'credentials',
       name: "my-project",
       credentials: {
         username: { label: "Email", type: "text", placeholder: "john@doe.com" },
@@ -92,4 +93,5 @@ export default NextAuth({
   session: {
     jwt: true,
   },
+  secret: process.env.SECRET
 });

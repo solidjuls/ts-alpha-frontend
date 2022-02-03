@@ -8,7 +8,7 @@ import Layout from "components/Layout";
 import "./date.css";
 import "./stylesGlobal.css";
 
-function MyApp({ Component, pageProps }) {
+function App({ Component, pageProps }) {
   return (
     <IdProvider>
       <SessionProvider session={pageProps.session}>
@@ -22,4 +22,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp;
+export default App;
