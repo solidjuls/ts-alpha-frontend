@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import { FormattedMessage } from "react-intl";
 
 import { styled } from "@stitches/react";
 
-import { prisma } from "utils/prisma"
+import { prisma } from "utils/prisma";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
@@ -17,10 +17,10 @@ const Form = styled("form", {
   justifyContent: "center",
   alignItems: "center",
   alignSelf: "center",
-  backgroundColor: "White", 
+  backgroundColor: "White",
   width: "640px",
   height: "400px",
-  boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px"
+  boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
 });
 
 const Content = styled("div", {
@@ -30,72 +30,66 @@ const Content = styled("div", {
   alignItems: "center",
 });
 
-const Login = ({ providers, user }) => {
+const Login = ({ user }) => {
   const { data: session, status } = useSession();
+  const [mail, setMail] = useState("");
+  const [pwd, setPwd] = useState("");
   console.log("login session", session, user);
   return (
     <>
       <Form>
-          <Head>
-            <title>Sign Up</title>
-          </Head>
+        <Head>
+          <title>Sign Up</title>
+        </Head>
 
-          <Content>
-            <h1>Sign up</h1>
-            <Label htmlFor="mail">
-              <FormattedMessage id="mail" />
-            </Label>
-            <Input
-              type="text"
-              id="mail"
-              margin="login"
-              //   defaultValue={inputValue}
-              //   onChange={(event) => onInputValueChange(event.target.value)}
-            />
-            <Label htmlFor="pwd">
-              <FormattedMessage id="password" />
-            </Label>
-            <Input
-              type="text"
-              id="pwd"
-              margin="login"
-              // defaultValue={inputValue}
-              //   onChange={(event) => onInputValueChange(event.target.value)}
-              //   {...rest}
-            />
+        <Content>
+          <h1>Sign up</h1>
+          <Label htmlFor="mail">
+            <FormattedMessage id="mail" />
+          </Label>
+          <Input
+            type="text"
+            id="mail"
+            margin="login"
+            defaultValue={mail}
+            onChange={(event) => setMail(event.target.value)}
+          />
+          <Label htmlFor="pwd">
+            <FormattedMessage id="password" />
+          </Label>
+          <Input
+            type="text"
+            id="pwd"
+            margin="login"
+            defaultValue={pwd}
+            onChange={(event) => setPwd(event.target.value)}
+          />
 
-            {!session && (
-              <Button
-                onClick={(e) => {
-                  e.preventDefault()
-                  signIn('credentials', { callbackUrl: '/submitform' })
-                }}
-              >
-                Login
-              </Button>
-            )}
-            {session && (
-              <Button onClick={() => signOut('credentials', { callbackUrl: '/foomat' })}>Sign out</Button>
-            )}
-          </Content>
-        </Form>
+          {!session && (
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                signIn("credentials", {
+                  mail,
+                  pwd,
+                  callbackUrl: "/submitform",
+                });
+              }}
+            >
+              Login
+            </Button>
+          )}
+          {session && (
+            <Button
+              onClick={() => signOut("credentials", { callbackUrl: "/foomat" })}
+            >
+              Sign out
+            </Button>
+          )}
+        </Content>
+      </Form>
     </>
   );
 };
-
-// This is the recommended way for Next.js 9.3 or newer
-export async function getServerSideProps({ req }) {
-  const user = await prisma.users.findFirst({
-    where: {
-      id: 2,
-    },
-  });
-  console.log("users 1", user)
-  const userParsed = JSON.stringify(user, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-
-  return {
-    props: { user: userParsed },
-  };
-}
 
 export default Login;
