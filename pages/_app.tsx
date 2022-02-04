@@ -2,9 +2,11 @@ import "../styles/globals.css";
 import { IdProvider } from "@radix-ui/react-id";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
+import { ThemeProvider } from "next-themes";
 
 import { IntlContextProvider } from "contexts/IntlContext";
 import Layout from "components/Layout";
+import { darkTheme } from "stitches.config.js";
 import { withTRPC } from "@trpc/next";
 import type { AppRouter } from "backend/router";
 
@@ -16,9 +18,18 @@ function App({ Component, pageProps }: AppProps) {
     <IdProvider>
       <SessionProvider session={pageProps.session}>
         <IntlContextProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            value={{
+              dark: darkTheme.className,
+              light: "light",
+            }}
+          >
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
         </IntlContextProvider>
       </SessionProvider>
     </IdProvider>

@@ -2,12 +2,13 @@ import { styled } from "@stitches/react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "components/UserAvatar";
+import { ThemeToggle } from "components/ThemeToggle";
 
 const Flex = styled("div", {
   display: "flex",
   flexDirection: "row",
-  alignItems: "center"
-})
+  alignItems: "center",
+});
 const HeaderContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
@@ -22,7 +23,7 @@ const Logo = styled("div", {
 });
 const Text = styled("div", {
   color: "white",
-  marginRight: "10px"
+  marginRight: "10px",
 });
 
 const Header = () => {
@@ -33,6 +34,7 @@ const Header = () => {
       <Link href="/" passHref>
         <Logo>Twilight Struggle Competition Hub</Logo>
       </Link>
+      <ThemeToggle />
       {!session && (
         <Link href="/login" passHref>
           <Text>Sign In</Text>
