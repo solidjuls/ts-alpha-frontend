@@ -5,8 +5,7 @@ import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
-  // const checkingDDBB = trpc.useQuery(["user-get", { id: 4 }]);
-  // console.log("home", checkingDDBB);
+
   return (
     <div className={styles.container}>
       <Head>

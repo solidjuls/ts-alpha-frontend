@@ -1,34 +1,31 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { client } from "utils/trpc";
 
 export default NextAuth({
   providers: [
     CredentialsProvider({
       debug: true,
-      id: 'credentials',
+      id: "credentials",
       name: "my-project",
       credentials: {
-        username: { label: "Email", type: "text", placeholder: "yourmail@twilight.com" },
+        username: {
+          label: "Email",
+          type: "text",
+          placeholder: "yourmail@twilight.com",
+        },
         password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("authorize", credentials);
+        const user = await client.query("user-get", {
+          mail: credentials.mail,
+          pwd: credentials.pwd,
+        });
 
-        // const user = await prisma.users.findFirst({
-        //   where: {
-        //     id: 2,
-        //   },
-        // });
-        // console.log("users 1", user);
-        // const userParsed = JSON.stringify(user, (key, value) =>
-        //   typeof value === "bigint" ? value.toString() : value
-        // );
-        
-        const user = {
-          name: "John Doe",
-          email: "john@doe.com",
+        return {
+          name: user.first_name.toString(),
+          email: user.email.toString(),
         };
-        return user;
       },
     }),
   ],
@@ -38,15 +35,15 @@ export default NextAuth({
     //   return user;
     // },
     async redirect(props) {
-      console.log("redirect", props);
+      //console.log("redirect", props);
       return "/submitform";
     },
     async session({ session, user, token }) {
-      // console.log("session", session, user, token);
+      //console.log("session", session, user, token);
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-      // console.log("jwt", token, user, account, profile, isNewUser);
+      console.log("jwt", token, user, account, profile, isNewUser);
       return token;
     },
   },
@@ -56,5 +53,5 @@ export default NextAuth({
   session: {
     jwt: true,
   },
-  secret: process.env.SECRET
+  secret: process.env.SECRET,
 });
