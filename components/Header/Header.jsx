@@ -3,6 +3,11 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "components/UserAvatar";
 
+const Flex = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center"
+})
 const HeaderContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
@@ -17,9 +22,8 @@ const Logo = styled("div", {
 });
 const Text = styled("div", {
   color: "white",
+  marginRight: "10px"
 });
-
-
 
 const Header = () => {
   const { data: session } = useSession();
@@ -35,10 +39,12 @@ const Header = () => {
         </Link>
       )}
       {session && (
-        // <Link href="/userprofile" passHref>
-        //   <Text>{`Hi ${session?.user?.name}`}</Text>
-        // </Link>
-        <UserAvatar name={session?.user?.name} />
+        <Flex>
+          <Link href="/userprofile" passHref>
+            <Text>{`Hi ${session?.user?.name}`}</Text>
+          </Link>
+          <UserAvatar name={session?.user?.name} />
+        </Flex>
       )}
     </HeaderContainer>
   );

@@ -71,7 +71,7 @@ const Login = ({ user }) => {
                 signIn("credentials", {
                   mail,
                   pwd,
-                  callbackUrl: "/",
+                  callbackUrl: "/submitform",
                 });
               }}
             >

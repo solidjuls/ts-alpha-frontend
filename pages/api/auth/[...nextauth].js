@@ -39,7 +39,7 @@ export default NextAuth({
     // },
     async redirect(props) {
       console.log("redirect", props);
-      return "/";
+      return "/submitform";
     },
     async session({ session, user, token }) {
       // console.log("session", session, user, token);

@@ -21,6 +21,9 @@ const styledItemStyles = {
   cursor: "pointer",
   borderRadius: "$1",
   margin: 5,
+  height: 25,
+  padding: '0 5px',
+  paddingLeft: 25,
   transition: "all 50ms",
   display: "flex",
   alignItems: "center",
@@ -127,8 +130,6 @@ const UserAvatar = ({ name }: { name: String }) => {
           <StyledTriangleDownIcon />
         </StyledTrigger>
         <StyledContent align="end">
-          <div>{`Signed in as ${name}`}</div>
-          <StyledSeparator />
           <StyledItem>
             <Link href="/userprofile" passHref>
               Profile
