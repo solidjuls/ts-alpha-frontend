@@ -7,9 +7,9 @@ const HeaderContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
-  //backgroundColor: "rgb(103, 58, 183)",
+  alignItems: "center",
   backgroundColor: "#24292f",
-  padding: "16px",
+  padding: "16px 32px 16px 16px",
 });
 
 const Logo = styled("div", {
@@ -29,16 +29,16 @@ const Header = () => {
       <Link href="/" passHref>
         <Logo>Twilight Struggle Competition Hub</Logo>
       </Link>
-      <UserAvatar />
       {!session && (
         <Link href="/login" passHref>
           <Text>Sign In</Text>
         </Link>
       )}
       {session && (
-        <Link href="/userprofile" passHref>
-          <Text>{`Hi ${session?.user?.name}`}</Text>
-        </Link>
+        // <Link href="/userprofile" passHref>
+        //   <Text>{`Hi ${session?.user?.name}`}</Text>
+        // </Link>
+        <UserAvatar name={session?.user?.name} />
       )}
     </HeaderContainer>
   );

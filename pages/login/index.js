@@ -71,7 +71,7 @@ const Login = ({ user }) => {
                 signIn("credentials", {
                   mail,
                   pwd,
-                  callbackUrl: "/submitform",
+                  callbackUrl: "/",
                 });
               }}
             >
@@ -80,7 +80,7 @@ const Login = ({ user }) => {
           )}
           {session && (
             <Button
-              onClick={() => signOut("credentials", { callbackUrl: "/foomat" })}
+              onClick={() => signOut("credentials", { callbackUrl: "/" })}
             >
               Sign out
             </Button>

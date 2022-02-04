@@ -10,13 +10,15 @@ import {
   Arrow,
   Separator,
 } from "@radix-ui/react-dropdown-menu";
+import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   fontSize: "$2",
   lineHeight: "1",
   color: "black",
-  cursor: "default",
+  cursor: "pointer",
   borderRadius: "$1",
   margin: 5,
   transition: "all 50ms",
@@ -114,7 +116,7 @@ const StyledContent = styled(Content, {
 const Flex = styled("div", { display: "flex", flexDirection: "row" });
 const StyledItem = styled(Item, { ...styledItemStyles });
 
-const UserAvatar = () => {
+const UserAvatar = ({ name }: { name: String }) => {
   return (
     <Flex>
       <Root>
@@ -124,12 +126,22 @@ const UserAvatar = () => {
           </StyledAvatar>
           <StyledTriangleDownIcon />
         </StyledTrigger>
-        <StyledContent>
-          <StyledItem>Profile</StyledItem>
+        <StyledContent align="end">
+          <div>{`Signed in as ${name}`}</div>
           <StyledSeparator />
-          <StyledItem>Sign out</StyledItem>
+          <StyledItem>
+            <Link href="/userprofile" passHref>
+              Profile
+            </Link>
+          </StyledItem>
+          <StyledSeparator />
+          <StyledItem
+            onClick={() => signOut({ callbackUrl: "/" })}
+          >
+            Sign out
+          </StyledItem>
           <Item />
-          <StyledArrow />
+          <StyledArrow offset={30} />
         </StyledContent>
       </Root>
     </Flex>
