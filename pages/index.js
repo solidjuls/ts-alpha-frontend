@@ -1,12 +1,13 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { useSession } from "next-auth/react";
-import { trpc } from "utils/trpc";
+// import { trpc } from "utils/trpc";
+import { DropdownMenu } from "components/DropdownMenu"
 
 export default function Home() {
   const { data: session } = useSession();
-  const checkingDDBB = trpc.useQuery(["user-get", { id: 4 }]);
-  console.log("home", checkingDDBB);
+  // const checkingDDBB = trpc.useQuery(["user-get", { id: 4 }]);
+  // console.log("home", checkingDDBB);
   return (
     <div className={styles.container}>
       <Head>
@@ -16,6 +17,8 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <h1 className={styles.title}>HOME PAGE</h1>
+        <section>I think we could add here the latest results of the leagues, grouped by date and leagues?</section>
+        <DropdownMenu/>
       </main>
     </div>
   );

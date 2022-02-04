@@ -4,7 +4,6 @@ import { FormattedMessage } from "react-intl";
 
 import { styled } from "@stitches/react";
 
-import { prisma } from "utils/prisma";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";

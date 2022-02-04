@@ -1,12 +1,14 @@
 import { styled } from "@stitches/react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { UserAvatar } from "components/UserAvatar";
 
 const HeaderContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
   justifyContent: "space-between",
-  backgroundColor: "rgb(103, 58, 183)",
+  //backgroundColor: "rgb(103, 58, 183)",
+  backgroundColor: "#24292f",
   padding: "16px",
 });
 
@@ -17,6 +19,8 @@ const Text = styled("div", {
   color: "white",
 });
 
+
+
 const Header = () => {
   const { data: session } = useSession();
 
@@ -25,9 +29,17 @@ const Header = () => {
       <Link href="/" passHref>
         <Logo>Twilight Struggle Competition Hub</Logo>
       </Link>
-      <Link href="/login" passHref>
-        <Text>{session ? `Hi ${session?.user?.name}` : "Sign In"}</Text>
-      </Link>
+      <UserAvatar />
+      {!session && (
+        <Link href="/login" passHref>
+          <Text>Sign In</Text>
+        </Link>
+      )}
+      {session && (
+        <Link href="/userprofile" passHref>
+          <Text>{`Hi ${session?.user?.name}`}</Text>
+        </Link>
+      )}
     </HeaderContainer>
   );
 };

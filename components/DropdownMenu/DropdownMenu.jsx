@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Root,
-  Trigger,
-  Content,
-  Item,
-} from "@radix-ui/react-dropdown-menu";
+import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
 
@@ -73,7 +68,7 @@ const BoxInput = styled("div", {
 });
 
 const DropdownMenu = () => {
-  const [selectedItem, setSelectedItem] = useState("")
+  const [selectedItem, setSelectedItem] = useState("");
   return (
     <Root>
       <StyledTrigger>
