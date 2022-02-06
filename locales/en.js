@@ -14,6 +14,7 @@ module.exports = {
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
     mail: "Mail",
-    password: "Password"
+    password: "Password",
+    updatePwdProfile: "Update your password"
   },
 };

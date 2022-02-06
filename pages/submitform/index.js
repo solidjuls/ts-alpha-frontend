@@ -110,6 +110,7 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     .then((result) => responseCallback(result))
     .catch((err) => responseCallback(err));
 };
+
 const SubmitForm = () => {
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
@@ -218,6 +219,7 @@ const SubmitForm = () => {
 
 export async function getServerSideProps(context) {
   const session = await getSession(context);
+  console.log("session", session)
   if (!session) {
     return {
       redirect: {

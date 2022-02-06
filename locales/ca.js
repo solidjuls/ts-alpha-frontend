@@ -13,6 +13,7 @@ module.exports = {
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
     mail: "Mail",
-    passowrd: "Contrasenya"
+    passowrd: "Contrasenya",
+    updatePwdProfile: "Actualitza la contrassenya"
   },
 };

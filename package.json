@@ -20,6 +20,7 @@
     "@trpc/next": "^9.18.0",
     "@trpc/react": "^9.18.0",
     "@trpc/server": "^9.18.0",
+    "bcryptjs": "^2.4.3",
     "date-fns": "^2.26.0",
     "next": "12.0.4",
     "next-auth": "^4.1.2",
@@ -33,6 +34,7 @@
     "zod": "^3.11.6"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "eslint": "7",
     "eslint-config-next": "12.0.4",
     "prisma": "^3.8.1"
