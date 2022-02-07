@@ -1,3 +1,4 @@
+import { FormattedMessage, useIntl } from "react-intl";
 import { styled } from "@stitches/react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -28,6 +29,7 @@ const Text = styled("div", {
 
 const Header = () => {
   const { data: session } = useSession();
+  const intl = useIntl();
 
   return (
     <HeaderContainer>
@@ -37,13 +39,15 @@ const Header = () => {
       <ThemeToggle />
       {!session && (
         <Link href="/login" passHref>
-          <Text>Sign In</Text>
+          <Text>
+            <FormattedMessage id="signIn" />
+          </Text>
         </Link>
       )}
       {session && (
         <Flex>
           <Link href="/userprofile" passHref>
-            <Text>{`Hi ${session?.user?.name}`}</Text>
+            <Text>{`${intl.formatMessage({ id: "greeting"})} ${session?.user?.name}`}</Text>
           </Link>
           <UserAvatar name={session?.user?.name} />
         </Flex>

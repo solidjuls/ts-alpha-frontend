@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { trpc } from "utils/trpc";
-import { hash } from 'bcryptjs';
+import { hash } from "bcryptjs";
 import { useSession } from "next-auth/react";
+import { FormattedMessage } from "react-intl";
 import { styled } from "@stitches/react";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
-import { FormattedMessage } from "react-intl";
+import { LanguagePicker } from "components/LanguagePicker";
 
 const ProfileLayout = styled("div", { padding: "24px" });
 const Flex = styled("div", { display: "flex" });
@@ -42,11 +43,11 @@ const UserProfile = () => {
   const [password, setPassword] = useState("");
   const updateClick = async () => {
     if (session?.user?.email) {
-      const aveure =await hash(password, 12)
-      console.log("aveure", aveure)
+      const aveure = await hash(password, 12);
+      console.log("aveure", aveure);
       mutation.mutate({
         mail: session.user?.email,
-        password: aveure
+        password: aveure,
       });
     }
   };
@@ -58,7 +59,10 @@ const UserProfile = () => {
         inputValue={password}
         onInputValueChange={setPassword}
       />
-      <button onClick={updateClick}>Update</button>
+      <button onClick={updateClick}>
+        <FormattedMessage id="updatePwdProfileButton" />
+      </button>
+      <LanguagePicker />
     </ProfileLayout>
   );
 };

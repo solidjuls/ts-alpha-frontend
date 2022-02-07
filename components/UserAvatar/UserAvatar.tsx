@@ -1,3 +1,4 @@
+import { FormattedMessage, useIntl } from "react-intl";
 import { styled, keyframes } from "@stitches/react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { blackA } from "@radix-ui/colors";
@@ -22,7 +23,7 @@ const styledItemStyles = {
   borderRadius: "$1",
   margin: 5,
   height: 25,
-  padding: '0 5px',
+  padding: "0 5px",
   paddingLeft: 25,
   transition: "all 50ms",
   display: "flex",
@@ -120,6 +121,7 @@ const Flex = styled("div", { display: "flex", flexDirection: "row" });
 const StyledItem = styled(Item, { ...styledItemStyles });
 
 const UserAvatar = ({ name }: { name: String }) => {
+  const intl = useIntl();
   return (
     <Flex>
       <Root>
@@ -132,14 +134,12 @@ const UserAvatar = ({ name }: { name: String }) => {
         <StyledContent align="end">
           <StyledItem>
             <Link href="/userprofile" passHref>
-              Profile
+              {intl.formatMessage({ id: "profileText" })}
             </Link>
           </StyledItem>
           <StyledSeparator />
-          <StyledItem
-            onClick={() => signOut({ callbackUrl: "/" })}
-          >
-            Sign out
+          <StyledItem onClick={() => signOut({ callbackUrl: "/" })}>
+            {intl.formatMessage({ id: "signOut" })}
           </StyledItem>
           <Item />
           <StyledArrow offset={30} />
