@@ -8,6 +8,7 @@ import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const Form = styled("form", {
   display: "flex",
@@ -29,11 +30,17 @@ const Content = styled("div", {
   alignItems: "center",
 });
 
+const ErrorInfo = styled("span", {
+  color: "red",
+  margin: "8px",
+});
+
 const Login = ({ user }) => {
+  const { error } = useRouter().query;
   const { data: session, status } = useSession();
   const [mail, setMail] = useState("");
   const [pwd, setPwd] = useState("");
-  console.log("login session", session, user);
+  // console.log("login session", error);
   return (
     <>
       <Form>
@@ -63,7 +70,7 @@ const Login = ({ user }) => {
             defaultValue={pwd}
             onChange={(event) => setPwd(event.target.value)}
           />
-
+          <ErrorInfo>Could not sign in</ErrorInfo>
           {!session && (
             <Button
               onClick={(e) => {
