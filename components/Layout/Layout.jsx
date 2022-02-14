@@ -1,11 +1,13 @@
+import { useState } from "react";
 import { styled } from "@stitches/react";
 import Image from "next/image";
 import Header from "components/Header";
+import { Sidebar } from "components/Sidebar";
 
 const Container = styled("div", {
   display: "flex",
   flexDirection: "column",
-  padding: "0 2rem",
+  // padding: "0 2rem",
   // backgroundColor: "rgb(240, 235, 248)",
   minHeight: "100vh",
   width: "100%",
@@ -54,9 +56,11 @@ const Footer = () => {
   );
 };
 const Layout = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Container>
-      <Header />
+      <Header openSidebar={() => setIsOpen(!isOpen)} />
+      {isOpen && <Sidebar />}
       <Content>{children}</Content>
       <Footer />
     </Container>

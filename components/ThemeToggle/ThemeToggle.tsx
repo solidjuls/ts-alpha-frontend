@@ -54,9 +54,9 @@ export const ThemeToggle = () => {
 
   return (
     <Flex>
-      <Label htmlFor="s1" css={{ paddingRight: 15 }}>
+      {/* <Label htmlFor="s1" css={{ paddingRight: 15 }}>
         {`${resolvedTheme} mode`}
-      </Label>
+      </Label> */}
       <StyledSwitch onCheckedChange={toggleTheme} defaultChecked id="s1">
         <StyledThumb />
       </StyledSwitch>

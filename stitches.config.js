@@ -1,6 +1,6 @@
 import { createStitches } from "@stitches/react";
 
-export const stitchesConfig = createStitches({
+const stitches = createStitches({
   theme: {
     colors: {
       gray900: "hsl(205,5%,7%)",
@@ -19,11 +19,13 @@ export const stitchesConfig = createStitches({
     },
   },
   media: {
-    dark: "(prefers-color-scheme: dark)",
+    sm: "(max-width: 480px)",
+    md: '(max-width: 768px)',
+    lg: '(max-width: 1024px)',
   },
 });
 
-export const darkTheme = stitchesConfig.createTheme({
+export const darkTheme = stitches.createTheme({
   colors: {
     primary: "$gray100",
     secondary: "$gray200",
@@ -33,3 +35,5 @@ export const darkTheme = stitchesConfig.createTheme({
     border: "$gray100",
   },
 });
+
+export default stitches;
