@@ -45,8 +45,7 @@ export default withTRPC<AppRouter>({
     const url = process.env.NEXT_PUBLIC_VERCEL_URL
       ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/trpc`
       : "http://localhost:3000/api/trpc";
-      console.log("checking env VERCEL_URL", process.env.VERCEL_URL, url)
-      console.log("checking env NEXT_PUBLIC_VERCEL_URL", process.env.NEXT_PUBLIC_VERCEL_URL, url)
+
     return {
       url,
       /**

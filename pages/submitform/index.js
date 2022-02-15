@@ -218,10 +218,8 @@ const SubmitForm = () => {
 };
 
 export async function getServerSideProps(context) {
-  console.log("checking env VERCEL_URL", process.env.VERCEL_URL, url)
-      console.log("checking env NEXT_PUBLIC_VERCEL_URL", process.env.NEXT_PUBLIC_VERCEL_URL)
   const session = await getSession(context);
-  console.log("session", session)
+
   if (!session) {
     return {
       redirect: {

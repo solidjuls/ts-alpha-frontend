@@ -3,8 +3,10 @@ import stitches from "stitches.config";
 const Box = stitches.styled("div");
 
 const sidebarItemStyles = { 
-  border: "solid 1px black",
-  padding: '4px'
+  borderTop: "solid 1px rgba(255,255,255,.15)",
+  backgroundColor: "#24292f",
+  color: 'white',
+  padding: '8px 16px'
 }
 
 const Sidebar = () => {
@@ -17,9 +19,9 @@ const Sidebar = () => {
           border: "solid 1px black"
         }}
       >
-        <Box css={{...sidebarItemStyles}}>item 1</Box>
-        <Box css={{...sidebarItemStyles}}>item 1</Box>
-        <Box css={{...sidebarItemStyles}}>item 1</Box>
+        <Box css={{...sidebarItemStyles}}>Home Page</Box>
+        <Box css={{...sidebarItemStyles}}>Profile</Box>
+        <Box css={{...sidebarItemStyles}}>Submit Form</Box>
       </Box>
     </Box>
   );

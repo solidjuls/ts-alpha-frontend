@@ -26,8 +26,25 @@ const HeaderContainer = stitches.styled("div", {
   justifyContent: "space-between",
   backgroundColor: "#24292f",
   padding: "16px 32px 16px 16px",
+  // "@sm": {
+  //   justifyContent: "flex-end",
+  // },
+});
+
+const StyledLink = stitches.styled(Link, {
+  display: "flex",
+  cursor: "pointer",
   "@sm": {
-    justifyContent: "flex-end",
+    display: "none",
+  },
+});
+
+const StyledHamburgerMenuIcon = stitches.styled(HamburgerMenuIcon, {
+  display: "none",
+  "@sm": {
+    display: "flex",
+    justifyContent: "flex-start",
+    cursor: "pointer",
   },
 });
 
@@ -48,13 +65,16 @@ const Header = ({ openSidebar }) => {
 
   return (
     <HeaderContainer>
-      <Link href="/" passHref>
+      <StyledHamburgerMenuIcon color="white" onClick={openSidebar} />
+      <StyledLink href="/" passHref>
         {/* <Logo>Twilight Struggle Competition Hub</Logo> */}
         <Logo>Logo</Logo>
-      </Link>
-      <HamburgerMenuIcon onClick={openSidebar} />
+      </StyledLink>
+      <StyledLink href="/submitform" passHref>
+        <Text>Submit Form</Text>
+      </StyledLink>
       <Flex>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
 
         {!session && (
           <Link href="/login" passHref>
