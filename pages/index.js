@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
-
+console.log("checking env variables", process.env.NEXT_PUBLIC_VERCEL_URL)
   return (
     <div className={styles.container}>
       <Head>
