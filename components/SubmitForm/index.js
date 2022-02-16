@@ -1,1 +1,0 @@
-export { SubmitForm } from "./SubmitForm";

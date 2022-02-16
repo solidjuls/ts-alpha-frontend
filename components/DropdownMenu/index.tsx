@@ -1,10 +1,4 @@
-import { useState } from "react";
-import {
-  Root,
-  Trigger,
-  Content,
-  Item,
-} from "@radix-ui/react-dropdown-menu";
+import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
 
@@ -13,15 +7,15 @@ const styledItemStyles = {
   fontSize: "$2",
   lineHeight: "1",
   color: "black",
-  cursor: "default",
+  cursor: "pointer",
   borderRadius: "$1",
-  padding: "$1 $2 $1 $5",
+  // padding: "$1 $2 $1 $5",
+  padding: "4px 8px 4px 8px",
   transition: "all 50ms",
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
   position: "relative",
-  padding: "8px",
 
   "&:focus": {
     outline: "none",
@@ -39,12 +33,11 @@ const StyledTrigger = styled(Trigger, {
 
 const StyledContent = styled(Content, {
   backgroundColor: "white",
-  borderRadius: "$2",
+  borderRadius: "4px",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
   width: "300px",
   padding: "$1",
-  minWidth: 150,
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
@@ -65,33 +58,51 @@ const SelectedItemDiv = styled("div", {
   lineHeight: 2,
   borderRadius: 4,
   fontSize: 15,
-  lineHeight: 1,
 });
 
 const BoxInput = styled("div", {
   position: "relative",
+  cursor: "pointer",
 });
 
-const DropdownMenu = () => {
-  const [selectedItem, setSelectedItem] = useState("")
+type ItemType = {
+  text: string;
+  value: string;
+};
+
+type DropdownMenuProps = {
+  items: Array<ItemType>;
+  selectedItem: string;
+  onSelect: Function;
+  width: string;
+};
+
+const DropdownMenu = ({
+  items,
+  selectedItem,
+  onSelect,
+  width,
+}: DropdownMenuProps) => {
   return (
     <Root>
       <StyledTrigger>
         <BoxInput>
-          <SelectedItemDiv>
+          <SelectedItemDiv css={{ width }}>
             <Span>{selectedItem}</Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />
         </BoxInput>
       </StyledTrigger>
 
-      <StyledContent>
-        <StyledItem onSelect={() => setSelectedItem("1")}>item 1</StyledItem>
-        <StyledItem onSelect={() => setSelectedItem("2")}>item 1</StyledItem>
-        <StyledItem onSelect={() => setSelectedItem("3")}>item 1</StyledItem>
-        <Item />
+      <StyledContent css={{ width }}>
+        {items.map((item) => (
+          <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
+            {item.text}
+          </StyledItem>
+        ))}
       </StyledContent>
     </Root>
   );
 };
-export { DropdownMenu };
+
+export default DropdownMenu;

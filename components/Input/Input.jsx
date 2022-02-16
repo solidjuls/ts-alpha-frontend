@@ -5,6 +5,8 @@ const Input = styled("input", {
   variants: {
     margin: {
       xxl: { margin: 64 },
+      url: { margin: "0 0 24px 0" },
+      login: { margin: "0 0 12px 0" },
     },
     border: {
       dropdown: {
@@ -14,7 +16,7 @@ const Input = styled("input", {
     }
   },
   all: "unset",
-  width: 400,
+  width: 150,
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -24,7 +26,7 @@ const Input = styled("input", {
   fontSize: 15,
   lineHeight: 1,
   color: "black",
-  backgroundColor: blackA.blackA5,
+  // backgroundColor: blackA.blackA5,
   boxShadow: `0 0 0 1px ${blackA.blackA9}`,
   "&:focus": { boxShadow: `0 0 0 2px black` },
 });
