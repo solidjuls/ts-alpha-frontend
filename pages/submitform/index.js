@@ -6,6 +6,7 @@ import { getSession } from "next-auth/react";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
+import DropdownMenu from "components/DropdownMenu";
 
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
@@ -39,10 +40,33 @@ const initialState = {
   video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
 };
 
+const DropdownLabelComponent = ({
+  labelText,
+  selectedItem,
+  onSelect,
+  items,
+  css,
+  ...rest
+}) => (
+  <Flex css={cssFlexTextDateComponent}>
+    <Label htmlFor="dropdown" css={cssLabel}>
+      <FormattedMessage id={labelText} />
+    </Label>
+    <DropdownMenu
+      id="dropdown"
+      items={items}
+      selectedItem={selectedItem}
+      onSelect={onSelect}
+      css={css}
+      {...rest}
+    />
+  </Flex>
+);
 const TextComponent = ({
   labelText,
   inputValue,
   onInputValueChange = () => {},
+  css,
   ...rest
 }) => (
   <Flex css={cssFlexTextDateComponent}>
@@ -54,6 +78,7 @@ const TextComponent = ({
       id="video1"
       defaultValue={inputValue}
       onChange={(event) => onInputValueChange(event.target.value)}
+      css={css}
       {...rest}
     />
   </Flex>
@@ -98,6 +123,7 @@ const DisplayData = ({ data, labelText }) => {
 
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
   sendCallback(data);
+  console.log("url", url, data);
   fetch(url, {
     method: "POST",
     headers: {
@@ -111,6 +137,106 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     .catch((err) => responseCallback(err));
 };
 
+const leagueTypes = [
+  {
+    text: "National League",
+    value: "National League",
+  },
+  {
+    text: "ITSL",
+    value: "ITSL",
+  },
+  {
+    text: "OTSL",
+    value: "OTSL",
+  },
+  {
+    text: "RTSL",
+    value: "RTSL",
+  },
+];
+
+const turns = [
+  {
+    text: "1",
+    value: "1",
+  },
+  {
+    text: "2",
+    value: "2",
+  },
+  {
+    text: "3",
+    value: "3",
+  },
+  {
+    text: "4",
+    value: "4",
+  },
+  {
+    text: "5",
+    value: "5",
+  },
+  {
+    text: "6",
+    value: "6",
+  },
+  {
+    text: "7",
+    value: "7",
+  },
+  {
+    text: "8",
+    value: "8",
+  },
+  {
+    text: "9",
+    value: "9",
+  },
+  {
+    text: "10",
+    value: "10",
+  },
+];
+
+const endType = [
+  {
+    value: "VP Track (+20)",
+    text: "VP Track (+20)",
+  },
+  {
+    value: "Final Scoring",
+    text: "Final Scoring",
+  },
+  {
+    value: "Wargames",
+    text: "Wargames",
+  },
+  {
+    value: "DEFCON",
+    text: "DEFCON",
+  },
+  {
+    value: "Forfeit",
+    text: "Forfeit",
+  },
+  {
+    value: "Timer Expired",
+    text: "Timer Expired",
+  },
+  {
+    value: "Europe Control",
+    text: "Europe Control",
+  },
+  {
+    value: "Scoring Card Held",
+    text: "Scoring Card Held",
+  },
+  {
+    value: "Cuban Missile Crisis",
+    text: "Cuban Missile Crisis",
+  },
+];
 const SubmitForm = () => {
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
@@ -127,23 +253,19 @@ const SubmitForm = () => {
   };
 
   return (
-    <Form>
+    <Form onSubmit={(e) => e.preventDefault()}>
       <Flex css={cssLayout}>
-        <TextComponent
-          labelText="currentURL"
-          inputValue={url}
-          onInputValueChange={(event) => setUrl(event.target.value)}
-          margin="url"
-        />
-        <TextComponent
-          labelText="typeOfGame"
-          inputValue={form.game_type}
-          onInputValueChange={(value) => onInputValueChange("game_type", value)}
-        />
         <TextComponent
           labelText="checkID"
           inputValue={form.game_code}
           onInputValueChange={(value) => onInputValueChange("game_code", value)}
+          css={{ width: "50px" }}
+        />
+        <DropdownLabelComponent
+          labelText="typeOfGame"
+          items={leagueTypes}
+          selectedItem={leagueTypes[0]}
+          onSelect={(e) => console.log("league types", e)}
         />
         <TextComponent
           labelText="playerUSA"
@@ -166,15 +288,17 @@ const SubmitForm = () => {
             onInputValueChange("game_winner", value)
           }
         />
-        <TextComponent
+        <DropdownLabelComponent
           labelText="endTurn"
-          inputValue={form.end_turn}
-          onInputValueChange={(value) => onInputValueChange("end_turn", value)}
+          items={turns}
+          selectedItem={turns[0]}
+          onSelect={(e) => console.log("endTurn", e)}
         />
-        <TextComponent
+        <DropdownLabelComponent
           labelText="endType"
-          inputValue={form.end_mode}
-          onInputValueChange={(value) => onInputValueChange("end_mode", value)}
+          items={endType}
+          selectedItem={endType[0]}
+          onSelect={(e) => console.log("endType", e)}
         />
         <DateComponent
           labelText="gameDate"
@@ -209,10 +333,10 @@ const SubmitForm = () => {
           Call submit API
         </Button>
       </Flex>
-      {/* <Flex>
+      <Flex>
         <DisplayData labelText="Send" data={sendInfo} />
         <DisplayData labelText="Response" data={responseInfo} />
-      </Flex> */}
+      </Flex>
     </Form>
   );
 };
@@ -228,7 +352,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  return { props: {}}
+  return { props: {} };
 }
 
 export default SubmitForm;

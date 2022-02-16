@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
@@ -8,7 +7,7 @@ const styledItemStyles = {
   fontSize: "$2",
   lineHeight: "1",
   color: "black",
-  cursor: "default",
+  cursor: "pointer",
   borderRadius: "$1",
   padding: "$1 $2 $1 $5",
   transition: "all 50ms",
@@ -16,7 +15,6 @@ const styledItemStyles = {
   alignItems: "center",
   justifyContent: "space-between",
   position: "relative",
-  padding: "8px",
 
   "&:focus": {
     outline: "none",
@@ -60,33 +58,45 @@ const SelectedItemDiv = styled("div", {
   lineHeight: 2,
   borderRadius: 4,
   fontSize: 15,
-  lineHeight: 1,
 });
 
 const BoxInput = styled("div", {
   position: "relative",
+  cursor: "pointer",
 });
 
-const DropdownMenu = () => {
-  const [selectedItem, setSelectedItem] = useState("");
+type ItemType = {
+  text: string;
+  value: string;
+};
+
+type DropdownMenuProps = {
+  items: Array<ItemType>;
+  selectedItem: ItemType;
+  onSelect: Function;
+};
+
+const DropdownMenu = ({ items, selectedItem, onSelect }: DropdownMenuProps) => {
   return (
     <Root>
       <StyledTrigger>
         <BoxInput>
           <SelectedItemDiv>
-            <Span>{selectedItem}</Span>
+            <Span>{selectedItem.text}</Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />
         </BoxInput>
       </StyledTrigger>
 
       <StyledContent>
-        <StyledItem onSelect={() => setSelectedItem("1")}>item 1</StyledItem>
-        <StyledItem onSelect={() => setSelectedItem("2")}>item 1</StyledItem>
-        <StyledItem onSelect={() => setSelectedItem("3")}>item 1</StyledItem>
-        <Item />
+        {items.map((item) => (
+          <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
+            {item.text}
+          </StyledItem>
+        ))}
       </StyledContent>
     </Root>
   );
 };
-export { DropdownMenu };
+
+export default DropdownMenu;

@@ -127,7 +127,7 @@ const UserAvatar = ({ name }: { name: String }) => {
       <Root>
         <StyledTrigger>
           <StyledAvatar>
-            <StyledImage src="https://avatars.githubusercontent.com/u/16022476?s=400&u=92d3395074971a36d6e5e5bf91a6a26706078afe&v=4"></StyledImage>
+            <StyledImage src="https://pbs.twimg.com/profile_images/1361968864171618316/T8jfJHNo_400x400.jpg"></StyledImage>
           </StyledAvatar>
           <StyledTriangleDownIcon />
         </StyledTrigger>
