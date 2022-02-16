@@ -40,7 +40,7 @@ const Login = ({ user }) => {
   const { data: session, status } = useSession();
   const [mail, setMail] = useState("");
   const [pwd, setPwd] = useState("");
-  // console.log("login session", error);
+
   return (
     <>
       <Form>
@@ -59,6 +59,7 @@ const Login = ({ user }) => {
             margin="login"
             defaultValue={mail}
             onChange={(event) => setMail(event.target.value)}
+            css={{ width: "300px" }}
           />
           <Label htmlFor="pwd">
             <FormattedMessage id="password" />
@@ -69,8 +70,9 @@ const Login = ({ user }) => {
             margin="login"
             defaultValue={pwd}
             onChange={(event) => setPwd(event.target.value)}
+            css={{ width: "300px" }}
           />
-          <ErrorInfo>Could not sign in</ErrorInfo>
+          {error && <ErrorInfo>Could not sign in</ErrorInfo>}
           {!session && (
             <Button
               onClick={(e) => {

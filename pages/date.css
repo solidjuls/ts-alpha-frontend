@@ -1,6 +1,6 @@
 .DayPickerInput > input{
     all: unset;
-    width: 400px;
+    width: 200px;
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -9,7 +9,8 @@ const styledItemStyles = {
   color: "black",
   cursor: "pointer",
   borderRadius: "$1",
-  padding: "$1 $2 $1 $5",
+  // padding: "$1 $2 $1 $5",
+  padding: "4px 8px 4px 8px",
   transition: "all 50ms",
   display: "flex",
   alignItems: "center",
@@ -32,12 +33,11 @@ const StyledTrigger = styled(Trigger, {
 
 const StyledContent = styled(Content, {
   backgroundColor: "white",
-  borderRadius: "$2",
+  borderRadius: "4px",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
   width: "300px",
   padding: "$1",
-  minWidth: 150,
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
@@ -72,23 +72,29 @@ type ItemType = {
 
 type DropdownMenuProps = {
   items: Array<ItemType>;
-  selectedItem: ItemType;
+  selectedItem: string;
   onSelect: Function;
+  width: string;
 };
 
-const DropdownMenu = ({ items, selectedItem, onSelect }: DropdownMenuProps) => {
+const DropdownMenu = ({
+  items,
+  selectedItem,
+  onSelect,
+  width,
+}: DropdownMenuProps) => {
   return (
     <Root>
       <StyledTrigger>
         <BoxInput>
-          <SelectedItemDiv>
-            <Span>{selectedItem.text}</Span>
+          <SelectedItemDiv css={{ width }}>
+            <Span>{selectedItem}</Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />
         </BoxInput>
       </StyledTrigger>
 
-      <StyledContent>
+      <StyledContent css={{ width }}>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}

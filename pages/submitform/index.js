@@ -133,8 +133,8 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     body: JSON.stringify(data),
   })
     .then((res) => res.json())
-    .then((result) => responseCallback(result))
-    .catch((err) => responseCallback(err));
+    .then((result) => { console.log("successful", result); responseCallback(result)})
+    .catch((err) => { console.log("error", err); responseCallback(err)});
 };
 
 const leagueTypes = [
@@ -264,8 +264,9 @@ const SubmitForm = () => {
         <DropdownLabelComponent
           labelText="typeOfGame"
           items={leagueTypes}
-          selectedItem={leagueTypes[0]}
-          onSelect={(e) => console.log("league types", e)}
+          selectedItem={form.game_type}
+          width="200px"
+          onSelect={(value) => onInputValueChange("game_type", value)}
         />
         <TextComponent
           labelText="playerUSA"
@@ -291,14 +292,16 @@ const SubmitForm = () => {
         <DropdownLabelComponent
           labelText="endTurn"
           items={turns}
-          selectedItem={turns[0]}
-          onSelect={(e) => console.log("endTurn", e)}
+          selectedItem={form.end_turn}
+          width="70px"
+          onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="endType"
           items={endType}
-          selectedItem={endType[0]}
-          onSelect={(e) => console.log("endType", e)}
+          width="200px"
+          selectedItem={form.end_mode}
+          onSelect={(value) => onInputValueChange("end_mode", value)}
         />
         <DateComponent
           labelText="gameDate"
@@ -330,13 +333,14 @@ const SubmitForm = () => {
             })
           }
         >
-          Call submit API
+          Submit
         </Button>
+        {responseInfo && <strong>Result submitted correctly</strong>}
       </Flex>
-      <Flex>
+      {/* <Flex>
         <DisplayData labelText="Send" data={sendInfo} />
         <DisplayData labelText="Response" data={responseInfo} />
-      </Flex>
+      </Flex> */}
     </Form>
   );
 };

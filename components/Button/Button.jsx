@@ -10,10 +10,10 @@ const Button = styled("button", {
   margin: "8px",
   fontWeight: "300",
   color: "#FFFFFF",
-  backgroundColor: "#4eb5f1",
+  backgroundColor: "#24292f",
   textAlign: "center",
   transition: " all 0.2s",
-  backgroundColor: "rgb(103, 58, 183)",
+  //backgroundColor: "rgb(103, 58, 183)",
 });
 
 export { Button };

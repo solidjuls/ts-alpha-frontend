@@ -62,7 +62,7 @@ const UserProfile = () => {
       <button onClick={updateClick}>
         <FormattedMessage id="updatePwdProfileButton" />
       </button>
-      <LanguagePicker />
+      {/* <LanguagePicker /> */}
     </ProfileLayout>
   );
 };
