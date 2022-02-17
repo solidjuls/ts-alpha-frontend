@@ -271,7 +271,7 @@ const userList  = data?.map(user => ({ value: user.id, text: user.name }))
           width="230px"
           onSelect={(value) => onInputValueChange("game_type", value)}
         />
-        {userList && <DropdownLabelComponent
+        {/* {userList && <DropdownLabelComponent
           labelText="playerUSA"
           items={userList}
           selectedItem={form.usa_player_id}
@@ -284,21 +284,21 @@ const userList  = data?.map(user => ({ value: user.id, text: user.name }))
           selectedItem={form.ussr_player_id}
           width="230px"
           onSelect={(value) => onInputValueChange("ussr_player_id", value)}
-        />}
-        {/* <TextComponent
+        />} */}
+        <TextComponent
           labelText="playerUSA"
           inputValue={form.usa_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("usa_player_id", value)
           }
-        /> */}
-        {/* <TextComponent
+        />
+        <TextComponent
           labelText="playerURSS"
           inputValue={form.ussr_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("ussr_player_id", value)
           }
-        /> */}
+        />
         <TextComponent
           labelText="gameWinner"
           inputValue={form.game_winner}
