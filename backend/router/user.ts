@@ -18,6 +18,24 @@ export const userRouter = trpc
       return JSON.parse(userParsed);
     },
   })
+  .query("get-all", {
+    async resolve() {
+      const user = await prisma.users.findMany({
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+        },
+      });
+      const userParsed = JSON.stringify(user, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+      return JSON.parse(userParsed).map((user: any) => ({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+      }));
+    },
+  })
   .mutation("update", {
     input: z.object({
       mail: z.string(),
