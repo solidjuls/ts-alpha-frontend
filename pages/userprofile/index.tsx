@@ -6,6 +6,7 @@ import { FormattedMessage } from "react-intl";
 import { styled } from "@stitches/react";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
+import { Button } from "components/Button";
 import { LanguagePicker } from "components/LanguagePicker";
 
 const ProfileLayout = styled("div", { padding: "24px" });
@@ -39,6 +40,7 @@ const TextComponent = ({
 
 const UserProfile = () => {
   const mutation = trpc.useMutation(["user-update"]);
+  const mutationAll = trpc.useMutation(["user-update-all"]);
   const { data: session } = useSession();
   const [password, setPassword] = useState("");
   const updateClick = async () => {
@@ -52,6 +54,16 @@ const UserProfile = () => {
     }
   };
 
+  const updateAllClick = async () => {
+    if (session?.user?.email) {
+      const pwd = await hash('welcome6', 12);
+
+      mutationAll.mutate({
+        password: pwd,
+      });
+    }
+  };
+
   return (
     <ProfileLayout>
       <TextComponent
@@ -59,9 +71,12 @@ const UserProfile = () => {
         inputValue={password}
         onInputValueChange={setPassword}
       />
-      <button onClick={updateClick}>
+      <Button onClick={updateClick}>
         <FormattedMessage id="updatePwdProfileButton" />
-      </button>
+      </Button>
+      <Button onClick={updateAllClick}>
+        Update All Passwords
+      </Button>
       {/* <LanguagePicker /> */}
     </ProfileLayout>
   );
