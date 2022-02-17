@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trpc } from "utils/trpc";
 import { styled } from "@stitches/react";
 import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
@@ -10,6 +11,7 @@ import DropdownMenu from "components/DropdownMenu";
 
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
+import { isError } from "react-query";
 
 const Form = styled("form", {
   alignItems: "center",
@@ -238,6 +240,7 @@ const endType = [
   },
 ];
 const SubmitForm = () => {
+  const { data } = trpc.useQuery(["user-get-all"]);
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
   const [sendInfo, setSendInfo] = useState("");
@@ -251,7 +254,7 @@ const SubmitForm = () => {
       [key]: value,
     }));
   };
-
+const userList  = data?.map(user => ({ value: user.id, text: user.name })) 
   return (
     <Form onSubmit={(e) => e.preventDefault()}>
       <Flex css={cssLayout}>
@@ -265,23 +268,37 @@ const SubmitForm = () => {
           labelText="typeOfGame"
           items={leagueTypes}
           selectedItem={form.game_type}
-          width="200px"
+          width="230px"
           onSelect={(value) => onInputValueChange("game_type", value)}
         />
-        <TextComponent
+        {userList && <DropdownLabelComponent
+          labelText="playerUSA"
+          items={userList}
+          selectedItem={form.usa_player_id}
+          width="230px"
+          onSelect={(value) => onInputValueChange("usa_player_id", value)}
+        />}
+        {userList && <DropdownLabelComponent
+          labelText="playerURSS"
+          items={userList}
+          selectedItem={form.ussr_player_id}
+          width="230px"
+          onSelect={(value) => onInputValueChange("ussr_player_id", value)}
+        />}
+        {/* <TextComponent
           labelText="playerUSA"
           inputValue={form.usa_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("usa_player_id", value)
           }
-        />
-        <TextComponent
+        /> */}
+        {/* <TextComponent
           labelText="playerURSS"
           inputValue={form.ussr_player_id}
           onInputValueChange={(value) =>
             onInputValueChange("ussr_player_id", value)
           }
-        />
+        /> */}
         <TextComponent
           labelText="gameWinner"
           inputValue={form.game_winner}
@@ -293,13 +310,13 @@ const SubmitForm = () => {
           labelText="endTurn"
           items={turns}
           selectedItem={form.end_turn}
-          width="70px"
+          width="230px"
           onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="endType"
           items={endType}
-          width="200px"
+          width="230px"
           selectedItem={form.end_mode}
           onSelect={(value) => onInputValueChange("end_mode", value)}
         />
