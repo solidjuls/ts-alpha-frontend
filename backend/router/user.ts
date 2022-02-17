@@ -53,6 +53,20 @@ export const userRouter = trpc
       console.log("really", updateUser);
       return { success: true };
     },
+  })
+  .mutation("update-all", {
+    input: z.object({
+      password: z.string(),
+    }),
+    async resolve({ input }) {
+      const updateUser = await prisma.users.updateMany({
+        data: {
+          password: input.password,
+        },
+      });
+      console.log("really", updateUser);
+      return { success: true };
+    },
   });
 
 export type UserRouter = typeof userRouter;
