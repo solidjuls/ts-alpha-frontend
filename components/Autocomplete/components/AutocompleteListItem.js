@@ -11,15 +11,21 @@ const Item = stitches.styled("div", {
   color: "lightgray", //${themeGet('colors.grey500')},
   fontSize: 12, //${themeGet('fontSizes.2')},
   padding: "8px 16px", //${themeGet('space.2')} ${themeGet('space.4')},
-  backgroundColor: ({ highlight, itemColor }) => (highlight ? "red" : "white"), //baseTheme.colors[itemColor] : baseTheme.colors['white'],
-  "&:hover:not([disabled])": {
-    cursor: "pointer",
-    backgroundColor: "red", //${baseTheme.colors['grey50']}},
+  backgroundColor: "white", //baseTheme.colors[itemColor] : baseTheme.colors['white'],
+  variants: {
+    color: {
+      red: { backgroundColor: "red" },
+      white: { backgroundColor: "white" },
+    },
   },
-  "&:focus:not([disabled])": {
-    cursor: "pointer",
-    backgroundColor: "red", //${baseTheme.colors['grey50']}},
-  },
+  // "&:hover:not([disabled])": {
+  //   cursor: "pointer",
+  //   backgroundColor: "red", //${baseTheme.colors['grey50']}},
+  // },
+  // "&:focus": {
+  //   cursor: "pointer",
+  //   backgroundColor: "red", //${baseTheme.colors['grey50']}},
+  // },
   "&[disabled]": {
     opacity: 0.5,
     cursor: "auto",
@@ -50,16 +56,21 @@ const AutocompleteListItem = ({
 }) => {
   const { highlightedIndex, getItemProps } = useAutocompleteState();
   const { onClick, ...restItemProps } = getItemProps({ item: value, index });
-  console.log("highlightedIndex === index",highlightedIndex === index, restItemProps)
+  console.log(
+    "highlightedIndex === index",
+    highlightedIndex === index,
+    restItemProps
+  );
   return (
     <Item
       key={`${id}${index}`}
       itemColor={itemColor}
       {...rest}
       //disabled={disabled}
+      // highlight={highlightedIndex === index}
+      color={highlightedIndex === index ? "red" : "white"}
       onClick={disabled ? Function.prototype : onClick}
       {...restItemProps}
-      highlight={highlightedIndex === index}
     >
       {children}
     </Item>

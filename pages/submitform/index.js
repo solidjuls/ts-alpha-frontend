@@ -78,7 +78,7 @@ const TypeaheadLabelComponent = ({
       <Typeahead
         debounceTime={300}
         onChange={onChange}
-        minChars={3}
+        minChars={1}
         selectedValueProperty="value"
         selectedInputProperty="text"
         onSelect={onSelect}
