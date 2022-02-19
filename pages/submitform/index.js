@@ -43,18 +43,12 @@ const initialState = {
   video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
 };
 
-const TypeaheadLabelComponent = ({
-  labelText,
-  selectedItem,
-  onSelect,
-  css,
-  ...rest
-}) => {
+const useTypeaheadState = () => {
   const { data } = trpc.useQuery(["user-get-all"]);
   const userList =
     data?.map((user) => ({ value: user.id, text: user.name })) || [];
   const [userSuggestions, setUserSuggestions] = useState([]);
-  console.log("userList", userList);
+  //console.log("userList", userList);
   const onChange = (input) => {
     setUserSuggestions(
       userList?.filter((user) => {
@@ -64,7 +58,18 @@ const TypeaheadLabelComponent = ({
       })
     );
   };
-  console.log("userSuggestions.current", userSuggestions);
+
+  return { userSuggestions, onChange }
+}
+const TypeaheadLabelComponent = ({
+  labelText,
+  selectedItem,
+  onSelect,
+  css,
+  ...rest
+}) => {
+  const {userSuggestions, onChange } = useTypeaheadState()
+  //console.log("userSuggestions.current", userSuggestions);
   // labelText="playerUSA"
   //         items={userList}
   //         selectedItem={form.usa_player_id}
