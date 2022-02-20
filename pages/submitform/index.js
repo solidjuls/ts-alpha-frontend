@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from 'next/router'
 import { trpc } from "utils/trpc";
 import { styled } from "@stitches/react";
 import { FormattedMessage } from "react-intl";
@@ -12,6 +13,7 @@ import DropdownMenu from "components/DropdownMenu";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { isError } from "react-query";
+import { Typeahead } from "components/Autocomplete/Typeahead";
 
 const Form = styled("form", {
   alignItems: "center",
@@ -31,7 +33,7 @@ const cssLayout = { flexDirection: "column", alignItems: "flex-start" };
 const initialState = {
   game_type: "National League",
   game_code: "C000",
-  game_winner: "413",
+  game_winner: "USA",
   end_turn: 10,
   end_mode: "DEFCON",
   game_date: "2021-11-17T09:49:22",
@@ -40,6 +42,74 @@ const initialState = {
   video1: "http://www.brown.com/est-aut-aut-dicta-velit-possimus-expedita",
   video2: "http://russel.com/eos-occaecati-culpa-nulla-libero.html",
   video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
+};
+
+const useTypeaheadState = () => {
+  const { data } = trpc.useQuery(["user-get-all"]);
+  const userList =
+    data?.map((user) => ({ value: user.id, text: user.name })) || [];
+  const [userSuggestions, setUserSuggestions] = useState([]);
+  //console.log("userList", userList);
+  const onChange = (input) => {
+    setUserSuggestions(
+      userList?.filter((user) => {
+        if (user.text.toLowerCase().includes(input.toLowerCase())) {
+          return true;
+        }
+      })
+    );
+  };
+
+  return { userSuggestions, onChange }
+}
+const TypeaheadLabelComponent = ({
+  labelText,
+  selectedItem,
+  onSelect,
+  css,
+  ...rest
+}) => {
+  const {userSuggestions, onChange } = useTypeaheadState()
+  //console.log("userSuggestions.current", userSuggestions);
+  // labelText="playerUSA"
+  //         items={userList}
+  //         selectedItem={form.usa_player_id}
+  //         width="230px"
+  //         onSelect={(value) => onInputValueChange("usa_player_id", value)}
+  return (
+    <Flex css={cssFlexTextDateComponent}>
+      <Label htmlFor="dropdown" css={cssLabel}>
+        <FormattedMessage id={labelText} />
+      </Label>
+      <Typeahead
+        debounceTime={300}
+        onChange={onChange}
+        minChars={1}
+        selectedValueProperty="value"
+        selectedInputProperty="text"
+        onSelect={onSelect}
+        selectedValue={selectedItem}
+        // onBlur={setValue}
+        {...rest}
+      >
+        <Typeahead.Input placeholder="Type the player name..." />
+        {userSuggestions.length > 0 && (
+          <Typeahead.List>
+            {userSuggestions.map(({ value, text }, index) => (
+              <Typeahead.Item
+                key={value}
+                value={{ value, text }}
+                index={index}
+                id={value}
+              >
+                <div>{text}</div>
+              </Typeahead.Item>
+            ))}
+          </Typeahead.List>
+        )}
+      </Typeahead>
+    </Flex>
+  );
 };
 
 const DropdownLabelComponent = ({
@@ -135,8 +205,14 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     body: JSON.stringify(data),
   })
     .then((res) => res.json())
-    .then((result) => { console.log("successful", result); responseCallback(result)})
-    .catch((err) => { console.log("error", err); responseCallback(err)});
+    .then((result) => {
+      console.log("successful", result);
+      responseCallback(result);
+    })
+    .catch((err) => {
+      console.log("error", err);
+      responseCallback(err);
+    });
 };
 
 const leagueTypes = [
@@ -239,8 +315,29 @@ const endType = [
     text: "Cuban Missile Crisis",
   },
 ];
+
+const gameWinningOptions = [
+  {
+    value: "USA",
+    text: "USA",
+  },
+  {
+    value: "URSS",
+    text: "URSS",
+  },
+  {
+    value: "Tie",
+    text: "Tie",
+  },
+];
+
 const SubmitForm = () => {
-  const { data } = trpc.useQuery(["user-get-all"]);
+  const [value, setValue] = useState("");
+  const router = useRouter()
+  const handleOnBlur = () => {
+    setIndustriesSuggestions([]);
+    setValue({});
+  };
   const [form, setForm] = useState(initialState);
   const [date, setDate] = useState(new Date());
   const [sendInfo, setSendInfo] = useState("");
@@ -254,7 +351,7 @@ const SubmitForm = () => {
       [key]: value,
     }));
   };
-const userList  = data?.map(user => ({ value: user.id, text: user.name })) 
+
   return (
     <Form onSubmit={(e) => e.preventDefault()}>
       <Flex css={cssLayout}>
@@ -271,40 +368,37 @@ const userList  = data?.map(user => ({ value: user.id, text: user.name }))
           width="230px"
           onSelect={(value) => onInputValueChange("game_type", value)}
         />
-        {/* {userList && <DropdownLabelComponent
+        <TypeaheadLabelComponent
           labelText="playerUSA"
-          items={userList}
           selectedItem={form.usa_player_id}
           width="230px"
-          onSelect={(value) => onInputValueChange("usa_player_id", value)}
-        />}
-        {userList && <DropdownLabelComponent
+          onSelect={(value) => {
+            console.log("value", value);
+            onInputValueChange("usa_player_id", value?.value);
+          }}
+        />
+        <TypeaheadLabelComponent
           labelText="playerURSS"
-          items={userList}
           selectedItem={form.ussr_player_id}
           width="230px"
-          onSelect={(value) => onInputValueChange("ussr_player_id", value)}
-        />} */}
-        <TextComponent
-          labelText="playerUSA"
-          inputValue={form.usa_player_id}
-          onInputValueChange={(value) =>
-            onInputValueChange("usa_player_id", value)
-          }
+          onSelect={(value) => {
+            console.log("value", value);
+            onInputValueChange("ussr_player_id", value?.value);
+          }}
         />
-        <TextComponent
-          labelText="playerURSS"
-          inputValue={form.ussr_player_id}
-          onInputValueChange={(value) =>
-            onInputValueChange("ussr_player_id", value)
-          }
+        <DropdownLabelComponent
+          labelText="endTurn"
+          items={turns}
+          selectedItem={form.end_turn}
+          width="230px"
+          onSelect={(value) => onInputValueChange("end_turn", value)}
         />
-        <TextComponent
+        <DropdownLabelComponent
           labelText="gameWinner"
-          inputValue={form.game_winner}
-          onInputValueChange={(value) =>
-            onInputValueChange("game_winner", value)
-          }
+          items={gameWinningOptions}
+          selectedItem={form.game_winner}
+          width="230px"
+          onSelect={(value) => onInputValueChange("game_winner", value)}
         />
         <DropdownLabelComponent
           labelText="endTurn"
@@ -346,7 +440,7 @@ const userList  = data?.map(user => ({ value: user.id, text: user.name }))
               url,
               data: form,
               sendCallback: setSendInfo,
-              responseCallback: setResponseInfo,
+              responseCallback: () => router.push("/"),
             })
           }
         >
