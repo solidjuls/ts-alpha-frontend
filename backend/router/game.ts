@@ -1,19 +1,55 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 export const gameRouter = trpc
   .router()
-  .query("get", {
-    input: z.object({ id: z.number() }),
+  .query("getAll", {
     async resolve({ input }) {
-      const game = await prisma.game_results.findFirst({
-        where: {
-          id: input.id,
+      const games = await prisma.game_results.findMany({
+        include: {
+          ratings_history: true,
+          users_game_results_usa_player_idTousers: {
+            select: {
+              first_name: true,
+              last_name: true,
+            },
+          },
+          users_game_results_ussr_player_idTousers: {
+            select: {
+              first_name: true,
+              last_name: true,
+            },
+          },
         },
+        take: 30,
+        orderBy: [
+          {
+            created_at: "desc",
+          },
+        ],
       });
-      const gameParsed = JSON.stringify(game, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-      return gameParsed;
+      const gamesNormalized = games.map((game) => ({
+        ...game,
+        reportedAt: game.reported_at,
+        endMode: game.end_mode,
+        endTurn: game.end_turn,
+        usaPlayer:
+          game.users_game_results_usa_player_idTousers.first_name +
+          " " +
+          game.users_game_results_usa_player_idTousers.last_name,
+        urssPlayer:
+          game.users_game_results_ussr_player_idTousers.first_name +
+          " " +
+          game.users_game_results_ussr_player_idTousers.last_name,
+        gameType: game.game_type,
+        gameWinner: game.game_winner,
+      }));
+      const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+      return JSON.parse(gameParsed);
     },
   })
   .mutation("update", {

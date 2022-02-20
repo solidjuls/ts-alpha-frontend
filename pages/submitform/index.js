@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from 'next/router'
 import { trpc } from "utils/trpc";
 import { styled } from "@stitches/react";
 import { FormattedMessage } from "react-intl";
@@ -332,7 +333,7 @@ const gameWinningOptions = [
 
 const SubmitForm = () => {
   const [value, setValue] = useState("");
-
+  const router = useRouter()
   const handleOnBlur = () => {
     setIndustriesSuggestions([]);
     setValue({});
@@ -439,7 +440,7 @@ const SubmitForm = () => {
               url,
               data: form,
               sendCallback: setSendInfo,
-              responseCallback: setResponseInfo,
+              responseCallback: () => router.push("/"),
             })
           }
         >

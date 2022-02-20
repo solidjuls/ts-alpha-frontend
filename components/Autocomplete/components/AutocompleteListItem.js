@@ -8,13 +8,13 @@ const Item = stitches.styled("div", {
   cursor: "pointer",
   display: "block",
   lineHeight: 1, //${themeGet('lineHeights.2')},
-  color: "lightgray", //${themeGet('colors.grey500')},
+  color: "black", //${themeGet('colors.grey500')},
   fontSize: 12, //${themeGet('fontSizes.2')},
   padding: "8px 16px", //${themeGet('space.2')} ${themeGet('space.4')},
   backgroundColor: "white", //baseTheme.colors[itemColor] : baseTheme.colors['white'],
   variants: {
     color: {
-      red: { backgroundColor: "red" },
+      lightgray: { backgroundColor: "lightgray" },
       white: { backgroundColor: "white" },
     },
   },
@@ -68,7 +68,7 @@ const AutocompleteListItem = ({
       {...rest}
       //disabled={disabled}
       // highlight={highlightedIndex === index}
-      color={highlightedIndex === index ? "red" : "white"}
+      color={highlightedIndex === index ? "lightgray" : "white"}
       onClick={disabled ? Function.prototype : onClick}
       {...restItemProps}
     >
