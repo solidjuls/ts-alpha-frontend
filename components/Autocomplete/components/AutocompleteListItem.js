@@ -1,9 +1,9 @@
 import React from "react";
-import stitches from "stitches.config";
+import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
-const Item = stitches.styled("div", {
+const Item = styled("div", {
   position: "relative",
   cursor: "pointer",
   display: "block",

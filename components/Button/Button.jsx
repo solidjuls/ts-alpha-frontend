@@ -1,4 +1,4 @@
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 
 const Button = styled("button", {
   display: "inline-block",

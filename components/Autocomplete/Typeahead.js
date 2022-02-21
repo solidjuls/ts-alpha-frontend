@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useDebounce } from "use-debounce";
 import Downshift from "downshift";
-import stitches from "stitches.config";
+import { styled } from "stitches.config";
 import {
   AutocompleteInput,
   AutocompleteList,
@@ -10,7 +10,7 @@ import {
 } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
 
-const RootWrapper = stitches.styled("div", {
+const RootWrapper = styled("div", {
   display: "block",
 });
 
@@ -80,7 +80,7 @@ const Typeahead = ({
   };
 
   const handleStateChange = (changes, actions) => {
-    console.log("changes.type", changes.type)
+    console.log("changes.type", changes.type);
     if (changes.type === Downshift.stateChangeTypes.keyDownEscape) {
       resetState();
     } else {

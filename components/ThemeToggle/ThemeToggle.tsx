@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { styled } from '@stitches/react';
+import { styled } from "stitches.config";
 import { violet, mauve, blackA, whiteA } from '@radix-ui/colors';
 import { useTheme } from "next-themes";
 import * as SwitchPrimitive from '@radix-ui/react-switch';

@@ -1,12 +1,12 @@
 import { FormattedMessage, useIntl } from "react-intl";
-import stitches from "stitches.config.js";
+import { styled } from "stitches.config";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "components/UserAvatar";
 import { ThemeToggle } from "components/ThemeToggle";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
-const Flex = stitches.styled("div", {
+const Flex = styled("div", {
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
@@ -19,7 +19,7 @@ const Flex = stitches.styled("div", {
   },
 });
 
-const HeaderContainer = stitches.styled("div", {
+const HeaderContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
@@ -31,7 +31,7 @@ const HeaderContainer = stitches.styled("div", {
   // },
 });
 
-const StyledLink = stitches.styled(Link, {
+const StyledLink = styled(Link, {
   display: "flex",
   cursor: "pointer",
   "@sm": {
@@ -39,7 +39,7 @@ const StyledLink = stitches.styled(Link, {
   },
 });
 
-const StyledHamburgerMenuIcon = stitches.styled(HamburgerMenuIcon, {
+const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
   display: "none",
   "@sm": {
     display: "flex",
@@ -48,13 +48,13 @@ const StyledHamburgerMenuIcon = stitches.styled(HamburgerMenuIcon, {
   },
 });
 
-const Logo = stitches.styled("div", {
+const Logo = styled("div", {
   color: "white",
   "@sm": {
     display: "none",
   },
 });
-const Text = stitches.styled("div", {
+const Text = styled("div", {
   color: "white",
   marginRight: "10px",
 });

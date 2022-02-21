@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 import Image from "next/image";
 import Header from "components/Header";
 import { Sidebar } from "components/Sidebar";

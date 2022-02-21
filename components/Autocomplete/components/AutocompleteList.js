@@ -1,5 +1,5 @@
 import React from "react";
-import stitches from "stitches.config";
+import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
@@ -10,12 +10,12 @@ export const i18ns = {
   },
 };
 
-const RelativeWrapper = stitches.styled("div", {
+const RelativeWrapper = styled("div", {
   position: "relative",
   zIndex: 200,
 });
 
-const ListContainer = stitches.styled("div", {
+const ListContainer = styled("div", {
   border: 2,
   borderRadius: 1,
   marginTop: 1,

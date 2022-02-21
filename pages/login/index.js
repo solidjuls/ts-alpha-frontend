@@ -2,7 +2,7 @@ import { useState } from "react";
 import Head from "next/head";
 import { FormattedMessage } from "react-intl";
 
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 
 import { Button } from "components/Button";
 import { Input } from "components/Input";

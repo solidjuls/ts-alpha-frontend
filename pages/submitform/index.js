@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "utils/trpc";
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
 

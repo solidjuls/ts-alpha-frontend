@@ -3,7 +3,7 @@ import { trpc } from "utils/trpc";
 import { hash } from "bcryptjs";
 import { useSession } from "next-auth/react";
 import { FormattedMessage } from "react-intl";
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
