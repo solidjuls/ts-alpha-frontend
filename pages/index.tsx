@@ -6,9 +6,7 @@ import { trpc } from "utils/trpc";
 const getResultDisplay = ({ game }: { game: any }) => {
   return `${game.usaPlayer} (USA)  ${game.ratings_history.find((item:any) => item.player_id === game.usa_player_id).rating} vs   ${game.urssPlayer} (URSS) ${game.ratings_history.find((item:any) => item.player_id === game.ussr_player_id).rating} - Winner: ${game.gameWinner};`
 };
-// ratings_history: Array(2)
-// 0: {id: '21828', created_at: '2022-02-19T19:21:52.000Z', updated_at: '2022-02-19T19:21:52.000Z', player_id: '461', rating: 4964, …}
-// 1: {id: '21829', created_at: '2022-02-19T19:21:52.000Z', updated_at: '2022-02-19T19:21:52.000Z', player_id: '488', rating: 6276, …}
+
 export default function Home() {
   const { data: session } = useSession();
   const { data } = trpc.useQuery(["game-getAll"]);
