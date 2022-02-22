@@ -1,6 +1,7 @@
 import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
+import { Box, Span } from "components/Atoms";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
@@ -46,9 +47,6 @@ const StyledTriangleDownIcon = styled(TriangleDownIcon, {
   right: "9px",
 });
 
-const Span = styled("span", {
-  marginLeft: "8px",
-});
 const SelectedItemDiv = styled("div", {
   width: "300px",
   height: "36px",
@@ -58,11 +56,6 @@ const SelectedItemDiv = styled("div", {
   lineHeight: 2,
   borderRadius: 4,
   fontSize: 15,
-});
-
-const BoxInput = styled("div", {
-  position: "relative",
-  cursor: "pointer",
 });
 
 type ItemType = {
@@ -86,12 +79,23 @@ const DropdownMenu = ({
   return (
     <Root>
       <StyledTrigger>
-        <BoxInput>
+        <Box
+          css={{
+            position: "relative",
+            cursor: "pointer",
+          }}
+        >
           <SelectedItemDiv css={{ width }}>
-            <Span>{selectedItem}</Span>
+            <Span
+              css={{
+                marginLeft: "8px",
+              }}
+            >
+              {selectedItem}
+            </Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />
-        </BoxInput>
+        </Box>
       </StyledTrigger>
 
       <StyledContent css={{ width }}>

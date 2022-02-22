@@ -1,6 +1,4 @@
-import { styled } from "stitches.config";
-
-const Box = styled("div");
+import { Box } from "components/Atoms";
 
 const sidebarItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",

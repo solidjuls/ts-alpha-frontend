@@ -3,8 +3,9 @@ import { styled } from "stitches.config";
 import Image from "next/image";
 import Header from "components/Header";
 import { Sidebar } from "components/Sidebar";
+import { Box, Span } from "components/Atoms";
 
-const Container = styled("div", {
+const containerStyles = {
   display: "flex",
   flexDirection: "column",
   // padding: "0 2rem",
@@ -12,14 +13,12 @@ const Container = styled("div", {
   minHeight: "100vh",
   width: "100%",
   height: "100%",
-});
-
-const Content = styled("div", {
+};
+const contentStyles = {
   display: "flex",
   flexGrow: "1",
   justifyContent: "center",
-});
-
+};
 const StyledFooter = styled("footer", {
   display: "flex",
   padding: "2rem 0",
@@ -33,12 +32,10 @@ const StyledFooter = styled("footer", {
     flexGrow: 1,
   },
 });
-
-const Logo = styled("span", {
+const logoCss = {
   height: "1em",
   marginLeft: "0.5rem",
-});
-
+}
 const Footer = () => {
   return (
     <StyledFooter>
@@ -48,9 +45,9 @@ const Footer = () => {
         rel="noopener noreferrer"
       >
         Powered by{" "}
-        <Logo>
+        <Span css={logoCss}>
           <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </Logo>
+        </Span>
       </a>
     </StyledFooter>
   );
@@ -58,12 +55,12 @@ const Footer = () => {
 const Layout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <Container>
+    <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />
       {isOpen && <Sidebar />}
-      <Content>{children}</Content>
+      <Box css={contentStyles}>{children}</Box>
       <Footer />
-    </Container>
+    </Box>
   );
 };
 

@@ -1,33 +1,36 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "utils/trpc";
-import { styled } from "stitches.config";
 import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
 
-import { gameWinningOptions, endType, turns, leagueTypes } from "./constants";
+import {
+  gameWinningOptions,
+  endType,
+  turns,
+  leagueTypes,
+} from "utils/constants";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import DropdownMenu from "components/DropdownMenu";
+import { Box, Form } from "components/Atoms";
 
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 
-const Form = styled("form", {
+const formStyles = {
   alignItems: "center",
   backgroundColor: "White",
   width: "640px",
   alignSelf: "center",
   //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
   padding: "12px",
-});
-const Flex = styled("div", { display: "flex" });
+};
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 const cssFlexTextDateComponent = { marginBottom: "16px" };
-const cssLayout = { flexDirection: "column", alignItems: "flex-start" };
 
 const useTypeaheadState = () => {
   const { data } = trpc.useQuery(["user-get-all"]);
@@ -57,7 +60,7 @@ const TypeaheadLabelComponent = ({
   const { userSuggestions, onChange } = useTypeaheadState();
 
   return (
-    <Flex css={cssFlexTextDateComponent}>
+    <Box css={cssFlexTextDateComponent}>
       <Label htmlFor="dropdown" css={cssLabel}>
         <FormattedMessage id={labelText} />
       </Label>
@@ -88,7 +91,7 @@ const TypeaheadLabelComponent = ({
           </Typeahead.List>
         )}
       </Typeahead>
-    </Flex>
+    </Box>
   );
 };
 
@@ -100,7 +103,7 @@ const DropdownLabelComponent = ({
   css,
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="dropdown" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -112,7 +115,7 @@ const DropdownLabelComponent = ({
       css={css}
       {...rest}
     />
-  </Flex>
+  </Box>
 );
 const TextComponent = ({
   labelText,
@@ -121,7 +124,7 @@ const TextComponent = ({
   css,
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="video1" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -133,7 +136,7 @@ const TextComponent = ({
       css={css}
       {...rest}
     />
-  </Flex>
+  </Box>
 );
 
 const DateComponent = ({
@@ -142,7 +145,7 @@ const DateComponent = ({
   onInputValueChange = () => {},
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="gameDate" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -155,7 +158,7 @@ const DateComponent = ({
         todayButton: "Today",
       }}
     />
-  </Flex>
+  </Box>
 );
 
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
@@ -191,8 +194,8 @@ const SubmitForm = () => {
   };
 
   return (
-    <Form onSubmit={(e) => e.preventDefault()}>
-      <Flex css={cssLayout}>
+    <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+      <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
         <TextComponent
           labelText="checkID"
           inputValue={form.game_code}
@@ -282,7 +285,7 @@ const SubmitForm = () => {
           Submit
         </Button>
         <strong>Result submitted correctly</strong>
-      </Flex>
+      </Box>
     </Form>
   );
 };

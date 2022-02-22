@@ -7,11 +7,11 @@ const Item = styled("div", {
   position: "relative",
   cursor: "pointer",
   display: "block",
-  lineHeight: 1, //${themeGet('lineHeights.2')},
-  color: "black", //${themeGet('colors.grey500')},
-  fontSize: 12, //${themeGet('fontSizes.2')},
-  padding: "8px 16px", //${themeGet('space.2')} ${themeGet('space.4')},
-  backgroundColor: "white", //baseTheme.colors[itemColor] : baseTheme.colors['white'],
+  lineHeight: 1,
+  color: "black",
+  fontSize: 12,
+  padding: "8px 16px",
+  backgroundColor: "white",
   variants: {
     color: {
       lightgray: { backgroundColor: "lightgray" },

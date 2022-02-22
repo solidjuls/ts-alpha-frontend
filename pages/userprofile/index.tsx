@@ -3,15 +3,12 @@ import { trpc } from "utils/trpc";
 import { hash } from "bcryptjs";
 import { useSession } from "next-auth/react";
 import { FormattedMessage } from "react-intl";
-import { styled } from "stitches.config";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
 import { LanguagePicker } from "components/LanguagePicker";
+import { Box } from "components/Atoms";
 
-const ProfileLayout = styled("div", { padding: "24px" });
-const Flex = styled("div", { display: "flex" });
-const cssFlexTextDateComponent = { marginBottom: "16px" };
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
 const TextComponent = ({
@@ -24,7 +21,7 @@ const TextComponent = ({
   inputValue: string;
   onInputValueChange: React.Dispatch<React.SetStateAction<string>>;
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={{ display: "flex", marginBottom: "16px" }}>
     <Label htmlFor="video1" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -35,7 +32,7 @@ const TextComponent = ({
       onChange={(event) => onInputValueChange(event.target.value)}
       {...rest}
     />
-  </Flex>
+  </Box>
 );
 
 const UserProfile = () => {
@@ -56,7 +53,7 @@ const UserProfile = () => {
 
   const updateAllClick = async () => {
     if (session?.user?.email) {
-      const pwd = await hash('welcome6', 12);
+      const pwd = await hash("welcome6", 12);
 
       mutationAll.mutate({
         password: pwd,
@@ -65,7 +62,7 @@ const UserProfile = () => {
   };
 
   return (
-    <ProfileLayout>
+    <Box css={{ padding: "24px" }}>
       <TextComponent
         labelText="updatePwdProfile"
         inputValue={password}
@@ -74,11 +71,9 @@ const UserProfile = () => {
       <Button onClick={updateClick}>
         <FormattedMessage id="updatePwdProfileButton" />
       </Button>
-      <Button onClick={updateAllClick}>
-        Update All Passwords
-      </Button>
+      <Button onClick={updateAllClick}>Update All Passwords</Button>
       {/* <LanguagePicker /> */}
-    </ProfileLayout>
+    </Box>
   );
 };
 

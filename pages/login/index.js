@@ -9,8 +9,9 @@ import { Input } from "components/Input";
 import { Label } from "components/Label";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
+import { Box, Form } from "components/Atoms";
 
-const Form = styled("form", {
+const formStyles = {
   display: "flex",
   flexDirection: "column",
   justifyItems: "center",
@@ -21,14 +22,7 @@ const Form = styled("form", {
   width: "640px",
   height: "400px",
   boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-});
-
-const Content = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  justifyItems: "center",
-  alignItems: "center",
-});
+};
 
 const ErrorInfo = styled("span", {
   color: "red",
@@ -43,12 +37,19 @@ const Login = ({ user }) => {
 
   return (
     <>
-      <Form>
+      <Form css={formStyles}>
         <Head>
           <title>Sign Up</title>
         </Head>
 
-        <Content>
+        <Box
+          css={{
+            display: "flex",
+            flexDirection: "column",
+            justifyItems: "center",
+            alignItems: "center",
+          }}
+        >
           <h1>Sign up</h1>
           <Label htmlFor="mail">
             <FormattedMessage id="mail" />
@@ -94,7 +95,7 @@ const Login = ({ user }) => {
               Sign out
             </Button>
           )}
-        </Content>
+        </Box>
       </Form>
     </>
   );

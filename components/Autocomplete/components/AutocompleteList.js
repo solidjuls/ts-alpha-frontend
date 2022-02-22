@@ -2,6 +2,7 @@ import React from "react";
 import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
+import { Box } from "components/Atoms";
 
 export const i18ns = {
   noResults: {
@@ -9,11 +10,6 @@ export const i18ns = {
     de: "Leider haben wir zu Ihrer Suche keine passenden Ergebnisse gefunden.",
   },
 };
-
-const RelativeWrapper = styled("div", {
-  position: "relative",
-  zIndex: 200,
-});
 
 const ListContainer = styled("div", {
   border: 2,
@@ -58,11 +54,14 @@ const AutocompleteList = ({
   // }
 
   return (
-    <RelativeWrapper>
-      <ListContainer {...getMenuProps({ isOpen })} {...rest}>
+    <Box css={{
+      position: "relative",
+      zIndex: 200,
+    }}>
+      <ListContainer {...getMenuProps({ isOpen })} {...rest} >
         {children}
       </ListContainer>
-    </RelativeWrapper>
+    </Box>
   );
 };
 

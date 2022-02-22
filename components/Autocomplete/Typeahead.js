@@ -2,17 +2,13 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useDebounce } from "use-debounce";
 import Downshift from "downshift";
-import { styled } from "stitches.config";
 import {
   AutocompleteInput,
   AutocompleteList,
   AutocompleteListItem,
 } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
-
-const RootWrapper = styled("div", {
-  display: "block",
-});
+import { Box } from "components/Atoms";
 
 const Typeahead = ({
   debounceTime,
@@ -103,7 +99,9 @@ const Typeahead = ({
         isOpen,
         highlightedIndex,
       }) => (
-        <RootWrapper {...getRootProps({})}>
+        <Box {...getRootProps({})} css={{
+          display: "block",
+        }}>
           <AutocompleteProvider
             value={{
               isOpen,
@@ -117,7 +115,7 @@ const Typeahead = ({
           >
             {children}
           </AutocompleteProvider>
-        </RootWrapper>
+        </Box>
       )}
     </Downshift>
   );
