@@ -43,16 +43,6 @@ const AutocompleteList = ({
 
   if (!isOpen) return null;
 
-  // if (React.Children.count(children) === 0) {
-  //   return (
-  //     <StyledListContainer>
-  //       <Text color="secondaryText" size={2} data-testid="no-results-found">
-  //         {noResultsCustomText || i18ns.noResults[noResultsTextLocale]}
-  //       </Text>
-  //     </StyledListContainer>
-  //   );
-  // }
-
   return (
     <Box css={{
       position: "relative",

@@ -24,7 +24,7 @@ const HeaderContainer = styled("div", {
   flexDirection: "row",
   alignItems: "center",
   justifyContent: "space-between",
-  backgroundColor: "#24292f",
+  backgroundColor: "$primary",
   padding: "16px 32px 16px 16px",
   // "@sm": {
   //   justifyContent: "flex-end",
@@ -49,13 +49,13 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
 });
 
 const Logo = styled("div", {
-  color: "white",
+  color: "$textLight",
   "@sm": {
     display: "none",
   },
 });
 const Text = styled("div", {
-  color: "white",
+  color: "$textLight",
   marginRight: "10px",
 });
 

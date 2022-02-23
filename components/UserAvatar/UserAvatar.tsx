@@ -19,7 +19,7 @@ const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   fontSize: "$2",
   lineHeight: "1",
-  color: "black",
+  color: "$textDark",
   cursor: "pointer",
   borderRadius: "$1",
   margin: 5,
@@ -35,7 +35,7 @@ const styledItemStyles = {
   "&:focus": {
     outline: "none",
     backgroundColor: "darkBlue",
-    color: "white",
+    color: "$textWhite",
   },
 };
 
@@ -66,7 +66,7 @@ const StyledTrigger = styled(Trigger, {
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color: "white",
+  color:"$textWhite",
 });
 
 const slideUpAndFade = keyframes({

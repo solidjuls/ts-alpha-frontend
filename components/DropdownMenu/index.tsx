@@ -7,7 +7,7 @@ const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   fontSize: "$2",
   lineHeight: "1",
-  color: "black",
+  color: "$textDark",
   cursor: "pointer",
   borderRadius: "$1",
   // padding: "$1 $2 $1 $5",
@@ -21,7 +21,7 @@ const styledItemStyles = {
   "&:focus": {
     outline: "none",
     backgroundColor: "darkBlue",
-    color: "white",
+    color: "$textLight",
   },
 };
 

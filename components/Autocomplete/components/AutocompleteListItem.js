@@ -8,14 +8,14 @@ const Item = styled("div", {
   cursor: "pointer",
   display: "block",
   lineHeight: 1,
-  color: "black",
+  color: "$textDark",
   fontSize: 12,
   padding: "8px 16px",
-  backgroundColor: "white",
+  backgroundColor: "$backgroundColorLight",
   variants: {
     color: {
-      lightgray: { backgroundColor: "lightgray" },
-      white: { backgroundColor: "white" },
+      lightgray: { backgroundColor: "$gray500" },
+      white: { backgroundColor: "$backgroundColorLight" },
     },
   },
   // "&:hover:not([disabled])": {
@@ -87,7 +87,6 @@ AutocompleteListItem.propTypes = {
   index: PropTypes.number,
   value: PropTypes.object,
   disabled: PropTypes.bool,
-  /** Select background-color from winery palette */
   itemColor: PropTypes.string,
 };
 
