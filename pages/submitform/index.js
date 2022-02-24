@@ -318,18 +318,20 @@ const endType = [
 
 const gameWinningOptions = [
   {
-    value: "USA",
+    value: "1",
     text: "USA",
   },
   {
-    value: "URSS",
+    value: "2",
     text: "URSS",
   },
   {
-    value: "Tie",
+    value: "3",
     text: "Tie",
   },
 ];
+
+const getSelectedItem = (value, list) => list.find(item => item.value === value)?.text || list[0].text
 
 const SubmitForm = () => {
   const [value, setValue] = useState("");
@@ -396,7 +398,7 @@ const SubmitForm = () => {
         <DropdownLabelComponent
           labelText="gameWinner"
           items={gameWinningOptions}
-          selectedItem={form.game_winner}
+          selectedItem={getSelectedItem(form.game_winner, gameWinningOptions)}
           width="230px"
           onSelect={(value) => onInputValueChange("game_winner", value)}
         />
