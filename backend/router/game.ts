@@ -45,7 +45,7 @@ export const gameRouter = trpc
             },
           },
         },
-        take: 30,
+        take: 5,
         orderBy: [
           {
             created_at: "desc",

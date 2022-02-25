@@ -31,10 +31,10 @@ export default function Home() {
         <h1 className={styles.title}>HOME PAGE</h1>
         <section>Latest results:</section>
         <br />
-        <Homepage />
-        {data?.map((game: any) => {
+        <Homepage data={data} />
+        {/* {data?.map((game: any) => {
           return <div key={game.id}>{getResultDisplay({ game })}</div>;
-        })}
+        })} */}
       </main>
     </div>
   );
