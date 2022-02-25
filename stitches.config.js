@@ -11,6 +11,7 @@ export const { styled, getCssText, createTheme } = createStitches({
       gray900: "hsl(205,5%,7%)",
       gray700: "hsl(205,5%,25%)",
       gray500: "hsl(205,5%,35%)",
+      greyLight:'#eeeeee',
       primary: "$gray900",
       secondary: "$gray700",
       tertiary: "$gray500",

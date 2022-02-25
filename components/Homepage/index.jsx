@@ -8,6 +8,8 @@ const GAMETYPE_MAXWIDTH = "60px";
 const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "row",
+  borderBottom: "solid 1px $greyLight",
+  margin: '8px'
 });
 
 const getRatingVariation = (rating) => rating[0].rating - rating[1].rating;
@@ -101,12 +103,38 @@ const ResultRow = ({ game }) => {
   );
 };
 
+const ResultsPanel = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  backgroundColor: 'white',
+  border: "solid 1px none",
+  borderRadius: "12px",
+  flexGrow: '1'
+});
+const TopPlayersPanel = styled("div", {
+  border: "solid 1px black",
+  margin: '12px',
+  borderRadius: "12px",
+  width: "200px",
+  height: "100px",
+});
+
 const Homepage = ({ data }) => {
   return (
-    <Box>
-      {data?.map((game, index) => (
-        <ResultRow key={index} game={game} />
-      ))}
+    <Box
+      css={{
+        display: "flex",
+        flexDirection: "row",
+        width: "100%",
+        maxWidth: "1000px",
+      }}
+    >
+      <ResultsPanel>
+        {data?.map((game, index) => (
+          <ResultRow key={index} game={game} />
+        ))}
+      </ResultsPanel>
+      <TopPlayersPanel />
     </Box>
   );
 };

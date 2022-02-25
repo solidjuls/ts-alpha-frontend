@@ -17,8 +17,17 @@ const containerStyles = {
 const contentStyles = {
   display: "flex",
   flexGrow: "1",
-  justifyContent: "center",
+  // justifyContent: "center",
 };
+
+const Main = styled("main", {
+  // justifyContent: "center",
+  alignItems: 'center',
+  flexDirection: 'column',
+  display: "flex",
+  backgroundColor: '#eeeeee'
+});
+
 const StyledFooter = styled("footer", {
   display: "flex",
   padding: "2rem 0",
@@ -35,7 +44,7 @@ const StyledFooter = styled("footer", {
 const logoCss = {
   height: "1em",
   marginLeft: "0.5rem",
-}
+};
 const Footer = () => {
   return (
     <StyledFooter>
@@ -58,7 +67,7 @@ const Layout = ({ children }) => {
     <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />
       {isOpen && <Sidebar />}
-      <Box css={contentStyles}>{children}</Box>
+      <Main css={contentStyles}>{children}</Main>
       <Footer />
     </Box>
   );
