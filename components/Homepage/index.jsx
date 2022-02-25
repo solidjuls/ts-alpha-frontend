@@ -3,13 +3,14 @@ import Image from "next/image";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 
-const GAMETYPE_MAXWIDTH = "60px";
+const GAMETYPE_WIDTH = "60px";
+const TRIANGLE_WIDTH = "20px";
 
 const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "row",
   borderBottom: "solid 1px $greyLight",
-  margin: '8px'
+  margin: "4px",
 });
 
 const getRatingVariation = (rating) => rating[0].rating - rating[1].rating;
@@ -18,20 +19,28 @@ const TriangleIcon = ({ rating }) => {
   const ratingVariation = getRatingVariation(rating);
   if (ratingVariation > 0) {
     return (
-      <Image src="/triangleUp.svg" alt="Triangle Up" width={28} height={28} />
+      <Image src="/triangleUp.svg" alt="Triangle Up" width={TRIANGLE_WIDTH} height={TRIANGLE_WIDTH} />
     );
   } else if (ratingVariation < 0) {
     return (
       <Image
         src="/triangleDown.svg"
         alt="Triangle Down"
-        width={28}
-        height={28}
+        width={TRIANGLE_WIDTH}
+        height={TRIANGLE_WIDTH}
       />
     );
   } else {
     return null;
   }
+};
+
+const boxStyle = {
+  display: "flex",
+  flexDirection: "column",
+  marginBottom: "8px",
+  borderRight: "solid 1px $greyLight",
+  justifyContent: 'center'
 };
 
 const Rating = ({ rating }) => {
@@ -48,11 +57,11 @@ const Rating = ({ rating }) => {
 const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Box css={{ display: "flex", flexDirection: "column" }}>
+      <Box css={boxStyle}>
         <Rating rating={ratingsUSA} />
         <Rating rating={ratingsUSSR} />
       </Box>
-      <Box css={{ display: "flex", flexDirection: "column" }}>
+      <Box css={boxStyle}>
         <TriangleIcon rating={ratingsUSA} />
         <TriangleIcon rating={ratingsUSSR} />
       </Box>
@@ -61,7 +70,7 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
 };
 const PlayerInfoBox = ({ nameUSA, nameUSSR, winner }) => {
   return (
-    <Box css={{ display: "flex", flexDirection: "column" }}>
+    <Box css={{...boxStyle, width: '300px'}}>
       <Text margin="noMargin" variant={winner === "1" ? "strong" : ""}>
         {nameUSA}
       </Text>
@@ -76,7 +85,7 @@ const ResultRow = ({ game }) => {
   return (
     <PlayerInfo>
       <Text
-        css={{ alignSelf: "center", maxWidth: GAMETYPE_MAXWIDTH }}
+        css={{ alignSelf: "center", width: GAMETYPE_WIDTH }}
         strong="bold"
       >
         {game.gameType}
@@ -88,11 +97,11 @@ const ResultRow = ({ game }) => {
         winner={game.gameWinner}
       />
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
-      <Box css={{ flexDirection: "column" }}>
+      <Box css={boxStyle}>
         <Text strong="bold">End turn</Text>
         <Text>T9</Text>
       </Box>
-      <Box css={{ flexDirection: "column" }}>
+      <Box css={boxStyle}>
         <Text strong="bold">End Mode</Text>
         <Text>DEFCON</Text>
       </Box>
@@ -106,14 +115,14 @@ const ResultRow = ({ game }) => {
 const ResultsPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
-  backgroundColor: 'white',
+  backgroundColor: "white",
   border: "solid 1px none",
   borderRadius: "12px",
-  flexGrow: '1'
+  flexGrow: "1",
 });
 const TopPlayersPanel = styled("div", {
   border: "solid 1px black",
-  margin: '12px',
+  margin: "12px",
   borderRadius: "12px",
   width: "200px",
   height: "100px",
