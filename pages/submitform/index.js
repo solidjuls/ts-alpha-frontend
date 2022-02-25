@@ -183,6 +183,8 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     });
 };
 
+const getSelectedItem = (value, list) => list.find(item => item.value === value)?.text || list[0].text
+
 const SubmitForm = () => {
   const router = useRouter();
   const [form, setForm] = useState({});

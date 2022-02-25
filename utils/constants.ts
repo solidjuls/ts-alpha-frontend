@@ -106,15 +106,15 @@ export const endType: Array<DropdownType> = [
 
 export const gameWinningOptions: Array<DropdownType> = [
   {
-    value: "USA",
+    value: "1",
     text: "USA",
   },
   {
-    value: "URSS",
+    value: "2",
     text: "URSS",
   },
   {
-    value: "Tie",
+    value: "3",
     text: "Tie",
   },
 ];
