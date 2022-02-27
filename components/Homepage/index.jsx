@@ -1,25 +1,37 @@
+import { useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
+import { trpc } from "utils/trpc";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
+import { DayMonthInput } from "components/Input";
 
 const GAMETYPE_WIDTH = "60px";
 const TRIANGLE_WIDTH = "20px";
-
+const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "row",
-  borderBottom: "solid 1px $greyLight",
+  borderBottom: borderStyle,
   margin: "4px",
 });
 
-const getRatingVariation = (rating) => rating[0].rating - rating[1].rating;
+const getRatingVariation = (rating) => {
+  if (!rating[0] || !rating[1]) return 0;
+
+  return rating[0].rating - rating[1].rating;
+};
 
 const TriangleIcon = ({ rating }) => {
   const ratingVariation = getRatingVariation(rating);
   if (ratingVariation > 0) {
     return (
-      <Image src="/triangleUp.svg" alt="Triangle Up" width={TRIANGLE_WIDTH} height={TRIANGLE_WIDTH} />
+      <Image
+        src="/triangleUp.svg"
+        alt="Triangle Up"
+        width={TRIANGLE_WIDTH}
+        height={TRIANGLE_WIDTH}
+      />
     );
   } else if (ratingVariation < 0) {
     return (
@@ -39,8 +51,8 @@ const boxStyle = {
   display: "flex",
   flexDirection: "column",
   marginBottom: "8px",
-  borderRight: "solid 1px $greyLight",
-  justifyContent: 'center'
+  borderRight: borderStyle,
+  justifyContent: "center",
 };
 
 const Rating = ({ rating }) => {
@@ -70,7 +82,7 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
 };
 const PlayerInfoBox = ({ nameUSA, nameUSSR, winner }) => {
   return (
-    <Box css={{...boxStyle, width: '300px'}}>
+    <Box css={{ ...boxStyle, width: "300px" }}>
       <Text margin="noMargin" variant={winner === "1" ? "strong" : ""}>
         {nameUSA}
       </Text>
@@ -84,10 +96,7 @@ const PlayerInfoBox = ({ nameUSA, nameUSSR, winner }) => {
 const ResultRow = ({ game }) => {
   return (
     <PlayerInfo>
-      <Text
-        css={{ alignSelf: "center", width: GAMETYPE_WIDTH }}
-        strong="bold"
-      >
+      <Text css={{ alignSelf: "center", width: GAMETYPE_WIDTH }} strong="bold">
         {game.gameType}
       </Text>
 
@@ -128,7 +137,31 @@ const TopPlayersPanel = styled("div", {
   height: "100px",
 });
 
-const Homepage = ({ data }) => {
+const FilterPanel = styled("div", {
+  padding: "8px",
+  margin: "8px",
+  borderBottom: borderStyle,
+});
+
+const formatDateToString = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
+
+const Homepage = () => {
+  const [dateValue, setDateValue] = useState(new Date());
+  const { data } = trpc.useQuery([
+    "game-getAll"]);
+  const onClickDay = (clickedItem) => {
+    // get current value
+
+    if (clickedItem === "left") {
+      dateValue.setDate(dateValue.getDate() - 1);
+    } else if (clickedItem === "right") {
+      dateValue.setDate(dateValue.getDate() + 1);
+    }
+
+    setDateValue(new Date(dateValue));
+    // fetch data with updated value
+  };
+
   return (
     <Box
       css={{
@@ -139,6 +172,12 @@ const Homepage = ({ data }) => {
       }}
     >
       <ResultsPanel>
+        <FilterPanel>
+          <DayMonthInput
+            value={formatDateToString(dateValue)}
+            onClick={onClickDay}
+          />
+        </FilterPanel>
         {data?.map((game, index) => (
           <ResultRow key={index} game={game} />
         ))}

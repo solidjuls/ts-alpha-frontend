@@ -1,25 +1,11 @@
 import Head from "next/head";
 // import styles from "../styles/Home.module.css";
 import { useSession } from "next-auth/react";
-import { trpc } from "utils/trpc";
 import Homepage from "components/Homepage";
-
-const getResultDisplay = ({ game }: { game: any }) => {
-  return `${game.usaPlayer} (USA)  ${
-    game.ratings_history.find(
-      (item: any) => item.player_id === game.usa_player_id
-    ).rating
-  } vs   ${game.urssPlayer} (URSS) ${
-    game.ratings_history.find(
-      (item: any) => item.player_id === game.ussr_player_id
-    ).rating
-  } - Winner: ${game.gameWinner};`;
-};
 
 export default function Home() {
   const { data: session } = useSession();
-  const { data } = trpc.useQuery(["game-getAll"]);
-  console.log("data", data);
+  
   return (
     <>
       <Head>
@@ -30,7 +16,7 @@ export default function Home() {
       <h1>HOME PAGE</h1>
       <section>Latest results:</section>
       <br />
-      <Homepage data={data} />
+      <Homepage />
       {/* {data?.map((game: any) => {
           return <div key={game.id}>{getResultDisplay({ game })}</div>;
         })} */}
