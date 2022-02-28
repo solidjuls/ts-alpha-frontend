@@ -5,6 +5,8 @@ import { trpc } from "utils/trpc";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { DayMonthInput } from "components/Input";
+import { TopPlayerRating } from "components/TopPlayerRating";
+import { dateAddDay } from "utils/dates";
 
 const GAMETYPE_WIDTH = "60px";
 const TRIANGLE_WIDTH = "20px";
@@ -129,13 +131,6 @@ const ResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
 });
-const TopPlayersPanel = styled("div", {
-  border: "solid 1px black",
-  margin: "12px",
-  borderRadius: "12px",
-  width: "200px",
-  height: "100px",
-});
 
 const FilterPanel = styled("div", {
   padding: "8px",
@@ -145,21 +140,33 @@ const FilterPanel = styled("div", {
 
 const formatDateToString = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
 
+const EmptyState = () => {
+  return (
+    <Box css={{ display: "flex", justifyContent: "center", margin: "16px" }}>
+      <Text css={{ fontSize: "20px" }} strong="bold">
+        No games
+      </Text>
+    </Box>
+  );
+};
+
 const Homepage = () => {
   const [dateValue, setDateValue] = useState(new Date());
   const { data } = trpc.useQuery([
-    "game-getAll"]);
+    "game-getAll",
+    { d: dateValue.toDateString() },
+  ]);
   const onClickDay = (clickedItem) => {
     // get current value
 
+    let newDate;
     if (clickedItem === "left") {
-      dateValue.setDate(dateValue.getDate() - 1);
+      newDate = dateAddDay(dateValue, -1);
     } else if (clickedItem === "right") {
-      dateValue.setDate(dateValue.getDate() + 1);
+      newDate = dateAddDay(dateValue, 1);
     }
 
-    setDateValue(new Date(dateValue));
-    // fetch data with updated value
+    setDateValue(newDate);
   };
 
   return (
@@ -178,11 +185,12 @@ const Homepage = () => {
             onClick={onClickDay}
           />
         </FilterPanel>
+        {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <TopPlayersPanel />
+      <TopPlayerRating />
     </Box>
   );
 };

@@ -1,7 +1,7 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { dateAddDay } from "utils/dates";
 
 const getLatestRatingByPlayer = async (playerId: bigint) => {
   const ratingPlayers = await prisma.ratings_history.findMany({
@@ -21,15 +21,21 @@ const getLatestRatingByPlayer = async (playerId: bigint) => {
       },
     ],
   });
-  console.log("ratingPlayers666", ratingPlayers, playerId);
+
   return ratingPlayers;
 };
+
+
 export const gameRouter = trpc
   .router()
   .query("getAll", {
-    //input: z.object({ date: z.string() }),
+    input: z.object({ d: z.string() }),
     async resolve({ input }) {
-      console.log("checking", input)
+      const date = new Date(Date.parse(input.d));
+      const datePlusOne = dateAddDay(date, 1)
+      // console.log("date entering", input.d);
+      // console.log("date plus 1 day", dateAddDay(date, 1))
+      // console.log("date parsed", date);
       const games = await prisma.game_results.findMany({
         include: {
           users_game_results_usa_player_idTousers: {
@@ -47,17 +53,20 @@ export const gameRouter = trpc
             },
           },
         },
-        // where: {
-        //   created_at: input.date,
-        // },
-        take: 30,
+        where: {
+          created_at: {
+            lt: datePlusOne,
+            gte: date,
+          },
+        },
+        // take: 1,
         orderBy: [
           {
             created_at: "desc",
           },
         ],
       });
-
+      console.log("games returned ", games);
       const gamesNormalized = await Promise.all(
         games.map(async (game) => {
           const usaPlayerRatings = await getLatestRatingByPlayer(

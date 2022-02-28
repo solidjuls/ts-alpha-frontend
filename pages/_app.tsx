@@ -1,4 +1,4 @@
-import superjson from "superjson"
+//import superjson from "superjson"
 import "../styles/globals.css";
 import { IdProvider } from "@radix-ui/react-id";
 import { SessionProvider } from "next-auth/react";
@@ -49,7 +49,7 @@ export default withTRPC<AppRouter>({
       : "http://localhost:3000/api/trpc";
 
     return {
-      transformer: superjson,
+      //transformer: superjson,
       url,
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient

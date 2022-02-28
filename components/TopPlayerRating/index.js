@@ -1,0 +1,1 @@
+export { TopPlayerRating } from "./TopPlayerRating";
