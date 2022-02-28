@@ -9,28 +9,52 @@ const topRatingAlignStyles = {
   justifyContent: "space-between",
 };
 
-const TopPlayersPanelStyled = styled("div", {
-  border: "solid 2px black",
+const SidePanelStyled = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  // border: "solid 2px black",
   backgroundColor: "white",
-  margin: "12px",
+  margin: "0 12px 0 12px",
+  padding: '12px',
   borderRadius: "12px",
-  width: "200px",
-  height: "100px",
+  width: "240px",
+  height: "170px",
 });
+
+const Announcement = () => {
+  return (
+    <SidePanelStyled>
+      <Text>Next match on action round zero</Text>
+    </SidePanelStyled>
+  );
+};
 
 const TopPlayerRating = () => {
   const { data } = trpc.useQuery(["rating-get", { n: 5 }]);
 
   return (
-    <TopPlayersPanelStyled>
-      {data?.map((item, index) => (
-        <Box key={index} css={topRatingAlignStyles}>
-          <Text margin="noMargin">{item.name}</Text>
-          <Text margin="noMargin">{item.rating}</Text>
-        </Box>
-      ))}
-    </TopPlayersPanelStyled>
+    <SidePanelStyled>
+      <Text
+        css={{
+          textAlign: "center",
+          fontSize: "20px",
+          borderBottom: "solid 1px $greyLight",
+        }}
+        strong="bold"
+      >
+        Top Players
+      </Text>
+      <Box>
+        {data?.map((item, index) => (
+          <Box key={index} css={topRatingAlignStyles}>
+            <Text margin="noMargin">{item.name}</Text>
+            <Text margin="noMargin">{item.rating}</Text>
+          </Box>
+        ))}
+      </Box>
+    </SidePanelStyled>
   );
 };
 
-export { TopPlayerRating };
+export { TopPlayerRating, Announcement };

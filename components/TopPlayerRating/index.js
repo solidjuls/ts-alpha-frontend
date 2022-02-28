@@ -1,1 +1,1 @@
-export { TopPlayerRating } from "./TopPlayerRating";
+export { TopPlayerRating, Announcement } from "./TopPlayerRating";

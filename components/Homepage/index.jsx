@@ -9,7 +9,7 @@ import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 
-const GAMETYPE_WIDTH = "60px";
+const GAMETYPE_WIDTH = "80px";
 const TRIANGLE_WIDTH = "20px";
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
@@ -184,7 +184,7 @@ const Homepage = () => {
         display: "flex",
         flexDirection: "row",
         width: "100%",
-        maxWidth: "1000px",
+        maxWidth: "1100px",
       }}
     >
       <ResultsPanel>
@@ -200,7 +200,9 @@ const Homepage = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <TopPlayerRating />
+      <Box>
+        <TopPlayerRating />
+      </Box>
     </Box>
   );
 };
