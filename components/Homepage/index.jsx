@@ -76,26 +76,34 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
         <Rating rating={ratingsUSA} />
         <Rating rating={ratingsUSSR} />
       </Box>
-      <Box css={boxStyle}>
+      {/* <Box css={boxStyle}>
         <TriangleIcon rating={ratingsUSA} />
         <TriangleIcon rating={ratingsUSSR} />
-      </Box>
+      </Box> */}
     </Box>
   );
 };
 const PlayerInfoBox = ({ nameUSA, nameUSSR, winner }) => {
   return (
     <Box css={{ ...boxStyle, width: "300px" }}>
-      <Text margin="noMargin" variant={winner === "1" ? "strong" : ""}>
+      <Text margin="noMargin" strong={winner === "1" ? "bold" : ""}>
         {nameUSA}
       </Text>
-      <Text margin="noMargin" variant={winner === "2" ? "strong" : ""}>
+      <Text margin="noMargin" strong={winner === "2" ? "bold" : ""}>
         {nameUSSR}
       </Text>
     </Box>
   );
 };
 
+const getWinnerText = (gameWinner) => {
+  if (gameWinner === '1') {
+    return "USA"
+  } else if(gameWinner == '2') {
+    return "USSR"
+  }
+  return 'TIE'
+}
 const ResultRow = ({ game }) => {
   return (
     <PlayerInfo>
@@ -109,6 +117,10 @@ const ResultRow = ({ game }) => {
         winner={game.gameWinner}
       />
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
+      <Box css={boxStyle}>
+        <Text strong="bold">Winner</Text>
+        <Text css={{ textAlign: "center" }}>{getWinnerText(game.gameWinner)}</Text>
+      </Box>
       <Box css={boxStyle}>
         <Text strong="bold">End turn</Text>
         <Text>T9</Text>

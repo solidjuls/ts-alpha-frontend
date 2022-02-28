@@ -35,7 +35,7 @@ const styledItemStyles = {
   "&:focus": {
     outline: "none",
     backgroundColor: "darkBlue",
-    color: "$textWhite",
+    color: "$textLight",
   },
 };
 
@@ -62,11 +62,11 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
-  backgroundColor: "#24292f",
+  backgroundColor: "$backgroundColorDark",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color:"$textWhite",
+  color:"$backgroundColorLight",
 });
 
 const slideUpAndFade = keyframes({

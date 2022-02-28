@@ -16,7 +16,7 @@ const Input = styled("input", {
     }
   },
   all: "unset",
-  width: 150,
+  // width: 150,
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",

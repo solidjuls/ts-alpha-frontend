@@ -3,6 +3,7 @@ import { styled } from "stitches.config";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "components/UserAvatar";
+import { Text } from "components/Text";
 import { ThemeToggle } from "components/ThemeToggle";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
@@ -31,9 +32,10 @@ const HeaderContainer = styled("div", {
   // },
 });
 
-const StyledLink = styled(Link, {
+const StyledText = styled(Text, {
   display: "flex",
   cursor: "pointer",
+  color: "$textLight",
   "@sm": {
     display: "none",
   },
@@ -48,17 +50,6 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
   },
 });
 
-const Logo = styled("div", {
-  color: "$textLight",
-  "@sm": {
-    display: "none",
-  },
-});
-const Text = styled("div", {
-  color: "$textLight",
-  marginRight: "10px",
-});
-
 const Header = ({ openSidebar }) => {
   const { data: session } = useSession();
   const intl = useIntl();
@@ -66,30 +57,30 @@ const Header = ({ openSidebar }) => {
   return (
     <HeaderContainer>
       <StyledHamburgerMenuIcon color="white" onClick={openSidebar} />
-      <StyledLink href="/" passHref>
+      <Link href="/" passHref>
         {/* <Logo>Twilight Struggle Competition Hub</Logo> */}
-        <Logo>Logo</Logo>
-      </StyledLink>
-      <StyledLink href="/submitform" passHref>
-        <Text>Submit Form</Text>
-      </StyledLink>
+        <StyledText>Home</StyledText>
+      </Link>
+      <Link href="/submitform" passHref>
+        <StyledText>Submit Form</StyledText>
+      </Link>
       <Flex>
         {/* <ThemeToggle /> */}
 
         {!session && (
           <Link href="/login" passHref>
-            <Text>
+            <StyledText>
               <FormattedMessage id="signIn" />
-            </Text>
+            </StyledText>
           </Link>
         )}
         {session && (
           <Flex display={{ "@sm": "none" }}>
-            <Text>
+            <StyledText css={{ marginRight: '12px'}}>
               {`${intl.formatMessage({ id: "greeting" })} ${
                 session?.user?.name
               }`}
-            </Text>
+            </StyledText>
             <UserAvatar name={session?.user?.name} />
           </Flex>
         )}

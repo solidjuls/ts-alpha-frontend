@@ -19,6 +19,7 @@ import { Box, Form } from "components/Atoms";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Typeahead } from "components/Autocomplete/Typeahead";
+import { dateFormat } from "utils/dates";
 
 const formStyles = {
   alignItems: "center",
@@ -29,8 +30,14 @@ const formStyles = {
   padding: "12px",
 };
 
-const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
-const cssFlexTextDateComponent = { marginBottom: "16px" };
+const dropdownWidth = "270px";
+const typeaheadWidth = "250px";
+const cssLabel = { marginBottom: 8, marginRight: 15, width: "160px" };
+const cssFlexTextDateComponent = {
+  display: "flex",
+  flexDirection: "column",
+  marginBottom: "16px",
+};
 
 const useTypeaheadState = () => {
   const { data } = trpc.useQuery(["user-get-all"]);
@@ -75,9 +82,9 @@ const TypeaheadLabelComponent = ({
         // onBlur={setValue}
         {...rest}
       >
-        <Typeahead.Input placeholder="Type the player name..." />
+        <Typeahead.Input css={css} placeholder="Type the player name..." />
         {userSuggestions.length > 0 && (
-          <Typeahead.List>
+          <Typeahead.List css={css}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item
                 key={value}
@@ -151,7 +158,10 @@ const DateComponent = ({
     </Label>
     <DayPickerInput
       id="gameDate"
-      format="YYYY-MM-DD"
+      value={inputValue}
+      format="YYYY/MM/DD"
+      placeholder="YYYY/MM/DD"
+      formatDate={dateFormat}
       onDayChange={(value) => onInputValueChange(value)}
       dayPickerProps={{
         showWeekNumbers: true,
@@ -162,7 +172,7 @@ const DateComponent = ({
 );
 
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
-  sendCallback(data);
+  // sendCallback(data);
   console.log("url", url, data);
   fetch(url, {
     method: "POST",
@@ -183,11 +193,15 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     });
 };
 
-const getSelectedItem = (value, list) => list.find(item => item.value === value)?.text || list[0].text
+const getSelectedItem = (value, list) =>
+  list.find((item) => item.value === value)?.text || list[0].text;
 
 const SubmitForm = () => {
   const router = useRouter();
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({
+    game_date: new Date(),
+    game_winner: '1'
+  });
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
       ...prevState,
@@ -208,13 +222,15 @@ const SubmitForm = () => {
           labelText="typeOfGame"
           items={leagueTypes}
           selectedItem={form.game_type}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("game_type", value)}
         />
         <TypeaheadLabelComponent
           labelText="playerUSA"
           selectedItem={form.usa_player_id}
-          width="230px"
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          css={{ width: typeaheadWidth }}
           onSelect={(value) =>
             onInputValueChange("usa_player_id", value?.value)
           }
@@ -222,7 +238,9 @@ const SubmitForm = () => {
         <TypeaheadLabelComponent
           labelText="playerURSS"
           selectedItem={form.ussr_player_id}
-          width="230px"
+          css={{ width: typeaheadWidth }}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
           onSelect={(value) =>
             onInputValueChange("ussr_player_id", value?.value)
           }
@@ -231,27 +249,20 @@ const SubmitForm = () => {
           labelText="endTurn"
           items={turns}
           selectedItem={form.end_turn}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="gameWinner"
           items={gameWinningOptions}
           selectedItem={getSelectedItem(form.game_winner, gameWinningOptions)}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("game_winner", value)}
-        />
-        <DropdownLabelComponent
-          labelText="endTurn"
-          items={turns}
-          selectedItem={form.end_turn}
-          width="230px"
-          onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="endType"
           items={endType}
-          width="230px"
+          css={{ width: dropdownWidth }}
           selectedItem={form.end_mode}
           onSelect={(value) => onInputValueChange("end_mode", value)}
         />
@@ -278,7 +289,7 @@ const SubmitForm = () => {
         <Button
           onClick={() =>
             callAPI({
-              url,
+              url: "https://tsalpha.klckh.com/api/game-results",
               data: form,
               responseCallback: () => router.push("/"),
             })

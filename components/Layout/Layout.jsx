@@ -68,7 +68,7 @@ const Layout = ({ children }) => {
       <Header openSidebar={() => setIsOpen(!isOpen)} />
       {isOpen && <Sidebar />}
       <Main css={contentStyles}>{children}</Main>
-      <Footer />
+      {/* <Footer /> */}
     </Box>
   );
 };
