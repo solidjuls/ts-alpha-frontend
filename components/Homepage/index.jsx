@@ -7,6 +7,7 @@ import Text from "components/Text";
 import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
+import { SkeletonHomepage } from "components/Skeletons";
 
 const GAMETYPE_WIDTH = "60px";
 const TRIANGLE_WIDTH = "20px";
@@ -142,7 +143,15 @@ const formatDateToString = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
   return (
-    <Box css={{ display: "flex", justifyContent: "center", margin: "16px" }}>
+    <Box
+      css={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        margin: "16px",
+        height: "320px",
+      }}
+    >
       <Text css={{ fontSize: "20px" }} strong="bold">
         No games
       </Text>
@@ -152,7 +161,7 @@ const EmptyState = () => {
 
 const Homepage = () => {
   const [dateValue, setDateValue] = useState(new Date());
-  const { data } = trpc.useQuery([
+  const { data, isLoading } = trpc.useQuery([
     "game-getAll",
     { d: dateValue.toDateString() },
   ]);
@@ -185,6 +194,7 @@ const Homepage = () => {
             onClick={onClickDay}
           />
         </FilterPanel>
+        {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <ResultRow key={index} game={game} />

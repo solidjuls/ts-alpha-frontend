@@ -1,6 +1,6 @@
 import { createStitches } from "@stitches/react";
 
-export const { styled, getCssText, createTheme } = createStitches({
+export const { styled, getCssText, createTheme, keyframes } = createStitches({
   theme: {
     colors: {
       textDark: "black",
@@ -11,6 +11,8 @@ export const { styled, getCssText, createTheme } = createStitches({
       gray900: "hsl(205,5%,7%)",
       gray700: "hsl(205,5%,25%)",
       gray500: "hsl(205,5%,35%)",
+      skeletonColorPrimary: '#e9eef0',
+      skeletonColorSecondary: '#bcc9d1',
       greyLight:'#eeeeee',
       primary: "$gray900",
       secondary: "$gray700",
