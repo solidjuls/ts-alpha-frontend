@@ -1,7 +1,8 @@
 import React from "react";
-import stitches from "stitches.config";
+import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
+import { Box } from "components/Atoms";
 
 export const i18ns = {
   noResults: {
@@ -10,12 +11,7 @@ export const i18ns = {
   },
 };
 
-const RelativeWrapper = stitches.styled("div", {
-  position: "relative",
-  zIndex: 200,
-});
-
-const ListContainer = stitches.styled("div", {
+const ListContainer = styled("div", {
   border: 2,
   borderRadius: 1,
   marginTop: 1,
@@ -47,22 +43,15 @@ const AutocompleteList = ({
 
   if (!isOpen) return null;
 
-  // if (React.Children.count(children) === 0) {
-  //   return (
-  //     <StyledListContainer>
-  //       <Text color="secondaryText" size={2} data-testid="no-results-found">
-  //         {noResultsCustomText || i18ns.noResults[noResultsTextLocale]}
-  //       </Text>
-  //     </StyledListContainer>
-  //   );
-  // }
-
   return (
-    <RelativeWrapper>
-      <ListContainer {...getMenuProps({ isOpen })} {...rest}>
+    <Box css={{
+      position: "relative",
+      zIndex: 200,
+    }}>
+      <ListContainer {...getMenuProps({ isOpen })} {...rest} >
         {children}
       </ListContainer>
-    </RelativeWrapper>
+    </Box>
   );
 };
 

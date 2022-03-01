@@ -1,4 +1,4 @@
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 import { blackA } from "@radix-ui/colors";
 
 const Input = styled("input", {
@@ -16,7 +16,7 @@ const Input = styled("input", {
     }
   },
   all: "unset",
-  width: 150,
+  // width: 150,
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -25,7 +25,7 @@ const Input = styled("input", {
   height: 35,
   fontSize: 15,
   lineHeight: 1,
-  color: "black",
+  color: "$textDark",
   // backgroundColor: blackA.blackA5,
   boxShadow: `0 0 0 1px ${blackA.blackA9}`,
   "&:focus": { boxShadow: `0 0 0 2px black` },

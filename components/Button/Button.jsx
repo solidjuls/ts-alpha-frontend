@@ -1,4 +1,4 @@
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
 
 const Button = styled("button", {
   display: "inline-block",
@@ -9,8 +9,8 @@ const Button = styled("button", {
   textDecoration: "none",
   margin: "8px",
   fontWeight: "300",
-  color: "#FFFFFF",
-  backgroundColor: "#24292f",
+  color: "$textLight",
+  backgroundColor: "$backgroundColorDark",
   textAlign: "center",
   transition: " all 0.2s",
   //backgroundColor: "rgb(103, 58, 183)",

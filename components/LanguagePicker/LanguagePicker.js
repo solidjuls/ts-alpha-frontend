@@ -1,16 +1,17 @@
-import { styled } from "@stitches/react";
 import { useIntlContext } from "../../contexts/IntlContext";
-
-const Flex = styled("div", { display: "flex", flexDirection: "row" });
-const A = styled("a", { margin: "8px" });
+import { Box, A } from "components/Atoms";
 
 const LanguagePicker = () => {
   const { setLocale } = useIntlContext();
   return (
-    <Flex>
-      <A onClick={() => setLocale("ca")}>CA</A>
-      <A onClick={() => setLocale("en")}>EN</A>
-    </Flex>
+    <Box css={{ display: "flex", flexDirection: "row" }}>
+      <A css={{ margin: "8px" }} onClick={() => setLocale("ca")}>
+        CA
+      </A>
+      <A css={{ margin: "8px" }} onClick={() => setLocale("en")}>
+        EN
+      </A>
+    </Box>
   );
 };
 

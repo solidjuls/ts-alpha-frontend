@@ -2452,6 +2452,11 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
+lodash.clonedeep@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
+  integrity sha1-4j8/nE+Pvd6HJSnBBxhXoIblzO8=
+
 lodash.merge@^4.6.2:
   version "4.6.2"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
@@ -3512,6 +3517,14 @@ stylis@3.5.4:
   version "3.5.4"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-3.5.4.tgz#f665f25f5e299cf3d64654ab949a57c768b73fbe"
   integrity sha512-8/3pSmthWM7lsPBKv7NXkzn2Uc9W7NotcwGNpJaa3k7WMM1XDCA4MgT5k/8BIexd5ydZdboXtU90XH9Ec4Bv/Q==
+
+superjson@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/superjson/-/superjson-1.8.1.tgz#c0fe510b8ff71c3bde5733a125623994ca9ec608"
+  integrity sha512-RaBKdbsYj29Ky+XcdE11pJAyKXPrqiCV269koH2WAlpeHh/9qnK0ET84GiVWvnutiufyDolK/vS2jtdFYr341w==
+  dependencies:
+    debug "^4.3.1"
+    lodash.clonedeep "^4.5.0"
 
 supports-color@^5.3.0:
   version "5.5.0"

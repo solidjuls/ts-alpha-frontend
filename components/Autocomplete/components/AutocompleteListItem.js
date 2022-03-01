@@ -1,21 +1,21 @@
 import React from "react";
-import stitches from "stitches.config";
+import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
-const Item = stitches.styled("div", {
+const Item = styled("div", {
   position: "relative",
   cursor: "pointer",
   display: "block",
-  lineHeight: 1, //${themeGet('lineHeights.2')},
-  color: "black", //${themeGet('colors.grey500')},
-  fontSize: 12, //${themeGet('fontSizes.2')},
-  padding: "8px 16px", //${themeGet('space.2')} ${themeGet('space.4')},
-  backgroundColor: "white", //baseTheme.colors[itemColor] : baseTheme.colors['white'],
+  lineHeight: 1,
+  color: "$textDark",
+  fontSize: 12,
+  padding: "8px 16px",
+  backgroundColor: "$backgroundColorLight",
   variants: {
     color: {
-      lightgray: { backgroundColor: "lightgray" },
-      white: { backgroundColor: "white" },
+      lightgray: { backgroundColor: "$gray500" },
+      white: { backgroundColor: "$backgroundColorLight" },
     },
   },
   // "&:hover:not([disabled])": {
@@ -87,7 +87,6 @@ AutocompleteListItem.propTypes = {
   index: PropTypes.number,
   value: PropTypes.object,
   disabled: PropTypes.bool,
-  /** Select background-color from winery palette */
   itemColor: PropTypes.string,
 };
 

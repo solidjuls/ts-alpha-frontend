@@ -1,47 +1,42 @@
 import { useState } from "react";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
 import { trpc } from "utils/trpc";
-import { styled } from "@stitches/react";
 import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
 
+import {
+  gameWinningOptions,
+  endType,
+  turns,
+  leagueTypes,
+} from "utils/constants";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import DropdownMenu from "components/DropdownMenu";
+import { Box, Form } from "components/Atoms";
 
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
-import { isError } from "react-query";
 import { Typeahead } from "components/Autocomplete/Typeahead";
+import { dateFormat } from "utils/dates";
 
-const Form = styled("form", {
+const formStyles = {
   alignItems: "center",
   backgroundColor: "White",
   width: "640px",
   alignSelf: "center",
   //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
   padding: "12px",
-});
-const Flex = styled("div", { display: "flex" });
-const TextArea = styled("textarea", { height: "300px", width: "500px" });
+};
 
-const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
-const cssFlexTextDateComponent = { marginBottom: "16px" };
-const cssLayout = { flexDirection: "column", alignItems: "flex-start" };
-
-const initialState = {
-  game_type: "National League",
-  game_code: "C000",
-  game_winner: "USA",
-  end_turn: 10,
-  end_mode: "DEFCON",
-  game_date: "2021-11-17T09:49:22",
-  usa_player_id: "345",
-  ussr_player_id: "413",
-  video1: "http://www.brown.com/est-aut-aut-dicta-velit-possimus-expedita",
-  video2: "http://russel.com/eos-occaecati-culpa-nulla-libero.html",
-  video3: "http://www.kunde.com/ut-sunt-velit-hic-necessitatibus",
+const dropdownWidth = "270px";
+const typeaheadWidth = "250px";
+const cssLabel = { marginBottom: 8, marginRight: 15, width: "160px" };
+const cssFlexTextDateComponent = {
+  display: "flex",
+  flexDirection: "column",
+  marginBottom: "16px",
 };
 
 const useTypeaheadState = () => {
@@ -60,8 +55,8 @@ const useTypeaheadState = () => {
     );
   };
 
-  return { userSuggestions, onChange }
-}
+  return { userSuggestions, onChange };
+};
 const TypeaheadLabelComponent = ({
   labelText,
   selectedItem,
@@ -69,15 +64,10 @@ const TypeaheadLabelComponent = ({
   css,
   ...rest
 }) => {
-  const {userSuggestions, onChange } = useTypeaheadState()
-  //console.log("userSuggestions.current", userSuggestions);
-  // labelText="playerUSA"
-  //         items={userList}
-  //         selectedItem={form.usa_player_id}
-  //         width="230px"
-  //         onSelect={(value) => onInputValueChange("usa_player_id", value)}
+  const { userSuggestions, onChange } = useTypeaheadState();
+
   return (
-    <Flex css={cssFlexTextDateComponent}>
+    <Box css={cssFlexTextDateComponent}>
       <Label htmlFor="dropdown" css={cssLabel}>
         <FormattedMessage id={labelText} />
       </Label>
@@ -92,9 +82,9 @@ const TypeaheadLabelComponent = ({
         // onBlur={setValue}
         {...rest}
       >
-        <Typeahead.Input placeholder="Type the player name..." />
+        <Typeahead.Input css={css} placeholder="Type the player name..." />
         {userSuggestions.length > 0 && (
-          <Typeahead.List>
+          <Typeahead.List css={css}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item
                 key={value}
@@ -108,7 +98,7 @@ const TypeaheadLabelComponent = ({
           </Typeahead.List>
         )}
       </Typeahead>
-    </Flex>
+    </Box>
   );
 };
 
@@ -120,7 +110,7 @@ const DropdownLabelComponent = ({
   css,
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="dropdown" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -132,7 +122,7 @@ const DropdownLabelComponent = ({
       css={css}
       {...rest}
     />
-  </Flex>
+  </Box>
 );
 const TextComponent = ({
   labelText,
@@ -141,7 +131,7 @@ const TextComponent = ({
   css,
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="video1" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
@@ -153,7 +143,7 @@ const TextComponent = ({
       css={css}
       {...rest}
     />
-  </Flex>
+  </Box>
 );
 
 const DateComponent = ({
@@ -162,39 +152,27 @@ const DateComponent = ({
   onInputValueChange = () => {},
   ...rest
 }) => (
-  <Flex css={cssFlexTextDateComponent}>
+  <Box css={cssFlexTextDateComponent}>
     <Label htmlFor="gameDate" css={cssLabel}>
       <FormattedMessage id={labelText} />
     </Label>
     <DayPickerInput
       id="gameDate"
-      format="YYYY-MM-DD"
+      value={inputValue}
+      format="YYYY/MM/DD"
+      placeholder="YYYY/MM/DD"
+      formatDate={dateFormat}
       onDayChange={(value) => onInputValueChange(value)}
       dayPickerProps={{
         showWeekNumbers: true,
         todayButton: "Today",
       }}
     />
-  </Flex>
+  </Box>
 );
 
-const DisplayData = ({ data, labelText }) => {
-  return (
-    <Flex css={cssLayout}>
-      <Label htmlFor="send" css={cssLabel}>
-        {labelText}
-      </Label>
-      <TextArea
-        name="send"
-        value={JSON.stringify(data, undefined, 2)}
-        readonly
-      ></TextArea>
-    </Flex>
-  );
-};
-
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
-  sendCallback(data);
+  // sendCallback(data);
   console.log("url", url, data);
   fetch(url, {
     method: "POST",
@@ -215,138 +193,15 @@ const callAPI = ({ url, data, sendCallback, responseCallback }) => {
     });
 };
 
-const leagueTypes = [
-  {
-    text: "National League",
-    value: "National League",
-  },
-  {
-    text: "ITSL",
-    value: "ITSL",
-  },
-  {
-    text: "OTSL",
-    value: "OTSL",
-  },
-  {
-    text: "RTSL",
-    value: "RTSL",
-  },
-];
-
-const turns = [
-  {
-    text: "1",
-    value: "1",
-  },
-  {
-    text: "2",
-    value: "2",
-  },
-  {
-    text: "3",
-    value: "3",
-  },
-  {
-    text: "4",
-    value: "4",
-  },
-  {
-    text: "5",
-    value: "5",
-  },
-  {
-    text: "6",
-    value: "6",
-  },
-  {
-    text: "7",
-    value: "7",
-  },
-  {
-    text: "8",
-    value: "8",
-  },
-  {
-    text: "9",
-    value: "9",
-  },
-  {
-    text: "10",
-    value: "10",
-  },
-];
-
-const endType = [
-  {
-    value: "VP Track (+20)",
-    text: "VP Track (+20)",
-  },
-  {
-    value: "Final Scoring",
-    text: "Final Scoring",
-  },
-  {
-    value: "Wargames",
-    text: "Wargames",
-  },
-  {
-    value: "DEFCON",
-    text: "DEFCON",
-  },
-  {
-    value: "Forfeit",
-    text: "Forfeit",
-  },
-  {
-    value: "Timer Expired",
-    text: "Timer Expired",
-  },
-  {
-    value: "Europe Control",
-    text: "Europe Control",
-  },
-  {
-    value: "Scoring Card Held",
-    text: "Scoring Card Held",
-  },
-  {
-    value: "Cuban Missile Crisis",
-    text: "Cuban Missile Crisis",
-  },
-];
-
-const gameWinningOptions = [
-  {
-    value: "1",
-    text: "USA",
-  },
-  {
-    value: "2",
-    text: "URSS",
-  },
-  {
-    value: "3",
-    text: "Tie",
-  },
-];
-
-const getSelectedItem = (value, list) => list.find(item => item.value === value)?.text || list[0].text
+const getSelectedItem = (value, list) =>
+  list.find((item) => item.value === value)?.text || list[0].text;
 
 const SubmitForm = () => {
-  const [value, setValue] = useState("");
-  const router = useRouter()
-  const handleOnBlur = () => {
-    setIndustriesSuggestions([]);
-    setValue({});
-  };
-  const [form, setForm] = useState(initialState);
-  const [date, setDate] = useState(new Date());
-  const [sendInfo, setSendInfo] = useState("");
-  const [responseInfo, setResponseInfo] = useState("");
-  const [url, setUrl] = useState("https://tsalpha.klckh.com/api/game-results");
-  const t = () => {};
-
+  const router = useRouter();
+  const [form, setForm] = useState({
+    game_date: new Date(),
+    game_winner: '1'
+  });
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
       ...prevState,
@@ -355,8 +210,8 @@ const SubmitForm = () => {
   };
 
   return (
-    <Form onSubmit={(e) => e.preventDefault()}>
-      <Flex css={cssLayout}>
+    <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+      <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
         <TextComponent
           labelText="checkID"
           inputValue={form.game_code}
@@ -367,52 +222,47 @@ const SubmitForm = () => {
           labelText="typeOfGame"
           items={leagueTypes}
           selectedItem={form.game_type}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("game_type", value)}
         />
         <TypeaheadLabelComponent
           labelText="playerUSA"
           selectedItem={form.usa_player_id}
-          width="230px"
-          onSelect={(value) => {
-            console.log("value", value);
-            onInputValueChange("usa_player_id", value?.value);
-          }}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          css={{ width: typeaheadWidth }}
+          onSelect={(value) =>
+            onInputValueChange("usa_player_id", value?.value)
+          }
         />
         <TypeaheadLabelComponent
           labelText="playerURSS"
           selectedItem={form.ussr_player_id}
-          width="230px"
-          onSelect={(value) => {
-            console.log("value", value);
-            onInputValueChange("ussr_player_id", value?.value);
-          }}
+          css={{ width: typeaheadWidth }}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          onSelect={(value) =>
+            onInputValueChange("ussr_player_id", value?.value)
+          }
         />
         <DropdownLabelComponent
           labelText="endTurn"
           items={turns}
           selectedItem={form.end_turn}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="gameWinner"
           items={gameWinningOptions}
           selectedItem={getSelectedItem(form.game_winner, gameWinningOptions)}
-          width="230px"
+          css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("game_winner", value)}
-        />
-        <DropdownLabelComponent
-          labelText="endTurn"
-          items={turns}
-          selectedItem={form.end_turn}
-          width="230px"
-          onSelect={(value) => onInputValueChange("end_turn", value)}
         />
         <DropdownLabelComponent
           labelText="endType"
           items={endType}
-          width="230px"
+          css={{ width: dropdownWidth }}
           selectedItem={form.end_mode}
           onSelect={(value) => onInputValueChange("end_mode", value)}
         />
@@ -439,21 +289,16 @@ const SubmitForm = () => {
         <Button
           onClick={() =>
             callAPI({
-              url,
+              url: "https://tsalpha.klckh.com/api/game-results",
               data: form,
-              sendCallback: setSendInfo,
               responseCallback: () => router.push("/"),
             })
           }
         >
           Submit
         </Button>
-        {responseInfo && <strong>Result submitted correctly</strong>}
-      </Flex>
-      {/* <Flex>
-        <DisplayData labelText="Send" data={sendInfo} />
-        <DisplayData labelText="Response" data={responseInfo} />
-      </Flex> */}
+        <strong>Result submitted correctly</strong>
+      </Box>
     </Form>
   );
 };

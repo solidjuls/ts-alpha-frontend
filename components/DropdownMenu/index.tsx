@@ -1,12 +1,13 @@
 import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
-import { styled } from "@stitches/react";
+import { styled } from "stitches.config";
+import { Box, Span } from "components/Atoms";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   fontSize: "$2",
   lineHeight: "1",
-  color: "black",
+  color: "$textDark",
   cursor: "pointer",
   borderRadius: "$1",
   // padding: "$1 $2 $1 $5",
@@ -20,7 +21,7 @@ const styledItemStyles = {
   "&:focus": {
     outline: "none",
     backgroundColor: "darkBlue",
-    color: "white",
+    color: "$textLight",
   },
 };
 
@@ -36,7 +37,7 @@ const StyledContent = styled(Content, {
   borderRadius: "4px",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
-  width: "300px",
+  // width: "300px",
   padding: "$1",
 });
 
@@ -46,11 +47,8 @@ const StyledTriangleDownIcon = styled(TriangleDownIcon, {
   right: "9px",
 });
 
-const Span = styled("span", {
-  marginLeft: "8px",
-});
 const SelectedItemDiv = styled("div", {
-  width: "300px",
+  // width: "300px",
   height: "36px",
   border: "solid 1px black",
   backgroundColor: "white",
@@ -58,11 +56,6 @@ const SelectedItemDiv = styled("div", {
   lineHeight: 2,
   borderRadius: 4,
   fontSize: 15,
-});
-
-const BoxInput = styled("div", {
-  position: "relative",
-  cursor: "pointer",
 });
 
 type ItemType = {
@@ -75,26 +68,38 @@ type DropdownMenuProps = {
   selectedItem: string;
   onSelect: Function;
   width: string;
+  css: any
 };
 
 const DropdownMenu = ({
   items,
   selectedItem,
   onSelect,
-  width,
+  css
 }: DropdownMenuProps) => {
   return (
     <Root>
-      <StyledTrigger>
-        <BoxInput>
-          <SelectedItemDiv css={{ width }}>
-            <Span>{selectedItem}</Span>
+      <StyledTrigger css={css}>
+        <Box
+          css={{
+            position: "relative",
+            cursor: "pointer",
+          }}
+        >
+          <SelectedItemDiv >
+            <Span
+              css={{
+                marginLeft: "8px",
+              }}
+            >
+              {selectedItem}
+            </Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />
-        </BoxInput>
+        </Box>
       </StyledTrigger>
 
-      <StyledContent css={{ width }}>
+      <StyledContent css={css}>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}

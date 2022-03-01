@@ -13,12 +13,13 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { Box } from "components/Atoms";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   fontSize: "$2",
   lineHeight: "1",
-  color: "black",
+  color: "$textDark",
   cursor: "pointer",
   borderRadius: "$1",
   margin: 5,
@@ -34,7 +35,7 @@ const styledItemStyles = {
   "&:focus": {
     outline: "none",
     backgroundColor: "darkBlue",
-    color: "white",
+    color: "$textLight",
   },
 };
 
@@ -61,11 +62,11 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
-  backgroundColor: "#24292f",
+  backgroundColor: "$backgroundColorDark",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color: "white",
+  color:"$backgroundColorLight",
 });
 
 const slideUpAndFade = keyframes({
@@ -117,13 +118,12 @@ const StyledContent = styled(Content, {
   },
 });
 
-const Flex = styled("div", { display: "flex", flexDirection: "row" });
 const StyledItem = styled(Item, { ...styledItemStyles });
 
 const UserAvatar = ({ name }: { name: String }) => {
   const intl = useIntl();
   return (
-    <Flex>
+    <Box css={{ display: "flex", flexDirection: "row" }}>
       <Root>
         <StyledTrigger>
           <StyledAvatar>
@@ -145,7 +145,7 @@ const UserAvatar = ({ name }: { name: String }) => {
           <StyledArrow offset={30} />
         </StyledContent>
       </Root>
-    </Flex>
+    </Box>
   );
 };
 
