@@ -25,6 +25,19 @@ const getLatestRatingByPlayer = async (playerId: bigint) => {
   return ratingPlayers;
 };
 
+const getCountry = async (countryId: bigint) => {
+  const country = await prisma.countries.findFirst({
+    select: {
+      icon: true,
+      tld_code: true,
+    },
+    where: {
+      id: countryId,
+    },
+  });
+
+  return country;
+};
 
 export const gameRouter = trpc
   .router()
@@ -32,7 +45,7 @@ export const gameRouter = trpc
     input: z.object({ d: z.string() }),
     async resolve({ input }) {
       const date = new Date(Date.parse(input.d));
-      const datePlusOne = dateAddDay(date, 1)
+      const datePlusOne = dateAddDay(date, 1);
       // console.log("date entering", input.d);
       // console.log("date plus 1 day", dateAddDay(date, 1))
       // console.log("date parsed", date);
@@ -75,6 +88,19 @@ export const gameRouter = trpc
           const ussrPlayerRatings = await getLatestRatingByPlayer(
             game.ussr_player_id
           );
+          let countryUSA;
+          let countryUSSR;
+          if (game.users_game_results_usa_player_idTousers.country_id) {
+            countryUSA = await getCountry(
+              game.users_game_results_usa_player_idTousers.country_id
+            );
+          }
+          if (game.users_game_results_ussr_player_idTousers.country_id) {
+            countryUSSR = await getCountry(
+              game.users_game_results_ussr_player_idTousers.country_id
+            );
+          }
+
           return {
             // ...game,
             created_at: game.created_at,
@@ -82,10 +108,10 @@ export const gameRouter = trpc
             endTurn: game.end_turn,
             usaPlayerId: game.usa_player_id,
             ussrPlayerId: game.ussr_player_id,
-            usaCountryId:
-              game.users_game_results_usa_player_idTousers.country_id,
-            ussrCountryId:
-              game.users_game_results_ussr_player_idTousers.country_id,
+            usaCountryCode: countryUSA?.tld_code,
+            ussrCountryCode: countryUSSR?.tld_code,
+            usaCountryIcon: countryUSA?.icon,
+            ussrCountryIcon: countryUSSR?.icon,
             usaPlayer:
               game.users_game_results_usa_player_idTousers.first_name +
               " " +

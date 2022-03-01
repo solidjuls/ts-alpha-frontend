@@ -2,7 +2,7 @@ import { useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import { trpc } from "utils/trpc";
-import { Box } from "components/Atoms";
+import { Box, A } from "components/Atoms";
 import Text from "components/Text";
 import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
@@ -10,7 +10,7 @@ import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 
 const GAMETYPE_WIDTH = "80px";
-const TRIANGLE_WIDTH = "20px";
+const TRIANGLE_WIDTH = "16px";
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
   display: "flex",
@@ -50,6 +50,12 @@ const TriangleIcon = ({ rating }) => {
   }
 };
 
+const responsive = {
+  "@sm": {
+    display: "none",
+  },
+};
+
 const boxStyle = {
   display: "flex",
   flexDirection: "column",
@@ -62,8 +68,8 @@ const Rating = ({ rating }) => {
   const ratingVariation = getRatingVariation(rating);
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Text margin="noMargin">{rating[0].rating}</Text>
-      <Text margin="noMargin">{`(${
+      <Text>{rating[0].rating}</Text>
+      <Text>{`(${
         ratingVariation === 0 ? "-" : ratingVariation
       })`}</Text>
     </Box>
@@ -83,55 +89,107 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
     </Box>
   );
 };
-const PlayerInfoBox = ({ nameUSA, nameUSSR, winner }) => {
+
+const FlagIcon = ({ code, icon }) => {
+  if (code === "CAT") {
+    return (
+      <Box css={{ marginLeft: "4px" }}>
+        <Image
+          src="/estelada_blava.png"
+          alt="Catalonia"
+          width={TRIANGLE_WIDTH}
+          height={TRIANGLE_WIDTH}
+        />
+      </Box>
+    );
+  }
+
+  return <Text>{icon}</Text>;
+};
+const PlayerInfoBox = ({
+  nameUSA,
+  nameUSSR,
+  winner,
+  usaCountryCode,
+  usaCountryIcon,
+  ussrCountryCode,
+  ussrCountryIcon,
+}) => {
   return (
-    <Box css={{ ...boxStyle, width: "300px" }}>
-      <Text margin="noMargin" strong={winner === "1" ? "bold" : ""}>
-        {nameUSA}
-      </Text>
-      <Text margin="noMargin" strong={winner === "2" ? "bold" : ""}>
-        {nameUSSR}
-      </Text>
+    <Box
+      css={{
+        ...boxStyle,
+        width: "300px",
+        "@sm": {
+          width: "100%",
+        },
+      }}
+    >
+      <Box css={{ display: "flex", flexDirection: "row", alignItems: "end" }}>
+        <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
+        <Text strong={winner === "1" ? "bold" : ""}>
+          {nameUSA}
+        </Text>
+      </Box>
+      <Box css={{ display: "flex", flexDirection: "row" }}>
+        <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
+        <Text strong={winner === "2" ? "bold" : ""}>
+          {nameUSSR}
+        </Text>
+      </Box>
     </Box>
   );
 };
 
 const getWinnerText = (gameWinner) => {
-  if (gameWinner === '1') {
-    return "USA"
-  } else if(gameWinner == '2') {
-    return "USSR"
+  if (gameWinner === "1") {
+    return "USA";
+  } else if (gameWinner == "2") {
+    return "USSR";
   }
-  return 'TIE'
-}
+  return "TIE";
+};
 const ResultRow = ({ game }) => {
   return (
     <PlayerInfo>
-      <Text css={{ alignSelf: "center", width: GAMETYPE_WIDTH }} strong="bold">
+      <Text
+        css={{ alignSelf: "center", width: GAMETYPE_WIDTH, ...responsive }}
+        strong="bold"
+      >
         {game.gameType}
       </Text>
 
       <PlayerInfoBox
+        usaCountryIcon={game.usaCountryIcon}
+        usaCountryCode={game.usaCountryCode}
+        ussrCountryIcon={game.ussrCountryIcon}
+        ussrCountryCode={game.ussrCountryCode}
         nameUSA={game.usaPlayer}
         nameUSSR={game.ussrPlayer}
         winner={game.gameWinner}
       />
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
-      <Box css={boxStyle}>
+      <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">Winner</Text>
-        <Text css={{ textAlign: "center" }}>{getWinnerText(game.gameWinner)}</Text>
+        <Text css={{ textAlign: "center" }}>
+          {getWinnerText(game.gameWinner)}
+        </Text>
       </Box>
-      <Box css={boxStyle}>
+      <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
         <Text>T9</Text>
       </Box>
-      <Box css={boxStyle}>
+      <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End Mode</Text>
         <Text>DEFCON</Text>
       </Box>
-      <a href="www.youtube.com" target="_blank">
+      <A
+        css={{ ...boxStyle, ...responsive }}
+        href="www.youtube.com"
+        target="_blank"
+      >
         Link to Video
-      </a>
+      </A>
     </PlayerInfo>
   );
 };
@@ -143,6 +201,7 @@ const ResultsPanel = styled("div", {
   border: "solid 1px none",
   borderRadius: "12px",
   flexGrow: "1",
+  marginBottom: "12px",
 });
 
 const FilterPanel = styled("div", {
@@ -197,6 +256,8 @@ const Homepage = () => {
         flexDirection: "row",
         width: "100%",
         maxWidth: "1100px",
+        flexWrap: "wrap",
+
       }}
     >
       <ResultsPanel>

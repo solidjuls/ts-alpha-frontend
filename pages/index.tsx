@@ -5,7 +5,7 @@ import Homepage from "components/Homepage";
 
 export default function Home() {
   const { data: session } = useSession();
-  
+
   return (
     <>
       <Head>
@@ -17,9 +17,6 @@ export default function Home() {
       <section>Latest results:</section>
       <br />
       <Homepage />
-      {/* {data?.map((game: any) => {
-          return <div key={game.id}>{getResultDisplay({ game })}</div>;
-        })} */}
     </>
   );
 }

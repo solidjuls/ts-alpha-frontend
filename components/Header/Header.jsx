@@ -3,7 +3,7 @@ import { styled } from "stitches.config";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { UserAvatar } from "components/UserAvatar";
-import { Text } from "components/Text";
+import Text from "components/Text";
 import { ThemeToggle } from "components/ThemeToggle";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
