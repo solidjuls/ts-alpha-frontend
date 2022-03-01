@@ -48,8 +48,8 @@ const TopPlayerRating = () => {
       <Box>
         {data?.map((item, index) => (
           <Box key={index} css={topRatingAlignStyles}>
-            <Text margin="noMargin">{item.name}</Text>
-            <Text margin="noMargin">{item.rating}</Text>
+            <Text>{item.name}</Text>
+            <Text>{item.rating}</Text>
           </Box>
         ))}
       </Box>
