@@ -18,21 +18,11 @@ const Item = styled("div", {
       white: { backgroundColor: "$backgroundColorLight" },
     },
   },
-  // "&:hover:not([disabled])": {
-  //   cursor: "pointer",
-  //   backgroundColor: "red", //${baseTheme.colors['grey50']}},
-  // },
-  // "&:focus": {
-  //   cursor: "pointer",
-  //   backgroundColor: "red", //${baseTheme.colors['grey50']}},
-  // },
+
   "&[disabled]": {
     opacity: 0.5,
     cursor: "auto",
     pointerEvents: "none",
-    // img {
-    //   filter: grayscale(100%),
-    // };
   },
 });
 
@@ -66,8 +56,6 @@ const AutocompleteListItem = ({
       key={`${id}${index}`}
       itemColor={itemColor}
       {...rest}
-      //disabled={disabled}
-      // highlight={highlightedIndex === index}
       color={highlightedIndex === index ? "lightgray" : "white"}
       onClick={disabled ? Function.prototype : onClick}
       {...restItemProps}

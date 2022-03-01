@@ -10,7 +10,6 @@ const styledItemStyles = {
   color: "$textDark",
   cursor: "pointer",
   borderRadius: "$1",
-  // padding: "$1 $2 $1 $5",
   padding: "4px 8px 4px 8px",
   transition: "all 50ms",
   display: "flex",
@@ -37,7 +36,6 @@ const StyledContent = styled(Content, {
   borderRadius: "4px",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
-  // width: "300px",
   padding: "$1",
 });
 
@@ -48,7 +46,6 @@ const StyledTriangleDownIcon = styled(TriangleDownIcon, {
 });
 
 const SelectedItemDiv = styled("div", {
-  // width: "300px",
   height: "36px",
   border: "solid 1px black",
   backgroundColor: "white",

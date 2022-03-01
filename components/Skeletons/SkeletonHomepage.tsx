@@ -5,7 +5,6 @@ const Body = styled("div", {
   display: "flex",
   flexWrap: "wrap",
   margin: "8px 16px",
-  // ${({ $alignment }) => $alignment && alignments[$alignment]};
 });
 
 const BodyRow = styled("div", {

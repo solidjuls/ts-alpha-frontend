@@ -30,9 +30,6 @@ const ListContainer = styled("div", {
   left: 0,
 });
 
-// const StyledListContainer = styled(ListContainer)`
-//   padding: ${themeGet("space.4")};
-// `;
 const AutocompleteList = ({
   children,
   noResultsCustomText,

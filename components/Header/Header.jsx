@@ -27,9 +27,6 @@ const HeaderContainer = styled("div", {
   justifyContent: "space-between",
   backgroundColor: "$primary",
   padding: "16px 32px 16px 16px",
-  // "@sm": {
-  //   justifyContent: "flex-end",
-  // },
 });
 
 const StyledText = styled(Text, {

@@ -46,9 +46,7 @@ export const gameRouter = trpc
     async resolve({ input }) {
       const date = new Date(Date.parse(input.d));
       const datePlusOne = dateAddDay(date, 1);
-      // console.log("date entering", input.d);
-      // console.log("date plus 1 day", dateAddDay(date, 1))
-      // console.log("date parsed", date);
+
       const games = await prisma.game_results.findMany({
         include: {
           users_game_results_usa_player_idTousers: {
@@ -72,14 +70,13 @@ export const gameRouter = trpc
             gte: date,
           },
         },
-        // take: 1,
         orderBy: [
           {
             created_at: "desc",
           },
         ],
       });
-      console.log("games returned ", games);
+
       const gamesNormalized = await Promise.all(
         games.map(async (game) => {
           const usaPlayerRatings = await getLatestRatingByPlayer(
@@ -102,7 +99,6 @@ export const gameRouter = trpc
           }
 
           return {
-            // ...game,
             created_at: game.created_at,
             endMode: game.end_mode,
             endTurn: game.end_turn,
@@ -134,27 +130,5 @@ export const gameRouter = trpc
       return JSON.parse(gameParsed);
     },
   })
-  .mutation("update", {
-    input: z.object({
-      votedFor: z.number(),
-      votedAgainst: z.number(),
-    }),
-    async resolve({ input }) {
-      // const voteInDb = await prisma.user_game_stats.findMany({
-      //     where: {
-      //       player_id: 2
-      //     }
-      //   });
-      //const parsing = JSON.stringify(voteInDb, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-      console.log("really", input);
-      return true;
-      // const voteInDb = await prisma.vote.create({
-      //   data: {
-      //     ...input,
-      //   },
-      // });
-      // return { success: true, vote: voteInDb };
-    },
-  });
 
 export type GameRouter = typeof gameRouter;

@@ -16,7 +16,6 @@ const Input = styled("input", {
     }
   },
   all: "unset",
-  // width: 150,
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -26,7 +25,6 @@ const Input = styled("input", {
   fontSize: 15,
   lineHeight: 1,
   color: "$textDark",
-  // backgroundColor: blackA.blackA5,
   boxShadow: `0 0 0 1px ${blackA.blackA9}`,
   "&:focus": { boxShadow: `0 0 0 2px black` },
 });

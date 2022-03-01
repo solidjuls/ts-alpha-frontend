@@ -172,7 +172,6 @@ const DateComponent = ({
 );
 
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
-  // sendCallback(data);
   console.log("url", url, data);
   fetch(url, {
     method: "POST",

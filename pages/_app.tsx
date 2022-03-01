@@ -1,5 +1,3 @@
-//import superjson from "superjson"
-import "../styles/globals.css";
 import { IdProvider } from "@radix-ui/react-id";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
@@ -11,8 +9,8 @@ import { darkTheme } from "stitches.config.js";
 import { withTRPC } from "@trpc/next";
 import type { AppRouter } from "backend/router";
 
-import "./date.css";
-import "./stylesGlobal.css";
+import "styles/date.css";
+import "styles/stylesGlobal.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (

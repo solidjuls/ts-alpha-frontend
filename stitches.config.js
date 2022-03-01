@@ -17,15 +17,6 @@ export const { styled, getCssText, createTheme, keyframes } = createStitches({
       primary: "$gray900",
       secondary: "$gray700",
       tertiary: "$gray500",
-      //   gray50: "hsl(205,5%,95%)",
-      //   blue500: "hsl(205,90%,45%)",
-      //   // Alias
-      //   primary: "$gray900",
-      //   secondary: "$gray700",
-      //   tertiary: "$gray500",
-      //   link: "$blue500",
-      //   background: "$gray50",
-      //   border: "$gray900",
     },
   },
   fontSizes: {
