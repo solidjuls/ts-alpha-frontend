@@ -7,7 +7,7 @@ const Text = styled("p", {
   variants: {
     strong: {
       bold: {
-        fontWeight: "700",
+        fontWeight: "600",
       },
     },
   },

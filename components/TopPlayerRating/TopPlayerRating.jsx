@@ -19,7 +19,7 @@ const SidePanelStyled = styled("div", {
   padding: '12px',
   borderRadius: "12px",
   width: "240px",
-  height: "170px",
+  height: "190px",
 });
 
 const Announcement = () => {
