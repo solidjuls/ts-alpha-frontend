@@ -8,10 +8,10 @@ const AutocompleteInput = ({
   resetIcon,
   label,
   placeholder,
+  error,
   ...rest
 }) => {
   const { getInputProps, openMenu } = useAutocompleteState();
-
   return (
     <div display="block" position="relative">
       <Input
@@ -24,6 +24,7 @@ const AutocompleteInput = ({
         icon={icon}
         resetIcon={resetIcon}
         {...rest}
+        border={error ? "error" : undefined}
       />
     </div>
   );

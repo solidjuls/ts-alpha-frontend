@@ -19,6 +19,7 @@ const Typeahead = ({
   selectedInputProperty,
   children,
   onBlur,
+  error,
   id,
   resetOnSelect,
 }) => {
@@ -106,6 +107,7 @@ const Typeahead = ({
             value={{
               isOpen,
               id,
+              error,
               getInputProps,
               getToggleButtonProps,
               getMenuProps,

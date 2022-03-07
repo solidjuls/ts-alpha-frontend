@@ -19,12 +19,6 @@ const PlayerInfo = styled("div", {
   margin: "4px",
 });
 
-const getRatingVariation = (rating) => {
-  if (!rating[0] || !rating[1]) return 0;
-
-  return rating[0].rating - rating[1].rating;
-};
-
 const responsive = {
   "@sm": {
     display: "none",
@@ -39,12 +33,11 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating }) => {
-  const ratingVariation = getRatingVariation(rating);
+const Rating = ({ rating, ratingDifference }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
-      <Text>{rating[0].rating}</Text>
-      <Text>{`(${ratingVariation === 0 ? "-" : ratingVariation})`}</Text>
+      <Text>{rating}</Text>
+      <Text>{`(${ratingDifference})`}</Text>
     </Box>
   );
 };
@@ -53,8 +46,8 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
-        <Rating rating={ratingsUSA} />
-        <Rating rating={ratingsUSSR} />
+        <Rating rating={ratingsUSA.rating} ratingDifference={ratingsUSA.ratingDifference} />
+        <Rating rating={ratingsUSSR.rating} ratingDifference={ratingsUSSR.ratingDifference}/>
       </Box>
     </Box>
   );
@@ -143,11 +136,11 @@ const ResultRow = ({ game }) => {
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
-        <Text>T9</Text>
+        <Text>{`T${game.endTurn}`}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End Mode</Text>
-        <Text>DEFCON</Text>
+        <Text>{game.endMode}</Text>
       </Box>
       <A
         css={{

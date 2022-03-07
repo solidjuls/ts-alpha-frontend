@@ -2,6 +2,7 @@ import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Box, Span } from "components/Atoms";
+import { blackA } from "@radix-ui/colors";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
@@ -29,11 +30,30 @@ const StyledItem = styled(Item, { ...styledItemStyles });
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
+  outline: "none",
+  boxShadow: `0 0 0 1px black`,
+  borderRadius: 4,
+  backgroundColor: "white",
+  variants: {
+    border: {
+      error: {
+        border: "solid 1px red",
+        boxShadow: "none",
+        "&:focus": {
+          boxShadow: `0 0 0 2px red`,
+        },
+      },
+    },
+  },
+  "&:focus": {
+    //outline: "none",
+    boxShadow: `0 0 0 2px black`,
+  },
 });
 
 const StyledContent = styled(Content, {
+  borderRadius: 4,
   backgroundColor: "white",
-  borderRadius: "4px",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
   padding: "$1",
@@ -47,11 +67,10 @@ const StyledTriangleDownIcon = styled(TriangleDownIcon, {
 
 const SelectedItemDiv = styled("div", {
   height: "36px",
-  border: "solid 1px black",
+  borderRadius: 4,
   backgroundColor: "white",
   textAlign: "left",
-  lineHeight: 2,
-  borderRadius: 4,
+  lineHeight: 2.3,
   fontSize: 15,
 });
 
@@ -65,25 +84,27 @@ type DropdownMenuProps = {
   selectedItem: string;
   onSelect: Function;
   width: string;
-  css: any
+  error: boolean;
+  css: any;
 };
 
 const DropdownMenu = ({
   items,
   selectedItem,
   onSelect,
-  css
+  error,
+  css,
 }: DropdownMenuProps) => {
   return (
     <Root>
-      <StyledTrigger css={css}>
+      <StyledTrigger css={css} border={error ? "error" : undefined}>
         <Box
           css={{
             position: "relative",
             cursor: "pointer",
           }}
         >
-          <SelectedItemDiv >
+          <SelectedItemDiv>
             <Span
               css={{
                 marginLeft: "8px",
