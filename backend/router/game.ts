@@ -3,18 +3,30 @@ import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
 
-const getLatestRatingByPlayer = async (playerId: bigint) => {
-  const ratingPlayers = await prisma.ratings_history.findMany({
+type RatingByPlayer = {
+  playerId: bigint;
+  gameResultId: bigint;
+};
+const getRatingDifferenceByPlayerGame = async ({
+  playerId,
+  createdAt,
+}: {
+  playerId: bigint;
+  createdAt: Date;
+}) => {
+  const ratingsPlayer = await prisma.ratings_history.findMany({
     select: {
       player_id: true,
       rating: true,
-      game_result_id: true,
       created_at: true,
     },
-    take: 2,
     where: {
       player_id: playerId,
+      created_at: {
+        lte: createdAt,
+      },
     },
+    take: 2,
     orderBy: [
       {
         created_at: "desc",
@@ -22,7 +34,29 @@ const getLatestRatingByPlayer = async (playerId: bigint) => {
     ],
   });
 
-  return ratingPlayers;
+  const differenceRating = ratingsPlayer[0].rating - ratingsPlayer[1].rating;
+  // console.log("ratingsPlayer checking", playerId, createdAt, differenceRating);
+  return differenceRating;
+};
+const getLatestRatingByPlayer = async ({
+  playerId,
+  gameResultId,
+}: RatingByPlayer) => {
+  // To find the difference at some point in time:
+  // I execute query below
+  // I get the created_at date => given_date
+  // I execute a new query (filtering only by player) where created_at <= given_date, take: 2
+  const ratingPlayers = await prisma.ratings_history.findFirst({
+    select: {
+      rating: true,
+    },
+    where: {
+      player_id: playerId,
+      game_result_id: gameResultId,
+    },
+  });
+
+  return ratingPlayers?.rating;
 };
 
 const getCountry = async (countryId: bigint) => {
@@ -39,122 +73,115 @@ const getCountry = async (countryId: bigint) => {
   return country;
 };
 
-export const gameRouter = trpc
-  .router()
-  .query("getAll", {
-    input: z.object({ d: z.string() }),
-    async resolve({ input }) {
-      const date = new Date(Date.parse(input.d));
-      const datePlusOne = dateAddDay(date, 1);
-      // console.log("date entering", input.d);
-      // console.log("date plus 1 day", dateAddDay(date, 1))
-      // console.log("date parsed", date);
-      const games = await prisma.game_results.findMany({
-        include: {
-          users_game_results_usa_player_idTousers: {
-            select: {
-              first_name: true,
-              last_name: true,
-              country_id: true,
-            },
-          },
-          users_game_results_ussr_player_idTousers: {
-            select: {
-              first_name: true,
-              last_name: true,
-              country_id: true,
-            },
-          },
-        },
-        where: {
-          created_at: {
-            lt: datePlusOne,
-            gte: date,
-          },
-        },
-        // take: 1,
-        orderBy: [
-          {
-            created_at: "desc",
-          },
-        ],
-      });
-      console.log("games returned ", games);
-      const gamesNormalized = await Promise.all(
-        games.map(async (game) => {
-          const usaPlayerRatings = await getLatestRatingByPlayer(
-            game.usa_player_id
-          );
-          const ussrPlayerRatings = await getLatestRatingByPlayer(
-            game.ussr_player_id
-          );
-          let countryUSA;
-          let countryUSSR;
-          if (game.users_game_results_usa_player_idTousers.country_id) {
-            countryUSA = await getCountry(
-              game.users_game_results_usa_player_idTousers.country_id
-            );
-          }
-          if (game.users_game_results_ussr_player_idTousers.country_id) {
-            countryUSSR = await getCountry(
-              game.users_game_results_ussr_player_idTousers.country_id
-            );
-          }
+export const gameRouter = trpc.router().query("getAll", {
+  input: z.object({ d: z.string() }),
+  async resolve({ input }) {
+    const date = new Date(Date.parse(input.d));
+    const datePlusOne = dateAddDay(date, 1);
 
-          return {
-            // ...game,
-            created_at: game.created_at,
-            endMode: game.end_mode,
-            endTurn: game.end_turn,
-            usaPlayerId: game.usa_player_id,
-            ussrPlayerId: game.ussr_player_id,
-            usaCountryCode: countryUSA?.tld_code,
-            ussrCountryCode: countryUSSR?.tld_code,
-            usaCountryIcon: countryUSA?.icon,
-            ussrCountryIcon: countryUSSR?.icon,
-            usaPlayer:
-              game.users_game_results_usa_player_idTousers.first_name +
-              " " +
-              game.users_game_results_usa_player_idTousers.last_name,
-            ussrPlayer:
-              game.users_game_results_ussr_player_idTousers.first_name +
-              " " +
-              game.users_game_results_ussr_player_idTousers.last_name,
-            gameType: game.game_type,
-            videoURL: game.video1,
-            gameWinner: game.game_winner,
-            ratingsUSA: usaPlayerRatings,
-            ratingsUSSR: ussrPlayerRatings,
-          };
-        })
-      );
-      const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      );
-      return JSON.parse(gameParsed);
-    },
-  })
-  .mutation("update", {
-    input: z.object({
-      votedFor: z.number(),
-      votedAgainst: z.number(),
-    }),
-    async resolve({ input }) {
-      // const voteInDb = await prisma.user_game_stats.findMany({
-      //     where: {
-      //       player_id: 2
-      //     }
-      //   });
-      //const parsing = JSON.stringify(voteInDb, (key, value) => (typeof value === 'bigint' ? value.toString() : value))
-      console.log("really", input);
-      return true;
-      // const voteInDb = await prisma.vote.create({
-      //   data: {
-      //     ...input,
-      //   },
-      // });
-      // return { success: true, vote: voteInDb };
-    },
-  });
+    const games = await prisma.game_results.findMany({
+      include: {
+        users_game_results_usa_player_idTousers: {
+          select: {
+            first_name: true,
+            last_name: true,
+            country_id: true,
+          },
+        },
+        users_game_results_ussr_player_idTousers: {
+          select: {
+            first_name: true,
+            last_name: true,
+            country_id: true,
+          },
+        },
+      },
+      where: {
+        created_at: {
+          lt: datePlusOne,
+          gte: date,
+        },
+      },
+      orderBy: [
+        {
+          created_at: "desc",
+        },
+      ],
+    });
+
+    const gamesNormalized = await Promise.all(
+      games.map(async (game) => {
+        const usaPlayerRatings = await getLatestRatingByPlayer({
+          playerId: game.usa_player_id,
+          gameResultId: game.id,
+        });
+        const ussrPlayerRatings = await getLatestRatingByPlayer({
+          playerId: game.ussr_player_id,
+          gameResultId: game.id,
+        });
+        const usaRatingDifference = await getRatingDifferenceByPlayerGame({
+          playerId: game.usa_player_id,
+          createdAt: game.created_at as Date,
+        });
+        const ussrRatingDifference = await getRatingDifferenceByPlayerGame({
+          playerId: game.ussr_player_id,
+          createdAt: game.created_at as Date,
+        });
+
+        getRatingDifferenceByPlayerGame({
+          playerId: game.ussr_player_id,
+          createdAt: game.created_at  as Date,
+        });
+        let countryUSA;
+        let countryUSSR;
+        if (game.users_game_results_usa_player_idTousers.country_id) {
+          countryUSA = await getCountry(
+            game.users_game_results_usa_player_idTousers.country_id
+          );
+        }
+        if (game.users_game_results_ussr_player_idTousers.country_id) {
+          countryUSSR = await getCountry(
+            game.users_game_results_ussr_player_idTousers.country_id
+          );
+        }
+
+        return {
+          created_at: game.created_at,
+          endMode: game.end_mode,
+          endTurn: game.end_turn,
+          usaPlayerId: game.usa_player_id,
+          ussrPlayerId: game.ussr_player_id,
+          usaCountryCode: countryUSA?.tld_code,
+          ussrCountryCode: countryUSSR?.tld_code,
+          usaCountryIcon: countryUSA?.icon,
+          ussrCountryIcon: countryUSSR?.icon,
+          usaPlayer:
+            game.users_game_results_usa_player_idTousers.first_name +
+            " " +
+            game.users_game_results_usa_player_idTousers.last_name,
+          ussrPlayer:
+            game.users_game_results_ussr_player_idTousers.first_name +
+            " " +
+            game.users_game_results_ussr_player_idTousers.last_name,
+          gameType: game.game_type,
+          videoURL: game.video1,
+          gameWinner: game.game_winner,
+          ratingsUSA: {
+            rating: usaPlayerRatings,
+            ratingDifference: usaRatingDifference,
+          },
+          ratingsUSSR: {
+            rating: ussrPlayerRatings,
+            ratingDifference: ussrRatingDifference,
+          },
+        };
+      })
+    );
+    const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value
+    );
+    return JSON.parse(gameParsed);
+  },
+});
 
 export type GameRouter = typeof gameRouter;

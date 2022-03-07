@@ -13,7 +13,6 @@ const SidePanelStyled = styled("div", {
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  // border: "solid 2px black",
   backgroundColor: "white",
   margin: "0 12px 0 12px",
   padding: '12px',

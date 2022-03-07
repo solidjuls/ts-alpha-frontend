@@ -19,37 +19,6 @@ const PlayerInfo = styled("div", {
   margin: "4px",
 });
 
-const getRatingVariation = (rating) => {
-  if (!rating[0] || !rating[1]) return 0;
-
-  return rating[0].rating - rating[1].rating;
-};
-
-const TriangleIcon = ({ rating }) => {
-  const ratingVariation = getRatingVariation(rating);
-  if (ratingVariation > 0) {
-    return (
-      <Image
-        src="/triangleUp.svg"
-        alt="Triangle Up"
-        width={TRIANGLE_WIDTH}
-        height={TRIANGLE_WIDTH}
-      />
-    );
-  } else if (ratingVariation < 0) {
-    return (
-      <Image
-        src="/triangleDown.svg"
-        alt="Triangle Down"
-        width={TRIANGLE_WIDTH}
-        height={TRIANGLE_WIDTH}
-      />
-    );
-  } else {
-    return null;
-  }
-};
-
 const responsive = {
   "@sm": {
     display: "none",
@@ -64,28 +33,22 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating }) => {
-  const ratingVariation = getRatingVariation(rating);
+const Rating = ({ rating, ratingDifference }) => {
   return (
-    <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Text>{rating[0].rating}</Text>
-      <Text>{`(${
-        ratingVariation === 0 ? "-" : ratingVariation
-      })`}</Text>
+    <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
+      <Text>{rating}</Text>
+      <Text>{`(${ratingDifference})`}</Text>
     </Box>
   );
 };
+
 const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
-        <Rating rating={ratingsUSA} />
-        <Rating rating={ratingsUSSR} />
+        <Rating rating={ratingsUSA.rating} ratingDifference={ratingsUSA.ratingDifference} />
+        <Rating rating={ratingsUSSR.rating} ratingDifference={ratingsUSSR.ratingDifference}/>
       </Box>
-      {/* <Box css={boxStyle}>
-        <TriangleIcon rating={ratingsUSA} />
-        <TriangleIcon rating={ratingsUSSR} />
-      </Box> */}
     </Box>
   );
 };
@@ -93,7 +56,7 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
 const FlagIcon = ({ code, icon }) => {
   if (code === "CAT") {
     return (
-      <Box css={{ marginLeft: "4px" }}>
+      <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
         <Image
           src="/estelada_blava.png"
           alt="Catalonia"
@@ -127,15 +90,11 @@ const PlayerInfoBox = ({
     >
       <Box css={{ display: "flex", flexDirection: "row", alignItems: "end" }}>
         <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
-        <Text strong={winner === "1" ? "bold" : ""}>
-          {nameUSA}
-        </Text>
+        <Text strong={winner === "1" ? "bold" : ""}>{nameUSA}</Text>
       </Box>
       <Box css={{ display: "flex", flexDirection: "row" }}>
         <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
-        <Text strong={winner === "2" ? "bold" : ""}>
-          {nameUSSR}
-        </Text>
+        <Text strong={winner === "2" ? "bold" : ""}>{nameUSSR}</Text>
       </Box>
     </Box>
   );
@@ -177,15 +136,20 @@ const ResultRow = ({ game }) => {
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
-        <Text>T9</Text>
+        <Text>{`T${game.endTurn}`}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End Mode</Text>
-        <Text>DEFCON</Text>
+        <Text>{game.endMode}</Text>
       </Box>
       <A
-        css={{ ...boxStyle, ...responsive }}
-        href="www.youtube.com"
+        css={{
+          ...boxStyle,
+          ...responsive,
+          borderRight: "none",
+          marginLeft: "20px",
+        }}
+        href="//youtube.com"
         target="_blank"
       >
         Link to Video
@@ -237,8 +201,6 @@ const Homepage = () => {
     { d: dateValue.toDateString() },
   ]);
   const onClickDay = (clickedItem) => {
-    // get current value
-
     let newDate;
     if (clickedItem === "left") {
       newDate = dateAddDay(dateValue, -1);
@@ -257,7 +219,6 @@ const Homepage = () => {
         width: "100%",
         maxWidth: "1100px",
         flexWrap: "wrap",
-
       }}
     >
       <ResultsPanel>

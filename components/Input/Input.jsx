@@ -12,11 +12,17 @@ const Input = styled("input", {
       dropdown: {
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
+      },
+      error: {
+        border: "solid 1px red",
+        "&:focus": {
+          boxShadow: `0 0 0 2px red`,
+        },
+        boxShadow: 'none'
       }
     }
   },
   all: "unset",
-  // width: 150,
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
@@ -26,9 +32,10 @@ const Input = styled("input", {
   fontSize: 15,
   lineHeight: 1,
   color: "$textDark",
-  // backgroundColor: blackA.blackA5,
-  boxShadow: `0 0 0 1px ${blackA.blackA9}`,
-  "&:focus": { boxShadow: `0 0 0 2px black` },
+  boxShadow: `0 0 0 1px black`,
+  "&:focus": {
+    boxShadow: `0 0 0 2px black`,
+  }
 });
 
 export { Input };

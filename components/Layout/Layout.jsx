@@ -8,8 +8,6 @@ import { Box, Span } from "components/Atoms";
 const containerStyles = {
   display: "flex",
   flexDirection: "column",
-  // padding: "0 2rem",
-  // backgroundColor: "rgb(240, 235, 248)",
   minHeight: "100vh",
   width: "100%",
   height: "100%",
@@ -17,11 +15,9 @@ const containerStyles = {
 const contentStyles = {
   display: "flex",
   flexGrow: "1",
-  // justifyContent: "center",
 };
 
 const Main = styled("main", {
-  // justifyContent: "center",
   alignItems: 'center',
   flexDirection: 'column',
   display: "flex",
