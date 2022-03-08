@@ -5,10 +5,12 @@ import { FormattedMessage } from "react-intl";
 import { styled } from "stitches.config";
 
 import { Button } from "components/Button";
+import Text from "components/Text";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { Box, Form } from "components/Atoms";
 
 const formStyles = {
@@ -95,6 +97,9 @@ const Login = ({ user }) => {
               Sign out
             </Button>
           )}
+          <Link href="/reset-password" passHref>
+            <Text>Forgot your password?</Text>
+          </Link>
         </Box>
       </Form>
     </>
