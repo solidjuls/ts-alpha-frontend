@@ -9,7 +9,8 @@ import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 
-const GAMETYPE_WIDTH = "80px";
+const GAMETYPE_WIDTH = "60px";
+const ENDMODE_WIDTH = "140px";
 const TRIANGLE_WIDTH = "16px";
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
@@ -46,8 +47,14 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
-        <Rating rating={ratingsUSA.rating} ratingDifference={ratingsUSA.ratingDifference} />
-        <Rating rating={ratingsUSSR.rating} ratingDifference={ratingsUSSR.ratingDifference}/>
+        <Rating
+          rating={ratingsUSA.rating}
+          ratingDifference={ratingsUSA.ratingDifference}
+        />
+        <Rating
+          rating={ratingsUSSR.rating}
+          ratingDifference={ratingsUSSR.ratingDifference}
+        />
       </Box>
     </Box>
   );
@@ -82,7 +89,7 @@ const PlayerInfoBox = ({
     <Box
       css={{
         ...boxStyle,
-        width: "300px",
+        width: "260px",
         "@sm": {
           width: "100%",
         },
@@ -138,7 +145,7 @@ const ResultRow = ({ game }) => {
         <Text strong="bold">End turn</Text>
         <Text>{`T${game.endTurn}`}</Text>
       </Box>
-      <Box css={{ ...boxStyle, ...responsive }}>
+      <Box css={{ ...boxStyle, ...responsive, width: ENDMODE_WIDTH }}>
         <Text strong="bold">End Mode</Text>
         <Text>{game.endMode}</Text>
       </Box>
@@ -200,6 +207,7 @@ const Homepage = () => {
     "game-getAll",
     { d: dateValue.toDateString() },
   ]);
+
   const onClickDay = (clickedItem) => {
     let newDate;
     if (clickedItem === "left") {
