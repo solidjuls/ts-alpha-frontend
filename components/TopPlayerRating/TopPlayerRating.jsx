@@ -15,7 +15,7 @@ const SidePanelStyled = styled("div", {
   justifyContent: "space-between",
   backgroundColor: "white",
   margin: "0 12px 0 12px",
-  padding: '12px',
+  padding: "12px",
   borderRadius: "12px",
   width: "240px",
   height: "190px",

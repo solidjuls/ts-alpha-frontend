@@ -261,6 +261,7 @@ const initialState = {
 const SubmitForm = () => {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
+  const [disabled, setDisabled] = useState(false);
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
       ...prevState,
@@ -273,6 +274,21 @@ const SubmitForm = () => {
   const validated = () => {
     let submit = true;
     console.log("form", form);
+    if (form["usa_player_id"].value === form["ussr_player_id"].value) {
+      setForm((prevState) => ({
+        ...prevState,
+        ['usa_player_id']: {
+          ...prevState['usa_player_id'],
+          error: true,
+        },
+        ['ussr_player_id']: {
+          ...prevState['ussr_player_id'],
+          error: true,
+        },
+      }));
+      return false;
+    }
+
     Object.keys(form).forEach((key) => {
       if (["video1", "video2", "video3"].includes(key)) {
       } else {
@@ -385,12 +401,17 @@ const SubmitForm = () => {
           onInputValueChange={(value) => onInputValueChange("video3", value)}
         />
         <Button
+          disabled={disabled}
           onClick={() => {
             if (validated()) {
+              setDisabled(true);
               callAPI({
                 url: "https://tsalpha.klckh.com/api/game-results",
                 data: normalizeData(form),
-                responseCallback: () => router.push("/"),
+                responseCallback: () => {
+                  setDisabled(false);
+                  router.push("/");
+                },
               });
             }
           }}

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
 
-type RatingByPlayer = {
+type RatingByPlayerGame = {
   playerId: bigint;
   gameResultId: bigint;
 };
@@ -38,14 +38,10 @@ const getRatingDifferenceByPlayerGame = async ({
   // console.log("ratingsPlayer checking", playerId, createdAt, differenceRating);
   return differenceRating;
 };
-const getLatestRatingByPlayer = async ({
+const getLatestRatingByPlayerGame = async ({
   playerId,
   gameResultId,
-}: RatingByPlayer) => {
-  // To find the difference at some point in time:
-  // I execute query below
-  // I get the created_at date => given_date
-  // I execute a new query (filtering only by player) where created_at <= given_date, take: 2
+}: RatingByPlayerGame) => {
   const ratingPlayers = await prisma.ratings_history.findFirst({
     select: {
       rating: true,
@@ -111,11 +107,11 @@ export const gameRouter = trpc.router().query("getAll", {
 
     const gamesNormalized = await Promise.all(
       games.map(async (game) => {
-        const usaPlayerRatings = await getLatestRatingByPlayer({
+        const usaPlayerRatings = await getLatestRatingByPlayerGame({
           playerId: game.usa_player_id,
           gameResultId: game.id,
         });
-        const ussrPlayerRatings = await getLatestRatingByPlayer({
+        const ussrPlayerRatings = await getLatestRatingByPlayerGame({
           playerId: game.ussr_player_id,
           gameResultId: game.id,
         });
