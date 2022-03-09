@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import { trpc } from "utils/trpc";
@@ -208,6 +208,7 @@ const Homepage = () => {
     { d: dateValue.toDateString() },
   ]);
 
+  console.log("rerender");
   const onClickDay = (clickedItem) => {
     let newDate;
     if (clickedItem === "left") {
