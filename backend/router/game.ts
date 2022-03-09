@@ -149,8 +149,6 @@ export const gameRouter = trpc.router().query("getAll", {
           ussrPlayerId: game.ussr_player_id,
           usaCountryCode: countryUSA?.tld_code,
           ussrCountryCode: countryUSSR?.tld_code,
-          usaCountryIcon: countryUSA?.icon,
-          ussrCountryIcon: countryUSSR?.icon,
           usaPlayer:
             game.users_game_results_usa_player_idTousers.first_name +
             " " +

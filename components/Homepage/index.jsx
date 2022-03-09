@@ -60,22 +60,16 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   );
 };
 
-const FlagIcon = ({ code, icon }) => {
-  if (code === "CAT") {
-    return (
-      <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
-        <Image
-          src="/estelada_blava.png"
-          alt="Catalonia"
-          width={TRIANGLE_WIDTH}
-          height={TRIANGLE_WIDTH}
-        />
-      </Box>
-    );
-  }
-
-  return <Text>{icon}</Text>;
-};
+const FlagIcon = ({ code }) => (
+  <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
+    <Image
+      src={`/flags/${code}.png`}
+      alt="code"
+      width={TRIANGLE_WIDTH}
+      height={TRIANGLE_WIDTH}
+    />
+  </Box>
+);
 const PlayerInfoBox = ({
   nameUSA,
   nameUSSR,
@@ -95,11 +89,11 @@ const PlayerInfoBox = ({
         },
       }}
     >
-      <Box css={{ display: "flex", flexDirection: "row", alignItems: "end" }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
         <Text strong={winner === "1" ? "bold" : ""}>{nameUSA}</Text>
       </Box>
-      <Box css={{ display: "flex", flexDirection: "row" }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
         <Text strong={winner === "2" ? "bold" : ""}>{nameUSSR}</Text>
       </Box>
@@ -116,6 +110,7 @@ const getWinnerText = (gameWinner) => {
   return "TIE";
 };
 const ResultRow = ({ game }) => {
+  console.log("country", game)
   return (
     <PlayerInfo>
       <Text
@@ -243,9 +238,9 @@ const Homepage = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <Box>
+      {/* <Box>
         <TopPlayerRating />
-      </Box>
+      </Box> */}
     </Box>
   );
 };
