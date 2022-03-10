@@ -110,7 +110,6 @@ const getWinnerText = (gameWinner) => {
   return "TIE";
 };
 const ResultRow = ({ game }) => {
-  console.log("country", game)
   return (
     <PlayerInfo>
       <Text

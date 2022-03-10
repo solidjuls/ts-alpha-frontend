@@ -3,30 +3,23 @@ import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
 
-type RatingByPlayerGame = {
-  playerId: bigint;
-  gameResultId: bigint;
-};
-const getRatingDifferenceByPlayerGame = async ({
+const getPreviousRating = async ({
   playerId,
   createdAt,
 }: {
   playerId: bigint;
   createdAt: Date;
 }) => {
-  const ratingsPlayer = await prisma.ratings_history.findMany({
+  const ratingsPlayer = await prisma.ratings_history.findFirst({
     select: {
-      player_id: true,
       rating: true,
-      created_at: true,
     },
     where: {
       player_id: playerId,
       created_at: {
-        lte: createdAt,
+        lt: createdAt,
       },
     },
-    take: 2,
     orderBy: [
       {
         created_at: "desc",
@@ -34,25 +27,7 @@ const getRatingDifferenceByPlayerGame = async ({
     ],
   });
 
-  const differenceRating = ratingsPlayer[0].rating - ratingsPlayer[1].rating;
-  // console.log("ratingsPlayer checking", playerId, createdAt, differenceRating);
-  return differenceRating;
-};
-const getLatestRatingByPlayerGame = async ({
-  playerId,
-  gameResultId,
-}: RatingByPlayerGame) => {
-  const ratingPlayers = await prisma.ratings_history.findFirst({
-    select: {
-      rating: true,
-    },
-    where: {
-      player_id: playerId,
-      game_result_id: gameResultId,
-    },
-  });
-
-  return ratingPlayers?.rating;
+  return ratingsPlayer?.rating as number;
 };
 
 const getCountry = async (countryId: bigint) => {
@@ -91,6 +66,12 @@ export const gameRouter = trpc.router().query("getAll", {
             country_id: true,
           },
         },
+        ratings_history: {
+          select: {
+            rating: true,
+            player_id: true,
+          },
+        },
       },
       where: {
         created_at: {
@@ -105,29 +86,40 @@ export const gameRouter = trpc.router().query("getAll", {
       ],
     });
 
+    const gamesWithRatingRelated = games.map((game) => {
+      let ratingHistoryUSA = 0;
+      let ratingHistoryUSSR = 0;
+      game.ratings_history.forEach(async ({ rating, player_id }) => {
+        if (player_id === game.usa_player_id) {
+          ratingHistoryUSA = rating;
+        } else if (player_id === game.ussr_player_id) {
+          ratingHistoryUSSR = rating;
+        }
+      });
+      return {
+        ...game,
+        ratingHistoryUSA,
+        ratingHistoryUSSR,
+      };
+    });
     const gamesNormalized = await Promise.all(
-      games.map(async (game) => {
-        const usaPlayerRatings = await getLatestRatingByPlayerGame({
-          playerId: game.usa_player_id,
-          gameResultId: game.id,
-        });
-        const ussrPlayerRatings = await getLatestRatingByPlayerGame({
-          playerId: game.ussr_player_id,
-          gameResultId: game.id,
-        });
-        const usaRatingDifference = await getRatingDifferenceByPlayerGame({
+      gamesWithRatingRelated.map(async (game) => {
+        const usaPreviousRating = await getPreviousRating({
           playerId: game.usa_player_id,
           createdAt: game.created_at as Date,
         });
-        const ussrRatingDifference = await getRatingDifferenceByPlayerGame({
+        const ratingsUSA = {
+          rating: game.ratingHistoryUSA,
+          ratingDifference: game.ratingHistoryUSA - usaPreviousRating,
+        };
+        const ussrPreviousRating = await getPreviousRating({
           playerId: game.ussr_player_id,
           createdAt: game.created_at as Date,
         });
-
-        getRatingDifferenceByPlayerGame({
-          playerId: game.ussr_player_id,
-          createdAt: game.created_at  as Date,
-        });
+        const ratingsUSSR = {
+          rating: game.ratingHistoryUSSR,
+          ratingDifference: game.ratingHistoryUSSR - ussrPreviousRating,
+        };
         let countryUSA;
         let countryUSSR;
         if (game.users_game_results_usa_player_idTousers.country_id) {
@@ -160,14 +152,8 @@ export const gameRouter = trpc.router().query("getAll", {
           gameType: game.game_type,
           videoURL: game.video1,
           gameWinner: game.game_winner,
-          ratingsUSA: {
-            rating: usaPlayerRatings,
-            ratingDifference: usaRatingDifference,
-          },
-          ratingsUSSR: {
-            rating: ussrPlayerRatings,
-            ratingDifference: ussrRatingDifference,
-          },
+          ratingsUSA,
+          ratingsUSSR,
         };
       })
     );
