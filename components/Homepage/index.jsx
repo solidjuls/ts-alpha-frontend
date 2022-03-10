@@ -237,9 +237,9 @@ const Homepage = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      {/* <Box>
+      <Box>
         <TopPlayerRating />
-      </Box> */}
+      </Box>
     </Box>
   );
 };

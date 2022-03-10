@@ -30,20 +30,6 @@ const getPreviousRating = async ({
   return ratingsPlayer?.rating as number;
 };
 
-const getCountry = async (countryId: bigint) => {
-  const country = await prisma.countries.findFirst({
-    select: {
-      icon: true,
-      tld_code: true,
-    },
-    where: {
-      id: countryId,
-    },
-  });
-
-  return country;
-};
-
 export const gameRouter = trpc.router().query("getAll", {
   input: z.object({ d: z.string() }),
   async resolve({ input }) {
@@ -56,14 +42,22 @@ export const gameRouter = trpc.router().query("getAll", {
           select: {
             first_name: true,
             last_name: true,
-            country_id: true,
+            countries: {
+              select: {
+                tld_code: true
+              }
+            }
           },
         },
         users_game_results_ussr_player_idTousers: {
           select: {
             first_name: true,
             last_name: true,
-            country_id: true,
+            countries: {
+              select: {
+                tld_code: true
+              }
+            }
           },
         },
         ratings_history: {
@@ -120,18 +114,6 @@ export const gameRouter = trpc.router().query("getAll", {
           rating: game.ratingHistoryUSSR,
           ratingDifference: game.ratingHistoryUSSR - ussrPreviousRating,
         };
-        let countryUSA;
-        let countryUSSR;
-        if (game.users_game_results_usa_player_idTousers.country_id) {
-          countryUSA = await getCountry(
-            game.users_game_results_usa_player_idTousers.country_id
-          );
-        }
-        if (game.users_game_results_ussr_player_idTousers.country_id) {
-          countryUSSR = await getCountry(
-            game.users_game_results_ussr_player_idTousers.country_id
-          );
-        }
 
         return {
           created_at: game.created_at,
@@ -139,8 +121,10 @@ export const gameRouter = trpc.router().query("getAll", {
           endTurn: game.end_turn,
           usaPlayerId: game.usa_player_id,
           ussrPlayerId: game.ussr_player_id,
-          usaCountryCode: countryUSA?.tld_code,
-          ussrCountryCode: countryUSSR?.tld_code,
+          usaCountryCode:
+            game?.users_game_results_usa_player_idTousers?.countries?.tld_code,
+          ussrCountryCode:
+            game?.users_game_results_ussr_player_idTousers?.countries?.tld_code,
           usaPlayer:
             game.users_game_results_usa_player_idTousers.first_name +
             " " +
