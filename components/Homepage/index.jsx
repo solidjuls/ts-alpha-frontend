@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import { trpc } from "utils/trpc";
@@ -60,22 +60,16 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   );
 };
 
-const FlagIcon = ({ code, icon }) => {
-  if (code === "CAT") {
-    return (
-      <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
-        <Image
-          src="/estelada_blava.png"
-          alt="Catalonia"
-          width={TRIANGLE_WIDTH}
-          height={TRIANGLE_WIDTH}
-        />
-      </Box>
-    );
-  }
-
-  return <Text>{icon}</Text>;
-};
+const FlagIcon = ({ code }) => (
+  <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
+    <Image
+      src={`/flags/${code}.png`}
+      alt="code"
+      width={TRIANGLE_WIDTH}
+      height={TRIANGLE_WIDTH}
+    />
+  </Box>
+);
 const PlayerInfoBox = ({
   nameUSA,
   nameUSSR,
@@ -95,11 +89,11 @@ const PlayerInfoBox = ({
         },
       }}
     >
-      <Box css={{ display: "flex", flexDirection: "row", alignItems: "end" }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
         <Text strong={winner === "1" ? "bold" : ""}>{nameUSA}</Text>
       </Box>
-      <Box css={{ display: "flex", flexDirection: "row" }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
         <Text strong={winner === "2" ? "bold" : ""}>{nameUSSR}</Text>
       </Box>
@@ -208,6 +202,7 @@ const Homepage = () => {
     { d: dateValue.toDateString() },
   ]);
 
+  console.log("rerender");
   const onClickDay = (clickedItem) => {
     let newDate;
     if (clickedItem === "left") {

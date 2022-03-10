@@ -41,7 +41,10 @@ export default withTRPC<AppRouter>({
      * If you want to use SSR, you need to use the server's full URL
      * @link https://trpc.io/docs/ssr
      */
-    console.log("process.env.NEXT_PUBLIC_VERCEL_URL", process.env.NEXT_PUBLIC_URL)
+    console.log(
+      "process.env.NEXT_PUBLIC_VERCEL_URL",
+      process.env.NEXT_PUBLIC_URL
+    );
     const url = process.env.NEXT_PUBLIC_URL
       ? `${process.env.NEXT_PUBLIC_URL}/api/trpc`
       : "http://localhost:3000/api/trpc";
@@ -52,7 +55,11 @@ export default withTRPC<AppRouter>({
       /**
        * @link https://react-query.tanstack.com/reference/QueryClient
        */
-      // queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      queryClientConfig: {
+        defaultOptions: {
+          queries: { staleTime: Infinity, refetchOnWindowFocus: false },
+        },
+      },
     };
   },
   /**

@@ -1,6 +1,7 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
+import { Ratings } from "types/ratings.types";
 
 const getAllPlayers = async () =>
   await prisma.users.findMany({
@@ -37,18 +38,22 @@ export const ratingsRouter = trpc.router().query("get", {
         return {
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
+          countryId: player.country_id
         };
       })
     );
 
-    const playersWithRatingSorted = playersWithRating
+    let playersWithRatingSorted = playersWithRating
       .filter((item) => item.rating)
       .sort((a, b) => {
         if (!a?.rating || !b?.rating) return 0;
 
         return b.rating - a.rating;
-      })
-      .slice(0, input.n);
+      });
+
+    if (input.n !== -1) {
+      playersWithRatingSorted = playersWithRatingSorted.slice(0, input.n);
+    }
 
     const playersWithRatingParsed = JSON.stringify(
       playersWithRatingSorted,
