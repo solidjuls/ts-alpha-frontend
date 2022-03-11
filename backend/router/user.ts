@@ -1,41 +1,69 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
-import { isJSDocPublicTag } from "typescript";
-const nodemailer = require('nodemailer');
-//<p>To activate your account please follow this link: <a target="_" href="${process.env.DOMAIN}/api/activate/user/${hash}">${process.env.DOMAIN}/activate </a></p>
-async function sendEmail(mail: string) {
-  const message = {
-    from: 'itsjunta2022@gmail.com',
-    // to: toUser.email // in production uncomment this
-    to: 'itsjunta2022@gmail.com',
-    subject: 'Your App - Activate Account',
-    html: `
-      <h3> Hello tester </h3>
-      <p>Thank you for registering into our Application. Much Appreciated! Just one last step is laying ahead of you...</p>
-      
-      <p>Cheers</p>
-      <p>Your Application Team</p>
-    `
+import crypto from "crypto";
+
+const nodemailer = require("nodemailer");
+
+const algorithm = "aes-256-ctr";
+const secretKey = "vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3";
+const iv = Buffer.from("aldrich");
+
+const generateHash = (mail: string) => {
+  try {
+    var cipher = crypto.createCipher("aes-256-cbc", "d6F3Efeq");
+    var crypted = cipher.update(mail, "utf8", "hex");
+    crypted += cipher.final("hex");
+    return crypted;
+  } catch (e) {
+    console.log("error", e);
   }
+};
+const decryptHash = (hash: any) => {
+  try {
+    var decipher = crypto.createDecipher('aes-256-cbc','d6F3Efeq')
+  var dec = decipher.update(hash,'hex','utf8')
+  dec += decipher.final('utf8');
+  return dec;
+  } catch (e) {
+    console.log("error", e);
+  }
+};
+
+async function sendEmail(mail: string, hashedUrl: string) {
+  const message = {
+    from: "juli.arnalot@gmail.com",
+    // to: toUser.email // in production uncomment this
+    to: mail,
+    subject: "Twilight Struggle - Reset Password",
+    html: `
+      <h3> Hello username </h3>
+      <p>Click this link ${hashedUrl} within the next hour to reset your password. </p>
+      
+      <p>Regards</p>
+      <p>ITS Junta</p>
+    `,
+  };
 
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: "smtp-relay.sendinblue.com",
+      port: 587,
+      secure: false, // true for 465, false for other ports
       auth: {
-        user: 'itsjunta2022@gmail.com',
-        pass: 'AskNot666'
-      }
-    })
+        user: "juli.arnalot@gmail.com",
+        pass: "rLaHcORsXkSpnBtF",
+      },
+    });
 
-    transporter.sendMail(message, function(err:any, info: any) {
+    transporter.sendMail(message, function (err: any, info: any) {
       if (err) {
-        rej(err)
+        rej(err);
       } else {
-        res(info)
+        res(info);
       }
-    })
-  })
+    });
+  });
 }
 
 export const userRouter = trpc
@@ -110,11 +138,32 @@ export const userRouter = trpc
     }),
     async resolve({ input }) {
       // get mail
-      // create a hash with expiring date with  user id as payload
+      // validate email
+      // create a hash with expiring date as payload
       // send an email with a link
-      console.log("checking", input)
-      await sendEmail(input.mail)
-    }
-  })
+      const user = await prisma.users.findFirst({
+        select: {
+          id: true,
+        },
+        where: {
+          email: input.mail,
+        },
+      });
+
+      console.log("user", user);
+      if (user) {
+        const hash = generateHash(input.mail);
+        console.log("hash", hash);
+        const decrypted = decryptHash(hash);
+        console.log("hash", decrypted);
+        // const aver = await sendEmail(
+        //   input.mail,
+        //   `http://localhost:3000/${hash}`
+        // );
+        //console.log("checking", aver, hash);
+      }
+      return { success: true };
+    },
+  });
 
 export type UserRouter = typeof userRouter;
