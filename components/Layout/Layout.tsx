@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import Header from "components/Header";
 import { Sidebar } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
+import { JsxAttributeLike } from "typescript";
 
 const containerStyles = {
   display: "flex",
@@ -18,10 +19,10 @@ const contentStyles = {
 };
 
 const Main = styled("main", {
-  alignItems: 'center',
-  flexDirection: 'column',
+  alignItems: "center",
+  flexDirection: "column",
   display: "flex",
-  backgroundColor: '#eeeeee'
+  backgroundColor: "#eeeeee",
 });
 
 const StyledFooter = styled("footer", {
@@ -57,8 +58,8 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Layout = ({ children }: { children: JSX.Element }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />

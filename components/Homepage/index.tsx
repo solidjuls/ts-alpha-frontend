@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import { trpc } from "utils/trpc";
 import { Box, A } from "components/Atoms";
 import Text from "components/Text";
-import { DayMonthInput } from "components/Input";
+import { DayMonthInput, DayMonthInputClickType } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
+import { Game, GameWinner, GameRating } from "types/game.types";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -34,7 +35,7 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating, ratingDifference }) => {
+const Rating = ({ rating, ratingDifference }: GameRating) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -43,7 +44,13 @@ const Rating = ({ rating, ratingDifference }) => {
   );
 };
 
-const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
+const RatingBox = ({
+  ratingsUSA,
+  ratingsUSSR,
+}: {
+  ratingsUSA: GameRating;
+  ratingsUSSR: GameRating;
+}) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
@@ -60,7 +67,7 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   );
 };
 
-const FlagIcon = ({ code }) => (
+const FlagIcon = ({ code }: { code: string }) => (
   <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
     <Image
       src={`/flags/${code}.png`}
@@ -75,9 +82,13 @@ const PlayerInfoBox = ({
   nameUSSR,
   winner,
   usaCountryCode,
-  usaCountryIcon,
   ussrCountryCode,
-  ussrCountryIcon,
+}: {
+  nameUSA: string;
+  nameUSSR: string;
+  winner: string;
+  usaCountryCode: string;
+  ussrCountryCode: string;
 }) => {
   return (
     <Box
@@ -90,18 +101,18 @@ const PlayerInfoBox = ({
       }}
     >
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
-        <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
-        <Text strong={winner === "1" ? "bold" : ""}>{nameUSA}</Text>
+        <FlagIcon code={usaCountryCode} />
+        <Text strong={winner === "1" ? "bold" : undefined}>{nameUSA}</Text>
       </Box>
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
-        <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
-        <Text strong={winner === "2" ? "bold" : ""}>{nameUSSR}</Text>
+        <FlagIcon code={ussrCountryCode} />
+        <Text strong={winner === "2" ? "bold" : undefined}>{nameUSSR}</Text>
       </Box>
     </Box>
   );
 };
 
-const getWinnerText = (gameWinner) => {
+const getWinnerText = (gameWinner: GameWinner) => {
   if (gameWinner === "1") {
     return "USA";
   } else if (gameWinner == "2") {
@@ -109,7 +120,7 @@ const getWinnerText = (gameWinner) => {
   }
   return "TIE";
 };
-const ResultRow = ({ game }) => {
+const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
       <Text
@@ -120,9 +131,7 @@ const ResultRow = ({ game }) => {
       </Text>
 
       <PlayerInfoBox
-        usaCountryIcon={game.usaCountryIcon}
         usaCountryCode={game.usaCountryCode}
-        ussrCountryIcon={game.ussrCountryIcon}
         ussrCountryCode={game.ussrCountryCode}
         nameUSA={game.usaPlayer}
         nameUSSR={game.ussrPlayer}
@@ -175,7 +184,8 @@ const FilterPanel = styled("div", {
   borderBottom: borderStyle,
 });
 
-const formatDateToString = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
+const formatDateToString = (date: Date) =>
+  `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
   return (
@@ -202,9 +212,8 @@ const Homepage = () => {
     { d: dateValue.toDateString() },
   ]);
 
-  console.log("rerender");
-  const onClickDay = (clickedItem) => {
-    let newDate;
+  const onClickDay = (clickedItem: DayMonthInputClickType) => {
+    let newDate: Date = new Date();
     if (clickedItem === "left") {
       newDate = dateAddDay(dateValue, -1);
     } else if (clickedItem === "right") {

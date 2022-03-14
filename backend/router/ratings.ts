@@ -9,7 +9,11 @@ const getAllPlayers = async () =>
       id: true,
       first_name: true,
       last_name: true,
-      country_id: true,
+      countries: {
+        select: {
+          tld_code: true
+        }
+      }
     },
   });
 
@@ -29,8 +33,6 @@ const getRatingByPlayer = async ({ playerId }: { playerId: bigint }) =>
 export const ratingsRouter = trpc.router().query("get", {
   input: z.object({ n: z.number() }),
   async resolve({ input }) {
-    console.log("ratingsRouter", input.n);
-
     const players = await getAllPlayers();
     const playersWithRating = await Promise.all(
       players.map(async (player) => {
@@ -38,7 +40,7 @@ export const ratingsRouter = trpc.router().query("get", {
         return {
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
-          countryId: player.country_id
+          countryCode: player.countries?.tld_code
         };
       })
     );
@@ -60,6 +62,6 @@ export const ratingsRouter = trpc.router().query("get", {
       (key, value) => (typeof value === "bigint" ? value.toString() : value)
     );
 
-    return JSON.parse(playersWithRatingParsed);
+    return JSON.parse(playersWithRatingParsed) as Ratings[];
   },
 });

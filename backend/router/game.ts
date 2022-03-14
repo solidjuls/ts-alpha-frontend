@@ -2,6 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
+import { Game } from "types/game.types";
 
 const getPreviousRating = async ({
   playerId,
@@ -44,9 +45,9 @@ export const gameRouter = trpc.router().query("getAll", {
             last_name: true,
             countries: {
               select: {
-                tld_code: true
-              }
-            }
+                tld_code: true,
+              },
+            },
           },
         },
         users_game_results_ussr_player_idTousers: {
@@ -55,9 +56,9 @@ export const gameRouter = trpc.router().query("getAll", {
             last_name: true,
             countries: {
               select: {
-                tld_code: true
-              }
-            }
+                tld_code: true,
+              },
+            },
           },
         },
         ratings_history: {
@@ -144,7 +145,8 @@ export const gameRouter = trpc.router().query("getAll", {
     const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
       typeof value === "bigint" ? value.toString() : value
     );
-    return JSON.parse(gameParsed);
+
+    return JSON.parse(gameParsed) as Game[];
   },
 });
 
