@@ -42,11 +42,11 @@ const UserProfile = () => {
   const [password, setPassword] = useState("");
   const updateClick = async () => {
     if (session?.user?.email) {
-      const aveure = await hash(password, 12);
-      console.log("aveure", aveure);
+      const pwdHashed = await hash(password, 12);
+
       mutation.mutate({
         mail: session.user?.email,
-        password: aveure,
+        password: pwdHashed,
       });
     }
   };

@@ -5,39 +5,25 @@ import crypto from "crypto";
 
 const nodemailer = require("nodemailer");
 
-const algorithm = "aes-256-ctr";
-const secretKey = "vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3";
-const iv = Buffer.from("aldrich");
-
 const generateHash = (mail: string) => {
-  try {
-    var cipher = crypto.createCipher("aes-256-cbc", "d6F3Efeq");
-    var crypted = cipher.update(mail, "utf8", "hex");
-    crypted += cipher.final("hex");
-    return crypted;
-  } catch (e) {
-    console.log("error", e);
-  }
-};
-const decryptHash = (hash: any) => {
-  try {
-    var decipher = crypto.createDecipher('aes-256-cbc','d6F3Efeq')
-  var dec = decipher.update(hash,'hex','utf8')
-  dec += decipher.final('utf8');
-  return dec;
-  } catch (e) {
-    console.log("error", e);
-  }
+  let data = `${mail}#${new Date().toString()}`;
+  let buff = Buffer.from(data);
+  return buff.toString("base64");
 };
 
-async function sendEmail(mail: string, hashedUrl: string) {
+const getUrl = () =>
+  process.env.NEXT_PUBLIC_URL
+    ? process.env.NEXT_PUBLIC_URL
+    : "http://localhost:3000";
+
+async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
     from: "juli.arnalot@gmail.com",
     // to: toUser.email // in production uncomment this
     to: mail,
     subject: "Twilight Struggle - Reset Password",
     html: `
-      <h3> Hello username </h3>
+      <h3> Hello ${firstName} </h3>
       <p>Click this link ${hashedUrl} within the next hour to reset your password. </p>
       
       <p>Regards</p>
@@ -114,7 +100,6 @@ export const userRouter = trpc
           password: input.password,
         },
       });
-      console.log("really", updateUser);
       return { success: true };
     },
   })
@@ -128,7 +113,6 @@ export const userRouter = trpc
           password: input.password,
         },
       });
-      console.log("really", updateUser);
       return { success: true };
     },
   })
@@ -137,29 +121,27 @@ export const userRouter = trpc
       mail: z.string(),
     }),
     async resolve({ input }) {
-      // get mail
-      // validate email
-      // create a hash with expiring date as payload
-      // send an email with a link
       const user = await prisma.users.findFirst({
         select: {
           id: true,
+          first_name: true
         },
         where: {
           email: input.mail,
         },
       });
 
-      console.log("user", user);
+
       if (user) {
         const hash = generateHash(input.mail);
-        console.log("hash", hash);
-        const decrypted = decryptHash(hash);
-        console.log("hash", decrypted);
-        // const aver = await sendEmail(
-        //   input.mail,
-        //   `http://localhost:3000/${hash}`
-        // );
+        // console.log("hash", hash);
+        // const decrypted = decryptHash(hash);
+        // console.log("hash", decrypted);
+        const aver = await sendEmail(
+          input.mail,
+          user.first_name,
+          `${getUrl()}/reset-password/${hash}`
+        );
         //console.log("checking", aver, hash);
       }
       return { success: true };
