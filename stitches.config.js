@@ -13,6 +13,7 @@ export const { styled, getCssText, createTheme, keyframes } = createStitches({
       gray500: "hsl(205,5%,35%)",
       skeletonColorPrimary: '#e9eef0',
       skeletonColorSecondary: '#bcc9d1',
+      infoForm: 'rgb(200, 200, 200)',
       greyLight:'#eeeeee',
       primary: "$gray900",
       secondary: "$gray700",

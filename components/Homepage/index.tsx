@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { styled } from "stitches.config";
-import Image from "next/image";
 import { trpc } from "utils/trpc";
+import { FlagIcon } from "components/FlagIcon";
 import { Box, A } from "components/Atoms";
 import Text from "components/Text";
 import { DayMonthInput, DayMonthInputClickType } from "components/Input";
@@ -12,7 +12,7 @@ import { Game, GameWinner, GameRating } from "types/game.types";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
-const TRIANGLE_WIDTH = "16px";
+
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
   display: "flex",
@@ -67,16 +67,6 @@ const RatingBox = ({
   );
 };
 
-const FlagIcon = ({ code }: { code: string }) => (
-  <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
-    <Image
-      src={`/flags/${code}.png`}
-      alt="code"
-      width={TRIANGLE_WIDTH}
-      height={TRIANGLE_WIDTH}
-    />
-  </Box>
-);
 const PlayerInfoBox = ({
   nameUSA,
   nameUSSR,
@@ -171,7 +161,7 @@ const ResultRow = ({ game }: { game: Game }) => {
 const ResultsPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "white",
+  backgroundColor: "$infoForm",
   border: "solid 1px none",
   borderRadius: "12px",
   flexGrow: "1",

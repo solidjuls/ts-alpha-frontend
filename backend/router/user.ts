@@ -2,6 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import crypto from "crypto";
+import { UserType } from "types/user.types";
 
 const nodemailer = require("nodemailer");
 
@@ -16,7 +17,11 @@ const getUrl = () =>
     ? process.env.NEXT_PUBLIC_URL
     : "http://localhost:3000";
 
-async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
+async function sendEmail(
+  mail: string,
+  firstName: string | null,
+  hashedUrl: string
+) {
   const message = {
     from: "juli.arnalot@gmail.com",
     // to: toUser.email // in production uncomment this
@@ -70,20 +75,24 @@ export const userRouter = trpc
   })
   .query("get-all", {
     async resolve() {
-      const user = await prisma.users.findMany({
+      const users = await prisma.users.findMany({
         select: {
           id: true,
           first_name: true,
           last_name: true,
+          countries: {
+            select: {
+              tld_code: true,
+            },
+          },
         },
       });
-      const userParsed = JSON.stringify(user, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      );
-      return JSON.parse(userParsed).map((user: any) => ({
-        id: user.id,
+
+      return users.map((user) => ({
+        id: user.id.toString(),
         name: `${user.first_name} ${user.last_name}`,
-      }));
+        countryCode: user.countries?.tld_code,
+      })) as UserType[];
     },
   })
   .mutation("update", {
@@ -124,13 +133,12 @@ export const userRouter = trpc
       const user = await prisma.users.findFirst({
         select: {
           id: true,
-          first_name: true
+          first_name: true,
         },
         where: {
           email: input.mail,
         },
       });
-
 
       if (user) {
         const hash = generateHash(input.mail);
