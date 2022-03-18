@@ -6,7 +6,7 @@ import { styled } from "stitches.config";
 
 import { Button } from "components/Button";
 import Text from "components/Text";
-import { Input } from "components/Input";
+import { Input, PasswordInput } from "components/Input";
 import { Label } from "components/Label";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -67,8 +67,7 @@ const Login = ({ user }) => {
           <Label htmlFor="pwd">
             <FormattedMessage id="password" />
           </Label>
-          <Input
-            type="text"
+          <PasswordInput
             id="pwd"
             margin="login"
             defaultValue={pwd}
@@ -98,7 +97,7 @@ const Login = ({ user }) => {
             </Button>
           )}
           <Link href="/reset-password" passHref>
-            <Text>Forgot your password?</Text>
+            <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
           </Link>
         </Box>
       </Form>

@@ -134,7 +134,7 @@ export const userRouter = trpc
 
       if (user) {
         const hash = generateHash(input.mail);
-        // console.log("hash", hash);
+        console.log("hash", hash);
         // const decrypted = decryptHash(hash);
         // console.log("hash", decrypted);
         const aver = await sendEmail(

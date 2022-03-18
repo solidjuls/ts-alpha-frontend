@@ -1,5 +1,4 @@
 import { styled } from "stitches.config";
-import { blackA } from "@radix-ui/colors";
 
 const Input = styled("input", {
   variants: {

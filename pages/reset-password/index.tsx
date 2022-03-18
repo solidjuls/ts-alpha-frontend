@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Box, Form } from "components/Atoms";
 import { trpc } from "utils/trpc";
 import Text from "components/Text";
@@ -27,8 +27,11 @@ const ErrorInfo = styled("span", {
   margin: "8px",
 });
 
+const Headline = styled('strong', {
+  marginBottom: "30px", 
+})
 const ResetPassword = () => {
-  const [mail, setMail] = useState("");
+  const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
   const mutation = trpc.useMutation(["user-reset-pwd"]);
 
@@ -37,43 +40,38 @@ const ResetPassword = () => {
       <Head>
         <title>Reset Password</title>
       </Head>
-
       {confirmation && <Text>An email has been sent to your account</Text>}
       {!confirmation && (
-        <Box
-          css={{
-            display: "flex",
-            flexDirection: "column",
-            justifyItems: "center",
-            alignItems: "center",
-          }}
-        >
-          <h1>Reset password</h1>
-          <Label htmlFor="mail">
-            <FormattedMessage id="mail" />
-          </Label>
-          <Input
-            type="text"
-            id="mail"
-            margin="login"
-            defaultValue={mail}
-            onChange={(event) => setMail(event.target.value)}
-            css={{ width: "300px" }}
-          />
+        <>
+          <Headline>
+            Add your mail and we will send you a link to reset your password
+          </Headline>
+          <Box
+            css={{ display: "flex", flexDirection: "row" }}
+          >
+            <Label htmlFor="mail">Mail</Label>
+            <Input
+              id="mail"
+              margin="login"
+              defaultValue={mail}
+              onChange={(event: any) => setMail(event.target.value)}
+              css={{ width: "300px" }}
+            />
+          </Box>
           <Button
             onClick={() => {
               if (mail) {
                 mutation.mutate({
                   mail,
                 });
-                setConfirmation(true)
+                setConfirmation(true);
               }
               // call reset endpoint
             }}
           >
             Reset
           </Button>
-        </Box>
+        </>
       )}
     </Form>
   );
