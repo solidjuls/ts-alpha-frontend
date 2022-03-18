@@ -56,10 +56,7 @@ const Header = ({ openSidebar }) => {
       <StyledHamburgerMenuIcon color="white" onClick={openSidebar} />
       <Link href="/" passHref>
         {/* <Logo>Twilight Struggle Competition Hub</Logo> */}
-        <StyledText>Home</StyledText>
-      </Link>
-      <Link href="/submitform" passHref>
-        <StyledText>Submit Form</StyledText>
+        <StyledText>Twilight Struggle Competition Hub</StyledText>
       </Link>
       <Flex>
         {/* <ThemeToggle /> */}

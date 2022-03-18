@@ -1,12 +1,52 @@
+import Link from "next/link";
 import { Box } from "components/Atoms";
-import Text from "components/Text"
+import Text from "components/Text";
 
 const sidebarItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
   backgroundColor: "#24292f",
   color: "white",
   padding: "8px 16px",
-  margin: 0
+  margin: 0,
+};
+
+const horizontalItemStyles = {
+  borderTop: "solid 1px rgba(255,255,255,.15)",
+  backgroundColor: "#24292f",
+  color: "white",
+  padding: "8px 16px",
+  margin: 0,
+};
+
+const Items = ({ styles }: any) => {
+  return (
+    <>
+      <Link href="/" passHref>
+        <Text css={styles}>Home Page</Text>
+      </Link>
+      <Link href="/players" passHref>
+        <Text css={styles}>Player List</Text>
+      </Link>
+      {/* <Text css={styles}>Federations</Text> */}
+      <Link href="/submitform" passHref>
+        <Text css={styles}>Submit Form</Text>
+      </Link>
+    </>
+  );
+};
+const HorizontalNavigation = () => {
+  return (
+    <Box
+      css={{
+        display: "flex",
+        flexDirection: "row",
+        backgroundColor: "#24292f",
+        width: "100%",
+      }}
+    >
+      <Items styles={horizontalItemStyles} />
+    </Box>
+  );
 };
 
 const Sidebar = () => {
@@ -19,12 +59,10 @@ const Sidebar = () => {
           border: "solid 1px black",
         }}
       >
-        <Text css={{ ...sidebarItemStyles }}>Home Page</Text>
-        <Text css={{ ...sidebarItemStyles }}>Profile</Text>
-        <Text css={{ ...sidebarItemStyles }}>Submit Form</Text>
+        <Items styles={sidebarItemStyles} />
       </Box>
     </Box>
   );
 };
 
-export { Sidebar };
+export { Sidebar, HorizontalNavigation };

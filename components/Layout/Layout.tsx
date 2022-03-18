@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import Header from "components/Header";
-import { Sidebar } from "components/Sidebar";
+import { Sidebar, HorizontalNavigation } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
-import { JsxAttributeLike } from "typescript";
 
 const containerStyles = {
   display: "flex",
@@ -63,7 +62,7 @@ const Layout = ({ children }: { children: JSX.Element }) => {
   return (
     <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />
-      {isOpen && <Sidebar />}
+      {isOpen ? <Sidebar /> : <HorizontalNavigation />}
       <Main css={contentStyles}>{children}</Main>
       {/* <Footer /> */}
     </Box>

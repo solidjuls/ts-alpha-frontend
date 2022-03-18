@@ -62,7 +62,7 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
-  backgroundColor: "$backgroundColorDark",
+  backgroundColor: "$primary",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
@@ -126,9 +126,9 @@ const UserAvatar = ({ name }: { name: String }) => {
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Root>
         <StyledTrigger>
-          <StyledAvatar>
+          {/* <StyledAvatar>
             <StyledImage src="https://pbs.twimg.com/profile_images/1361968864171618316/T8jfJHNo_400x400.jpg"></StyledImage>
-          </StyledAvatar>
+          </StyledAvatar> */}
           <StyledTriangleDownIcon />
         </StyledTrigger>
         <StyledContent align="end">

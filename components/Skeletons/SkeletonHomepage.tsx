@@ -1,5 +1,5 @@
 import { styled } from "stitches.config";
-import { Box } from "components/Atoms"
+import { Box } from "components/Atoms";
 
 const Body = styled("div", {
   display: "flex",
@@ -15,31 +15,37 @@ const BodyRow = styled("div", {
   backgroundColor: "$skeletonColorPrimary",
 });
 
-const SkeletonHomepage = () => {
-  return (
-    <>
-      <Body>
-        <BodyRow />
-        <BodyRow />
-      </Body>
-      <Body>
-        <BodyRow />
-        <BodyRow />
-      </Body>
-      <Body>
-        <BodyRow />
-        <BodyRow />
-      </Body>
-      <Body>
-        <BodyRow />
-        <BodyRow />
-      </Body>
-      <Body>
-        <BodyRow />
-        <BodyRow />
-      </Body>
+const SkeletonPlayers = () => (
+  <>
+    <Body>
+    <BodyRow />
+      <BodyRow />
+    </Body>
     </>
-  );
-};
+)
+const SkeletonHomepage = () => (
+  <>
+    <Body>
+      <BodyRow />
+      <BodyRow />
+    </Body>
+    <Body>
+      <BodyRow />
+      <BodyRow />
+    </Body>
+    <Body>
+      <BodyRow />
+      <BodyRow />
+    </Body>
+    <Body>
+      <BodyRow />
+      <BodyRow />
+    </Body>
+    <Body>
+      <BodyRow />
+      <BodyRow />
+    </Body>
+  </>
+);
 
 export { SkeletonHomepage };
