@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import crypto from "crypto";
 import { UserType } from "types/user.types";
+import jwt from "next-auth/jwt"
 
 const nodemailer = require("nodemailer");
 
@@ -100,7 +101,11 @@ export const userRouter = trpc
       mail: z.string(),
       password: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ input, ...rest }) {
+      console.log("ddd", rest)
+      // const token = await jwt.getToken({ req, secret })
+      // console.log("JSON Web Token", token)
+
       const updateUser = await prisma.users.update({
         where: {
           email: input.mail,

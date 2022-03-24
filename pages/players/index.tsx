@@ -1,5 +1,5 @@
 import { styled } from "stitches.config";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
 import { Box } from "components/Atoms";
 import { User } from "components/User";
 import { SkeletonHomepage } from "components/Skeletons";

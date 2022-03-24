@@ -27,18 +27,13 @@ export default NextAuth({
         console.log("user", user)
         if (!user) return null;
 
-        console.log("checkPassword", credentials.pwd, user.password)
         const checkPassword = await compare(credentials.pwd, user.password);
+        console.log("checkPassword", checkPassword)
         if (!checkPassword) return null;
 
-        const userParsed = JSON.stringify(user, (key, value) =>
-          typeof value === "bigint" ? value.toString() : value
-        );
-
-        const userReparsed = JSON.parse(userParsed);
         return {
-          email: userReparsed.email,
-          name: userReparsed.first_name,
+          email: user.email,
+          name: user.first_name,
         };
       },
     }),
@@ -52,12 +47,15 @@ export default NextAuth({
       //console.log("redirect", props);
       return "/submitform";
     },
-    async session({ session, user, token }) {
-      // console.log("session", session, user, token);
+    async session({ session, token }) {
+      //console.log("session", session, token);
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
-      // console.log("jwt", token, user, account, profile, isNewUser);
+      console.log("jwt", token, user, account, profile, isNewUser);
+      if (user?.token) {
+        token.token = user.token;
+      }
       return token;
     },
   },

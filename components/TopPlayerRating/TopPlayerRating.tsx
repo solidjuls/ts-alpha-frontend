@@ -1,4 +1,4 @@
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";

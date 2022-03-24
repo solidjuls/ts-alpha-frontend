@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { styled } from "stitches.config";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, A } from "components/Atoms";
 import Text from "components/Text";
@@ -237,7 +237,7 @@ const Homepage = () => {
         ))}
       </ResultsPanel>
       <Box>
-        <TopPlayerRating />
+        {/* <TopPlayerRating /> */}
       </Box>
     </Box>
   );

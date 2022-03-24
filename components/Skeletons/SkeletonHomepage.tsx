@@ -18,11 +18,11 @@ const BodyRow = styled("div", {
 const SkeletonPlayers = () => (
   <>
     <Body>
-    <BodyRow />
+      <BodyRow />
       <BodyRow />
     </Body>
-    </>
-)
+  </>
+);
 const SkeletonHomepage = () => (
   <>
     <Body>

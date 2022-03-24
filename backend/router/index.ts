@@ -2,7 +2,6 @@ import * as trpc from "@trpc/server";
 import { userRouter } from "./user";
 import { gameRouter } from "./game";
 import { ratingsRouter } from "./ratings";
-import { Ratings } from "types/ratings.types";
 
 export const appRouter = trpc
   .router()

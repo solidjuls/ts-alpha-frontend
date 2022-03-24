@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
 import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
 

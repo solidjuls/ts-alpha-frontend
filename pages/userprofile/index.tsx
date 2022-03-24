@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
+import jwt from "next-auth/jwt"
 import { hash } from "bcryptjs";
 import { useSession } from "next-auth/react";
 import { FormattedMessage } from "react-intl";
