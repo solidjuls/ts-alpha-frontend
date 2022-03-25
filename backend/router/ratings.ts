@@ -2,6 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { UserType } from "types/user.types";
+import { getRatingByPlayer } from "backend/utils/common";
 
 const getAllPlayers = async () =>
   await prisma.users.findMany({
@@ -17,18 +18,7 @@ const getAllPlayers = async () =>
     },
   });
 
-const getRatingByPlayer = async ({ playerId }: { playerId: bigint }) =>
-  await prisma.ratings_history.findFirst({
-    select: {
-      rating: true,
-    },
-    where: {
-      player_id: playerId,
-    },
-    orderBy: {
-      created_at: "desc",
-    },
-  });
+
 
 export const ratingsRouter = trpc.router().query("get", {
   input: z.object({ n: z.number() }),

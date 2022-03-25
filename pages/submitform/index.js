@@ -214,34 +214,34 @@ const getSelectedItem = (value, list) =>
   list.find((item) => item.value === value)?.text || list[0].text;
 
 const initialState = {
-  game_date: {
+  gameDate: {
     value: new Date(),
   },
-  game_winner: {
+  gameWinner: {
     value: "1",
     error: false,
   },
-  game_code: {
+  gameCode: {
     value: "",
     error: false,
   },
-  game_type: {
+  gameType: {
     value: "",
     error: false,
   },
-  usa_player_id: {
+  usaPlayerId: {
     value: "",
     error: false,
   },
-  ussr_player_id: {
+  ussrPlayerId: {
     value: "",
     error: false,
   },
-  end_turn: {
+  endTurn: {
     value: "",
     error: false,
   },
-  end_mode: {
+  endMode: {
     value: "",
     error: false,
   },
@@ -262,6 +262,12 @@ const SubmitForm = () => {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [disabled, setDisabled] = useState(false);
+  const gameSubmitMutation = trpc.useMutation(["game-submit"], {
+    onSuccess: () => setDisabled(false),
+    onError: (error, variables, context) => setDisabled(false),
+    onSettled: () => setDisabled(false),
+  });
+
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
       ...prevState,
@@ -274,15 +280,15 @@ const SubmitForm = () => {
   const validated = () => {
     let submit = true;
     console.log("form", form);
-    if (form["usa_player_id"].value === form["ussr_player_id"].value) {
+    if (form["usaPlayerId"].value === form["ussrPlayerId"].value) {
       setForm((prevState) => ({
         ...prevState,
-        ['usa_player_id']: {
-          ...prevState['usa_player_id'],
+        ['usaPlayerId']: {
+          ...prevState['usaPlayerId'],
           error: true,
         },
-        ['ussr_player_id']: {
-          ...prevState['ussr_player_id'],
+        ['ussrPlayerId']: {
+          ...prevState['ussrPlayerId'],
           error: true,
         },
       }));
@@ -312,75 +318,75 @@ const SubmitForm = () => {
       <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
         <TextComponent
           labelText="checkID"
-          inputValue={form.game_code.value}
-          onInputValueChange={(value) => onInputValueChange("game_code", value)}
+          inputValue={form.gameCode.value}
+          onInputValueChange={(value) => onInputValueChange("gameCode", value)}
           css={{ width: "50px" }}
-          error={form.game_code.error}
+          error={form.gameCode.error}
         />
         <DropdownLabelComponent
           labelText="typeOfGame"
           items={leagueTypes}
-          selectedItem={form.game_type.value}
-          error={form.game_type.error}
+          selectedItem={form.gameType.value}
+          error={form.gameType.error}
           css={{ width: dropdownWidth }}
-          onSelect={(value) => onInputValueChange("game_type", value)}
+          onSelect={(value) => onInputValueChange("gameType", value)}
         />
         <TypeaheadLabelComponent
           labelText="playerUSA"
-          selectedItem={form.usa_player_id.value}
+          selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.usa_player_id.error}
+          error={form.usaPlayerId.error}
           css={{ width: typeaheadWidth }}
           onSelect={(value) =>
-            onInputValueChange("usa_player_id", value?.value)
+            onInputValueChange("usaPlayerId", value?.value)
           }
-          onBlur={() => onInputValueChange("usa_player_id", "")}
+          onBlur={() => onInputValueChange("usaPlayerId", "")}
         />
         <TypeaheadLabelComponent
           labelText="playerURSS"
-          selectedItem={form.ussr_player_id.value}
-          error={form.ussr_player_id.error}
+          selectedItem={form.ussrPlayerId.value}
+          error={form.ussrPlayerId.error}
           css={{ width: typeaheadWidth }}
           selectedValueProperty="value"
           selectedInputProperty="text"
           onSelect={(value) =>
-            onInputValueChange("ussr_player_id", value?.value)
+            onInputValueChange("ussrPlayerId", value?.value)
           }
-          onBlur={() => onInputValueChange("ussr_player_id", "")}
+          onBlur={() => onInputValueChange("ussrPlayerId", "")}
         />
         <DropdownLabelComponent
           labelText="gameWinner"
           items={gameWinningOptions}
           selectedItem={getSelectedItem(
-            form.game_winner.value,
+            form.gameWinner.value,
             gameWinningOptions
           )}
-          error={form.game_winner.error}
+          error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
-          onSelect={(value) => onInputValueChange("game_winner", value)}
+          onSelect={(value) => onInputValueChange("gameWinner", value)}
         />
         <DropdownLabelComponent
           labelText="endTurn"
           items={turns}
-          error={form.end_turn.error}
-          selectedItem={form.end_turn.value}
+          error={form.endTurn.error}
+          selectedItem={form.endTurn.value}
           css={{ width: dropdownWidth }}
-          onSelect={(value) => onInputValueChange("end_turn", value)}
+          onSelect={(value) => onInputValueChange("endTurn", value)}
         />
         <DropdownLabelComponent
           labelText="endType"
           items={endType}
-          error={form.end_mode.error}
+          error={form.endMode.error}
           css={{ width: dropdownWidth }}
-          selectedItem={form.end_mode.value}
-          onSelect={(value) => onInputValueChange("end_mode", value)}
+          selectedItem={form.endMode.value}
+          onSelect={(value) => onInputValueChange("endMode", value)}
         />
         <DateComponent
           labelText="gameDate"
-          inputValue={form.game_date.value}
-          error={form.game_date.error}
-          onInputValueChange={(value) => onInputValueChange("game_date", value)}
+          inputValue={form.gameDate.value}
+          error={form.gameDate.error}
+          onInputValueChange={(value) => onInputValueChange("gameDate", value)}
         />
         <TextComponent
           labelText="videoLink1"
@@ -405,14 +411,17 @@ const SubmitForm = () => {
           onClick={() => {
             if (validated()) {
               setDisabled(true);
-              callAPI({
-                url: "https://tsalpha.klckh.com/api/game-results",
-                data: normalizeData(form),
-                responseCallback: () => {
-                  setDisabled(false);
-                  router.push("/");
-                },
-              });
+              gameSubmitMutation.mutate({
+                data: normalizeData(form)
+              })
+              // callAPI({
+              //   url: "https://tsalpha.klckh.com/api/game-results",
+              //   data: normalizeData(form),
+              //   responseCallback: () => {
+              //     setDisabled(false);
+              //     router.push("/");
+              //   },
+              // });
             }
           }}
         >

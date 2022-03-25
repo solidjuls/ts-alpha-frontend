@@ -30,3 +30,20 @@ export type Game = {
   ratingsUSA: GameRating;
   ratingsUSSR: GameRating;
 };
+
+type GameLeagueType = "National League" | "ITSL" | "OTSL" | "RTSL" | "Friendly";
+type GameWinnerType = "1" | "2" | "3";
+
+export type SubmitGameType = {
+  gameDate: string;
+  gameWinner: GameWinnerType;
+  gameCode: string;
+  gameType: GameLeagueType;
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  endTurn: string;
+  endMode: string;
+  video1?: string;
+  video2?: string;
+  video3?: string;
+};
