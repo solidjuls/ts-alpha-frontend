@@ -43,6 +43,6 @@
     "@types/bcryptjs": "^2.4.2",
     "eslint": "7",
     "eslint-config-next": "12.0.4",
-    "prisma": "^3.8.1"
+    "prisma": "^3.9.1"
   }
 }
