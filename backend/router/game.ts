@@ -324,22 +324,15 @@ export const gameRouter = trpc
     async resolve({ input }) {
       // ALL DATA CHANGE MUST RESPECT THE OLD DATES
 
-      await recreateRatings(input)
-        .catch(console.error)
-        .finally(() => {
-          prisma.$disconnect();
-          console.log("Disconnecting!!!!");
-        });
-      console.log("Exiting!!!!");
-      // we update all ratings records on DB
-      // Endpoint response will return all rating variations
-      // No new rows, nor deleted rows, should happen
-    },
-  });
+      // I get all affected games and create objects to resubmit them
+      // I calculate player rating with created_at lower than
 
-async function recreateRatings(input: any) {
-  try {
-    await prisma.$transaction(async (prisma) => {
+      // await recreateRatings(input)
+      //   .catch(console.error)
+      //   .finally(() => {
+      //     prisma.$disconnect();
+      //     console.log("Disconnecting!!!!");
+      //   });
       const dateNow = new Date(Date.now());
       // we select the oldId game created_at
       const oldGameDate = await prisma.game_results.findFirst({
@@ -382,74 +375,93 @@ async function recreateRatings(input: any) {
       });
       console.log("ratingsData", ratingsData);
       let newGameWithId = "0";
+      for (let index = 0; index < allGamesAffected.length; index++) {
+        const game = allGamesAffected[index];
+        console.log("index", index, game.id, input?.data?.oldId);
+        if (game.id.toString() === input?.data?.oldId) {
+          // we delete and add oldId game data with the new one submited
+          const oldId = BigInt(input?.data?.oldId);
+          await prisma.game_results.delete({
+            where: {
+              id: oldId,
+            },
+          });
+          await prisma.ratings_history.deleteMany({
+            where: {
+              game_result_id: oldId,
+            },
+          });
+          await submitGame({ data: input.data });
+        } else {
+          //we recalculate all ratings based on the games retrieved,
+          const { newUsaRating, newUssrRating } = await calculateRating({
+            usaPlayerId: game.usa_player_id,
+            ussrPlayerId: game.ussr_player_id,
+            gameWinner: game.game_winner,
+          });
+          console.log(
+            "newUsaRating, newUssrRating",
+            index,
+            newUsaRating,
+            newUssrRating
+          );
+          await prisma.ratings_history.createMany({
+            data: [
+              {
+                player_id: BigInt(game.usa_player_id),
+                rating: newUsaRating,
+                game_code: "recr",
+                created_at: game.created_at,
+                updated_at: dateNow,
+                game_result_id: game.id,
+                total_games: 0,
+                friendly_games: 0,
+                usa_victories: 0,
+                usa_losses: 0,
+                usa_ties: 0,
+                ussr_victories: 0,
+                ussr_losses: 0,
+                ussr_ties: 0,
+              },
+              {
+                player_id: BigInt(game.ussr_player_id),
+                rating: newUssrRating,
+                game_code: "recr",
+                created_at: game.created_at,
+                updated_at: dateNow,
+                game_result_id: game.id,
+                total_games: 0,
+                friendly_games: 0,
+                usa_victories: 0,
+                usa_losses: 0,
+                usa_ties: 0,
+                ussr_victories: 0,
+                ussr_losses: 0,
+                ussr_ties: 0,
+              },
+            ],
+          });
+        }
+      }
       const restoreCompleted = await Promise.all(
-        allGamesAffected.map(async (game: any, index: number) => {
-          console.log("index", index, game.id)
-          if (game.id.toString() === input?.data?.oldId) {
-            // we delete and add oldId game data with the new one submited
-            const oldId = BigInt(input?.data?.oldId);
-            await prisma.game_results.delete({
-              where: {
-                id: oldId,
-              },
-            });
-            await prisma.ratings_history.deleteMany({
-              where: {
-                game_result_id: oldId,
-              },
-            });
-            return await submitGame({ data: input.data });
-          } else {
-            // we recalculate all ratings based on the games retrieved,
-            // const { newUsaRating, newUssrRating } = await calculateRating({
-            //   usaPlayerId: game.usa_player_id,
-            //   ussrPlayerId: game.ussr_player_id,
-            //   gameWinner: game.game_winner,
-            // });
-            // console.log("index", index, game.usaPlayerId, game.ussrPlayerId)
-            return await prisma.ratings_history.createMany({
-              data: [
-                {
-                  player_id: BigInt(game.usa_player_id),
-                  rating: 6666,
-                  game_code: "recr",
-                  created_at: game.created_at,
-                  updated_at: dateNow,
-                  game_result_id: game.id,
-                  total_games: 0,
-                  friendly_games: 0,
-                  usa_victories: 0,
-                  usa_losses: 0,
-                  usa_ties: 0,
-                  ussr_victories: 0,
-                  ussr_losses: 0,
-                  ussr_ties: 0,
-                },
-                {
-                  player_id: BigInt(game.ussr_player_id),
-                  rating: 6666,
-                  game_code: "recr",
-                  created_at: game.created_at,
-                  updated_at: dateNow,
-                  game_result_id: game.id,
-                  total_games: 0,
-                  friendly_games: 0,
-                  usa_victories: 0,
-                  usa_losses: 0,
-                  usa_ties: 0,
-                  ussr_victories: 0,
-                  ussr_losses: 0,
-                  ussr_ties: 0,
-                },
-              ],
-            });
-          }
-        })
+        allGamesAffected.map(async (game: any, index: number) => {})
       );
 
       console.log("restoreCompleted", restoreCompleted);
 
-      return newGameWithId;
+      return null;
+
+      console.log("Exiting!!!!");
+      // we update all ratings records on DB
+      // Endpoint response will return all rating variations
+      // No new rows, nor deleted rows, should happen
+    },
+  });
+
+async function recreateRatings(input: any) {
+  try {
+    await prisma.$transaction(async (prisma) => {
+      
     });
   } catch (e) {
     console.log("trans error", e);
