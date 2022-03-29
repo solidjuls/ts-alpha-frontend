@@ -9,6 +9,7 @@ import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game, GameWinner, GameRating } from "types/game.types";
+import { getWinnerText } from "utils/games"; 
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -102,14 +103,7 @@ const PlayerInfoBox = ({
   );
 };
 
-const getWinnerText = (gameWinner: GameWinner) => {
-  if (gameWinner === "1") {
-    return "USA";
-  } else if (gameWinner == "2") {
-    return "USSR";
-  }
-  return "TIE";
-};
+
 const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
