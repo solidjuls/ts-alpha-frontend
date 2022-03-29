@@ -2,7 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { UserType } from "types/user.types";
-import { getRatingByPlayer } from "backend/utils/common";
+import { getRatingByPlayer } from "backend/controller/rating.controller";
 
 const getAllPlayers = async () =>
   await prisma.users.findMany({
@@ -12,13 +12,11 @@ const getAllPlayers = async () =>
       last_name: true,
       countries: {
         select: {
-          tld_code: true
-        }
-      }
+          tld_code: true,
+        },
+      },
     },
   });
-
-
 
 export const ratingsRouter = trpc.router().query("get", {
   input: z.object({ n: z.number() }),
@@ -30,7 +28,7 @@ export const ratingsRouter = trpc.router().query("get", {
         return {
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
-          countryCode: player.countries?.tld_code
+          countryCode: player.countries?.tld_code,
         };
       })
     );

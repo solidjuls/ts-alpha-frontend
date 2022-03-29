@@ -3,6 +3,11 @@ export type GameRating = {
   ratingDifference: number;
 };
 
+export type BiggerLowerValue = {
+  bigger: number;
+  smaller: number;
+};
+
 export type GameWinner = "1" | "2" | "3";
 
 export type Game = {
