@@ -4,7 +4,10 @@ import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
 import { Game, SubmitGameType } from "types/game.types";
 import { calculateRating } from "backend/controller/rating.controller";
-import { getGameWithRatings, getGameById } from "backend/controller/game.controller";
+import {
+  getGameWithRatings,
+  getGameById,
+} from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
 const submitGame = async ({ data }: any) => {
@@ -110,13 +113,11 @@ export const gameRouter = trpc
       return JSON.parse(gameParsed) as Game[];
     },
   })
-  .query("restoreConfirm", {
-    // input: z.object({ id: z.string() }),
-    async resolve() {
-      const input = {
-        oldId: "12036",
-      };
-      const summaryGames = await recreateRatingsConfirm(input);
+  .mutation("restoreConfirm", {
+    input: z.object({ id: z.string() }),
+    async resolve({ input }) {
+      console.log("input", input)
+      const summaryGames = await recreateRatingsConfirm(input?.id);
 
       const gameParsed = JSON.stringify(summaryGames);
       return JSON.parse(gameParsed);
@@ -138,24 +139,25 @@ export const gameRouter = trpc
     }),
     async resolve({ input }) {
       // ALL DATA CHANGE MUST RESPECT THE OLD DATES
-      await recreateRatings(input)
-        .catch(console.error)
-        .finally(() => {
-          prisma.$disconnect();
-          console.log("Disconnecting!!!!");
-        });
-
-      console.log("Exiting!!!!");
-      const summaryGames = await recreateRatingsConfirm(input?.data);
-
+      // await recreateRatings(input)
+      //   .catch(console.error)
+      //   .finally(() => {
+      //     prisma.$disconnect();
+      //     console.log("Disconnecting!!!!");
+      //   });
+      console.log("input?.data", input?.data);
+      const summaryGames = await recreateRatings(input);
+      
+      console.log("summaryGames", summaryGames);
       const gameParsed = JSON.stringify(summaryGames);
       return JSON.parse(gameParsed);
+      // return JSON.parse("yeah");
     },
   });
 
 
-async function recreateRatingsConfirm(input: any) {
-  const oldGameDate = await getGameById(input?.oldId);
+async function recreateRatingsConfirm(oldId: string) {
+  const oldGameDate = await getGameById(oldId);
 
   if (oldGameDate && oldGameDate.created_at != null) {
     const gamesAffected = await getGameWithRatings({
@@ -319,7 +321,7 @@ const startRecreatingRatings = async (input) => {
 };
 async function recreateRatings(input: any) {
   try {
-    await startRecreatingRatings(input);
+    return await startRecreatingRatings(input);
     // await prisma.$transaction(async (prisma) => {
 
     // });
