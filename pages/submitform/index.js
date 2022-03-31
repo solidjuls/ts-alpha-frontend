@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "contexts/APIProvider";
-import { FormattedMessage } from "react-intl";
 import { getSession } from "next-auth/react";
 
 import {
@@ -12,13 +11,14 @@ import {
 } from "utils/constants";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
-import { Label } from "components/Label";
+import { UserTypeahead } from "./UserTypeahead"
 import DropdownMenu from "components/DropdownMenu";
 import { Box, Form } from "components/Atoms";
+import { WithLabel } from "./WithLabel";
 
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
-import { Typeahead } from "components/Autocomplete/Typeahead";
+
 import { dateFormat } from "utils/dates";
 
 const formStyles = {
@@ -32,12 +32,6 @@ const formStyles = {
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
-const cssLabel = { marginBottom: 8, marginRight: 15, width: "160px" };
-const cssFlexTextDateComponent = {
-  display: "flex",
-  flexDirection: "column",
-  marginBottom: "16px",
-};
 
 const normalizeData = (form) => {
   let payloadObject = {};
@@ -46,75 +40,9 @@ const normalizeData = (form) => {
   });
   return payloadObject;
 };
-const useTypeaheadState = () => {
-  const { data } = trpc.useQuery(["user-get-all"]);
-  const userList =
-    data?.map((user) => ({ value: user.id, text: user.name })) || [];
-  const [userSuggestions, setUserSuggestions] = useState([]);
-  //console.log("userList", userList);
-  const onChange = (input) => {
-    setUserSuggestions(
-      userList?.filter((user) => {
-        if (user.text.toLowerCase().includes(input.toLowerCase())) {
-          return true;
-        }
-      })
-    );
-  };
 
-  return { userSuggestions, onChange };
-};
-const TypeaheadLabelComponent = ({
-  labelText,
-  selectedItem,
-  onSelect,
-  css,
-  error,
-  ...rest
-}) => {
-  const { userSuggestions, onChange } = useTypeaheadState();
 
-  return (
-    <Box css={cssFlexTextDateComponent}>
-      <Label htmlFor="dropdown" css={cssLabel}>
-        <FormattedMessage id={labelText} />
-      </Label>
-      <Typeahead
-        debounceTime={300}
-        onChange={onChange}
-        minChars={1}
-        selectedValueProperty="value"
-        selectedInputProperty="text"
-        onSelect={onSelect}
-        selectedValue={selectedItem}
-        // onBlur={setValue}
-        {...rest}
-      >
-        <Typeahead.Input
-          css={css}
-          error={error}
-          placeholder="Type the player name..."
-        />
-        {userSuggestions.length > 0 && (
-          <Typeahead.List css={css}>
-            {userSuggestions.map(({ value, text }, index) => (
-              <Typeahead.Item
-                key={value}
-                value={{ value, text }}
-                index={index}
-                id={value}
-              >
-                <div>{text}</div>
-              </Typeahead.Item>
-            ))}
-          </Typeahead.List>
-        )}
-      </Typeahead>
-    </Box>
-  );
-};
-
-const DropdownLabelComponent = ({
+const UserDropdown = ({
   labelText,
   selectedItem,
   onSelect,
@@ -123,10 +51,7 @@ const DropdownLabelComponent = ({
   css,
   ...rest
 }) => (
-  <Box css={cssFlexTextDateComponent}>
-    <Label htmlFor="dropdown" css={cssLabel}>
-      <FormattedMessage id={labelText} />
-    </Label>
+  <WithLabel labelText={labelText}>
     <DropdownMenu
       id="dropdown"
       items={items}
@@ -136,7 +61,7 @@ const DropdownLabelComponent = ({
       {...rest}
       error={error}
     />
-  </Box>
+  </WithLabel>
 );
 const TextComponent = ({
   labelText,
@@ -147,10 +72,7 @@ const TextComponent = ({
   ...rest
 }) => {
   return (
-    <Box css={cssFlexTextDateComponent}>
-      <Label htmlFor="video1" css={cssLabel}>
-        <FormattedMessage id={labelText} />
-      </Label>
+    <WithLabel labelText={labelText}>
       <Input
         type="text"
         id="video1"
@@ -160,7 +82,7 @@ const TextComponent = ({
         {...rest}
         border={error ? "error" : undefined}
       />
-    </Box>
+    </WithLabel>
   );
 };
 
@@ -170,10 +92,7 @@ const DateComponent = ({
   onInputValueChange = () => {},
   ...rest
 }) => (
-  <Box css={cssFlexTextDateComponent}>
-    <Label htmlFor="gameDate" css={cssLabel}>
-      <FormattedMessage id={labelText} />
-    </Label>
+  <WithLabel labelText={labelText}>
     <DayPickerInput
       id="gameDate"
       value={inputValue}
@@ -186,7 +105,7 @@ const DateComponent = ({
         todayButton: "Today",
       }}
     />
-  </Box>
+  </WithLabel>
 );
 
 const callAPI = ({ url, data, sendCallback, responseCallback }) => {
@@ -258,6 +177,7 @@ const initialState = {
     error: false,
   },
 };
+
 const SubmitForm = () => {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
@@ -277,6 +197,7 @@ const SubmitForm = () => {
       },
     }));
   };
+
   const validated = () => {
     let submit = true;
     console.log("form", form);
@@ -313,6 +234,7 @@ const SubmitForm = () => {
     });
     return submit;
   };
+
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
@@ -323,7 +245,7 @@ const SubmitForm = () => {
           css={{ width: "50px" }}
           error={form.gameCode.error}
         />
-        <DropdownLabelComponent
+        <UserDropdown
           labelText="typeOfGame"
           items={leagueTypes}
           selectedItem={form.gameType.value}
@@ -331,7 +253,7 @@ const SubmitForm = () => {
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <TypeaheadLabelComponent
+        <UserTypeahead
           labelText="playerUSA"
           selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
@@ -343,7 +265,7 @@ const SubmitForm = () => {
           }
           onBlur={() => onInputValueChange("usaPlayerId", "")}
         />
-        <TypeaheadLabelComponent
+        <UserTypeahead
           labelText="playerURSS"
           selectedItem={form.ussrPlayerId.value}
           error={form.ussrPlayerId.error}
@@ -355,7 +277,7 @@ const SubmitForm = () => {
           }
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
         />
-        <DropdownLabelComponent
+        <UserDropdown
           labelText="gameWinner"
           items={gameWinningOptions}
           selectedItem={getSelectedItem(
@@ -366,7 +288,7 @@ const SubmitForm = () => {
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameWinner", value)}
         />
-        <DropdownLabelComponent
+        <UserDropdown
           labelText="endTurn"
           items={turns}
           error={form.endTurn.error}
@@ -374,7 +296,7 @@ const SubmitForm = () => {
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("endTurn", value)}
         />
-        <DropdownLabelComponent
+        <UserDropdown
           labelText="endType"
           items={endType}
           error={form.endMode.error}
