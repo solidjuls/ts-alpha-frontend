@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from 'bcryptjs';
-import { prisma } from "backend/utils/prisma";
+
+
 
 export default NextAuth({
   providers: [
@@ -26,7 +26,7 @@ export default NextAuth({
         // user not found
         console.log("user", user)
         if (!user) return null;
-
+// llegirem i prendrem notes sobre server components
         const checkPassword = await compare(credentials.pwd, user.password);
         console.log("checkPassword", checkPassword)
         if (!checkPassword) return null;

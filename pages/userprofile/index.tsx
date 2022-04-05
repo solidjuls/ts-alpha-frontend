@@ -42,14 +42,14 @@ const UserProfile = () => {
   const { data: session } = useSession();
   const [password, setPassword] = useState("");
   const updateClick = async () => {
-    if (session?.user?.email) {
+    // if (session?.user?.email) {
       const pwdHashed = await hash(password, 12);
 
       mutation.mutate({
-        mail: session.user?.email,
+        mail: "juli.arnalot@gmail.com",// session.user?.email,
         password: pwdHashed,
       });
-    }
+    // }
   };
 
   const updateAllClick = async () => {

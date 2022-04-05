@@ -1,14 +1,15 @@
 import { useState } from "react";
 import Head from "next/head";
 import { FormattedMessage } from "react-intl";
-
+import { trpc } from "contexts/APIProvider";
 import { styled } from "stitches.config";
+import { hash } from "bcryptjs";
 
 import { Button } from "components/Button";
 import Text from "components/Text";
 import { Input, PasswordInput } from "components/Input";
 import { Label } from "components/Label";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn, signOut } from "contexts/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Box, Form } from "components/Atoms";
@@ -33,7 +34,9 @@ const ErrorInfo = styled("span", {
 
 const Login = ({ user }) => {
   const { error } = useRouter().query;
-  const { data: session, status } = useSession();
+  const signin = trpc.useMutation(["user-signin"]);
+
+  // const { data: session, status } = useSession();
   const [mail, setMail] = useState("");
   const [pwd, setPwd] = useState("");
 
@@ -75,7 +78,19 @@ const Login = ({ user }) => {
             css={{ width: "300px" }}
           />
           {error && <ErrorInfo>Could not sign in</ErrorInfo>}
-          {!session && (
+          <Button
+            onClick={async (e) => {
+              e.preventDefault();
+              // const pwdHashed = await hash(pwd, 12);
+              await signin.mutate({
+                mail,
+                pwd
+              });
+            }}
+          >
+            Login
+          </Button>
+          {/* {!session && (
             <Button
               onClick={(e) => {
                 e.preventDefault();
@@ -88,14 +103,14 @@ const Login = ({ user }) => {
             >
               Login
             </Button>
-          )}
-          {session && (
+          )} */}
+          {/* {session && (
             <Button
               onClick={() => signOut("credentials", { callbackUrl: "/" })}
             >
               Sign out
             </Button>
-          )}
+          )} */}
           <Link href="/reset-password" passHref>
             <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
           </Link>

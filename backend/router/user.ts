@@ -2,8 +2,11 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import crypto from "crypto";
+import { hash } from "bcryptjs";
 import { UserType } from "types/user.types";
-import jwt from "next-auth/jwt"
+import { authorize } from "backend/controller/user.controller";
+import jwt from "jsonwebtoken";
+import cookie from "cookie";
 
 const nodemailer = require("nodemailer");
 
@@ -60,6 +63,30 @@ async function sendEmail(
 
 export const userRouter = trpc
   .router()
+  .mutation("signin", {
+    input: z.object({ mail: z.string(), pwd: z.string() }),
+    async resolve({ input, ctx }) {
+      const user = await authorize({
+        email: input.mail,
+        pwd: input.pwd,
+      });
+      console.log("user resolve", user)
+      if (!user) {
+        // deal with it
+        return null;
+      }
+      const token = jwt.sign({ mail: user.email, role: 'admin' }, process.env.TOKEN_SECRET, {
+        expiresIn: "60d",
+      });
+
+      // console.log("token", ctx)
+      ctx.res.setHeader('Set-Cookie', cookie.serialize('auth-token',token, {
+        maxAge: 60 * 60 * 24, // 1 day
+        path: "/",
+        httpOnly: true
+      }));
+    }
+  })
   .query("get", {
     input: z.object({ mail: z.string(), pwd: z.string() }),
     async resolve({ input }) {
@@ -102,7 +129,7 @@ export const userRouter = trpc
       password: z.string(),
     }),
     async resolve({ input, ...rest }) {
-      console.log("ddd", rest)
+      console.log("ddd", input.password);
       // const token = await jwt.getToken({ req, secret })
       // console.log("JSON Web Token", token)
 

@@ -99,18 +99,18 @@ export const gameRouter = trpc
       const date = new Date(Date.parse(input.d));
       const datePlusOne = dateAddDay(date, 1);
 
-      const gamesNormalized = await getGameWithRatings({
-        created_at: {
-          lt: datePlusOne,
-          gte: date,
-        },
-      });
+      // const gamesNormalized = await getGameWithRatings({
+      //   created_at: {
+      //     lt: datePlusOne,
+      //     gte: date,
+      //   },
+      // });
 
-      const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      );
+      // const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
+      //   typeof value === "bigint" ? value.toString() : value
+      // );
 
-      return JSON.parse(gameParsed) as Game[];
+      return null//JSON.parse(gameParsed) as Game[];
     },
   })
   .mutation("restoreConfirm", {
