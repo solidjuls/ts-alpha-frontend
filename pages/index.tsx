@@ -1,10 +1,7 @@
 import Head from "next/head";
-import { useSession } from "next-auth/react";
 import Homepage from "components/Homepage";
 
 export default function Home() {
-  const { data: session } = useSession();
-
   return (
     <>
       <Head>

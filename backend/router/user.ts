@@ -6,7 +6,7 @@ import { hash } from "bcryptjs";
 import { UserType } from "types/user.types";
 import { authorize } from "backend/controller/user.controller";
 import jwt from "jsonwebtoken";
-import cookie from "cookie";
+import Cookies from "cookies";
 
 const nodemailer = require("nodemailer");
 
@@ -70,22 +70,37 @@ export const userRouter = trpc
         email: input.mail,
         pwd: input.pwd,
       });
-      console.log("user resolve", user)
+      console.log("user resolve", user);
       if (!user) {
         // deal with it
         return null;
       }
-      const token = jwt.sign({ mail: user.email, role: 'admin' }, process.env.TOKEN_SECRET, {
-        expiresIn: "60d",
-      });
+      const token = jwt.sign(
+        { mail: user.email, role: "admin" },
+        process.env.TOKEN_SECRET,
+        {
+          expiresIn: "60d",
+        }
+      );
 
       // console.log("token", ctx)
-      ctx.res.setHeader('Set-Cookie', cookie.serialize('auth-token',token, {
-        maxAge: 60 * 60 * 24, // 1 day
+      const cookies = new Cookies(ctx.req, ctx.res);
+      cookies.set("auth-token", token, {
+        maxAge: 60 * 60 * 24,
         path: "/",
-        httpOnly: true
-      }));
-    }
+        httpOnly: true,
+      });
+
+      return { email: user.email, name: user.name };
+    },
+  })
+  .mutation("signout", {
+    async resolve({ ctx }) {
+      const cookies = new Cookies(ctx.req, ctx.res);
+      cookies.set("auth-token");
+
+      return { success: true };
+    },
   })
   .query("get", {
     input: z.object({ mail: z.string(), pwd: z.string() }),

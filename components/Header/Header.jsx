@@ -1,7 +1,7 @@
 import { FormattedMessage, useIntl } from "react-intl";
 import { styled } from "stitches.config";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useSession } from "contexts/AuthProvider";
 import { UserAvatar } from "components/UserAvatar";
 import Text from "components/Text";
 import { ThemeToggle } from "components/ThemeToggle";
@@ -48,7 +48,7 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
 });
 
 const Header = ({ openSidebar }) => {
-  const { data: session } = useSession();
+  const { name } = useSession();
   const intl = useIntl();
 
   return (
@@ -61,21 +61,21 @@ const Header = ({ openSidebar }) => {
       <Flex>
         {/* <ThemeToggle /> */}
 
-        {!session && (
+        {!name && (
           <Link href="/login" passHref>
             <StyledText>
               <FormattedMessage id="signIn" />
             </StyledText>
           </Link>
         )}
-        {session && (
+        {name && (
           <Flex display={{ "@sm": "none" }}>
             <StyledText css={{ marginRight: '12px'}}>
               {`${intl.formatMessage({ id: "greeting" })} ${
-                session?.user?.name
+                name
               }`}
             </StyledText>
-            <UserAvatar name={session?.user?.name} />
+            <UserAvatar name={name} />
           </Flex>
         )}
       </Flex>

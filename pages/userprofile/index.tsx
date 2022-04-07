@@ -2,7 +2,7 @@ import { useState } from "react";
 import { trpc } from "contexts/APIProvider";
 import jwt from "next-auth/jwt"
 import { hash } from "bcryptjs";
-import { useSession } from "next-auth/react";
+import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";
 import { Input } from "components/Input";
 import { Label } from "components/Label";

@@ -1,4 +1,5 @@
 declare type JWTPayload = {
-  user: SessionUser;
   exp: number;
+  mail: string;
+  role: string;
 };

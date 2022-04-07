@@ -35,7 +35,7 @@ const ErrorInfo = styled("span", {
 const Login = ({ user }) => {
   const { error } = useRouter().query;
   const signin = trpc.useMutation(["user-signin"]);
-
+  const { setAuthentication } = useSession();
   // const { data: session, status } = useSession();
   const [mail, setMail] = useState("");
   const [pwd, setPwd] = useState("");
@@ -81,11 +81,11 @@ const Login = ({ user }) => {
           <Button
             onClick={async (e) => {
               e.preventDefault();
-              // const pwdHashed = await hash(pwd, 12);
-              await signin.mutate({
+              const response = await signin.mutateAsync({
                 mail,
-                pwd
+                pwd,
               });
+              setAuthentication(response);
             }}
           >
             Login

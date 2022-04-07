@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "contexts/APIProvider";
-import { getSession } from "next-auth/react";
 
 import {
   gameWinningOptions,
@@ -11,11 +10,11 @@ import {
 } from "utils/constants";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
-import { UserTypeahead } from "./UserTypeahead"
+import { UserTypeahead } from "./UserTypeahead";
 import DropdownMenu from "components/DropdownMenu";
 import { Box, Form } from "components/Atoms";
 import { WithLabel } from "./WithLabel";
-
+import { getInfoFromCookies } from "utils/cookies";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 
@@ -40,7 +39,6 @@ const normalizeData = (form) => {
   });
   return payloadObject;
 };
-
 
 const UserDropdown = ({
   labelText,
@@ -178,7 +176,8 @@ const initialState = {
   },
 };
 
-const SubmitForm = () => {
+const SubmitForm = ({ role }) => {
+  console.log("role", role);
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [disabled, setDisabled] = useState(false);
@@ -204,12 +203,12 @@ const SubmitForm = () => {
     if (form["usaPlayerId"].value === form["ussrPlayerId"].value) {
       setForm((prevState) => ({
         ...prevState,
-        ['usaPlayerId']: {
-          ...prevState['usaPlayerId'],
+        ["usaPlayerId"]: {
+          ...prevState["usaPlayerId"],
           error: true,
         },
-        ['ussrPlayerId']: {
-          ...prevState['ussrPlayerId'],
+        ["ussrPlayerId"]: {
+          ...prevState["ussrPlayerId"],
           error: true,
         },
       }));
@@ -260,9 +259,7 @@ const SubmitForm = () => {
           selectedInputProperty="text"
           error={form.usaPlayerId.error}
           css={{ width: typeaheadWidth }}
-          onSelect={(value) =>
-            onInputValueChange("usaPlayerId", value?.value)
-          }
+          onSelect={(value) => onInputValueChange("usaPlayerId", value?.value)}
           onBlur={() => onInputValueChange("usaPlayerId", "")}
         />
         <UserTypeahead
@@ -272,9 +269,7 @@ const SubmitForm = () => {
           css={{ width: typeaheadWidth }}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          onSelect={(value) =>
-            onInputValueChange("ussrPlayerId", value?.value)
-          }
+          onSelect={(value) => onInputValueChange("ussrPlayerId", value?.value)}
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
         />
         <UserDropdown
@@ -334,8 +329,8 @@ const SubmitForm = () => {
             if (validated()) {
               setDisabled(true);
               gameSubmitMutation.mutate({
-                data: normalizeData(form)
-              })
+                data: normalizeData(form),
+              });
               // callAPI({
               //   url: "https://tsalpha.klckh.com/api/game-results",
               //   data: normalizeData(form),
@@ -354,10 +349,9 @@ const SubmitForm = () => {
   );
 };
 
-export async function getServerSideProps(context) {
-  const session = await getSession(context);
-
-  if (!session) {
+export async function getServerSideProps({ req, res }) {
+  const payload = getInfoFromCookies({ req, res });
+  if (!payload) {
     return {
       redirect: {
         permanent: false,
@@ -365,7 +359,7 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  return { props: {} };
+  return { props: { role: payload.role } };
 }
 
 export default SubmitForm;

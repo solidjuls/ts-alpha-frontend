@@ -4,7 +4,7 @@ import type { NextApiRequest } from "next";
 import { IncomingMessage } from "http";
 // import { getToken } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
-import cookie from "cookie";
+import Cookies from "cookies";
 
 export const getAccessTokenFromCookie = (
   req: NextApiRequest | IncomingMessage
@@ -30,11 +30,12 @@ export default trpcNext.createNextApiHandler({
       try {
         // there has two options cookie based or bearer based
         const secret = process.env.APP_SECRET_KEY as string;
-        var cookies = cookie.parse(req.headers.cookie);
+        const cookies = new Cookies(req, res);
+        var token = cookies.get('auth-token')
 
         // let token = req.headers["auth-token"]?.split(" ")[1] ?? null;
         // cookies.parse(req.headers.cookie);
-        const token = cookies['auth-token']
+        // const token = cookies['auth-token']
         console.log("create context", token);
         // console.log("create context", req.headers.cookie["auth-token"]);
         // if (!token) token = getAccessTokenFromCookie(req);

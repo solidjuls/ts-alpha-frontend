@@ -1,5 +1,6 @@
 import { IdProvider } from "@radix-ui/react-id";
-import { SessionProvider } from "next-auth/react";
+import Cookies from 'cookies'
+import AuthProvider from "contexts/AuthProvider";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { IntlContextProvider } from "contexts/IntlContext";
@@ -16,7 +17,7 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <IdProvider>
       <APIProvider>
-        <SessionProvider session={pageProps.session}>
+        <AuthProvider>
           <IntlContextProvider>
             <ThemeProvider
               attribute="class"
@@ -31,7 +32,7 @@ function App({ Component, pageProps }: AppProps) {
               </Layout>
             </ThemeProvider>
           </IntlContextProvider>
-        </SessionProvider>
+        </AuthProvider>
       </APIProvider>
     </IdProvider>
   );
