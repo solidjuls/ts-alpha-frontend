@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "contexts/APIProvider";
-import jwt from "next-auth/jwt"
+import jwt from "next-auth/jwt";
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";
@@ -43,23 +43,28 @@ const UserProfile = () => {
   const [password, setPassword] = useState("");
   const updateClick = async () => {
     // if (session?.user?.email) {
-      const pwdHashed = await hash(password, 12);
+    const pwdHashed = await hash(password, 12);
 
-      mutation.mutate({
-        mail: "juli.arnalot@gmail.com",// session.user?.email,
-        password: pwdHashed,
-      });
+    mutation.mutate({
+      mail: "juli.arnalot@gmail.com", // session.user?.email,
+      password: pwdHashed,
+    });
     // }
   };
 
   const updateAllClick = async () => {
-    if (session?.user?.email) {
-      const pwd = await hash("welcome6", 12);
+    const pwd = "welcome6"
 
-      mutationAll.mutate({
-        password: pwd,
-      });
-    }
+    mutationAll.mutate({
+      password: pwd,
+    });
+    // if (session?.user?.email) {
+    //   const pwd = await hash("welcome6", 12);
+
+    //   mutationAll.mutate({
+    //     password: pwd,
+    //   });
+    // }
   };
 
   return (

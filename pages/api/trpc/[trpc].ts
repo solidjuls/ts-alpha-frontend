@@ -33,6 +33,7 @@ export default trpcNext.createNextApiHandler({
         const cookies = new Cookies(req, res);
         var token = cookies.get('auth-token')
 
+        if (!token) return null
         // let token = req.headers["auth-token"]?.split(" ")[1] ?? null;
         // cookies.parse(req.headers.cookie);
         // const token = cookies['auth-token']
@@ -44,7 +45,12 @@ export default trpcNext.createNextApiHandler({
         const payload: JWTPayload = jwt.verify(token, process.env.TOKEN_SECRET);
         console.log("jwt.verify", payload);
         // let payload: JWTPayload = getToken({ token, secret });
-        return  null//payload?.user;
+        return  {
+          user: {
+            mail: payload.mail,
+            role: payload.role
+          }
+        }//payload?.user;
       } catch (e) {
         return null;
       }

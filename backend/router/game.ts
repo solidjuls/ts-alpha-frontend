@@ -113,16 +113,6 @@ export const gameRouter = trpc
       return null//JSON.parse(gameParsed) as Game[];
     },
   })
-  .mutation("restoreConfirm", {
-    input: z.object({ id: z.string() }),
-    async resolve({ input }) {
-      console.log("input", input)
-      const summaryGames = await recreateRatingsConfirm(input?.id);
-
-      const gameParsed = JSON.stringify(summaryGames);
-      return JSON.parse(gameParsed);
-    },
-  })
   .mutation("submit", {
     input: z.object({
       data: z.object({ ...getGameEndpointContract() }),
@@ -131,6 +121,16 @@ export const gameRouter = trpc
       const newGameWithId = await submitGame({ data: input.data });
       console.log("newGameWithId", newGameWithId);
       return newGameWithId;
+    },
+  })
+  .mutation("restoreConfirm", {
+    input: z.object({ id: z.string() }),
+    async resolve({ input }) {
+      console.log("input", input)
+      const summaryGames = await recreateRatingsConfirm(input?.id);
+
+      const gameParsed = JSON.stringify(summaryGames);
+      return JSON.parse(gameParsed);
     },
   })
   .mutation("restore", {

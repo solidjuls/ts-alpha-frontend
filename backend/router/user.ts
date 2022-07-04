@@ -102,76 +102,106 @@ export const userRouter = trpc
       return { success: true };
     },
   })
-  .query("get", {
-    input: z.object({ mail: z.string(), pwd: z.string() }),
-    async resolve({ input }) {
-      const user = await prisma.users.findFirst({
-        where: {
-          email: input.mail,
-        },
-      });
-      const userParsed = JSON.stringify(user, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
-      );
-      return JSON.parse(userParsed);
-    },
-  })
-  .query("get-all", {
-    async resolve() {
-      const users = await prisma.users.findMany({
-        select: {
-          id: true,
-          first_name: true,
-          last_name: true,
-          countries: {
-            select: {
-              tld_code: true,
+  .merge(
+    trpc
+      .router()
+      .middleware(async ({ ctx, next }) => {
+        if (!ctx.user) {
+          throw new trpc.TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Not logged in",
+          });
+        }
+        console.log("middleware user successful");
+        return next();
+      })
+      .query("get", {
+        input: z.object({ mail: z.string(), pwd: z.string() }),
+        async resolve({ input }) {
+          const user = await prisma.users.findFirst({
+            where: {
+              email: input.mail,
             },
-          },
+          });
+          const userParsed = JSON.stringify(user, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value
+          );
+          return JSON.parse(userParsed);
         },
-      });
+      })
+      .query("get-all", {
+        async resolve() {
+          const users = await prisma.users.findMany({
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              countries: {
+                select: {
+                  tld_code: true,
+                },
+              },
+            },
+          });
 
-      return users.map((user) => ({
-        id: user.id.toString(),
-        name: `${user.first_name} ${user.last_name}`,
-        countryCode: user.countries?.tld_code,
-      })) as UserType[];
-    },
-  })
-  .mutation("update", {
-    input: z.object({
-      mail: z.string(),
-      password: z.string(),
-    }),
-    async resolve({ input, ...rest }) {
-      console.log("ddd", input.password);
-      // const token = await jwt.getToken({ req, secret })
-      // console.log("JSON Web Token", token)
+          return users.map((user) => ({
+            id: user.id.toString(),
+            name: `${user.first_name} ${user.last_name}`,
+            countryCode: user.countries?.tld_code,
+          })) as UserType[];
+        },
+      })
+      .mutation("update", {
+        input: z.object({
+          mail: z.string(),
+          password: z.string(),
+        }),
+        async resolve({ input, ...rest }) {
+          console.log("ddd", input.password);
+          // const token = await jwt.getToken({ req, secret })
+          // console.log("JSON Web Token", token)
 
-      const updateUser = await prisma.users.update({
-        where: {
-          email: input.mail,
+          const updateUser = await prisma.users.update({
+            where: {
+              email: input.mail,
+            },
+            data: {
+              password: input.password,
+            },
+          });
+          console.log("update did happen");
+          return { success: true };
         },
-        data: {
-          password: input.password,
+      })
+  )
+  .merge(
+    trpc
+      .router()
+      .middleware(async ({ ctx, next }) => {
+        console.log("ctx.user.role === ", ctx.user.user.role)
+        if (ctx.user.user.role === "admin") {
+          throw new trpc.TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Not admin",
+          });
+        }
+        console.log("middleware admin successful");
+        return next();
+      })
+      .mutation("update-all", {
+        input: z.object({
+          password: z.string(),
+        }),
+        async resolve({ input }) {
+          const updateUser = await prisma.users.updateMany({
+            data: {
+              password: input.password,
+            },
+          });
+          return { success: true };
         },
-      });
-      return { success: true };
-    },
-  })
-  .mutation("update-all", {
-    input: z.object({
-      password: z.string(),
-    }),
-    async resolve({ input }) {
-      const updateUser = await prisma.users.updateMany({
-        data: {
-          password: input.password,
-        },
-      });
-      return { success: true };
-    },
-  })
+      })
+  )
   .mutation("reset-pwd", {
     input: z.object({
       mail: z.string(),
