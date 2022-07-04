@@ -1,12 +1,13 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  previewFeatures = ["interactiveTransactions", "referentialIntegrity"]
 }
 
 datasource db {
   provider          = "mysql"
   url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_URL")
+  referentialIntegrity = "prisma"
 }
 
 model countries {
