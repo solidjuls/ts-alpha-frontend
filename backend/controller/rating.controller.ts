@@ -4,44 +4,50 @@ import { BiggerLowerValue } from "types/game.types";
 const DEFAULT_RATING = 5000;
 
 export const getPreviousRating = async ({
-    playerId,
-    createdAt,
-  }: {
-    playerId: bigint;
-    createdAt: Date;
-  }) => {
-    const ratingsPlayer = await prisma.ratings_history.findFirst({
-      select: {
-        rating: true,
+  playerId,
+  createdAt,
+}: {
+  playerId: bigint;
+  createdAt: Date;
+}) => {
+  const ratingsPlayer = await prisma.ratings_history.findFirst({
+    select: {
+      rating: true,
+    },
+    where: {
+      player_id: playerId,
+      created_at: {
+        lt: createdAt,
       },
-      where: {
-        player_id: playerId,
-        created_at: {
-          lt: createdAt,
-        },
+    },
+    orderBy: [
+      {
+        created_at: "desc",
       },
-      orderBy: [
-        {
-          created_at: "desc",
-        },
-      ],
-    });
+    ],
+  });
 
-    return ratingsPlayer?.rating as number;
-  };
+  return ratingsPlayer?.rating as number;
+};
 
 const getRatingDifference = (
   defeated: number,
   winner: number,
   addValue: number = 100
 ) => {
-    console.log("defeated", defeated);
-    console.log("winner", winner);
-    console.log("(defeated - winner) * 0.05", (defeated - winner) * 0.05);
-    console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
-    console.log("Math.abs(Math.round((defeated - winner) * 0.05))", Math.abs(Math.round((defeated - winner) * 0.05)))
-    console.log("addValue", addValue)
-    
+  console.log("defeated", defeated);
+  console.log("winner", winner);
+  console.log("(defeated - winner) * 0.05", (defeated - winner) * 0.05);
+  console.log(
+    "Math.round((defeated - winner) * 0.05)",
+    Math.round((defeated - winner) * 0.05)
+  );
+  console.log(
+    "Math.abs(Math.round((defeated - winner) * 0.05))",
+    Math.abs(Math.round((defeated - winner) * 0.05))
+  );
+  console.log("addValue", addValue);
+
   const newValue = Math.abs(Math.round((defeated - winner) * 0.05)) + addValue;
 
   if (addValue !== 0 && newValue <= 0) {
@@ -53,7 +59,7 @@ const getRatingDifference = (
     return 200;
   }
   console.log("Difference normal", newValue);
-  console.log("--------------------")
+  console.log("--------------------");
   return newValue;
 };
 
@@ -107,6 +113,10 @@ export const calculateRating = async ({
   usaPlayerId,
   ussrPlayerId,
   gameWinner,
+}: {
+  usaPlayerId: any;
+  ussrPlayerId: any;
+  gameWinner: any;
 }) => {
   const usaRating = await getRatingByPlayer({
     playerId: BigInt(usaPlayerId),

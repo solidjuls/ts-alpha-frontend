@@ -1,12 +1,15 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
+import type { Context } from "../context";
 import { prisma } from "backend/utils/prisma";
 import crypto from "crypto";
 import { hash } from "bcryptjs";
 import { UserType } from "types/user.types";
 import { authorize } from "backend/controller/user.controller";
-import jwt from "jsonwebtoken";
+/* @ts-ignore */
 import Cookies from "cookies";
+/* @ts-ignore */
+import jwt from "jsonwebtoken";
 
 const nodemailer = require("nodemailer");
 
@@ -62,10 +65,11 @@ async function sendEmail(
 }
 
 export const userRouter = trpc
-  .router()
+  .router<Context>()
   .mutation("signin", {
     input: z.object({ mail: z.string(), pwd: z.string() }),
     async resolve({ input, ctx }) {
+      if (!ctx) return null;
       const user = await authorize({
         email: input.mail,
         pwd: input.pwd,
@@ -96,6 +100,7 @@ export const userRouter = trpc
   })
   .mutation("signout", {
     async resolve({ ctx }) {
+      if (!ctx) return { success: false };
       const cookies = new Cookies(ctx.req, ctx.res);
       cookies.set("auth-token");
 
@@ -104,9 +109,9 @@ export const userRouter = trpc
   })
   .merge(
     trpc
-      .router()
+      .router<Context>()
       .middleware(async ({ ctx, next }) => {
-        if (!ctx.user) {
+        if (!ctx?.user) {
           throw new trpc.TRPCError({
             code: "UNAUTHORIZED",
             message: "Not logged in",
@@ -176,10 +181,10 @@ export const userRouter = trpc
   )
   .merge(
     trpc
-      .router()
+      .router<Context>()
       .middleware(async ({ ctx, next }) => {
-        console.log("ctx.user.role === ", ctx.user.user.role)
-        if (ctx.user.user.role === "admin") {
+        // console.log("ctx.user.role === ", ctx.user.user.role);
+        if (ctx?.user?.user.role === "admin") {
           throw new trpc.TRPCError({
             code: "UNAUTHORIZED",
             message: "Not admin",

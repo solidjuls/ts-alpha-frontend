@@ -2,7 +2,7 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
-import { Game, SubmitGameType } from "types/game.types";
+import { GameWinner, SubmitGameType } from "types/game.types";
 import { calculateRating } from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
@@ -10,7 +10,7 @@ import {
 } from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
-const submitGame = async ({ data }: any) => {
+const submitGame = async (data: Game) => {
   const { newUsaRating, newUssrRating } = await calculateRating({
     usaPlayerId: data.usaPlayerId,
     ussrPlayerId: data.ussrPlayerId,
@@ -77,9 +77,9 @@ const submitGame = async ({ data }: any) => {
   });
 };
 
-const getGameEndpointContract = () => ({
+const zodGameApiValidation = () => ({
   gameDate: z.string(),
-  gameWinner: z.string(),
+  gameWinner: z.enum(["1", "2", "3"]),
   gameCode: z.string(),
   gameType: z.string(),
   usaPlayerId: z.string(),
@@ -90,6 +90,29 @@ const getGameEndpointContract = () => ({
   video2: z.optional(z.string()),
   video3: z.optional(z.string()),
 });
+
+const zodGameRecreateAPI = z.object({
+  data: z.object({
+    ...zodGameApiValidation(),
+    oldId: z.string(),
+  }),
+});
+
+type Game = {
+  video1?: string | undefined;
+  video2?: string | undefined;
+  video3?: string | undefined;
+  gameDate: string;
+  gameWinner: GameWinner;
+  gameCode: string;
+  gameType: string;
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  endTurn: string;
+  endMode: string;
+};
+
+type GameRecreate = Game & { oldId: string };
 
 export const gameRouter = trpc
   .router()
@@ -110,15 +133,15 @@ export const gameRouter = trpc
       //   typeof value === "bigint" ? value.toString() : value
       // );
 
-      return null//JSON.parse(gameParsed) as Game[];
+      return null; //JSON.parse(gameParsed) as Game[];
     },
   })
   .mutation("submit", {
     input: z.object({
-      data: z.object({ ...getGameEndpointContract() }),
+      data: z.object({ ...zodGameApiValidation() }),
     }),
     async resolve({ input }) {
-      const newGameWithId = await submitGame({ data: input.data });
+      const newGameWithId = await submitGame(input.data);
       console.log("newGameWithId", newGameWithId);
       return newGameWithId;
     },
@@ -126,17 +149,15 @@ export const gameRouter = trpc
   .mutation("restoreConfirm", {
     input: z.object({ id: z.string() }),
     async resolve({ input }) {
-      console.log("input", input)
-      const summaryGames = await recreateRatingsConfirm(input?.id);
+      console.log("input", input);
+      const summaryGames = await recreateRatingsConfirm(input.id);
 
       const gameParsed = JSON.stringify(summaryGames);
       return JSON.parse(gameParsed);
     },
   })
   .mutation("restore", {
-    input: z.object({
-      data: z.object({ ...getGameEndpointContract(), oldId: z.string() }),
-    }),
+    input: zodGameRecreateAPI,
     async resolve({ input }) {
       // ALL DATA CHANGE MUST RESPECT THE OLD DATES
       // await recreateRatings(input)
@@ -146,15 +167,14 @@ export const gameRouter = trpc
       //     console.log("Disconnecting!!!!");
       //   });
       console.log("input?.data", input?.data);
-      const summaryGames = await recreateRatings(input);
-      
+      const summaryGames = await recreateRatings(input?.data);
+
       console.log("summaryGames", summaryGames);
       const gameParsed = JSON.stringify(summaryGames);
       return JSON.parse(gameParsed);
       // return JSON.parse("yeah");
     },
   });
-
 
 async function recreateRatingsConfirm(oldId: string) {
   const oldGameDate = await getGameById(oldId);
@@ -184,6 +204,13 @@ const createNewRating = async ({
   createdAt,
   updatedAt,
   gameId,
+}: {
+  usaPlayerId: bigint;
+  ussrPlayerId: bigint;
+  gameWinner: GameWinner;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  gameId: bigint;
 }) => {
   //we recalculate all ratings based on the games retrieved,
   const { newUsaRating, newUssrRating } = await calculateRating({
@@ -235,10 +262,10 @@ const createNewRating = async ({
   });
 };
 
-const startRecreatingRatings = async (input) => {
+const startRecreatingRatings = async (input: GameRecreate) => {
   const dateNow = new Date(Date.now());
   // we select the oldId game created_at
-  const oldGameDate = await getGameById(input?.data?.oldId);
+  const oldGameDate = await getGameById(input.oldId);
 
   // we select all games with date created_at >= oldId game
   const allGamesAffected = await prisma.game_results.findMany({
@@ -270,23 +297,23 @@ const startRecreatingRatings = async (input) => {
 
   for (let index = 0; index < allGamesAffected.length; index++) {
     const game = allGamesAffected[index];
-    console.log("index", index, game.id, input?.data?.oldId);
-    if (game.id.toString() === input?.data?.oldId) {
-      const oldId = BigInt(input?.data?.oldId);
+    console.log("index", index, game.id, input.oldId);
+    if (game.id.toString() === input.oldId) {
+      const oldId = BigInt(input.oldId);
       const newGame = {
         updated_at: dateNow,
-        usa_player_id: BigInt(input?.data?.usaPlayerId),
-        ussr_player_id: BigInt(input?.data?.ussrPlayerId),
-        game_type: input?.data?.gameType,
-        game_code: input?.data?.gameCode,
-        game_winner: input?.data?.gameWinner,
-        end_turn: Number(input?.data?.endTurn),
-        end_mode: input?.data?.endMode,
-        game_date: new Date(Date.parse(input?.data?.gameDate)),
-        video1: input?.data?.video1 || null,
-        video2: input?.data?.video2 || null,
-        video3: input?.data?.video3 || null,
-        reporter_id: BigInt(input?.data?.usaPlayerId),
+        usa_player_id: BigInt(input.usaPlayerId),
+        ussr_player_id: BigInt(input.ussrPlayerId),
+        game_type: input.gameType,
+        game_code: input.gameCode,
+        game_winner: input.gameWinner,
+        end_turn: Number(input.endTurn),
+        end_mode: input.endMode,
+        game_date: new Date(Date.parse(input.gameDate)),
+        video1: input.video1 || null,
+        video2: input.video2 || null,
+        video3: input.video3 || null,
+        reporter_id: BigInt(input.usaPlayerId),
       };
 
       await prisma.game_results.update({
@@ -298,9 +325,9 @@ const startRecreatingRatings = async (input) => {
         },
       });
       await createNewRating({
-        usaPlayerId: BigInt(input?.data?.usaPlayerId),
-        ussrPlayerId: BigInt(input?.data?.ussrPlayerId),
-        gameWinner: input?.data?.gameWinner,
+        usaPlayerId: BigInt(input.usaPlayerId),
+        ussrPlayerId: BigInt(input.ussrPlayerId),
+        gameWinner: input.gameWinner as GameWinner,
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
@@ -309,7 +336,7 @@ const startRecreatingRatings = async (input) => {
       await createNewRating({
         usaPlayerId: BigInt(game.usa_player_id),
         ussrPlayerId: BigInt(game.ussr_player_id),
-        gameWinner: game.game_winner,
+        gameWinner: game.game_winner as GameWinner,
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
@@ -319,7 +346,7 @@ const startRecreatingRatings = async (input) => {
 
   return null;
 };
-async function recreateRatings(input: any) {
+async function recreateRatings(input: GameRecreate) {
   try {
     return await startRecreatingRatings(input);
     // await prisma.$transaction(async (prisma) => {
