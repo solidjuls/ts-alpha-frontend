@@ -23,6 +23,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-cutter": "^0.2.0",
     "cookies": "^0.8.0",
+    "cookies-next": "^2.1.1",
     "crypto": "^1.0.1",
     "date-fns": "^2.26.0",
     "downshift": "^6.1.7",
