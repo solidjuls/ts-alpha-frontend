@@ -1,5 +1,4 @@
 import { IdProvider } from "@radix-ui/react-id";
-import Cookies from 'cookies'
 import AuthProvider from "contexts/AuthProvider";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";

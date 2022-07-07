@@ -36,7 +36,7 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating, ratingDifference }: GameRating) => {
+const Rating = ({ rating, ratingDifference }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -48,9 +48,6 @@ const Rating = ({ rating, ratingDifference }: GameRating) => {
 const RatingBox = ({
   ratingsUSA,
   ratingsUSSR,
-}: {
-  ratingsUSA: GameRating;
-  ratingsUSSR: GameRating;
 }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
@@ -74,12 +71,6 @@ const PlayerInfoBox = ({
   winner,
   usaCountryCode,
   ussrCountryCode,
-}: {
-  nameUSA: string;
-  nameUSSR: string;
-  winner: string;
-  usaCountryCode: string;
-  ussrCountryCode: string;
 }) => {
   return (
     <Box
@@ -104,7 +95,7 @@ const PlayerInfoBox = ({
 };
 
 
-const ResultRow = ({ game }: { game: Game }) => {
+const ResultRow = ({ game }) => {
   return (
     <PlayerInfo>
       <Text
@@ -168,7 +159,7 @@ const FilterPanel = styled("div", {
   borderBottom: borderStyle,
 });
 
-const formatDateToString = (date: Date) =>
+const formatDateToString = (date) =>
   `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
@@ -196,8 +187,8 @@ const Homepage = () => {
     { d: dateValue.toDateString() },
   ]);
 
-  const onClickDay = (clickedItem: DayMonthInputClickType) => {
-    let newDate: Date = new Date();
+  const onClickDay = (clickedItem) => {
+    let newDate = new Date();
     if (clickedItem === "left") {
       newDate = dateAddDay(dateValue, -1);
     } else if (clickedItem === "right") {

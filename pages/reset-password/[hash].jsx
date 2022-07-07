@@ -7,7 +7,7 @@ import { Button } from "components/Button";
 import { Box } from "components/Atoms";
 import { PasswordInput } from "components/Input";
 
-const decryptHash = (hash: string) => {
+const decryptHash = (hash) => {
   let buff = Buffer.from(hash, "base64");
   return buff.toString("ascii");
 };
@@ -16,10 +16,6 @@ const LabelInput = ({
   inputValue,
   labelText,
   onChange,
-}: {
-  inputValue: string;
-  labelText: string;
-  onChange: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
@@ -28,7 +24,7 @@ const LabelInput = ({
         id="mail"
         margin="login"
         defaultValue={inputValue}
-        onChange={(event: any) => onChange(event.target.value)}
+        onChange={(event) => onChange(event.target.value)}
         css={{ width: "300px" }}
       />
     </Box>
@@ -42,7 +38,7 @@ const ResetPassword = () => {
   const router = useRouter();
   const { hash: hashKey } = router.query;
 
-  const decrypted = decryptHash(hashKey as string);
+  const decrypted = decryptHash(hashKey);
   const values = decrypted.split("#");
   const date = Date.parse(values[1]);
   console.log(Date.now() - date);

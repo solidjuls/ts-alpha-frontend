@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { trpc } from "contexts/APIProvider";
 import { Typeahead } from "components/Autocomplete/Typeahead";
-import { WithLabel } from "./WithLabel";
+import WithLabel from "./WithLabel";
 
 const useTypeaheadState = () => {
   const { data } = trpc.useQuery(["user-get-all"]);
@@ -68,4 +68,4 @@ const UserTypeahead = ({
   );
 };
 
-export { UserTypeahead };
+export default UserTypeahead;

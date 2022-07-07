@@ -18,7 +18,7 @@ const horizontalItemStyles = {
   margin: 0,
 };
 
-const Items = ({ styles }: any) => {
+const Items = ({ styles }) => {
   return (
     <>
       <Link href="/" passHref>

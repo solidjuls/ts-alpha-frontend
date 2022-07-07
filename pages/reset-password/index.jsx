@@ -54,7 +54,7 @@ const ResetPassword = () => {
               id="mail"
               margin="login"
               defaultValue={mail}
-              onChange={(event: any) => setMail(event.target.value)}
+              onChange={(event) => setMail(event.target.value)}
               css={{ width: "300px" }}
             />
           </Box>

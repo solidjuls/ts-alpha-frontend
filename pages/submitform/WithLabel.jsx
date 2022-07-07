@@ -20,4 +20,4 @@ const WithLabel = ({ labelText, children }) => {
   );
 };
 
-export { WithLabel };
+export default WithLabel;

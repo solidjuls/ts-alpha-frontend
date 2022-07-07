@@ -10,10 +10,10 @@ import {
 } from "utils/constants";
 import { Button } from "components/Button";
 import { Input } from "components/Input";
-import { UserTypeahead } from "./UserTypeahead";
+import UserTypeahead from "./UserTypeahead";
 import DropdownMenu from "components/DropdownMenu";
 import { Box, Form } from "components/Atoms";
-import { WithLabel } from "./WithLabel";
+import WithLabel from "./WithLabel";
 import { getInfoFromCookies } from "utils/cookies";
 import "react-day-picker/lib/style.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";

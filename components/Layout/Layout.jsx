@@ -57,7 +57,7 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }: { children: JSX.Element }) => {
+const Layout = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box css={containerStyles}>

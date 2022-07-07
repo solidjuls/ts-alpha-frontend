@@ -3,7 +3,7 @@ import cookieCutter from "cookie-cutter";
 
 const KEY = "ts-user";
 const AuthContext = createContext({});
-function getSessionStorageOrDefault(key: string, defaultValue: Object) {
+function getSessionStorageOrDefault(key, defaultValue) {
   if (typeof window !== "undefined") {
     const stored = sessionStorage.getItem(key);
     if (!stored) {
@@ -14,7 +14,7 @@ function getSessionStorageOrDefault(key: string, defaultValue: Object) {
   return defaultValue;
 }
 
-const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(getSessionStorageOrDefault(KEY, {}));
   useEffect(() => {
     console.log("useSession effect enters");
@@ -23,7 +23,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [auth]);
 
-  const setAuthentication = (authProps: { mail: string; name: string }) => {
+  const setAuthentication = (authProps) => {
     cookieCutter.set("ts-user", authProps);
     setAuth(authProps);
   };

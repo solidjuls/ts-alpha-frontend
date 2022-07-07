@@ -74,19 +74,19 @@ const SelectedItemDiv = styled("div", {
   fontSize: 15,
 });
 
-type ItemType = {
-  text: string;
-  value: string;
-};
+// type ItemType = {
+//   text: string;
+//   value: string;
+// };
 
-type DropdownMenuProps = {
-  items: Array<ItemType>;
-  selectedItem: string;
-  onSelect: Function;
-  width: string;
-  error: boolean;
-  css: any;
-};
+// type DropdownMenuProps = {
+//   items: Array<ItemType>;
+//   selectedItem: string;
+//   onSelect: Function;
+//   width: string;
+//   error: boolean;
+//   css: any;
+// };
 
 const DropdownMenu = ({
   items,
@@ -94,7 +94,7 @@ const DropdownMenu = ({
   onSelect,
   error,
   css,
-}: DropdownMenuProps) => {
+}) => {
   return (
     <Root>
       <StyledTrigger css={css} border={error ? "error" : undefined}>

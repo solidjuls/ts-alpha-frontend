@@ -120,7 +120,7 @@ const StyledContent = styled(Content, {
 
 const StyledItem = styled(Item, { ...styledItemStyles });
 
-const UserAvatar = ({ name }: { name: String }) => {
+const UserAvatar = ({ name }) => {
   const intl = useIntl();
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>

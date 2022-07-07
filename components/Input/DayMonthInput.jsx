@@ -34,14 +34,14 @@ const StyledCalendarIcon = styled(CalendarIcon, {
 
 const width = "110px";
 
-export type DayMonthInputClickType = "left" | "right";
+// export type DayMonthInputClickType = "left" | "right";
 
-type DayMonthInputType = {
-  value: string;
-  onClick: (value: DayMonthInputClickType) => void;
-};
+// type DayMonthInputType = {
+//   value: string;
+//   onClick: (value: DayMonthInputClickType) => void;
+// };
 
-const DayMonthInput = ({ value, onClick }: DayMonthInputType) => {
+const DayMonthInput = ({ value, onClick }) => {
   return (
     <Box
       css={{

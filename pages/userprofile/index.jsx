@@ -17,10 +17,6 @@ const TextComponent = ({
   inputValue,
   onInputValueChange = () => {},
   ...rest
-}: {
-  labelText: string;
-  inputValue: string;
-  onInputValueChange: React.Dispatch<React.SetStateAction<string>>;
 }) => (
   <Box css={{ display: "flex", marginBottom: "16px" }}>
     <Label htmlFor="video1" css={cssLabel}>

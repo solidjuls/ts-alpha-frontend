@@ -1,4 +1,4 @@
-export const getWinnerText = (gameWinner: GameWinner) => {
+export const getWinnerText = (gameWinner) => {
     if (gameWinner === "1") {
       return "USA";
     } else if (gameWinner == "2") {
