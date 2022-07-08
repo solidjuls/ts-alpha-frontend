@@ -5,8 +5,8 @@ generator client {
 
 datasource db {
   provider             = "mysql"
-  url                  = "mysql://root:rusting@127.0.0.1:3306/ts-alpha"
-  shadowDatabaseUrl    = "mysql://root:rusting@127.0.0.1:3306/ts-alpha"
+  url                  = env("DATABASE_URL")
+  shadowDatabaseUrl    = env("SHADOW_URL")
   referentialIntegrity = "prisma"
 }
 
