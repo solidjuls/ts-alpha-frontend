@@ -58,7 +58,7 @@ const Footer = () => {
   );
 };
 const Layout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />

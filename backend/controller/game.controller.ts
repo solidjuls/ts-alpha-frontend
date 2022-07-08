@@ -1,10 +1,10 @@
 import { prisma } from "backend/utils/prisma";
-import { Game, SubmitGameType } from "types/game.types";
+import { GameDB } from "types/game.types";
 import { getPreviousRating } from "backend/controller/rating.controller";
 
 const getGamesWithRatingDifference: (
   gamesWithRatingRelated: any
-) => Promise<Game[]> = async (gamesWithRatingRelated: any) => {
+) => Promise<GameDB[]> = async (gamesWithRatingRelated: any) => {
   return await Promise.all(
     gamesWithRatingRelated.map(async (game: any) => {
       const usaPreviousRating = await getPreviousRating({

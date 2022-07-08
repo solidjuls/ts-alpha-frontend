@@ -1,12 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions", "referentialIntegrity"]
 }
 
 datasource db {
-  provider          = "mysql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_URL")
+  provider             = "mysql"
+  url                  = "mysql://root:rusting@127.0.0.1:3306/ts-alpha"
+  shadowDatabaseUrl    = "mysql://root:rusting@127.0.0.1:3306/ts-alpha"
   referentialIntegrity = "prisma"
 }
 
@@ -118,22 +118,6 @@ model ratings_history {
   @@index([player_id, created_at], map: "ratings_history_player_id_created_at_index")
 }
 
-model user_game_stats {
-  player_id      BigInt    @id @db.UnsignedBigInt
-  created_at     DateTime? @db.Timestamp(0)
-  updated_at     DateTime? @db.Timestamp(0)
-  rating         Int       @default(5000)
-  total_games    Int       @default(0)
-  friendly_games Int       @default(0)
-  usa_victories  Int       @default(0)
-  usa_losses     Int       @default(0)
-  usa_ties       Int       @default(0)
-  ussr_victories Int       @default(0)
-  ussr_losses    Int       @default(0)
-  ussr_ties      Int       @default(0)
-  users          users     @relation(fields: [player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_game_stats_player_id_foreign")
-}
-
 model users {
   id                                              BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
   name                                            String?           @db.VarChar(255)
@@ -152,7 +136,6 @@ model users {
   game_results_game_results_usa_player_idTousers  game_results[]    @relation("game_results_usa_player_idTousers")
   game_results_game_results_ussr_player_idTousers game_results[]    @relation("game_results_ussr_player_idTousers")
   ratings_history                                 ratings_history[]
-  user_game_stats                                 user_game_stats?
 
   @@index([country_id], map: "users_country_id_foreign")
   @@index([first_name], map: "users_first_name_index")

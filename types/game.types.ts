@@ -1,16 +1,6 @@
-export type GameRating = {
-  rating: number;
-  ratingDifference: number;
-};
+import { z } from "zod";
 
-export type BiggerLowerValue = {
-  bigger: number;
-  smaller: number;
-};
-
-export type GameWinner = "1" | "2" | "3";
-
-export type Game = {
+export type GameDB = {
   id: bigint;
   created_at: Date | null;
   updated_at: Date | null;
@@ -36,19 +26,41 @@ export type Game = {
   ratingsUSSR: GameRating;
 };
 
+export const zGameAPI = z.object({
+  gameDate: z.string(),
+  gameWinner: z.enum(["1", "2", "3"]),
+  gameCode: z.string(),
+  gameType: z.string(),
+  usaPlayerId: z.string(),
+  ussrPlayerId: z.string(),
+  endTurn: z.string(),
+  endMode: z.string(),
+  video1: z.optional(z.string()),
+  video2: z.optional(z.string()),
+  video3: z.optional(z.string()),
+});
+
+export const zGameRecreateAPI = zGameAPI.extend({
+  oldId: z.string(),
+});
+
+export type GameRating = {
+  rating: number;
+  ratingDifference: number;
+};
+
+export type BiggerLowerValue = {
+  bigger: number;
+  smaller: number;
+};
+
+export type GameWinner = "1" | "2" | "3";
+
+export type Game = z.infer<typeof zGameAPI>;
+
+export type GameRecreate = z.infer<typeof zGameRecreateAPI>;
+
+
+
 type GameLeagueType = "National League" | "ITSL" | "OTSL" | "RTSL" | "Friendly";
 type GameWinnerType = "1" | "2" | "3";
-
-export type SubmitGameType = {
-  gameDate: string;
-  gameWinner: GameWinnerType;
-  gameCode: string;
-  gameType: GameLeagueType;
-  usaPlayerId: string;
-  ussrPlayerId: string;
-  endTurn: string;
-  endMode: string;
-  video1?: string;
-  video2?: string;
-  video3?: string;
-};

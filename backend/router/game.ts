@@ -2,7 +2,13 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
-import { GameWinner, SubmitGameType } from "types/game.types";
+import {
+  Game,
+  GameWinner,
+  GameRecreate,
+  zGameAPI,
+  zGameRecreateAPI,
+} from "types/game.types";
 import { calculateRating } from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
@@ -77,43 +83,6 @@ const submitGame = async (data: Game) => {
   });
 };
 
-const zodGameApiValidation = () => ({
-  gameDate: z.string(),
-  gameWinner: z.enum(["1", "2", "3"]),
-  gameCode: z.string(),
-  gameType: z.string(),
-  usaPlayerId: z.string(),
-  ussrPlayerId: z.string(),
-  endTurn: z.string(),
-  endMode: z.string(),
-  video1: z.optional(z.string()),
-  video2: z.optional(z.string()),
-  video3: z.optional(z.string()),
-});
-
-const zodGameRecreateAPI = z.object({
-  data: z.object({
-    ...zodGameApiValidation(),
-    oldId: z.string(),
-  }),
-});
-
-type Game = {
-  video1?: string | undefined;
-  video2?: string | undefined;
-  video3?: string | undefined;
-  gameDate: string;
-  gameWinner: GameWinner;
-  gameCode: string;
-  gameType: string;
-  usaPlayerId: string;
-  ussrPlayerId: string;
-  endTurn: string;
-  endMode: string;
-};
-
-type GameRecreate = Game & { oldId: string };
-
 export const gameRouter = trpc
   .router()
   .query("getAll", {
@@ -138,12 +107,15 @@ export const gameRouter = trpc
   })
   .mutation("submit", {
     input: z.object({
-      data: z.object({ ...zodGameApiValidation() }),
+      data: zGameAPI,
     }),
     async resolve({ input }) {
       const newGameWithId = await submitGame(input.data);
       console.log("newGameWithId", newGameWithId);
-      return newGameWithId;
+      const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+      return JSON.parse(newGameWithIdParsed);
     },
   })
   .mutation("restoreConfirm", {
@@ -157,7 +129,9 @@ export const gameRouter = trpc
     },
   })
   .mutation("restore", {
-    input: zodGameRecreateAPI,
+    input: z.object({
+      data: zGameRecreateAPI,
+    }),
     async resolve({ input }) {
       // ALL DATA CHANGE MUST RESPECT THE OLD DATES
       // await recreateRatings(input)
@@ -167,7 +141,7 @@ export const gameRouter = trpc
       //     console.log("Disconnecting!!!!");
       //   });
       console.log("input?.data", input?.data);
-      const summaryGames = await recreateRatings(input?.data);
+      const summaryGames = await recreateRatings(input.data);
 
       console.log("summaryGames", summaryGames);
       const gameParsed = JSON.stringify(summaryGames);
