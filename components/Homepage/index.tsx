@@ -4,12 +4,12 @@ import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, A } from "components/Atoms";
 import Text from "components/Text";
-import { DayMonthInput, DayMonthInputClickType } from "components/Input";
+import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
-import { Game, GameWinner, GameRating } from "types/game.types";
-import { getWinnerText } from "utils/games"; 
+import { Game, GameRating } from "types/game.types";
+import { getWinnerText } from "utils/games";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -36,7 +36,10 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating, ratingDifference }) => {
+const Rating = ({
+  rating,
+  ratingDifference,
+}: Pick<GameRating, "rating" | "ratingDifference">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -48,7 +51,7 @@ const Rating = ({ rating, ratingDifference }) => {
 const RatingBox = ({
   ratingsUSA,
   ratingsUSSR,
-}) => {
+}: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
@@ -66,12 +69,19 @@ const RatingBox = ({
 };
 
 const PlayerInfoBox = ({
-  nameUSA,
-  nameUSSR,
-  winner,
+  usaPlayer,
+  ussrPlayer,
+  gameWinner,
   usaCountryCode,
   ussrCountryCode,
-}) => {
+}: Pick<
+  Game,
+  | "usaPlayer"
+  | "ussrPlayer"
+  | "gameWinner"
+  | "usaCountryCode"
+  | "ussrCountryCode"
+>) => {
   return (
     <Box
       css={{
@@ -84,18 +94,21 @@ const PlayerInfoBox = ({
     >
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={usaCountryCode} />
-        <Text strong={winner === "1" ? "bold" : undefined}>{nameUSA}</Text>
+        <Text strong={gameWinner === "1" ? "bold" : undefined}>
+          {usaPlayer}
+        </Text>
       </Box>
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
         <FlagIcon code={ussrCountryCode} />
-        <Text strong={winner === "2" ? "bold" : undefined}>{nameUSSR}</Text>
+        <Text strong={gameWinner === "2" ? "bold" : undefined}>
+          {ussrPlayer}
+        </Text>
       </Box>
     </Box>
   );
 };
 
-
-const ResultRow = ({ game }) => {
+const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
       <Text
@@ -108,9 +121,9 @@ const ResultRow = ({ game }) => {
       <PlayerInfoBox
         usaCountryCode={game.usaCountryCode}
         ussrCountryCode={game.ussrCountryCode}
-        nameUSA={game.usaPlayer}
-        nameUSSR={game.ussrPlayer}
-        winner={game.gameWinner}
+        usaPlayer={game.usaPlayer}
+        ussrPlayer={game.ussrPlayer}
+        gameWinner={game.gameWinner}
       />
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
       <Box css={{ ...boxStyle, ...responsive }}>
@@ -159,7 +172,7 @@ const FilterPanel = styled("div", {
   borderBottom: borderStyle,
 });
 
-const formatDateToString = (date) =>
+const formatDateToString = (date: Date) =>
   `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
@@ -180,14 +193,14 @@ const EmptyState = () => {
   );
 };
 
-const Homepage = () => {
-  const [dateValue, setDateValue] = useState(new Date());
+const Homepage: React.FC = () => {
+  const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
     "game-getAll",
-    { d: dateValue.toDateString() },
+    // { d: dateValue.toDateString() },
   ]);
 
-  const onClickDay = (clickedItem) => {
+  const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
     if (clickedItem === "left") {
       newDate = dateAddDay(dateValue, -1);
@@ -221,9 +234,7 @@ const Homepage = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <Box>
-        {/* <TopPlayerRating /> */}
-      </Box>
+      <Box>{/* <TopPlayerRating /> */}</Box>
     </Box>
   );
 };

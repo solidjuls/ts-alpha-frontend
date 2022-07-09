@@ -4,6 +4,7 @@ import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
 import {
   Game,
+  GameAPI,
   GameWinner,
   GameRecreate,
   zGameAPI,
@@ -16,7 +17,7 @@ import {
 } from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
-const submitGame = async (data: Game) => {
+const submitGame = async (data: GameAPI) => {
   const { newUsaRating, newUssrRating } = await calculateRating({
     usaPlayerId: data.usaPlayerId,
     ussrPlayerId: data.ussrPlayerId,
@@ -86,17 +87,12 @@ const submitGame = async (data: Game) => {
 export const gameRouter = trpc
   .router()
   .query("getAll", {
-    input: z.object({ d: z.string() }),
+    // input: z.object({ d: z.string() }),
     async resolve({ input }) {
-      const date = new Date(Date.parse(input.d));
-      const datePlusOne = dateAddDay(date, 1);
+      // const date = new Date(Date.parse(input.d));
+      // const datePlusOne = dateAddDay(date, 1);
 
-      const gamesNormalized = await getGameWithRatings({
-        created_at: {
-          lt: datePlusOne,
-          gte: date,
-        },
-      });
+      const gamesNormalized = await getGameWithRatings();
 
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
@@ -154,11 +150,7 @@ async function recreateRatingsConfirm(oldId: string) {
   const oldGameDate = await getGameById(oldId);
 
   if (oldGameDate && oldGameDate.created_at != null) {
-    const gamesAffected = await getGameWithRatings({
-      created_at: {
-        gte: new Date(oldGameDate.created_at),
-      },
-    });
+    const gamesAffected = await getGameWithRatings();
     return gamesAffected.map(
       (game, index) =>
         `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${

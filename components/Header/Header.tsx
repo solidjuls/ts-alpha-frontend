@@ -47,7 +47,7 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
   },
 });
 
-const Header = ({ openSidebar }) => {
+const Header = ({ openSidebar }: { openSidebar: () => void}) => {
   const { name } = useSession();
   const intl = useIntl();
 

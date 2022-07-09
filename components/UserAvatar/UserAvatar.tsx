@@ -66,7 +66,7 @@ const StyledTrigger = styled(Trigger, {
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color:"$backgroundColorLight",
+  color: "$backgroundColorLight",
 });
 
 const slideUpAndFade = keyframes({
@@ -120,7 +120,7 @@ const StyledContent = styled(Content, {
 
 const StyledItem = styled(Item, { ...styledItemStyles });
 
-const UserAvatar = ({ name }) => {
+const UserAvatar = ({ name }: { name: string }) => {
   const intl = useIntl();
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>

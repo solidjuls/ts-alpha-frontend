@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
 import Header from "components/Header";
@@ -57,8 +57,8 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Layout = ({ children }: { children: ReactNode}) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box css={containerStyles}>
       <Header openSidebar={() => setIsOpen(!isOpen)} />

@@ -1,10 +1,10 @@
 import { prisma } from "backend/utils/prisma";
-import { GameDB } from "types/game.types";
+import { Game } from "types/game.types";
 import { getPreviousRating } from "backend/controller/rating.controller";
 
 const getGamesWithRatingDifference: (
   gamesWithRatingRelated: any
-) => Promise<GameDB[]> = async (gamesWithRatingRelated: any) => {
+) => Promise<Game[]> = async (gamesWithRatingRelated: any) => {
   return await Promise.all(
     gamesWithRatingRelated.map(async (game: any) => {
       const usaPreviousRating = await getPreviousRating({
@@ -53,8 +53,9 @@ const getGamesWithRatingDifference: (
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter: any) => {
+export const getGameWithRatings = async () => {
   const games = await prisma.game_results.findMany({
+    take: 3,
     include: {
       users_game_results_usa_player_idTousers: {
         select: {
@@ -85,9 +86,9 @@ export const getGameWithRatings = async (filter: any) => {
         },
       },
     },
-    where: {
-      ...filter,
-    },
+    // where: {
+    //   ...filter,
+    // },
     orderBy: [
       {
         created_at: "desc",

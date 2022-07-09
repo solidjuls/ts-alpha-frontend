@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type GameDB = {
+export type Game = {
   id: bigint;
   created_at: Date | null;
   updated_at: Date | null;
@@ -56,7 +56,7 @@ export type BiggerLowerValue = {
 
 export type GameWinner = "1" | "2" | "3";
 
-export type Game = z.infer<typeof zGameAPI>;
+export type GameAPI = z.infer<typeof zGameAPI>;
 
 export type GameRecreate = z.infer<typeof zGameRecreateAPI>;
 
