@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { styled } from "stitches.config";
-import Image from "next/image";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
+import { FlagIcon } from "components/FlagIcon";
 import { Box, A } from "components/Atoms";
 import Text from "components/Text";
 import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
+import { Game, GameRating } from "types/game.types";
+import { getWinnerText } from "utils/games";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
-const TRIANGLE_WIDTH = "16px";
+
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
   display: "flex",
@@ -34,7 +36,10 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({ rating, ratingDifference }) => {
+const Rating = ({
+  rating,
+  ratingDifference,
+}: Pick<GameRating, "rating" | "ratingDifference">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -43,7 +48,10 @@ const Rating = ({ rating, ratingDifference }) => {
   );
 };
 
-const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
+const RatingBox = ({
+  ratingsUSA,
+  ratingsUSSR,
+}: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
@@ -60,25 +68,20 @@ const RatingBox = ({ ratingsUSA, ratingsUSSR }) => {
   );
 };
 
-const FlagIcon = ({ code }) => (
-  <Box css={{ marginLeft: "4px", marginRight: "4px" }}>
-    <Image
-      src={`/flags/${code}.png`}
-      alt="code"
-      width={TRIANGLE_WIDTH}
-      height={TRIANGLE_WIDTH}
-    />
-  </Box>
-);
 const PlayerInfoBox = ({
-  nameUSA,
-  nameUSSR,
-  winner,
+  usaPlayer,
+  ussrPlayer,
+  gameWinner,
   usaCountryCode,
-  usaCountryIcon,
   ussrCountryCode,
-  ussrCountryIcon,
-}) => {
+}: Pick<
+  Game,
+  | "usaPlayer"
+  | "ussrPlayer"
+  | "gameWinner"
+  | "usaCountryCode"
+  | "ussrCountryCode"
+>) => {
   return (
     <Box
       css={{
@@ -90,26 +93,22 @@ const PlayerInfoBox = ({
       }}
     >
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
-        <FlagIcon code={usaCountryCode} icon={usaCountryIcon} />
-        <Text strong={winner === "1" ? "bold" : ""}>{nameUSA}</Text>
+        <FlagIcon code={usaCountryCode} />
+        <Text strong={gameWinner === "1" ? "bold" : undefined}>
+          {usaPlayer}
+        </Text>
       </Box>
       <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
-        <FlagIcon code={ussrCountryCode} icon={ussrCountryIcon} />
-        <Text strong={winner === "2" ? "bold" : ""}>{nameUSSR}</Text>
+        <FlagIcon code={ussrCountryCode} />
+        <Text strong={gameWinner === "2" ? "bold" : undefined}>
+          {ussrPlayer}
+        </Text>
       </Box>
     </Box>
   );
 };
 
-const getWinnerText = (gameWinner) => {
-  if (gameWinner === "1") {
-    return "USA";
-  } else if (gameWinner == "2") {
-    return "USSR";
-  }
-  return "TIE";
-};
-const ResultRow = ({ game }) => {
+const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
       <Text
@@ -120,13 +119,11 @@ const ResultRow = ({ game }) => {
       </Text>
 
       <PlayerInfoBox
-        usaCountryIcon={game.usaCountryIcon}
         usaCountryCode={game.usaCountryCode}
-        ussrCountryIcon={game.ussrCountryIcon}
         ussrCountryCode={game.ussrCountryCode}
-        nameUSA={game.usaPlayer}
-        nameUSSR={game.ussrPlayer}
-        winner={game.gameWinner}
+        usaPlayer={game.usaPlayer}
+        ussrPlayer={game.ussrPlayer}
+        gameWinner={game.gameWinner}
       />
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
       <Box css={{ ...boxStyle, ...responsive }}>
@@ -162,7 +159,7 @@ const ResultRow = ({ game }) => {
 const ResultsPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
-  backgroundColor: "white",
+  backgroundColor: "$infoForm",
   border: "solid 1px none",
   borderRadius: "12px",
   flexGrow: "1",
@@ -175,7 +172,8 @@ const FilterPanel = styled("div", {
   borderBottom: borderStyle,
 });
 
-const formatDateToString = (date) => `${date.getDate()}/${date.getMonth() + 1}`;
+const formatDateToString = (date: Date) =>
+  `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
   return (
@@ -195,16 +193,15 @@ const EmptyState = () => {
   );
 };
 
-const Homepage = () => {
-  const [dateValue, setDateValue] = useState(new Date());
+const Homepage: React.FC = () => {
+  const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
     "game-getAll",
-    { d: dateValue.toDateString() },
+    // { d: dateValue.toDateString() },
   ]);
 
-  console.log("rerender");
-  const onClickDay = (clickedItem) => {
-    let newDate;
+  const onClickDay = (clickedItem: "left" | "right") => {
+    let newDate = new Date();
     if (clickedItem === "left") {
       newDate = dateAddDay(dateValue, -1);
     } else if (clickedItem === "right") {
@@ -237,9 +234,7 @@ const Homepage = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <Box>
-        <TopPlayerRating />
-      </Box>
+      <Box>{/* <TopPlayerRating /> */}</Box>
     </Box>
   );
 };

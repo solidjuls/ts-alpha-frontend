@@ -2,150 +2,325 @@ import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
 import { dateAddDay } from "utils/dates";
+import {
+  Game,
+  GameAPI,
+  GameWinner,
+  GameRecreate,
+  zGameAPI,
+  zGameRecreateAPI,
+} from "types/game.types";
+import { calculateRating } from "backend/controller/rating.controller";
+import {
+  getGameWithRatings,
+  getGameById,
+} from "backend/controller/game.controller";
+import { getWinnerText } from "utils/games";
 
-const getPreviousRating = async ({
-  playerId,
-  createdAt,
-}: {
-  playerId: bigint;
-  createdAt: Date;
-}) => {
-  const ratingsPlayer = await prisma.ratings_history.findFirst({
-    select: {
-      rating: true,
-    },
-    where: {
-      player_id: playerId,
-      created_at: {
-        lt: createdAt,
+const submitGame = async (data: GameAPI) => {
+  const { newUsaRating, newUssrRating } = await calculateRating({
+    usaPlayerId: data.usaPlayerId,
+    ussrPlayerId: data.ussrPlayerId,
+    gameWinner: data.gameWinner,
+  });
+
+  const dateNow = new Date(Date.now());
+  const newGame = {
+    created_at: dateNow,
+    updated_at: dateNow,
+    usa_player_id: BigInt(data.usaPlayerId),
+    ussr_player_id: BigInt(data.ussrPlayerId),
+    game_type: data.gameType,
+    game_code: data.gameCode,
+    reported_at: dateNow,
+    game_winner: data.gameWinner,
+    end_turn: Number(data.endTurn),
+    end_mode: data.endMode,
+    game_date: new Date(Date.parse(data.gameDate)),
+    video1: data.video1 || null,
+    video2: data.video2 || null,
+    video3: data.video3 || null,
+    reporter_id: BigInt(data.usaPlayerId),
+  };
+
+  return await prisma.game_results.create({
+    data: {
+      ...newGame,
+      ratings_history: {
+        create: [
+          {
+            player_id: BigInt(data.usaPlayerId),
+            rating: newUsaRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+          {
+            player_id: BigInt(data.ussrPlayerId),
+            rating: newUssrRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+        ],
       },
     },
-    orderBy: [
+  });
+};
+
+export const gameRouter = trpc
+  .router()
+  .query("getAll", {
+    // input: z.object({ d: z.string() }),
+    async resolve({ input }) {
+      // const date = new Date(Date.parse(input.d));
+      // const datePlusOne = dateAddDay(date, 1);
+
+      const gamesNormalized = await getGameWithRatings();
+
+      const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+
+      return JSON.parse(gameParsed) as Game[];
+    },
+  })
+  .mutation("submit", {
+    input: z.object({
+      data: zGameAPI,
+    }),
+    async resolve({ input }) {
+      const newGameWithId = await submitGame(input.data);
+      console.log("newGameWithId", newGameWithId);
+      const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+      return JSON.parse(newGameWithIdParsed);
+    },
+  })
+  .mutation("restoreConfirm", {
+    input: z.object({ id: z.string() }),
+    async resolve({ input }) {
+      console.log("input", input);
+      const summaryGames = await recreateRatingsConfirm(input.id);
+
+      const gameParsed = JSON.stringify(summaryGames);
+      return JSON.parse(gameParsed);
+    },
+  })
+  .mutation("restore", {
+    input: z.object({
+      data: zGameRecreateAPI,
+    }),
+    async resolve({ input }) {
+      // ALL DATA CHANGE MUST RESPECT THE OLD DATES
+      // await recreateRatings(input)
+      //   .catch(console.error)
+      //   .finally(() => {
+      //     prisma.$disconnect();
+      //     console.log("Disconnecting!!!!");
+      //   });
+      console.log("input?.data", input?.data);
+      const summaryGames = await recreateRatings(input.data);
+
+      console.log("summaryGames", summaryGames);
+      const gameParsed = JSON.stringify(summaryGames);
+      return JSON.parse(gameParsed);
+      // return JSON.parse("yeah");
+    },
+  });
+
+async function recreateRatingsConfirm(oldId: string) {
+  const oldGameDate = await getGameById(oldId);
+
+  if (oldGameDate && oldGameDate.created_at != null) {
+    const gamesAffected = await getGameWithRatings();
+    return gamesAffected.map(
+      (game, index) =>
+        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${
+          game.ratingsUSA.ratingDifference
+        }) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${
+          game.ratingsUSSR.ratingDifference
+        }) ->Winner ${getWinnerText(game.gameWinner)}`
+    );
+  }
+  return [];
+}
+
+const createNewRating = async ({
+  usaPlayerId,
+  ussrPlayerId,
+  gameWinner,
+  createdAt,
+  updatedAt,
+  gameId,
+}: {
+  usaPlayerId: bigint;
+  ussrPlayerId: bigint;
+  gameWinner: GameWinner;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  gameId: bigint;
+}) => {
+  //we recalculate all ratings based on the games retrieved,
+  const { newUsaRating, newUssrRating } = await calculateRating({
+    usaPlayerId,
+    ussrPlayerId,
+    gameWinner,
+  });
+  console.log(
+    "newUsaRating, newUssrRating",
+    gameId,
+    newUsaRating,
+    newUssrRating
+  );
+  await prisma.ratings_history.createMany({
+    data: [
       {
-        created_at: "desc",
+        player_id: BigInt(usaPlayerId),
+        rating: newUsaRating,
+        game_code: "recr",
+        created_at: createdAt,
+        updated_at: updatedAt,
+        game_result_id: gameId,
+        total_games: 0,
+        friendly_games: 0,
+        usa_victories: 0,
+        usa_losses: 0,
+        usa_ties: 0,
+        ussr_victories: 0,
+        ussr_losses: 0,
+        ussr_ties: 0,
+      },
+      {
+        player_id: BigInt(ussrPlayerId),
+        rating: newUssrRating,
+        game_code: "recr",
+        created_at: createdAt,
+        updated_at: updatedAt,
+        game_result_id: gameId,
+        total_games: 0,
+        friendly_games: 0,
+        usa_victories: 0,
+        usa_losses: 0,
+        usa_ties: 0,
+        ussr_victories: 0,
+        ussr_losses: 0,
+        ussr_ties: 0,
       },
     ],
   });
-
-  return ratingsPlayer?.rating as number;
 };
 
-export const gameRouter = trpc.router().query("getAll", {
-  input: z.object({ d: z.string() }),
-  async resolve({ input }) {
-    const date = new Date(Date.parse(input.d));
-    const datePlusOne = dateAddDay(date, 1);
+const startRecreatingRatings = async (input: GameRecreate) => {
+  const dateNow = new Date(Date.now());
+  // we select the oldId game created_at
+  const oldGameDate = await getGameById(input.oldId);
 
-    const games = await prisma.game_results.findMany({
-      include: {
-        users_game_results_usa_player_idTousers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            countries: {
-              select: {
-                tld_code: true
-              }
-            }
-          },
-        },
-        users_game_results_ussr_player_idTousers: {
-          select: {
-            first_name: true,
-            last_name: true,
-            countries: {
-              select: {
-                tld_code: true
-              }
-            }
-          },
-        },
-        ratings_history: {
-          select: {
-            rating: true,
-            player_id: true,
-          },
-        },
+  // we select all games with date created_at >= oldId game
+  const allGamesAffected = await prisma.game_results.findMany({
+    select: {
+      id: true,
+      created_at: true,
+      usa_player_id: true,
+      ussr_player_id: true,
+      game_winner: true,
+      game_code: true,
+    },
+    where: {
+      created_at: {
+        gte: new Date(oldGameDate?.created_at as Date),
       },
-      where: {
-        created_at: {
-          lt: datePlusOne,
-          gte: date,
-        },
-      },
-      orderBy: [
-        {
-          created_at: "desc",
-        },
-      ],
-    });
+    },
+  });
 
-    const gamesWithRatingRelated = games.map((game) => {
-      let ratingHistoryUSA = 0;
-      let ratingHistoryUSSR = 0;
-      game.ratings_history.forEach(async ({ rating, player_id }) => {
-        if (player_id === game.usa_player_id) {
-          ratingHistoryUSA = rating;
-        } else if (player_id === game.ussr_player_id) {
-          ratingHistoryUSSR = rating;
-        }
-      });
-      return {
-        ...game,
-        ratingHistoryUSA,
-        ratingHistoryUSSR,
+  // we delete all rating info related to those games
+  const ids = allGamesAffected.map((game) => game.id);
+
+  await prisma.ratings_history.deleteMany({
+    where: {
+      game_result_id: {
+        in: ids,
+      },
+    },
+  });
+
+  for (let index = 0; index < allGamesAffected.length; index++) {
+    const game = allGamesAffected[index];
+    console.log("index", index, game.id, input.oldId);
+    if (game.id.toString() === input.oldId) {
+      const oldId = BigInt(input.oldId);
+      const newGame = {
+        updated_at: dateNow,
+        usa_player_id: BigInt(input.usaPlayerId),
+        ussr_player_id: BigInt(input.ussrPlayerId),
+        game_type: input.gameType,
+        game_code: input.gameCode,
+        game_winner: input.gameWinner,
+        end_turn: Number(input.endTurn),
+        end_mode: input.endMode,
+        game_date: new Date(Date.parse(input.gameDate)),
+        video1: input.video1 || null,
+        video2: input.video2 || null,
+        video3: input.video3 || null,
+        reporter_id: BigInt(input.usaPlayerId),
       };
-    });
-    const gamesNormalized = await Promise.all(
-      gamesWithRatingRelated.map(async (game) => {
-        const usaPreviousRating = await getPreviousRating({
-          playerId: game.usa_player_id,
-          createdAt: game.created_at as Date,
-        });
-        const ratingsUSA = {
-          rating: game.ratingHistoryUSA,
-          ratingDifference: game.ratingHistoryUSA - usaPreviousRating,
-        };
-        const ussrPreviousRating = await getPreviousRating({
-          playerId: game.ussr_player_id,
-          createdAt: game.created_at as Date,
-        });
-        const ratingsUSSR = {
-          rating: game.ratingHistoryUSSR,
-          ratingDifference: game.ratingHistoryUSSR - ussrPreviousRating,
-        };
 
-        return {
-          created_at: game.created_at,
-          endMode: game.end_mode,
-          endTurn: game.end_turn,
-          usaPlayerId: game.usa_player_id,
-          ussrPlayerId: game.ussr_player_id,
-          usaCountryCode:
-            game?.users_game_results_usa_player_idTousers?.countries?.tld_code,
-          ussrCountryCode:
-            game?.users_game_results_ussr_player_idTousers?.countries?.tld_code,
-          usaPlayer:
-            game.users_game_results_usa_player_idTousers.first_name +
-            " " +
-            game.users_game_results_usa_player_idTousers.last_name,
-          ussrPlayer:
-            game.users_game_results_ussr_player_idTousers.first_name +
-            " " +
-            game.users_game_results_ussr_player_idTousers.last_name,
-          gameType: game.game_type,
-          videoURL: game.video1,
-          gameWinner: game.game_winner,
-          ratingsUSA,
-          ratingsUSSR,
-        };
-      })
-    );
-    const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
-      typeof value === "bigint" ? value.toString() : value
-    );
-    return JSON.parse(gameParsed);
-  },
-});
+      await prisma.game_results.update({
+        data: {
+          ...newGame,
+        },
+        where: {
+          id: oldId,
+        },
+      });
+      await createNewRating({
+        usaPlayerId: BigInt(input.usaPlayerId),
+        ussrPlayerId: BigInt(input.ussrPlayerId),
+        gameWinner: input.gameWinner as GameWinner,
+        createdAt: game.created_at,
+        updatedAt: dateNow,
+        gameId: game.id,
+      });
+    } else {
+      await createNewRating({
+        usaPlayerId: BigInt(game.usa_player_id),
+        ussrPlayerId: BigInt(game.ussr_player_id),
+        gameWinner: game.game_winner as GameWinner,
+        createdAt: game.created_at,
+        updatedAt: dateNow,
+        gameId: game.id,
+      });
+    }
+  }
+
+  return null;
+};
+async function recreateRatings(input: GameRecreate) {
+  try {
+    return await startRecreatingRatings(input);
+    // await prisma.$transaction(async (prisma) => {
+
+    // });
+  } catch (e) {
+    console.log("trans error", e);
+  }
+}
 
 export type GameRouter = typeof gameRouter;

@@ -1,9 +1,9 @@
 import { IdProvider } from "@radix-ui/react-id";
-import { SessionProvider } from "next-auth/react";
+import AuthProvider from "contexts/AuthProvider";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
-
 import { IntlContextProvider } from "contexts/IntlContext";
+import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
 import { darkTheme } from "stitches.config.js";
 import { withTRPC } from "@trpc/next";
@@ -15,22 +15,24 @@ import "styles/stylesGlobal.css";
 function App({ Component, pageProps }: AppProps) {
   return (
     <IdProvider>
-      <SessionProvider session={pageProps.session}>
-        <IntlContextProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            value={{
-              dark: darkTheme.className,
-              light: "light",
-            }}
-          >
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
-        </IntlContextProvider>
-      </SessionProvider>
+      <APIProvider>
+        <AuthProvider>
+          <IntlContextProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              value={{
+                dark: darkTheme.className,
+                light: "light",
+              }}
+            >
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </IntlContextProvider>
+        </AuthProvider>
+      </APIProvider>
     </IdProvider>
   );
 }

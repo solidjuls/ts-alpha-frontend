@@ -3,6 +3,7 @@ import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Box, Span } from "components/Atoms";
 import { blackA } from "@radix-ui/colors";
+import type * as Stitches from "@stitches/react";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
@@ -74,18 +75,9 @@ const SelectedItemDiv = styled("div", {
   fontSize: 15,
 });
 
-type ItemType = {
-  text: string;
+type DropdownItemType = {
   value: string;
-};
-
-type DropdownMenuProps = {
-  items: Array<ItemType>;
-  selectedItem: string;
-  onSelect: Function;
-  width: string;
-  error: boolean;
-  css: any;
+  text: string;
 };
 
 const DropdownMenu = ({
@@ -94,7 +86,13 @@ const DropdownMenu = ({
   onSelect,
   error,
   css,
-}: DropdownMenuProps) => {
+}: {
+  items: DropdownItemType[];
+  selectedItem: string;
+  onSelect: (value: string) => void;
+  error: boolean;
+  css: Stitches.CSS;
+}) => {
   return (
     <Root>
       <StyledTrigger css={css} border={error ? "error" : undefined}>

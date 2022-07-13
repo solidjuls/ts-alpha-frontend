@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
+import jwt from "next-auth/jwt";
 import { hash } from "bcryptjs";
-import { useSession } from "next-auth/react";
+import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";
 import { Input } from "components/Input";
 import { Label } from "components/Label";
@@ -16,10 +17,6 @@ const TextComponent = ({
   inputValue,
   onInputValueChange = () => {},
   ...rest
-}: {
-  labelText: string;
-  inputValue: string;
-  onInputValueChange: React.Dispatch<React.SetStateAction<string>>;
 }) => (
   <Box css={{ display: "flex", marginBottom: "16px" }}>
     <Label htmlFor="video1" css={cssLabel}>
@@ -41,24 +38,29 @@ const UserProfile = () => {
   const { data: session } = useSession();
   const [password, setPassword] = useState("");
   const updateClick = async () => {
-    if (session?.user?.email) {
-      const pwdHashed = await hash(password, 12);
+    // if (session?.user?.email) {
+    const pwdHashed = await hash(password, 12);
 
-      mutation.mutate({
-        mail: session.user?.email,
-        password: pwdHashed,
-      });
-    }
+    mutation.mutate({
+      mail: "juli.arnalot@gmail.com", // session.user?.email,
+      password: pwdHashed,
+    });
+    // }
   };
 
   const updateAllClick = async () => {
-    if (session?.user?.email) {
-      const pwd = await hash("welcome6", 12);
+    const pwd = "welcome6"
 
-      mutationAll.mutate({
-        password: pwd,
-      });
-    }
+    mutationAll.mutate({
+      password: pwd,
+    });
+    // if (session?.user?.email) {
+    //   const pwd = await hash("welcome6", 12);
+
+    //   mutationAll.mutate({
+    //     password: pwd,
+    //   });
+    // }
   };
 
   return (

@@ -1,2 +1,3 @@
 export { Input } from "./Input";
-export { DayMonthInput } from "./DayMonthInput";
+export * from "./DayMonthInput";
+export * from "./PasswordInput";

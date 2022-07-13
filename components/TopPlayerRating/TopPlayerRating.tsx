@@ -1,19 +1,14 @@
-import { trpc } from "utils/trpc";
+import { trpc } from "contexts/APIProvider";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
-
-const topRatingAlignStyles = {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
-};
+import { User } from "components/User";
 
 const SidePanelStyled = styled("div", {
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  backgroundColor: "white",
+  backgroundColor: "$infoForm",
   margin: "0 12px 0 12px",
   padding: "12px",
   borderRadius: "12px",
@@ -46,10 +41,12 @@ const TopPlayerRating = () => {
       </Text>
       <Box>
         {data?.map((item, index) => (
-          <Box key={index} css={topRatingAlignStyles}>
-            <Text>{item.name}</Text>
-            <Text>{item.rating}</Text>
-          </Box>
+          <User
+            key={index}
+            name={item.name}
+            rating={item.rating}
+            countryCode={item.countryCode}
+          />
         ))}
       </Box>
     </SidePanelStyled>

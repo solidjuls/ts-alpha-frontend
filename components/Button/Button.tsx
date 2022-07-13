@@ -3,7 +3,8 @@ import { styled } from "stitches.config";
 const Button = styled("button", {
   display: "inline-block",
   padding: "8px",
-  margin: "0 0.3em 0.3em 0",
+  cursor: "pointer",
+  // margin: "0 0.3em 0.3em 0",
   borderRadius: "4px",
   boxSizing: " border-box",
   textDecoration: "none",

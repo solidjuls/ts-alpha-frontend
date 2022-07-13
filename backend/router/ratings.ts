@@ -1,7 +1,8 @@
 import * as trpc from "@trpc/server";
 import { z } from "zod";
 import { prisma } from "backend/utils/prisma";
-import { Ratings } from "types/ratings.types";
+import { UserType } from "types/user.types";
+import { getRatingByPlayer } from "backend/controller/rating.controller";
 
 const getAllPlayers = async () =>
   await prisma.users.findMany({
@@ -9,28 +10,17 @@ const getAllPlayers = async () =>
       id: true,
       first_name: true,
       last_name: true,
-      country_id: true,
-    },
-  });
-
-const getRatingByPlayer = async ({ playerId }: { playerId: bigint }) =>
-  await prisma.ratings_history.findFirst({
-    select: {
-      rating: true,
-    },
-    where: {
-      player_id: playerId,
-    },
-    orderBy: {
-      created_at: "desc",
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
     },
   });
 
 export const ratingsRouter = trpc.router().query("get", {
   input: z.object({ n: z.number() }),
   async resolve({ input }) {
-    console.log("ratingsRouter", input.n);
-
     const players = await getAllPlayers();
     const playersWithRating = await Promise.all(
       players.map(async (player) => {
@@ -38,7 +28,7 @@ export const ratingsRouter = trpc.router().query("get", {
         return {
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
-          countryId: player.country_id
+          countryCode: player.countries?.tld_code,
         };
       })
     );
@@ -55,11 +45,6 @@ export const ratingsRouter = trpc.router().query("get", {
       playersWithRatingSorted = playersWithRatingSorted.slice(0, input.n);
     }
 
-    const playersWithRatingParsed = JSON.stringify(
-      playersWithRatingSorted,
-      (key, value) => (typeof value === "bigint" ? value.toString() : value)
-    );
-
-    return JSON.parse(playersWithRatingParsed);
+    return playersWithRatingSorted as UserType[];
   },
 });

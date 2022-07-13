@@ -1,4 +1,4 @@
-export const dateAddDay = (date: Date, day: number) => {
+export const dateAddDay: (date: Date, day: number) => Date = (date, day) => {
   const newDate = new Date(date);
   return new Date(newDate.setDate(newDate.getDate() + day));
 };

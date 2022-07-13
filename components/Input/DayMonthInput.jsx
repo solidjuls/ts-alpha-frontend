@@ -32,10 +32,16 @@ const StyledCalendarIcon = styled(CalendarIcon, {
   left: "24px",
 });
 
-const width = '110px'
+const width = "110px";
+
+// export type DayMonthInputClickType = "left" | "right";
+
+// type DayMonthInputType = {
+//   value: string;
+//   onClick: (value: DayMonthInputClickType) => void;
+// };
 
 const DayMonthInput = ({ value, onClick }) => {
-  
   return (
     <Box
       css={{
@@ -53,9 +59,9 @@ const DayMonthInput = ({ value, onClick }) => {
           {value}
         </Span>
       </InputDiv>
-      <StyledCalendarIcon  />
-      <StyledChevronRightIcon onClick={() => onClick('right')}/>
-      <StyledChevronLeftIcon onClick={() => onClick('left')}/>
+      <StyledCalendarIcon />
+      <StyledChevronRightIcon onClick={() => onClick("right")} />
+      <StyledChevronLeftIcon onClick={() => onClick("left")} />
     </Box>
   );
 };

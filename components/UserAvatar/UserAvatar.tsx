@@ -12,7 +12,8 @@ import {
   Separator,
 } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useSession } from "contexts/AuthProvider";
 import { Box } from "components/Atoms";
 
 const styledItemStyles = {
@@ -62,11 +63,11 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
-  backgroundColor: "$backgroundColorDark",
+  backgroundColor: "$primary",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color:"$backgroundColorLight",
+  color: "$backgroundColorLight",
 });
 
 const slideUpAndFade = keyframes({
@@ -120,15 +121,17 @@ const StyledContent = styled(Content, {
 
 const StyledItem = styled(Item, { ...styledItemStyles });
 
-const UserAvatar = ({ name }: { name: String }) => {
+const UserAvatar = ({ name }: { name: string }) => {
   const intl = useIntl();
+  const router = useRouter();
+  const { logout } = useSession();
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Root>
         <StyledTrigger>
-          <StyledAvatar>
+          {/* <StyledAvatar>
             <StyledImage src="https://pbs.twimg.com/profile_images/1361968864171618316/T8jfJHNo_400x400.jpg"></StyledImage>
-          </StyledAvatar>
+          </StyledAvatar> */}
           <StyledTriangleDownIcon />
         </StyledTrigger>
         <StyledContent align="end">
@@ -138,7 +141,14 @@ const UserAvatar = ({ name }: { name: String }) => {
             </Link>
           </StyledItem>
           <StyledSeparator />
-          <StyledItem onClick={() => signOut({ callbackUrl: "/" })}>
+          <StyledItem
+            onClick={async () => {
+              if (logout) {
+                await logout();
+                router.push("/");
+              }
+            }}
+          >
             {intl.formatMessage({ id: "signOut" })}
           </StyledItem>
           <Item />
