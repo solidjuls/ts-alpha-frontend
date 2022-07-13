@@ -3,3 +3,5 @@ declare type JWTPayload = {
   mail: string;
   role: string;
 };
+
+declare module 'cookie-cutter'

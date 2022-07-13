@@ -1,9 +1,25 @@
-import { useContext, createContext, useState, useEffect } from "react";
+import {
+  useContext,
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import cookieCutter from "cookie-cutter";
+import type { AuthType } from "../types/user.types";
+
+type AuthContextProps = Pick<AuthType, "name" | "email"> & {
+  setAuthentication?: (authProps: AuthType) => void;
+};
 
 const KEY = "ts-user";
-const AuthContext = createContext({});
-function getSessionStorageOrDefault(key, defaultValue) {
+const AuthContext = createContext<AuthContextProps>({
+  email: undefined,
+  name: undefined,
+});
+
+function getSessionStorageOrDefault(key: string, defaultValue?: AuthType) {
+  console.log("asdfafsdf", key, defaultValue);
   if (typeof window !== "undefined") {
     const stored = sessionStorage.getItem(key);
     if (!stored) {
@@ -14,8 +30,13 @@ function getSessionStorageOrDefault(key, defaultValue) {
   return defaultValue;
 }
 
-const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState(getSessionStorageOrDefault(KEY, {}));
+type AuthProviderProps = {
+  children: ReactNode;
+};
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [auth, setAuth] = useState<AuthType>(
+    getSessionStorageOrDefault(KEY, {})
+  );
   useEffect(() => {
     console.log("useSession effect enters");
     if (typeof window !== "undefined") {
@@ -23,7 +44,7 @@ const AuthProvider = ({ children }) => {
     }
   }, [auth]);
 
-  const setAuthentication = (authProps) => {
+  const setAuthentication = (authProps: AuthType) => {
     cookieCutter.set("ts-user", authProps);
     setAuth(authProps);
   };

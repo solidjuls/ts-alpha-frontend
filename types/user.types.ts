@@ -4,3 +4,9 @@ export type UserType = {
   rating?: number;
   countryCode: string;
 };
+
+export type AuthType = {
+  name?: string | undefined;
+  email?: string | undefined;
+  pwd?: string | undefined;
+}

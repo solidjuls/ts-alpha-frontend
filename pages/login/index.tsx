@@ -9,7 +9,7 @@ import { Button } from "components/Button";
 import Text from "components/Text";
 import { Input, PasswordInput } from "components/Input";
 import { Label } from "components/Label";
-import { useSession, signIn, signOut } from "contexts/AuthProvider";
+import { useSession } from "contexts/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Box, Form } from "components/Atoms";
@@ -32,13 +32,13 @@ const ErrorInfo = styled("span", {
   margin: "8px",
 });
 
-const Login = ({ user }) => {
+const Login = () => {
   const { error } = useRouter().query;
   const signin = trpc.useMutation(["user-signin"]);
-  const { setAuthentication } = useSession();
-  // const { data: session, status } = useSession();
-  const [mail, setMail] = useState("");
-  const [pwd, setPwd] = useState("");
+  const signout = trpc.useMutation(["user-signout"]);
+  const { email, setAuthentication } = useSession();
+  const [mail, setMail] = useState<string>("");
+  const [pwd, setPwd] = useState<string>("");
 
   return (
     <>
@@ -74,43 +74,44 @@ const Login = ({ user }) => {
             id="pwd"
             margin="login"
             defaultValue={pwd}
-            onChange={(event) => setPwd(event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setPwd(event.target.value)
+            }
             css={{ width: "300px" }}
           />
           {error && <ErrorInfo>Could not sign in</ErrorInfo>}
           <Button
             onClick={async (e) => {
               e.preventDefault();
-              const response = await signin.mutateAsync({
-                mail,
-                pwd,
-              });
-              setAuthentication(response);
+              try {
+                const response = await signin.mutateAsync({
+                  mail,
+                  pwd,
+                });
+                if (response && setAuthentication) setAuthentication(response);
+              } catch (e) {
+                console.log("login error", e);
+              }
             }}
           >
             Login
           </Button>
-          {/* {!session && (
+          {email && (
             <Button
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                signIn("credentials", {
-                  mail,
-                  pwd,
-                  callbackUrl: "/submitform",
-                });
+                try {
+                  const response = await signout.mutateAsync();
+                  if (response && response.success && setAuthentication)
+                    setAuthentication({});
+                } catch (e) {
+                  console.log("sign out error", e);
+                }
               }}
-            >
-              Login
-            </Button>
-          )} */}
-          {/* {session && (
-            <Button
-              onClick={() => signOut("credentials", { callbackUrl: "/" })}
             >
               Sign out
             </Button>
-          )} */}
+          )}
           <Link href="/reset-password" passHref>
             <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
           </Link>

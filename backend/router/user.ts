@@ -4,7 +4,7 @@ import type { Context } from "../context";
 import { prisma } from "backend/utils/prisma";
 import crypto from "crypto";
 import { hash } from "bcryptjs";
-import { UserType } from "types/user.types";
+import { AuthType, UserType } from "types/user.types";
 import { authorize } from "backend/controller/user.controller";
 /* @ts-ignore */
 import Cookies from "cookies";
@@ -76,8 +76,10 @@ export const userRouter = trpc
       });
       console.log("user resolve", user);
       if (!user) {
-        // deal with it
-        return null;
+        throw new trpc.TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User doesn't exist",
+        });
       }
       const token = jwt.sign(
         { mail: user.email, role: "admin" },
@@ -87,15 +89,13 @@ export const userRouter = trpc
         }
       );
 
-      // console.log("token", ctx)
-      const cookies = new Cookies(ctx.req, ctx.res);
-      cookies.set("auth-token", token, {
+      new Cookies(ctx.req, ctx.res).set("auth-token", token, {
         maxAge: 60 * 60 * 24,
         path: "/",
         httpOnly: true,
       });
 
-      return { email: user.email, name: user.name };
+      return { email: user.email, name: user.name } as AuthType;
     },
   })
   .mutation("signout", {
