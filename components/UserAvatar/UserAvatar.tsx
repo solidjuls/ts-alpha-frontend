@@ -12,7 +12,8 @@ import {
   Separator,
 } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useSession } from "contexts/AuthProvider";
 import { Box } from "components/Atoms";
 
 const styledItemStyles = {
@@ -122,6 +123,8 @@ const StyledItem = styled(Item, { ...styledItemStyles });
 
 const UserAvatar = ({ name }: { name: string }) => {
   const intl = useIntl();
+  const router = useRouter();
+  const { logout } = useSession();
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Root>
@@ -138,7 +141,14 @@ const UserAvatar = ({ name }: { name: string }) => {
             </Link>
           </StyledItem>
           <StyledSeparator />
-          <StyledItem onClick={() => signOut({ callbackUrl: "/" })}>
+          <StyledItem
+            onClick={async () => {
+              if (logout) {
+                await logout();
+                router.push("/");
+              }
+            }}
+          >
             {intl.formatMessage({ id: "signOut" })}
           </StyledItem>
           <Item />
