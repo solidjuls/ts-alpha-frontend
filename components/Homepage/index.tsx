@@ -164,6 +164,8 @@ const ResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
   marginBottom: "12px",
+  height: "500px",
+  overflowY: "scroll"
 });
 
 const FilterPanel = styled("div", {

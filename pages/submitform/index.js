@@ -131,6 +131,10 @@ const getSelectedItem = (value, list) =>
   list.find((item) => item.value === value)?.text || list[0].text;
 
 const initialState = {
+  gameRecreateId: {
+    value: "",
+    error: false,
+  },
   gameDate: {
     value: new Date(),
   },
@@ -236,6 +240,15 @@ const SubmitForm = ({ role }) => {
 
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+      {role === 2 && (
+        <TextComponent
+          labelText="gameRecreateId"
+          inputValue={form.gameRecreateId.value}
+          onInputValueChange={(value) => onInputValueChange("gameRecreateId", value)}
+          css={{ width: "50px" }}
+          error={form.gameRecreateId.error}
+        />
+      )}
       <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
         <TextComponent
           labelText="checkID"
@@ -351,6 +364,7 @@ const SubmitForm = ({ role }) => {
 
 export async function getServerSideProps({ req, res }) {
   const payload = getInfoFromCookies({ req, res });
+  console.log("payload", payload);
   if (!payload) {
     return {
       redirect: {

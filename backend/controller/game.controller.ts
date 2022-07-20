@@ -55,7 +55,6 @@ const getGamesWithRatingDifference: (
 // Games with their ratings and return normalized data
 export const getGameWithRatings = async () => {
   const games = await prisma.game_results.findMany({
-    take: 3,
     include: {
       users_game_results_usa_player_idTousers: {
         select: {
