@@ -108,7 +108,7 @@ const DropdownMenu = ({
                 marginLeft: "8px",
               }}
             >
-              {selectedItem}
+              {items.find((item) => item.value === selectedItem)?.text}
             </Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />

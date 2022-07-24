@@ -106,27 +106,6 @@ const DateComponent = ({
   </WithLabel>
 );
 
-const callAPI = ({ url, data, sendCallback, responseCallback }) => {
-  console.log("url", url, data);
-  fetch(url, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  })
-    .then((res) => res.json())
-    .then((result) => {
-      console.log("successful", result);
-      responseCallback(result);
-    })
-    .catch((err) => {
-      console.log("error", err);
-      responseCallback(err);
-    });
-};
-
 const getSelectedItem = (value, list) =>
   list.find((item) => item.value === value)?.text || list[0].text;
 
@@ -181,7 +160,6 @@ const initialState = {
 };
 
 const SubmitForm = ({ role }) => {
-  console.log("role", role);
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [disabled, setDisabled] = useState(false);
@@ -203,7 +181,6 @@ const SubmitForm = ({ role }) => {
 
   const validated = () => {
     let submit = true;
-    console.log("form", form);
     if (form["usaPlayerId"].value === form["ussrPlayerId"].value) {
       setForm((prevState) => ({
         ...prevState,
@@ -261,6 +238,8 @@ const SubmitForm = ({ role }) => {
           labelText="typeOfGame"
           items={leagueTypes}
           selectedItem={form.gameType.value}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
           error={form.gameType.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
@@ -344,14 +323,6 @@ const SubmitForm = ({ role }) => {
               gameSubmitMutation.mutate({
                 data: normalizeData(form),
               });
-              // callAPI({
-              //   url: "https://tsalpha.klckh.com/api/game-results",
-              //   data: normalizeData(form),
-              //   responseCallback: () => {
-              //     setDisabled(false);
-              //     router.push("/");
-              //   },
-              // });
             }
           }}
         >
@@ -364,7 +335,7 @@ const SubmitForm = ({ role }) => {
 
 export async function getServerSideProps({ req, res }) {
   const payload = getInfoFromCookies({ req, res });
-  console.log("payload", payload);
+console.log("payload", payload)
   if (!payload) {
     return {
       redirect: {

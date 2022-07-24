@@ -90,7 +90,6 @@ export const userRouter = trpc
       );
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
-        maxAge: 60 * 60 * 24,
         path: "/",
         httpOnly: true,
       });
