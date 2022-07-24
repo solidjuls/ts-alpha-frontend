@@ -23,7 +23,7 @@ const submitGame = async (data: GameAPI) => {
     ussrPlayerId: data.ussrPlayerId,
     gameWinner: data.gameWinner,
   });
-
+console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating)
   const dateNow = new Date(Date.now());
   const newGame = {
     created_at: dateNow,

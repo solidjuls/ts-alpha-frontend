@@ -92,13 +92,13 @@ const PlayerInfoBox = ({
         },
       }}
     >
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1, alignItems: 'center' }}>
         <FlagIcon code={usaCountryCode} />
         <Text strong={gameWinner === "1" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
       </Box>
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
+      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1, alignItems: 'center' }}>
         <FlagIcon code={ussrCountryCode} />
         <Text strong={gameWinner === "2" ? "bold" : undefined}>
           {ussrPlayer}
@@ -134,7 +134,7 @@ const ResultRow = ({ game }: { game: Game }) => {
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
-        <Text>{`T${game.endTurn}`}</Text>
+        <Text css={{ textAlign: "center" }}>{`T${game.endTurn}`}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive, width: ENDMODE_WIDTH }}>
         <Text strong="bold">End Mode</Text>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { trpc } from "contexts/APIProvider";
 
@@ -163,11 +163,24 @@ const SubmitForm = ({ role }) => {
   const router = useRouter();
   const [form, setForm] = useState(initialState);
   const [disabled, setDisabled] = useState(false);
+
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: () => setDisabled(false),
     onError: (error, variables, context) => setDisabled(false),
     onSettled: () => setDisabled(false),
   });
+
+  useEffect(() => {
+    async function submitMutate() {
+      if (disabled === true) {
+        await gameSubmitMutation.mutate({
+          data: normalizeData(form),
+        });
+        router.push("/");
+      }
+    }
+    submitMutate();
+  }, [disabled]);
 
   const onInputValueChange = (key, value) => {
     setForm((prevState) => ({
@@ -221,7 +234,9 @@ const SubmitForm = ({ role }) => {
         <TextComponent
           labelText="gameRecreateId"
           inputValue={form.gameRecreateId.value}
-          onInputValueChange={(value) => onInputValueChange("gameRecreateId", value)}
+          onInputValueChange={(value) =>
+            onInputValueChange("gameRecreateId", value)
+          }
           css={{ width: "50px" }}
           error={form.gameRecreateId.error}
         />
@@ -267,10 +282,7 @@ const SubmitForm = ({ role }) => {
         <UserDropdown
           labelText="gameWinner"
           items={gameWinningOptions}
-          selectedItem={getSelectedItem(
-            form.gameWinner.value,
-            gameWinningOptions
-          )}
+          selectedItem={form.gameWinner.value}
           error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameWinner", value)}
@@ -320,9 +332,6 @@ const SubmitForm = ({ role }) => {
           onClick={() => {
             if (validated()) {
               setDisabled(true);
-              gameSubmitMutation.mutate({
-                data: normalizeData(form),
-              });
             }
           }}
         >
@@ -335,7 +344,7 @@ const SubmitForm = ({ role }) => {
 
 export async function getServerSideProps({ req, res }) {
   const payload = getInfoFromCookies({ req, res });
-console.log("payload", payload)
+  console.log("payload", payload);
   if (!payload) {
     return {
       redirect: {
