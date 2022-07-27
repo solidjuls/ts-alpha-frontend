@@ -86,19 +86,33 @@ const PlayerInfoBox = ({
     <Box
       css={{
         ...boxStyle,
-        width: "260px",
+        width: "200px",
         "@sm": {
           width: "100%",
         },
       }}
     >
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1, alignItems: 'center' }}>
+      <Box
+        css={{
+          display: "flex",
+          flexDirection: "row",
+          lineHeight: 1,
+          alignItems: "center",
+        }}
+      >
         <FlagIcon code={usaCountryCode} />
         <Text strong={gameWinner === "1" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
       </Box>
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1, alignItems: 'center' }}>
+      <Box
+        css={{
+          display: "flex",
+          flexDirection: "row",
+          lineHeight: 1,
+          alignItems: "center",
+        }}
+      >
         <FlagIcon code={ussrCountryCode} />
         <Text strong={gameWinner === "2" ? "bold" : undefined}>
           {ussrPlayer}
@@ -134,7 +148,7 @@ const ResultRow = ({ game }: { game: Game }) => {
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
-        <Text css={{ textAlign: "center" }}>{`T${game.endTurn}`}</Text>
+        <Text css={{ textAlign: "center" }}>{game.endTurn}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive, width: ENDMODE_WIDTH }}>
         <Text strong="bold">End Mode</Text>
@@ -144,6 +158,7 @@ const ResultRow = ({ game }: { game: Game }) => {
         css={{
           ...boxStyle,
           ...responsive,
+          width: "100px",
           borderRight: "none",
           marginLeft: "20px",
         }}
@@ -165,7 +180,7 @@ const ResultsPanel = styled("div", {
   flexGrow: "1",
   marginBottom: "12px",
   height: "500px",
-  overflowY: "scroll"
+  overflowY: "scroll",
 });
 
 const FilterPanel = styled("div", {
@@ -236,7 +251,9 @@ const Homepage: React.FC = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <Box>{/* <TopPlayerRating /> */}</Box>
+      <Box>
+        <TopPlayerRating />
+      </Box>
     </Box>
   );
 };
