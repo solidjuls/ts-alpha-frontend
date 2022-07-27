@@ -75,7 +75,7 @@ const SelectedItemDiv = styled("div", {
   fontSize: 15,
 });
 
-type DropdownItemType = {
+export type DropdownItemType = {
   value: string;
   text: string;
 };
