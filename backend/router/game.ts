@@ -23,7 +23,7 @@ const submitGame = async (data: GameAPI) => {
     ussrPlayerId: data.ussrPlayerId,
     gameWinner: data.gameWinner,
   });
-
+  console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
   const dateNow = new Date(Date.now());
   const newGame = {
     created_at: dateNow,
@@ -91,13 +91,13 @@ export const gameRouter = trpc
     async resolve({ input }) {
       // const date = new Date(Date.parse(input.d));
       // const datePlusOne = dateAddDay(date, 1);
-
+      console.log("enter router", new Date())
       const gamesNormalized = await getGameWithRatings();
-
+      console.log("gamesNormalized", new Date())
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
       );
-
+      console.log("gameParsed", new Date())
       return JSON.parse(gameParsed) as Game[];
     },
   })
@@ -148,16 +148,20 @@ export const gameRouter = trpc
 
 async function recreateRatingsConfirm(oldId: string) {
   const oldGameDate = await getGameById(oldId);
-
   if (oldGameDate && oldGameDate.created_at != null) {
-    const gamesAffected = await getGameWithRatings();
+    const gamesAffected = await getGameWithRatings({
+      created_at: {
+        gte: oldGameDate.created_at,
+      },
+    });
+
     return gamesAffected.map(
       (game, index) =>
         `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${
           game.ratingsUSA.ratingDifference
         }) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${
           game.ratingsUSSR.ratingDifference
-        }) ->Winner ${getWinnerText(game.gameWinner)}`
+        })`
     );
   }
   return [];

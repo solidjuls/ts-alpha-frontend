@@ -6,6 +6,7 @@ const sidebarItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
   backgroundColor: "#24292f",
   color: "white",
+  cursor: 'pointer',
   padding: "8px 16px",
   margin: 0,
 };
@@ -13,6 +14,7 @@ const sidebarItemStyles = {
 const horizontalItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
   backgroundColor: "#24292f",
+  cursor: 'pointer',
   color: "white",
   padding: "8px 16px",
   margin: 0,

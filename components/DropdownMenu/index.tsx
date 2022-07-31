@@ -75,7 +75,7 @@ const SelectedItemDiv = styled("div", {
   fontSize: 15,
 });
 
-type DropdownItemType = {
+export type DropdownItemType = {
   value: string;
   text: string;
 };
@@ -108,7 +108,7 @@ const DropdownMenu = ({
                 marginLeft: "8px",
               }}
             >
-              {selectedItem}
+              {items.find((item) => item.value === selectedItem)?.text}
             </Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />

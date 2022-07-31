@@ -125,6 +125,7 @@ export const calculateRating = async ({
     playerId: BigInt(ussrPlayerId),
   });
 
+  console.log("usaRating, ussrRating", usaRating, ussrRating)
   return getNewRatings(
     usaRating?.rating || DEFAULT_RATING,
     ussrRating?.rating || DEFAULT_RATING,

@@ -4,5 +4,7 @@ declare type JWTPayload = {
   role: string;
 };
 
-declare module 'cookie-cutter'
-declare module 'cookie'
+declare module "cookie-cutter";
+declare module "cookie";
+declare module "cookies";
+declare module "jsonwebtoken";

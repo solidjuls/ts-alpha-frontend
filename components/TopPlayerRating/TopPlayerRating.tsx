@@ -3,6 +3,7 @@ import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { User } from "components/User";
+import { SkeletonPlayers } from "components/Skeletons";
 
 const SidePanelStyled = styled("div", {
   display: "flex",
@@ -25,7 +26,7 @@ const Announcement = () => {
 };
 
 const TopPlayerRating = () => {
-  const { data } = trpc.useQuery(["rating-get", { n: 5 }]);
+  const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
 
   return (
     <SidePanelStyled>
@@ -39,6 +40,7 @@ const TopPlayerRating = () => {
       >
         Top Players
       </Text>
+      {isLoading && <SkeletonPlayers />}
       <Box>
         {data?.map((item, index) => (
           <User

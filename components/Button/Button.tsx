@@ -5,7 +5,7 @@ const Button = styled("button", {
   padding: "8px",
   cursor: "pointer",
   // margin: "0 0.3em 0.3em 0",
-  borderRadius: "4px",
+  borderRadius: "8px",
   boxSizing: " border-box",
   textDecoration: "none",
   margin: "8px",
