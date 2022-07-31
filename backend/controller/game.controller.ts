@@ -53,7 +53,7 @@ const getGamesWithRatingDifference: (
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter: any) => {
+export const getGameWithRatings = async (filter?: any) => {
   const games = await prisma.game_results.findMany({
     include: {
       users_game_results_usa_player_idTousers: {
@@ -95,7 +95,7 @@ export const getGameWithRatings = async (filter: any) => {
       },
     ],
   });
-
+console.log("games findMany", new Date())
   const normalizedGames = games.map((game) => {
     let ratingHistoryUSA = 0;
     let ratingHistoryUSSR = 0;
@@ -112,10 +112,11 @@ export const getGameWithRatings = async (filter: any) => {
       ratingHistoryUSSR,
     };
   });
+  console.log("games normalizedGames", new Date())
   const getGamesWithRating = await getGamesWithRatingDifference(
     normalizedGames
   );
-
+  console.log("games getGamesWithRating", new Date())
   return getGamesWithRating;
 };
 

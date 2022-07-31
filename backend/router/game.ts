@@ -91,13 +91,13 @@ export const gameRouter = trpc
     async resolve({ input }) {
       // const date = new Date(Date.parse(input.d));
       // const datePlusOne = dateAddDay(date, 1);
-
+      console.log("enter router", new Date())
       const gamesNormalized = await getGameWithRatings();
-
+      console.log("gamesNormalized", new Date())
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
       );
-
+      console.log("gameParsed", new Date())
       return JSON.parse(gameParsed) as Game[];
     },
   })
