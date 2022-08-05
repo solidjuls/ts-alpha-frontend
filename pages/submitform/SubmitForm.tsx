@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
+
 import { trpc } from "contexts/APIProvider";
 import { TextComponent } from "./TextComponent";
 import { DateComponent } from "./DateComponent";
@@ -104,8 +105,10 @@ const SubmitForm = ({
   setForm,
 }: SubmitFormProps) => {
   const router = useRouter();
+  const trpcUtils = trpc.useContext();
+  trpc.Provider
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
-    onSuccess: (props) => console.log("success gameSubmitMutation", props),
+    onSuccess: () => trpcUtils.invalidateQueries(),
     onError: (error, variables, context) =>
       console.log("error gameSubmitMutation", error, variables, context),
     onSettled: (props) => console.log("onSettled gameSubmitMutation", props),
@@ -117,7 +120,7 @@ const SubmitForm = ({
     onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
   });
   const gameRecreationMutation = trpc.useMutation(["game-restore"], {
-    onSuccess: (props) => console.log("success gameRecreationMutation", props),
+    onSuccess: () => trpcUtils.invalidateQueries(),
     onError: (error, variables, context) =>
       console.log("error gameRecreationMutation", error, variables, context),
     onSettled: (props) =>
