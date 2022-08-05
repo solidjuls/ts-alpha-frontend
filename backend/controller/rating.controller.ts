@@ -48,7 +48,7 @@ const getRatingDifference = (
   );
   console.log("addValue", addValue);
 
-  const newValue = Math.abs(Math.round((defeated - winner) * 0.05)) + addValue;
+  const newValue = Math.round((defeated - winner) * 0.05) + addValue;
 
   if (addValue !== 0 && newValue <= 0) {
     console.log("Difference minimum", 1);

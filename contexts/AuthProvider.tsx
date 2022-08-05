@@ -42,7 +42,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signOut = trpc.useMutation(["user-signout"]);
   const [auth, setAuth] = useState<AuthType>({ name: "", email: "" });
 
-  useEffect(() => setAuth(JSON.parse(cookieCutter.get(KEY))), []);
+  useEffect(() => {
+    const cookies = cookieCutter.get(KEY)
+    if (cookies) {
+      setAuth(JSON.parse(cookies))
+    }
+  }, []);
 
   const setAuthentication = (authProps: AuthType) => {
     cookieCutter.set(KEY, JSON.stringify(authProps));
