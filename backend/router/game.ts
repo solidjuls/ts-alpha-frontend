@@ -10,7 +10,10 @@ import {
   zGameAPI,
   zGameRecreateAPI,
 } from "types/game.types";
-import { calculateRating } from "backend/controller/rating.controller";
+import {
+  getPreviousRating,
+  calculateRating,
+} from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
   getGameById,
@@ -23,6 +26,14 @@ const submitGame = async (data: GameAPI) => {
     ussrPlayerId: data.ussrPlayerId,
     gameWinner: data.gameWinner,
   });
+  const usaPreviousRating = await getPreviousRating({
+    playerId: BigInt(data.usaPlayerId),
+    createdAt: new Date(Date.now()),
+  });
+  const ussrPreviousRating = await getPreviousRating({
+    playerId: BigInt(data.ussrPlayerId),
+    createdAt: new Date(Date.now()),
+  });
   console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
   const dateNow = new Date(Date.now());
   const newGame = {
@@ -30,6 +41,8 @@ const submitGame = async (data: GameAPI) => {
     updated_at: dateNow,
     usa_player_id: BigInt(data.usaPlayerId),
     ussr_player_id: BigInt(data.ussrPlayerId),
+    usa_previous_rating: usaPreviousRating,
+    ussr_previous_rating: ussrPreviousRating,
     game_type: data.gameType,
     game_code: data.gameCode,
     reported_at: dateNow,
@@ -91,13 +104,13 @@ export const gameRouter = trpc
     async resolve({ input }) {
       // const date = new Date(Date.parse(input.d));
       // const datePlusOne = dateAddDay(date, 1);
-      console.log("enter router", new Date())
+      console.log("enter router", new Date());
       const gamesNormalized = await getGameWithRatings();
-      console.log("gamesNormalized", new Date())
+      console.log("gamesNormalized", new Date());
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
       );
-      console.log("gameParsed", new Date())
+      console.log("gameParsed", new Date());
       return JSON.parse(gameParsed) as Game[];
     },
   })
@@ -157,11 +170,7 @@ async function recreateRatingsConfirm(oldId: string) {
 
     return gamesAffected.map(
       (game, index) =>
-        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${
-          game.ratingsUSA.ratingDifference
-        }) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${
-          game.ratingsUSSR.ratingDifference
-        })`
+        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${game.ratingsUSA.ratingDifference}) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${game.ratingsUSSR.ratingDifference})`
     );
   }
   return [];

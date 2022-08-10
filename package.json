@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
+    "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha dev --execute 'yarn dev'",
+    "dev:planetscale:prod": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

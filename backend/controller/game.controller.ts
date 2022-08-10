@@ -1,27 +1,20 @@
 import { prisma } from "backend/utils/prisma";
 import { Game } from "types/game.types";
-import { getPreviousRating } from "backend/controller/rating.controller";
 
 const getGamesWithRatingDifference: (
   gamesWithRatingRelated: any
 ) => Promise<Game[]> = async (gamesWithRatingRelated: any) => {
   return await Promise.all(
     gamesWithRatingRelated.map(async (game: any) => {
-      const usaPreviousRating = await getPreviousRating({
-        playerId: game.usa_player_id,
-        createdAt: game.created_at as Date,
-      });
+      
       const ratingsUSA = {
         rating: game.ratingHistoryUSA,
-        ratingDifference: game.ratingHistoryUSA - usaPreviousRating,
+        ratingDifference: game.ratingHistoryUSA - game.usa_previous_rating,
       };
-      const ussrPreviousRating = await getPreviousRating({
-        playerId: game.ussr_player_id,
-        createdAt: game.created_at as Date,
-      });
+     
       const ratingsUSSR = {
         rating: game.ratingHistoryUSSR,
-        ratingDifference: game.ratingHistoryUSSR - ussrPreviousRating,
+        ratingDifference: game.ratingHistoryUSSR - game.ussr_previous_rating,
       };
 
       return {

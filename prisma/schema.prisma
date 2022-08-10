@@ -28,6 +28,8 @@ model game_results {
   updated_at                               DateTime?         @db.Timestamp(0)
   usa_player_id                            BigInt            @db.UnsignedBigInt
   ussr_player_id                           BigInt            @db.UnsignedBigInt
+  usa_previous_rating                      Int?              @default(0)
+  ussr_previous_rating                     Int?              @default(0)
   game_type                                String            @db.VarChar(255)
   game_code                                String            @db.VarChar(255)
   reported_at                              DateTime          @db.Timestamp(0)
@@ -100,7 +102,7 @@ model users {
   last_login_at                                   DateTime?         @db.Timestamp(0)
   countries                                       countries?        @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
   game_results_game_results_reporter_idTousers    game_results[]    @relation("game_results_reporter_idTousers")
-  game_results_game_results_u sa_player_idTousers  game_results[]    @relation("game_results_usa_player_idTousers")
+  game_results_game_results_usa_player_idTousers  game_results[]    @relation("game_results_usa_player_idTousers")
   game_results_game_results_ussr_player_idTousers game_results[]    @relation("game_results_ussr_player_idTousers")
   ratings_history                                 ratings_history[]
 

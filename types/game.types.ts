@@ -6,6 +6,8 @@ export type Game = {
   updated_at: Date | null;
   usaPlayerId: bigint;
   ussrPlayerId: bigint;
+  usaRatingDifference: number;
+  ussrRatingDifference: number;
   gameType: string;
   game_code: string;
   reported_at: Date;

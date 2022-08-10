@@ -10,6 +10,7 @@ import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game, GameRating } from "types/game.types";
 import { getWinnerText } from "utils/games";
+import { GAME_QUERY } from "utils/constants";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -213,7 +214,7 @@ const EmptyState = () => {
 const Homepage: React.FC = () => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
-    "game-getAll",
+    GAME_QUERY,
     // { d: dateValue.toDateString() },
   ]);
 

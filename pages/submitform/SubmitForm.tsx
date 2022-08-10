@@ -12,6 +12,7 @@ import {
   leagueTypes,
 } from "utils/constants";
 import { Button } from "components/Button";
+import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
 import WithLabel from "./WithLabel";
@@ -106,9 +107,12 @@ const SubmitForm = ({
 }: SubmitFormProps) => {
   const router = useRouter();
   const trpcUtils = trpc.useContext();
-  trpc.Provider
+  trpc.Provider;
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
-    onSuccess: () => trpcUtils.invalidateQueries(),
+    onSuccess: async () => {
+      await trpcUtils.invalidateQueries([GAME_QUERY, "rating-getAll"]);
+      router.push("/");
+    },
     onError: (error, variables, context) =>
       console.log("error gameSubmitMutation", error, variables, context),
     onSettled: (props) => console.log("onSettled gameSubmitMutation", props),
@@ -269,7 +273,6 @@ const SubmitForm = ({
                   await gameRecreationMutation.mutateAsync({
                     data: normalizeData(form),
                   });
-                  router.push("/");
                   // setButtonDisabled(true);
                 }
               }

@@ -3,6 +3,7 @@ type DropdownType = {
     value: string;
 }
 
+export const GAME_QUERY = "game-getAll"
 export const leagueTypes: Array<DropdownType> = [
   {
     text: "National / Regional League",
