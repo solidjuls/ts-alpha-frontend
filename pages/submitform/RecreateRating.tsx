@@ -3,8 +3,22 @@ import { TextComponent } from "./TextComponent";
 import { Box } from "components/Atoms";
 import { Checkbox } from "components/Checkbox";
 import { Label } from "components/Label";
+import { SubmitFormValue, SubmitFormState } from "types/game.types";
 
-const RecreateRating = ({ oldId, onInputValueChange, checked, setChecked }) => {
+const RecreateRating = ({
+  oldId,
+  onInputValueChange,
+  checked,
+  setChecked,
+}: {
+  oldId: SubmitFormValue<string>;
+  onInputValueChange: (
+    key: keyof SubmitFormState,
+    value: string | Date
+  ) => void;
+  checked: boolean;
+  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   return (
     <Box>
       <Checkbox
@@ -23,13 +37,14 @@ const RecreateRating = ({ oldId, onInputValueChange, checked, setChecked }) => {
             padding: "8px",
           }}
         >
-          <Label>Add the ID of the game you want recreated. Then, enter the new data using the form as usual </Label>
+          <Label>
+            Add the ID of the game you want recreated. Then, enter the new data
+            using the form as usual{" "}
+          </Label>
           <TextComponent
             labelText="oldId"
             inputValue={oldId.value}
-            onInputValueChange={(value) =>
-              onInputValueChange("oldId", value)
-            }
+            onInputValueChange={(value) => onInputValueChange("oldId", value)}
             css={{ width: "50px" }}
             error={oldId.error}
           />

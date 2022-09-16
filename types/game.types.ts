@@ -1,5 +1,25 @@
 import { z } from "zod";
 
+export type SubmitFormState = {
+  oldId: SubmitFormValue<string>;
+  gameDate: SubmitFormValue<Date>;
+  gameWinner: SubmitFormValue<GameWinner>;
+  gameCode: SubmitFormValue<string>;
+  gameType: SubmitFormValue<string>;
+  usaPlayerId: SubmitFormValue<string>;
+  ussrPlayerId: SubmitFormValue<string>;
+  endTurn: SubmitFormValue<string>;
+  endMode: SubmitFormValue<string>;
+  video1: SubmitFormValue<string>;
+  video2: SubmitFormValue<string>;
+  video3: SubmitFormValue<string>;
+};
+
+export type SubmitFormValue<T> = {
+  value: T;
+  error: boolean;
+};
+
 export type Game = {
   id: bigint;
   created_at: Date | null;

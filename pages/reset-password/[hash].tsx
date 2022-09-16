@@ -7,12 +7,20 @@ import { Button } from "components/Button";
 import { Box } from "components/Atoms";
 import { PasswordInput } from "components/Input";
 
-const decryptHash = (hash) => {
+const decryptHash = (hash: any) => {
   let buff = Buffer.from(hash, "base64");
   return buff.toString("ascii");
 };
 
-const LabelInput = ({ inputValue, labelText, onChange }) => {
+const LabelInput = ({
+  inputValue,
+  labelText,
+  onChange,
+}: {
+  inputValue: string;
+  labelText: string;
+  onChange: (value: string) => void;
+}) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Label css={{ width: "200px" }}>{labelText}</Label>
@@ -20,7 +28,7 @@ const LabelInput = ({ inputValue, labelText, onChange }) => {
         id="mail"
         margin="login"
         defaultValue={inputValue}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event: any) => onChange(event.target.value)}
         css={{ width: "300px" }}
       />
     </Box>
@@ -29,8 +37,8 @@ const LabelInput = ({ inputValue, labelText, onChange }) => {
 
 const ResetPassword = () => {
   const mutation = trpc.useMutation(["user-update"]);
-  const [pwd, setPwd] = useState<String>("");
-  const [pwdConfirm, setPwdConfirm] = useState<String>("");
+  const [pwd, setPwd] = useState<string>("");
+  const [pwdConfirm, setPwdConfirm] = useState<string>("");
   const router = useRouter();
   const { hash: hashKey } = router.query;
 

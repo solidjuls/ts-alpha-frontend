@@ -34,8 +34,8 @@ const ErrorInfo = styled("span", {
 
 const LoginForm: React.FC = () => {
   const { login } = useSession();
-  const [mail, setMail] = useState<String>("");
-  const [pwd, setPwd] = useState<String>("");
+  const [mail, setMail] = useState<string>("");
+  const [pwd, setPwd] = useState<string>("");
 
   return (
     <>

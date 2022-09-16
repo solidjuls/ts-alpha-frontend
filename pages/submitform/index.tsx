@@ -1,31 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { getInfoFromCookies } from "utils/cookies";
-import { GameAPI, GameWinner, GameRecreate } from "types/game.types";
+import { GameAPI, GameWinner, GameRecreate, SubmitFormValue, SubmitFormState } from "types/game.types";
 import { SubmitForm } from "./SubmitForm";
 
 type SubmitFormProps = {
   role: number;
-};
-
-type SubmitFormValue<T> = {
-  value: T;
-  error: boolean;
-};
-
-export type SubmitFormState = {
-  oldId: SubmitFormValue<string>;
-  gameDate: SubmitFormValue<Date>;
-  gameWinner: SubmitFormValue<GameWinner>;
-  gameCode: SubmitFormValue<string>;
-  gameType: SubmitFormValue<string>;
-  usaPlayerId: SubmitFormValue<string>;
-  ussrPlayerId: SubmitFormValue<string>;
-  endTurn: SubmitFormValue<string>;
-  endMode: SubmitFormValue<string>;
-  video1: SubmitFormValue<string>;
-  video2: SubmitFormValue<string>;
-  video3: SubmitFormValue<string>;
 };
 
 const initialState: SubmitFormState = {
@@ -90,8 +70,8 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       if (["video1", "video2", "video3"].includes(key)) {
       } else {
         if (
-          (key !== "oldId" && form[key].value === "") ||
-          (checked && form[key].value === "")
+          (key !== "oldId" && form[key as keyof SubmitFormState].value === "") ||
+          (checked && form[key as keyof SubmitFormState].value === "")
         ) {
           // form[key].error = true;
           setForm((prevState: any) => ({

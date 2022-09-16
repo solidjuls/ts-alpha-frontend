@@ -138,7 +138,7 @@ const SubmitForm = ({
         <RecreateRating
           checked={checked}
           setChecked={setChecked}
-          oldId={form.oldId}
+          oldId={form.oldId.value}
           onInputValueChange={onInputValueChange}
         />
       )}

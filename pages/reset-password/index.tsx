@@ -31,7 +31,7 @@ const Headline = styled('strong', {
   marginBottom: "30px", 
 })
 const ResetPassword = () => {
-  const [mail, setMail] = useState<String>("");
+  const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
   const mutation = trpc.useMutation(["user-reset-pwd"]);
 

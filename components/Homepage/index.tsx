@@ -215,7 +215,7 @@ const Homepage: React.FC = () => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
     GAME_QUERY,
-    { d: dateValue.toDateString() }
+    { d: dateValue.toDateString() },
   ]);
 
   const onClickDay = (clickedItem: "left" | "right") => {
