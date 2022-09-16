@@ -107,10 +107,11 @@ const SubmitForm = ({
 }: SubmitFormProps) => {
   const router = useRouter();
   const trpcUtils = trpc.useContext();
-  trpc.Provider;
+
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: async () => {
-      await trpcUtils.invalidateQueries([GAME_QUERY, "rating-getAll"]);
+      await trpcUtils.invalidateQueries([GAME_QUERY]);
+      await trpcUtils.invalidateQueries(["rating-get", { n: 5 }])
       router.push("/");
     },
     onError: (error, variables, context) =>

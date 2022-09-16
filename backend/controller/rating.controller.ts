@@ -3,33 +3,6 @@ import { BiggerLowerValue } from "types/game.types";
 
 const DEFAULT_RATING = 5000;
 
-export const getPreviousRating = async ({
-  playerId,
-  createdAt,
-}: {
-  playerId: bigint;
-  createdAt: Date;
-}) => {
-  const ratingsPlayer = await prisma.ratings_history.findFirst({
-    select: {
-      rating: true,
-    },
-    where: {
-      player_id: playerId,
-      created_at: {
-        lt: createdAt,
-      },
-    },
-    orderBy: [
-      {
-        created_at: "desc",
-      },
-    ],
-  });
-
-  return ratingsPlayer?.rating as number;
-};
-
 const getRatingDifference = (
   defeated: number,
   winner: number,
@@ -106,7 +79,7 @@ const getNewRatings = (
       newUssrRating = ussrRating + ratingDifference;
     }
   }
-  return { newUsaRating, newUssrRating };
+  return { newUsaRating, newUssrRating, usaRating, ussrRating };
 };
 
 export const calculateRating = async ({

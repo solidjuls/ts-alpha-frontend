@@ -10,10 +10,7 @@ import {
   zGameAPI,
   zGameRecreateAPI,
 } from "types/game.types";
-import {
-  getPreviousRating,
-  calculateRating,
-} from "backend/controller/rating.controller";
+import { calculateRating } from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
   getGameById,
@@ -21,19 +18,13 @@ import {
 import { getWinnerText } from "utils/games";
 
 const submitGame = async (data: GameAPI) => {
-  const { newUsaRating, newUssrRating } = await calculateRating({
-    usaPlayerId: data.usaPlayerId,
-    ussrPlayerId: data.ussrPlayerId,
-    gameWinner: data.gameWinner,
-  });
-  const usaPreviousRating = await getPreviousRating({
-    playerId: BigInt(data.usaPlayerId),
-    createdAt: new Date(Date.now()),
-  });
-  const ussrPreviousRating = await getPreviousRating({
-    playerId: BigInt(data.ussrPlayerId),
-    createdAt: new Date(Date.now()),
-  });
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } =
+    await calculateRating({
+      usaPlayerId: data.usaPlayerId,
+      ussrPlayerId: data.ussrPlayerId,
+      gameWinner: data.gameWinner,
+    });
+
   console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
   const dateNow = new Date(Date.now());
   const newGame = {
@@ -41,8 +32,8 @@ const submitGame = async (data: GameAPI) => {
     updated_at: dateNow,
     usa_player_id: BigInt(data.usaPlayerId),
     ussr_player_id: BigInt(data.ussrPlayerId),
-    usa_previous_rating: usaPreviousRating,
-    ussr_previous_rating: ussrPreviousRating,
+    usa_previous_rating: usaRating,
+    ussr_previous_rating: ussrRating,
     game_type: data.gameType,
     game_code: data.gameCode,
     reported_at: dateNow,

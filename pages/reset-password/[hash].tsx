@@ -12,14 +12,10 @@ const decryptHash = (hash) => {
   return buff.toString("ascii");
 };
 
-const LabelInput = ({
-  inputValue,
-  labelText,
-  onChange,
-}) => {
+const LabelInput = ({ inputValue, labelText, onChange }) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Label css={{ width: '200px'}}>{labelText}</Label>
+      <Label css={{ width: "200px" }}>{labelText}</Label>
       <PasswordInput
         id="mail"
         margin="login"
@@ -33,8 +29,8 @@ const LabelInput = ({
 
 const ResetPassword = () => {
   const mutation = trpc.useMutation(["user-update"]);
-  const [pwd, setPwd] = useState<string>("");
-  const [pwdConfirm, setPwdConfirm] = useState<string>("");
+  const [pwd, setPwd] = useState<String>("");
+  const [pwdConfirm, setPwdConfirm] = useState<String>("");
   const router = useRouter();
   const { hash: hashKey } = router.query;
 
@@ -44,7 +40,7 @@ const ResetPassword = () => {
   console.log(Date.now() - date);
   if (date === NaN) return <div>Link invalid</div>;
   if ((Date.now() - date) / 1000 > 3600) return <div>Link outdated</div>;
-if((Date.now() - date) / 1000> 3600) return <div>nowhere to go</div>
+  if ((Date.now() - date) / 1000 > 3600) return <div>nowhere to go</div>;
 
   return (
     <Box
@@ -57,7 +53,11 @@ if((Date.now() - date) / 1000> 3600) return <div>nowhere to go</div>
     >
       <h1>Reset password</h1>
       <LabelInput labelText="New password" inputValue={pwd} onChange={setPwd} />
-      <LabelInput labelText="Confirm new password" inputValue={pwdConfirm} onChange={setPwdConfirm} />
+      <LabelInput
+        labelText="Confirm new password"
+        inputValue={pwdConfirm}
+        onChange={setPwdConfirm}
+      />
       <Button
         onClick={async () => {
           if (values[0]) {
