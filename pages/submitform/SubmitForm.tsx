@@ -246,7 +246,6 @@ const SubmitForm = ({
                 await gameSubmitMutation.mutate({
                   data: normalizeData(form),
                 });
-                router.push("/");
               }
             }}
           >

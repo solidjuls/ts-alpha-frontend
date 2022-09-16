@@ -91,12 +91,17 @@ const submitGame = async (data: GameAPI) => {
 export const gameRouter = trpc
   .router()
   .query("getAll", {
-    // input: z.object({ d: z.string() }),
+    input: z.object({ d: z.string() }),
     async resolve({ input }) {
-      // const date = new Date(Date.parse(input.d));
-      // const datePlusOne = dateAddDay(date, 1);
+      const date = new Date(Date.parse(input.d));
+      const datePlusOne = dateAddDay(date, 1);
       console.log("enter router", new Date());
-      const gamesNormalized = await getGameWithRatings();
+      const gamesNormalized = await getGameWithRatings({
+        created_at: {
+          lte: datePlusOne,
+        },
+      });
+
       console.log("gamesNormalized", new Date());
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
