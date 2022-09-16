@@ -18,18 +18,22 @@ import {
 import { getWinnerText } from "utils/games";
 
 const submitGame = async (data: GameAPI) => {
-  const { newUsaRating, newUssrRating } = await calculateRating({
-    usaPlayerId: data.usaPlayerId,
-    ussrPlayerId: data.ussrPlayerId,
-    gameWinner: data.gameWinner,
-  });
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } =
+    await calculateRating({
+      usaPlayerId: data.usaPlayerId,
+      ussrPlayerId: data.ussrPlayerId,
+      gameWinner: data.gameWinner,
+    });
 
+  console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
   const dateNow = new Date(Date.now());
   const newGame = {
     created_at: dateNow,
     updated_at: dateNow,
     usa_player_id: BigInt(data.usaPlayerId),
     ussr_player_id: BigInt(data.ussrPlayerId),
+    usa_previous_rating: usaRating,
+    ussr_previous_rating: ussrRating,
     game_type: data.gameType,
     game_code: data.gameCode,
     reported_at: dateNow,
@@ -87,17 +91,22 @@ const submitGame = async (data: GameAPI) => {
 export const gameRouter = trpc
   .router()
   .query("getAll", {
-    // input: z.object({ d: z.string() }),
+    input: z.object({ d: z.string() }),
     async resolve({ input }) {
-      // const date = new Date(Date.parse(input.d));
-      // const datePlusOne = dateAddDay(date, 1);
+      const date = new Date(Date.parse(input.d));
+      const datePlusOne = dateAddDay(date, 1);
+      console.log("enter router", new Date());
+      const gamesNormalized = await getGameWithRatings({
+        created_at: {
+          lte: datePlusOne,
+        },
+      });
 
-      const gamesNormalized = await getGameWithRatings();
-
+      console.log("gamesNormalized", new Date());
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
         typeof value === "bigint" ? value.toString() : value
       );
-
+      console.log("gameParsed", new Date());
       return JSON.parse(gameParsed) as Game[];
     },
   })
@@ -148,16 +157,16 @@ export const gameRouter = trpc
 
 async function recreateRatingsConfirm(oldId: string) {
   const oldGameDate = await getGameById(oldId);
-
   if (oldGameDate && oldGameDate.created_at != null) {
-    const gamesAffected = await getGameWithRatings();
+    const gamesAffected = await getGameWithRatings({
+      created_at: {
+        gte: oldGameDate.created_at,
+      },
+    });
+
     return gamesAffected.map(
       (game, index) =>
-        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${
-          game.ratingsUSA.ratingDifference
-        }) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${
-          game.ratingsUSSR.ratingDifference
-        }) ->Winner ${getWinnerText(game.gameWinner)}`
+        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${game.ratingsUSA.ratingDifference}) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${game.ratingsUSSR.ratingDifference})`
     );
   }
   return [];

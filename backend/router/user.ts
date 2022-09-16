@@ -82,7 +82,7 @@ export const userRouter = trpc
         });
       }
       const token = jwt.sign(
-        { mail: user.email, role: "admin" },
+        { mail: user.email, role: user.role },
         process.env.TOKEN_SECRET,
         {
           expiresIn: "60d",
@@ -90,7 +90,6 @@ export const userRouter = trpc
       );
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
-        maxAge: 60 * 60 * 24,
         path: "/",
         httpOnly: true,
       });
@@ -224,7 +223,7 @@ export const userRouter = trpc
 
       if (user) {
         const hash = generateHash(input.mail);
-        console.log("hash", hash);
+
         // const decrypted = decryptHash(hash);
         // console.log("hash", decrypted);
         const aver = await sendEmail(

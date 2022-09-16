@@ -3,9 +3,10 @@ type DropdownType = {
     value: string;
 }
 
+export const GAME_QUERY = "game-getAll"
 export const leagueTypes: Array<DropdownType> = [
   {
-    text: "National League",
+    text: "National / Regional League",
     value: "National League",
   },
   {
@@ -19,6 +20,26 @@ export const leagueTypes: Array<DropdownType> = [
   {
     text: "RTSL",
     value: "RTSL",
+  },
+  {
+    text: "TS Convention",
+    value: "TSC",
+  },
+  {
+    text: "TS World Cup",
+    value: "TSWC",
+  },
+  {
+    text: "Champions League",
+    value: "CL",
+  },
+  {
+    text: "Friendly Game",
+    value: "FG",
+  },
+  {
+    text: "Grand Slam",
+    value: "GS",
   },
 ];
 

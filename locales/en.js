@@ -3,6 +3,7 @@ module.exports = {
     description: "This is a non-page component that requires its own namespace",
     currentURL: "Current URL",
     typeOfGame: "Type of game",
+    gameRecreateId: "Game ID",
     checkID: "Check ID",
     playerUSA: "USA Player *",
     playerURSS: "URSS Player *",

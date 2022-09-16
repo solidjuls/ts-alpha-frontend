@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "contexts/AuthProvider";
+import Text from "components/Text";
 import { Box } from "components/Atoms";
 
 const styledItemStyles = {
@@ -64,6 +65,9 @@ const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
   backgroundColor: "$primary",
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center'
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
@@ -99,6 +103,15 @@ const StyledSeparator = styled(Separator, {
   backgroundColor: "#24292f",
 });
 
+const StyledText = styled(Text, {
+  display: "flex",
+  cursor: "pointer",
+  color: "$textLight",
+  "@sm": {
+    display: "none",
+  },
+});
+
 const StyledContent = styled(Content, {
   minWidth: 120,
   backgroundColor: "white",
@@ -129,6 +142,9 @@ const UserAvatar = ({ name }: { name: string }) => {
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Root>
         <StyledTrigger>
+          <StyledText css={{ marginRight: "12px" }}>
+            {`${intl.formatMessage({ id: "greeting" })} ${name}`}
+          </StyledText>
           {/* <StyledAvatar>
             <StyledImage src="https://pbs.twimg.com/profile_images/1361968864171618316/T8jfJHNo_400x400.jpg"></StyledImage>
           </StyledAvatar> */}

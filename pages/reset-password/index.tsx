@@ -61,6 +61,7 @@ const ResetPassword = () => {
           <Button
             onClick={() => {
               if (mail) {
+                // @ts-ignore
                 mutation.mutate({
                   mail,
                 });

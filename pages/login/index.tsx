@@ -47,7 +47,7 @@ const LoginForm: React.FC = () => {
         type="text"
         id="mail"
         margin="login"
-        defaultValue={mail}
+        // defaultValue={mail}
         onChange={(event) => setMail(event.target.value)}
         css={{ width: "300px" }}
       />

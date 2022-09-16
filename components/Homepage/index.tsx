@@ -10,6 +10,7 @@ import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game, GameRating } from "types/game.types";
 import { getWinnerText } from "utils/games";
+import { GAME_QUERY } from "utils/constants";
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -86,19 +87,33 @@ const PlayerInfoBox = ({
     <Box
       css={{
         ...boxStyle,
-        width: "260px",
+        width: "200px",
         "@sm": {
           width: "100%",
         },
       }}
     >
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
+      <Box
+        css={{
+          display: "flex",
+          flexDirection: "row",
+          lineHeight: 1,
+          alignItems: "center",
+        }}
+      >
         <FlagIcon code={usaCountryCode} />
         <Text strong={gameWinner === "1" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
       </Box>
-      <Box css={{ display: "flex", flexDirection: "row", lineHeight: 1 }}>
+      <Box
+        css={{
+          display: "flex",
+          flexDirection: "row",
+          lineHeight: 1,
+          alignItems: "center",
+        }}
+      >
         <FlagIcon code={ussrCountryCode} />
         <Text strong={gameWinner === "2" ? "bold" : undefined}>
           {ussrPlayer}
@@ -134,7 +149,7 @@ const ResultRow = ({ game }: { game: Game }) => {
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
-        <Text>{`T${game.endTurn}`}</Text>
+        <Text css={{ textAlign: "center" }}>{game.endTurn}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive, width: ENDMODE_WIDTH }}>
         <Text strong="bold">End Mode</Text>
@@ -144,6 +159,7 @@ const ResultRow = ({ game }: { game: Game }) => {
         css={{
           ...boxStyle,
           ...responsive,
+          width: "100px",
           borderRight: "none",
           marginLeft: "20px",
         }}
@@ -164,6 +180,8 @@ const ResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
   marginBottom: "12px",
+  height: "500px",
+  overflowY: "scroll",
 });
 
 const FilterPanel = styled("div", {
@@ -196,8 +214,9 @@ const EmptyState = () => {
 const Homepage: React.FC = () => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
-    "game-getAll",
-    // { d: dateValue.toDateString() },
+    GAME_QUERY,
+    // @ts-ignore
+    { d: dateValue.toDateString() },
   ]);
 
   const onClickDay = (clickedItem: "left" | "right") => {
@@ -234,7 +253,9 @@ const Homepage: React.FC = () => {
           <ResultRow key={index} game={game} />
         ))}
       </ResultsPanel>
-      <Box>{/* <TopPlayerRating /> */}</Box>
+      <Box>
+        <TopPlayerRating />
+      </Box>
     </Box>
   );
 };

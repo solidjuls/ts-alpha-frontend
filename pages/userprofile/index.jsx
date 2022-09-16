@@ -40,7 +40,7 @@ const UserProfile = () => {
   const updateClick = async () => {
     // if (session?.user?.email) {
     const pwdHashed = await hash(password, 12);
-
+// @ts-ignore
     mutation.mutate({
       mail: "juli.arnalot@gmail.com", // session.user?.email,
       password: pwdHashed,

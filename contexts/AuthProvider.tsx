@@ -11,7 +11,7 @@ import type { AuthType } from "../types/user.types";
 import { trpc } from "contexts/APIProvider";
 
 type LoginFnType = (mail: string, pwd: string) => void;
-type LogoutFnType = () => void
+type LogoutFnType = () => void;
 
 type AuthContextProps = Pick<AuthType, "name" | "email"> & {
   setAuthentication?: (authProps: AuthType) => void;
@@ -25,16 +25,11 @@ const AuthContext = createContext<AuthContextProps>({
   name: undefined,
 });
 
-function getSessionStorageOrDefault(key: string, defaultValue?: AuthType) {
-  console.log("asdfafsdf", key, defaultValue);
-  if (typeof window !== "undefined") {
-    const stored = sessionStorage.getItem(key);
-    if (!stored) {
-      return defaultValue;
-    }
-    return JSON.parse(stored);
-  }
-  return defaultValue;
+function getSessionStorageOrDefault(defaultValue?: AuthType) {
+  console.log("cookieCutter", cookieCutter);
+  const cookies = cookieCutter.get(KEY);
+  if (!cookies) return defaultValue;
+  return cookies;
 }
 
 type AuthProviderProps = {
@@ -45,26 +40,28 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
   const signIn = trpc.useMutation(["user-signin"]);
   const signOut = trpc.useMutation(["user-signout"]);
-  const [auth, setAuth] = useState<AuthType>(
-    getSessionStorageOrDefault(KEY, {})
-  );
+  const [auth, setAuth] = useState<AuthType>({ name: "", email: "" });
+
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem(KEY, JSON.stringify(auth));
+    const cookies = cookieCutter.get(KEY)
+    if (cookies) {
+      setAuth(JSON.parse(cookies))
     }
-  }, [auth]);
+  }, []);
 
   const setAuthentication = (authProps: AuthType) => {
-    cookieCutter.set("ts-user", authProps);
+    cookieCutter.set(KEY, JSON.stringify(authProps));
     setAuth(authProps);
   };
 
   const login: LoginFnType = async (mail, pwd) => {
     try {
+      // @ts-ignore
       const response = await signIn.mutateAsync({
         mail,
         pwd,
       });
+      console.log("response", response);
       if (response && setAuthentication) {
         router.push("/");
         setAuthentication(response);
@@ -79,7 +76,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await signOut.mutateAsync();
       if (response && response.success && setAuthentication)
         setAuthentication({});
-        router.push("/");
+      router.push("/");
     } catch (e) {
       console.log("sign out error", e);
     }

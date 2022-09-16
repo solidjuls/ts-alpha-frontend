@@ -1,27 +1,20 @@
 import { prisma } from "backend/utils/prisma";
 import { Game } from "types/game.types";
-import { getPreviousRating } from "backend/controller/rating.controller";
 
 const getGamesWithRatingDifference: (
   gamesWithRatingRelated: any
 ) => Promise<Game[]> = async (gamesWithRatingRelated: any) => {
   return await Promise.all(
     gamesWithRatingRelated.map(async (game: any) => {
-      const usaPreviousRating = await getPreviousRating({
-        playerId: game.usa_player_id,
-        createdAt: game.created_at as Date,
-      });
+      
       const ratingsUSA = {
         rating: game.ratingHistoryUSA,
-        ratingDifference: game.ratingHistoryUSA - usaPreviousRating,
+        ratingDifference: game.ratingHistoryUSA - game.usa_previous_rating,
       };
-      const ussrPreviousRating = await getPreviousRating({
-        playerId: game.ussr_player_id,
-        createdAt: game.created_at as Date,
-      });
+     
       const ratingsUSSR = {
         rating: game.ratingHistoryUSSR,
-        ratingDifference: game.ratingHistoryUSSR - ussrPreviousRating,
+        ratingDifference: game.ratingHistoryUSSR - game.ussr_previous_rating,
       };
 
       return {
@@ -53,9 +46,8 @@ const getGamesWithRatingDifference: (
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async () => {
+export const getGameWithRatings = async (filter?: any) => {
   const games = await prisma.game_results.findMany({
-    take: 3,
     include: {
       users_game_results_usa_player_idTousers: {
         select: {
@@ -86,16 +78,17 @@ export const getGameWithRatings = async () => {
         },
       },
     },
-    // where: {
-    //   ...filter,
-    // },
+    where: {
+      ...filter,
+    },
+    // take: 15,
     orderBy: [
       {
         created_at: "desc",
       },
     ],
   });
-
+console.log("games findMany", new Date())
   const normalizedGames = games.map((game) => {
     let ratingHistoryUSA = 0;
     let ratingHistoryUSSR = 0;
@@ -112,11 +105,12 @@ export const getGameWithRatings = async () => {
       ratingHistoryUSSR,
     };
   });
+  console.log("games normalizedGames", new Date())
   const getGamesWithRating = await getGamesWithRatingDifference(
     normalizedGames
   );
-
-  return getGamesWithRating
+  console.log("games getGamesWithRating", new Date())
+  return getGamesWithRating;
 };
 
 export const getGameById = async (id: string) =>

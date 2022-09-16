@@ -70,11 +70,6 @@ const Header = ({ openSidebar }: { openSidebar: () => void}) => {
         )}
         {name && (
           <Flex display={{ "@sm": "none" }}>
-            <StyledText css={{ marginRight: '12px'}}>
-              {`${intl.formatMessage({ id: "greeting" })} ${
-                name
-              }`}
-            </StyledText>
             <UserAvatar name={name} />
           </Flex>
         )}

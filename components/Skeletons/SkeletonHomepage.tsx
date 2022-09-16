@@ -20,6 +20,9 @@ const SkeletonPlayers = () => (
     <Body>
       <BodyRow />
       <BodyRow />
+      <BodyRow />
+      <BodyRow />
+      <BodyRow />
     </Body>
   </>
 );
@@ -48,4 +51,4 @@ const SkeletonHomepage = () => (
   </>
 );
 
-export { SkeletonHomepage };
+export { SkeletonHomepage, SkeletonPlayers };

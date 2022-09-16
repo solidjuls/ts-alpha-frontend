@@ -2,6 +2,7 @@ module.exports = {
   messages: {
     currentURL: "URL Actual",
     typeOfGame: "Tipus de partida",
+    gameRecreateId: "ID joc",
     checkID: "ID",
     playerUSA: "Jugador USA *",
     playerURSS: "Jugador URSS *",

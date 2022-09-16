@@ -14,18 +14,14 @@ export const authorize = async ({
     },
   });
 
-  // user not found
-  console.log("user", user);
-  console.log("pwd", pwd);
   if (!user) return null;
-//
-  // const checkPassword = await compare(pwd, user.password as string);
-  // console.log("checkPassword", checkPassword);
-  // if (!checkPassword) return null;
+
+  const checkPassword = await compare(pwd, user.password as string);
+  if (!checkPassword) return null;
 
   return {
-    email: 'juli.arnalot@gmail.com',//user.email,
-    name: 'Juli',// user.first_name,
-    role: "admin"
+    email: user.email,
+    name: user.first_name,
+    role: user.role
   };
 };

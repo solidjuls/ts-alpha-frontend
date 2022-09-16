@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
+    "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha dev --execute 'yarn dev'",
+    "dev:planetscale:prod": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +13,7 @@
     "@prisma/client": "^4.0.0",
     "@radix-ui/colors": "^0.1.7",
     "@radix-ui/react-avatar": "^0.1.3",
+    "@radix-ui/react-checkbox": "^1.0.0",
     "@radix-ui/react-dropdown-menu": "^0.1.1",
     "@radix-ui/react-icons": "^1.0.3",
     "@radix-ui/react-label": "^0.1.1",
