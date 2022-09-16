@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { TextComponent } from "./TextComponent";
+import React from "react";
+import TextComponent from "./TextComponent";
 import { Box } from "components/Atoms";
 import { Checkbox } from "components/Checkbox";
 import { Label } from "components/Label";
@@ -54,4 +54,4 @@ const RecreateRating = ({
   );
 };
 
-export { RecreateRating };
+export default RecreateRating;

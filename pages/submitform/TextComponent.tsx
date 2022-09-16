@@ -34,4 +34,4 @@ const TextComponent = ({
   );
 };
 
-export { TextComponent };
+export default TextComponent;

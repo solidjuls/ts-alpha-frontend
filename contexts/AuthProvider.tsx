@@ -56,6 +56,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login: LoginFnType = async (mail, pwd) => {
     try {
+      // @ts-ignore
       const response = await signIn.mutateAsync({
         mail,
         pwd,

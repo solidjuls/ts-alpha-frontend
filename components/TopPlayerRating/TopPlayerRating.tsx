@@ -26,6 +26,7 @@ const Announcement = () => {
 };
 
 const TopPlayerRating = () => {
+  // @ts-ignore
   const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
 
   return (

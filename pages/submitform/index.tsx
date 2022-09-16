@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import { GameAPI, GameWinner, GameRecreate, SubmitFormValue, SubmitFormState } from "types/game.types";
-import { SubmitForm } from "./SubmitForm";
+import SubmitForm from "./SubmitForm";
 
 type SubmitFormProps = {
   role: number;

@@ -2,9 +2,9 @@ import React from "react";
 import { useRouter } from "next/router";
 
 import { trpc } from "contexts/APIProvider";
-import { TextComponent } from "./TextComponent";
-import { DateComponent } from "./DateComponent";
-import { RecreateRating } from "./RecreateRating";
+import TextComponent from "./TextComponent";
+import DateComponent from "./DateComponent";
+import RecreateRating from "./RecreateRating";
 import {
   gameWinningOptions,
   endType,
@@ -17,7 +17,7 @@ import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
 import WithLabel from "./WithLabel";
 import DropdownMenu, { DropdownItemType } from "components/DropdownMenu";
-import type { SubmitFormState } from "./index";
+import type { SubmitFormState } from "types/game.types";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -111,6 +111,7 @@ const SubmitForm = ({
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: async () => {
       await trpcUtils.invalidateQueries([GAME_QUERY]);
+      // @ts-ignore
       await trpcUtils.invalidateQueries(["rating-get", { n: 5 }])
       router.push("/");
     },
@@ -138,7 +139,7 @@ const SubmitForm = ({
         <RecreateRating
           checked={checked}
           setChecked={setChecked}
-          oldId={form.oldId.value}
+          oldId={form.oldId}
           onInputValueChange={onInputValueChange}
         />
       )}
@@ -243,6 +244,7 @@ const SubmitForm = ({
             onClick={async (event) => {
               if (validated(form, setForm)) {
                 event.currentTarget.disabled = true;
+                // @ts-ignore
                 await gameSubmitMutation.mutate({
                   data: normalizeData(form),
                 });
@@ -258,6 +260,7 @@ const SubmitForm = ({
             css={{ width: "200px", fontSize: "18px" }}
             onClick={async (event) => {
               // event.currentTarget.disabled = true;
+              // @ts-ignore
               const result = await gameConfirmRecreation.mutateAsync({
                 id: form.oldId.value,
               });
@@ -270,6 +273,7 @@ const SubmitForm = ({
                 )
               ) {
                 if (validated(form, setForm)) {
+                  // @ts-ignore
                   await gameRecreationMutation.mutateAsync({
                     data: normalizeData(form),
                   });
@@ -286,4 +290,4 @@ const SubmitForm = ({
   );
 };
 
-export { SubmitForm };
+export default SubmitForm;

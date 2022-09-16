@@ -215,6 +215,7 @@ const Homepage: React.FC = () => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
     GAME_QUERY,
+    // @ts-ignore
     { d: dateValue.toDateString() },
   ]);
 
