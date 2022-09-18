@@ -5,6 +5,7 @@ module.exports = {
     typeOfGame: "Type of game",
     gameRecreateId: "Game ID",
     checkID: "Check ID",
+    oldId: "Old Check ID",
     playerUSA: "USA Player *",
     playerURSS: "URSS Player *",
     gameWinner: "Game winner",

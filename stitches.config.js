@@ -43,5 +43,3 @@ export const darkTheme = createTheme({
     border: "$gray100",
   },
 });
-
-export default stitches;

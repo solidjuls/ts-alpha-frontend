@@ -42,7 +42,7 @@
     "react-query": "^3.34.12",
     "superjson": "^1.8.1",
     "typescript": "^4.7.4",
-    "use-debounce": "^7.0.1",
+    "use-debounce": "^8.0.4",
     "zod": "^3.11.6"
   },
   "devDependencies": {

@@ -1,6 +1,5 @@
 import React from "react";
 import { useRouter } from "next/router";
-
 import { trpc } from "contexts/APIProvider";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
@@ -15,6 +14,7 @@ import { Button } from "components/Button";
 import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
+import { Checkbox } from "components/Checkbox";
 import WithLabel from "./WithLabel";
 import DropdownMenu, { DropdownItemType } from "components/DropdownMenu";
 import type { SubmitFormState } from "types/game.types";
@@ -112,7 +112,7 @@ const SubmitForm = ({
     onSuccess: async () => {
       await trpcUtils.invalidateQueries([GAME_QUERY]);
       // @ts-ignore
-      await trpcUtils.invalidateQueries(["rating-get", { n: 5 }])
+      await trpcUtils.invalidateQueries(["rating-get", { n: 5 }]);
       router.push("/");
     },
     onError: (error, variables, context) =>
@@ -136,12 +136,20 @@ const SubmitForm = ({
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {role === 2 && (
-        <RecreateRating
-          checked={checked}
-          setChecked={setChecked}
-          oldId={form.oldId}
-          onInputValueChange={onInputValueChange}
-        />
+        <>
+          <Checkbox
+            checked={checked}
+            onCheckedChange={(value: boolean) => setChecked(value)}
+            text="Activate rating recreation"
+            css={{ marginBottom: "8px" }}
+          />
+          {checked && (
+            <RecreateRating
+              oldId={form.oldId}
+              onInputValueChange={onInputValueChange}
+            />
+          )}
+        </>
       )}
       <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
         <TextComponent
