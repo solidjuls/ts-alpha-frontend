@@ -17,6 +17,7 @@ export const authorize = async ({
   if (!user) return null;
 
   const checkPassword = await compare(pwd, user.password as string);
+  console.log("checkPassword", checkPassword)
   if (!checkPassword) return null;
 
   return {

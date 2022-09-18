@@ -13,7 +13,7 @@ import {
 import { calculateRating } from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
-  getGameById,
+  getGameByGameCode,
 } from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
@@ -110,6 +110,36 @@ export const gameRouter = trpc
       return JSON.parse(gameParsed) as Game[];
     },
   })
+  .query("getDataByGame", {
+    input: z.object({ id: z.string() }),
+    async resolve({ input }) {
+      const game = await prisma.game_results.findFirst({
+        select: {
+          game_code: true,
+          game_type: true,
+          usa_player_id: true,
+          ussr_player_id: true,
+          game_winner: true,
+          end_turn: true,
+          end_mode: true,
+          game_date: true,
+          video1: true,
+          video2: true,
+          video3: true,
+        },
+        where: {
+          game_code: input.id,
+        },
+      });
+
+      console.log("game", game);
+
+      const gameParsed = JSON.stringify(game, (key, value) =>
+        typeof value === "bigint" ? value.toString() : value
+      );
+      return JSON.parse(gameParsed);
+    },
+  })
   .mutation("submit", {
     input: z.object({
       data: zGameAPI,
@@ -156,7 +186,7 @@ export const gameRouter = trpc
   });
 
 async function recreateRatingsConfirm(oldId: string) {
-  const oldGameDate = await getGameById(oldId);
+  const oldGameDate = await getGameByGameCode(oldId);
   if (oldGameDate && oldGameDate.created_at != null) {
     const gamesAffected = await getGameWithRatings({
       created_at: {
@@ -188,11 +218,12 @@ const createNewRating = async ({
   gameId: bigint;
 }) => {
   //we recalculate all ratings based on the games retrieved,
-  const { newUsaRating, newUssrRating } = await calculateRating({
-    usaPlayerId,
-    ussrPlayerId,
-    gameWinner,
-  });
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } =
+    await calculateRating({
+      usaPlayerId,
+      ussrPlayerId,
+      gameWinner,
+    });
   console.log(
     "newUsaRating, newUssrRating",
     gameId,
@@ -235,12 +266,14 @@ const createNewRating = async ({
       },
     ],
   });
+
+  return { usaRating, ussrRating };
 };
 
 const startRecreatingRatings = async (input: GameRecreate) => {
   const dateNow = new Date(Date.now());
   // we select the oldId game created_at
-  const oldGameDate = await getGameById(input.oldId);
+  const oldGameDate = await getGameByGameCode(input.oldId);
 
   // we select all games with date created_at >= oldId game
   const allGamesAffected = await prisma.game_results.findMany({
@@ -258,7 +291,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
       },
     },
   });
-
+  console.log("allGamesAffected", allGamesAffected);
   // we delete all rating info related to those games
   const ids = allGamesAffected.map((game) => game.id);
 
@@ -273,12 +306,22 @@ const startRecreatingRatings = async (input: GameRecreate) => {
   for (let index = 0; index < allGamesAffected.length; index++) {
     const game = allGamesAffected[index];
     console.log("index", index, game.id, input.oldId);
-    if (game.id.toString() === input.oldId) {
-      const oldId = BigInt(input.oldId);
+    if (game.game_code === input.oldId) {
+      // const oldId = BigInt(input.oldId);
+      const { usaRating, ussrRating } = await createNewRating({
+        usaPlayerId: BigInt(input.usaPlayerId),
+        ussrPlayerId: BigInt(input.ussrPlayerId),
+        gameWinner: input.gameWinner as GameWinner,
+        createdAt: game.created_at,
+        updatedAt: dateNow,
+        gameId: game.id,
+      });
       const newGame = {
         updated_at: dateNow,
         usa_player_id: BigInt(input.usaPlayerId),
         ussr_player_id: BigInt(input.ussrPlayerId),
+        usa_previous_rating: usaRating,
+        ussr_previous_rating: ussrRating,
         game_type: input.gameType,
         game_code: input.gameCode,
         game_winner: input.gameWinner,
@@ -296,25 +339,26 @@ const startRecreatingRatings = async (input: GameRecreate) => {
           ...newGame,
         },
         where: {
-          id: oldId,
+          id: game.id,
         },
       });
-      await createNewRating({
-        usaPlayerId: BigInt(input.usaPlayerId),
-        ussrPlayerId: BigInt(input.ussrPlayerId),
-        gameWinner: input.gameWinner as GameWinner,
-        createdAt: game.created_at,
-        updatedAt: dateNow,
-        gameId: game.id,
-      });
     } else {
-      await createNewRating({
+      const { usaRating, ussrRating } = await createNewRating({
         usaPlayerId: BigInt(game.usa_player_id),
         ussrPlayerId: BigInt(game.ussr_player_id),
         gameWinner: game.game_winner as GameWinner,
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
+      });
+      await prisma.game_results.update({
+        data: {
+          usa_previous_rating: usaRating,
+          ussr_previous_rating: ussrRating,
+        },
+        where: {
+          id: game.id,
+        },
       });
     }
   }
