@@ -27,8 +27,10 @@ const formStyles = {
   backgroundColor: "White",
   width: "640px",
   alignSelf: "center",
-  //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-  padding: "12px",
+  // boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
+  "@sm": {
+    width: "100%",
+  },
 };
 
 type DropdownWithLabelProps = {
@@ -151,7 +153,13 @@ const SubmitForm = ({
           )}
         </>
       )}
-      <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
+      <Box
+        css={{
+          flexDirection: "column",
+          alignItems: "flex-start",
+          padding: "12px",
+        }}
+      >
         <TextComponent
           labelText="checkID"
           inputValue={form.gameCode.value}
