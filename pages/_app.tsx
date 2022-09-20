@@ -5,7 +5,6 @@ import { ThemeProvider } from "next-themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
-import { darkTheme } from "stitches.config.js";
 import { withTRPC } from "@trpc/next";
 import type { AppRouter } from "backend/router";
 
@@ -22,7 +21,6 @@ function App({ Component, pageProps }: AppProps) {
               attribute="class"
               defaultTheme="system"
               value={{
-                dark: darkTheme.className,
                 light: "light",
               }}
             >
