@@ -112,14 +112,11 @@ const SubmitForm = ({
 
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: async () => {
-      await trpcUtils.invalidateQueries([GAME_QUERY]);
-      // @ts-ignore
-      await trpcUtils.invalidateQueries(["rating-get", { n: 5 }]);
-      router.push("/");
+      trpcUtils.queryClient.invalidateQueries();
+      if (window) window.location.href = "/"
     },
     onError: (error, variables, context) =>
       console.log("error gameSubmitMutation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameSubmitMutation", props),
   });
   const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
     onSuccess: (props) => console.log("success gameConfirmRecreation", props),
