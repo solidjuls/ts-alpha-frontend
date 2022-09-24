@@ -58,14 +58,6 @@ const restoreDataFromAPI = (data: any) => {
       value: data.video1,
       error: false,
     },
-    video2: {
-      value: data.video2,
-      error: false,
-    },
-    video3: {
-      value: data.video3,
-      error: false,
-    },
   };
 };
 
@@ -107,15 +99,7 @@ const initialState: SubmitFormState = {
     error: false,
   },
   video1: {
-    value: "http://youtube.com",
-    error: false,
-  },
-  video2: {
-    value: "http://youtube.com",
-    error: false,
-  },
-  video3: {
-    value: "http://youtube.com",
+    value: "",
     error: false,
   },
 };
@@ -136,7 +120,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (["video1", "video2", "video3"].includes(key)) {
+      if (["video1"].includes(key)) {
       } else {
         if (
           (key !== "oldId" &&

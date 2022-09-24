@@ -42,8 +42,6 @@ const submitGame = async (data: GameAPI) => {
     end_mode: data.endMode,
     game_date: new Date(Date.parse(data.gameDate)),
     video1: data.video1 || null,
-    video2: data.video2 || null,
-    video3: data.video3 || null,
     reporter_id: BigInt(data.usaPlayerId),
   };
 
@@ -124,8 +122,6 @@ export const gameRouter = trpc
           end_mode: true,
           game_date: true,
           video1: true,
-          video2: true,
-          video3: true,
         },
         where: {
           game_code: input.id,
@@ -329,8 +325,6 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         end_mode: input.endMode,
         game_date: new Date(Date.parse(input.gameDate)),
         video1: input.video1 || null,
-        video2: input.video2 || null,
-        video3: input.video3 || null,
         reporter_id: BigInt(input.usaPlayerId),
       };
 

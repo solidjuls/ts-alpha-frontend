@@ -238,18 +238,6 @@ const SubmitForm = ({
             onInputValueChange("video1", value)
           }
         />
-        <TextComponent
-          labelText="videoLink2"
-          inputValue={form.video2.value}
-          error={form.video2.error}
-          onInputValueChange={(value) => onInputValueChange("video2", value)}
-        />
-        <TextComponent
-          labelText="videoLink3"
-          inputValue={form.video3.value}
-          error={form.video3.error}
-          onInputValueChange={(value) => onInputValueChange("video3", value)}
-        />
         {!checked && (
           <Button
             // disabled={buttonDisabled}
