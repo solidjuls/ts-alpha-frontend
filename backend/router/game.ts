@@ -23,6 +23,7 @@ const submitGame = async (data: GameAPI) => {
       usaPlayerId: data.usaPlayerId,
       ussrPlayerId: data.ussrPlayerId,
       gameWinner: data.gameWinner,
+      gameType: data.gameType
     });
 
   console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
@@ -205,6 +206,7 @@ const createNewRating = async ({
   createdAt,
   updatedAt,
   gameId,
+  gameType
 }: {
   usaPlayerId: bigint;
   ussrPlayerId: bigint;
@@ -212,6 +214,7 @@ const createNewRating = async ({
   createdAt: Date | null;
   updatedAt: Date | null;
   gameId: bigint;
+  gameType: string;
 }) => {
   //we recalculate all ratings based on the games retrieved,
   const { newUsaRating, newUssrRating, usaRating, ussrRating } =
@@ -219,6 +222,7 @@ const createNewRating = async ({
       usaPlayerId,
       ussrPlayerId,
       gameWinner,
+      gameType
     });
   console.log(
     "newUsaRating, newUssrRating",
@@ -280,6 +284,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
       ussr_player_id: true,
       game_winner: true,
       game_code: true,
+      game_type: true
     },
     where: {
       created_at: {
@@ -311,6 +316,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
+        gameType: game.game_type
       });
       const newGame = {
         updated_at: dateNow,
@@ -344,6 +350,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
+        gameType: game.game_type
       });
       await prisma.game_results.update({
         data: {
