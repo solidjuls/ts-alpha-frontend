@@ -11,8 +11,6 @@ export type SubmitFormState = {
   endTurn: SubmitFormValue<string>;
   endMode: SubmitFormValue<string>;
   video1: SubmitFormValue<string>;
-  video2: SubmitFormValue<string>;
-  video3: SubmitFormValue<string>;
 };
 
 export type SubmitFormValue<T> = {
@@ -36,8 +34,6 @@ export type Game = {
   endMode: string | null;
   game_date: Date;
   video1: string | null;
-  video2: string | null;
-  video3: string | null;
   videoURL: string;
   reporter_id: bigint | null;
   usaCountryCode: string;
@@ -58,8 +54,6 @@ export const zGameAPI = z.object({
   endTurn: z.string(),
   endMode: z.string(),
   video1: z.optional(z.string()),
-  video2: z.optional(z.string()),
-  video3: z.optional(z.string()),
 });
 
 export const zGameRecreateAPI = zGameAPI.extend({

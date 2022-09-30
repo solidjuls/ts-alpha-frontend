@@ -1,9 +1,9 @@
 type DropdownType = {
-    text: string;
-    value: string;
-}
+  text: string;
+  value: string;
+};
 
-export const GAME_QUERY = "game-getAll"
+export const GAME_QUERY = "game-getAll";
 export const leagueTypes: Array<DropdownType> = [
   {
     text: "National / Regional League",
@@ -125,6 +125,20 @@ export const endType: Array<DropdownType> = [
   },
 ];
 
+const getEndType = ({
+  winningOption,
+  endTurn,
+}: {
+  winningOption: string;
+  endTurn: string;
+}) => {
+  // if TIE then Wargammes, Final Scoring
+  // if endTurn <= 7 then VP Track, DEFCON, Forfeit, Timer Expired, Europe COntrol, Scoring Card Held, Cuban Missile...
+};
+
+const getEndTurn = ({ winningOption }: { winningOption: string }) => {
+  // if TIE then 8, 9, 10
+};
 export const gameWinningOptions: Array<DropdownType> = [
   {
     value: "1",

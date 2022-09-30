@@ -27,8 +27,10 @@ const formStyles = {
   backgroundColor: "White",
   width: "640px",
   alignSelf: "center",
-  //boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-  padding: "12px",
+  // boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
+  "@sm": {
+    width: "100%",
+  },
 };
 
 type DropdownWithLabelProps = {
@@ -110,14 +112,11 @@ const SubmitForm = ({
 
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: async () => {
-      await trpcUtils.invalidateQueries([GAME_QUERY]);
-      // @ts-ignore
-      await trpcUtils.invalidateQueries(["rating-get", { n: 5 }]);
-      router.push("/");
+      trpcUtils.queryClient.invalidateQueries();
+      if (window) window.location.href = "/"
     },
     onError: (error, variables, context) =>
       console.log("error gameSubmitMutation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameSubmitMutation", props),
   });
   const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
     onSuccess: (props) => console.log("success gameConfirmRecreation", props),
@@ -151,7 +150,13 @@ const SubmitForm = ({
           )}
         </>
       )}
-      <Box css={{ flexDirection: "column", alignItems: "flex-start" }}>
+      <Box
+        css={{
+          flexDirection: "column",
+          alignItems: "flex-start",
+          padding: "12px",
+        }}
+      >
         <TextComponent
           labelText="checkID"
           inputValue={form.gameCode.value}
@@ -232,18 +237,6 @@ const SubmitForm = ({
           onInputValueChange={(value: string) =>
             onInputValueChange("video1", value)
           }
-        />
-        <TextComponent
-          labelText="videoLink2"
-          inputValue={form.video2.value}
-          error={form.video2.error}
-          onInputValueChange={(value) => onInputValueChange("video2", value)}
-        />
-        <TextComponent
-          labelText="videoLink3"
-          inputValue={form.video3.value}
-          error={form.video3.error}
-          onInputValueChange={(value) => onInputValueChange("video3", value)}
         />
         {!checked && (
           <Button

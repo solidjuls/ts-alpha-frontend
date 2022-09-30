@@ -23,6 +23,7 @@ const submitGame = async (data: GameAPI) => {
       usaPlayerId: data.usaPlayerId,
       ussrPlayerId: data.ussrPlayerId,
       gameWinner: data.gameWinner,
+      gameType: data.gameType
     });
 
   console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
@@ -42,8 +43,6 @@ const submitGame = async (data: GameAPI) => {
     end_mode: data.endMode,
     game_date: new Date(Date.parse(data.gameDate)),
     video1: data.video1 || null,
-    video2: data.video2 || null,
-    video3: data.video3 || null,
     reporter_id: BigInt(data.usaPlayerId),
   };
 
@@ -124,8 +123,6 @@ export const gameRouter = trpc
           end_mode: true,
           game_date: true,
           video1: true,
-          video2: true,
-          video3: true,
         },
         where: {
           game_code: input.id,
@@ -209,6 +206,7 @@ const createNewRating = async ({
   createdAt,
   updatedAt,
   gameId,
+  gameType
 }: {
   usaPlayerId: bigint;
   ussrPlayerId: bigint;
@@ -216,6 +214,7 @@ const createNewRating = async ({
   createdAt: Date | null;
   updatedAt: Date | null;
   gameId: bigint;
+  gameType: string;
 }) => {
   //we recalculate all ratings based on the games retrieved,
   const { newUsaRating, newUssrRating, usaRating, ussrRating } =
@@ -223,6 +222,7 @@ const createNewRating = async ({
       usaPlayerId,
       ussrPlayerId,
       gameWinner,
+      gameType
     });
   console.log(
     "newUsaRating, newUssrRating",
@@ -284,6 +284,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
       ussr_player_id: true,
       game_winner: true,
       game_code: true,
+      game_type: true
     },
     where: {
       created_at: {
@@ -315,6 +316,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
+        gameType: game.game_type
       });
       const newGame = {
         updated_at: dateNow,
@@ -329,8 +331,6 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         end_mode: input.endMode,
         game_date: new Date(Date.parse(input.gameDate)),
         video1: input.video1 || null,
-        video2: input.video2 || null,
-        video3: input.video3 || null,
         reporter_id: BigInt(input.usaPlayerId),
       };
 
@@ -350,6 +350,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
+        gameType: game.game_type
       });
       await prisma.game_results.update({
         data: {
