@@ -20,13 +20,16 @@ const getRatingDifference = (
     "Math.round((defeated - winner) * 0.05)",
     Math.round((defeated - winner) * 0.05)
   );
-  console.log("addValue", addValue);
+  console.log("addValue", addValue, gameType);
 
   let basicCalculus = (defeated - winner) * 0.05;
 
-  if (gameType === "FS") basicCalculus = basicCalculus / 2;
+  if (gameType === "FG") basicCalculus = basicCalculus / 2;
 
   const newValue = Math.round(basicCalculus) + addValue;
+
+  console.log("friendly", newValue);
+  console.log("non friendly",  Math.round((defeated - winner) * 0.05) + 100);
 
   if (addValue !== 0 && newValue <= 0) {
     console.log("Difference minimum", 1);
@@ -62,7 +65,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       ussrRating,
       usaRating,
-      100,
+      gameType === "FG" ? 50 : 100,
       gameType
     );
     newUsaRating = usaRating + ratingDifference;
@@ -71,7 +74,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       usaRating,
       ussrRating,
-      100,
+      gameType === "FG" ? 50 : 100,
       gameType
     );
     newUsaRating = usaRating - ratingDifference;
