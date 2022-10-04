@@ -18,6 +18,7 @@ const getGamesWithRatingDifference: (
       };
 
       return {
+        id: game.id,
         created_at: game.created_at,
         endMode: game.end_mode,
         endTurn: game.end_turn,
@@ -113,7 +114,7 @@ console.log("games findMany", new Date())
   return getGamesWithRating;
 };
 
-export const getGameByGameCode = async (id: string) =>
+export const getGameByGameId = async (id: string) =>
   await prisma.game_results.findFirst({
     select: {
       created_at: true,
@@ -121,6 +122,6 @@ export const getGameByGameCode = async (id: string) =>
       reported_at: true,
     },
     where: {
-      game_code: id,
+      id: Number(id)
     },
   });
