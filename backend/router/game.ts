@@ -13,7 +13,7 @@ import {
 import { calculateRating } from "backend/controller/rating.controller";
 import {
   getGameWithRatings,
-  getGameByGameCode,
+  getGameByGameId
 } from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
@@ -110,7 +110,7 @@ export const gameRouter = trpc
     },
   })
   .query("getDataByGame", {
-    input: z.object({ id: z.string() }),
+    input: z.object({ id: z.number() }),
     async resolve({ input }) {
       const game = await prisma.game_results.findFirst({
         select: {
@@ -125,7 +125,7 @@ export const gameRouter = trpc
           video1: true,
         },
         where: {
-          game_code: input.id,
+          id: input.id,
         },
       });
 
@@ -183,7 +183,7 @@ export const gameRouter = trpc
   });
 
 async function recreateRatingsConfirm(oldId: string) {
-  const oldGameDate = await getGameByGameCode(oldId);
+  const oldGameDate = await getGameByGameId(oldId);
   if (oldGameDate && oldGameDate.created_at != null) {
     const gamesAffected = await getGameWithRatings({
       created_at: {
@@ -273,7 +273,7 @@ const createNewRating = async ({
 const startRecreatingRatings = async (input: GameRecreate) => {
   const dateNow = new Date(Date.now());
   // we select the oldId game created_at
-  const oldGameDate = await getGameByGameCode(input.oldId);
+  const oldGameDate = await getGameByGameId(input.oldId);
 
   // we select all games with date created_at >= oldId game
   const allGamesAffected = await prisma.game_results.findMany({
@@ -307,7 +307,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
   for (let index = 0; index < allGamesAffected.length; index++) {
     const game = allGamesAffected[index];
     console.log("index", index, game.id, input.oldId);
-    if (game.game_code === input.oldId) {
+    if (game.id.toString() === input.oldId) {
       // const oldId = BigInt(input.oldId);
       const { usaRating, ussrRating } = await createNewRating({
         usaPlayerId: BigInt(input.usaPlayerId),

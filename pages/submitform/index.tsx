@@ -16,10 +16,10 @@ type SubmitFormProps = {
   role: number;
 };
 
-const restoreDataFromAPI = (data: any) => {
+const restoreDataFromAPI = (data: any, id: any) => {
   return {
     oldId: {
-      value: data.game_code,
+      value: id,
       error: false,
     },
     gameDate: {
@@ -55,7 +55,7 @@ const restoreDataFromAPI = (data: any) => {
       error: false,
     },
     video1: {
-      value: data.video1,
+      value: data.video1 || "",
       error: false,
     },
   };
@@ -110,10 +110,12 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [checked, setChecked] = useState(false);
 
   const [id] = useDebounce(form.oldId.value, 1000);
-  const { data, isLoading } = trpc.useQuery(["game-getDataByGame", { id }], {
-    enabled: form.oldId.value !== "",
+  const { data } = trpc.useQuery(["game-getDataByGame", { id: Number(id) }], {
+    enabled: id !== undefined && id !== "",
     onSuccess: (data) => {
-      if (data) setForm(restoreDataFromAPI(data));
+      if (data) {
+        setForm(restoreDataFromAPI(data, id));
+      }
     },
   });
 
@@ -146,13 +148,16 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     key: keyof SubmitFormState,
     value: string | Date
   ) => {
-    setForm((prevState) => ({
-      ...prevState,
-      [key]: {
-        value,
-        error: prevState[key].error ? value === "" : false,
-      },
-    }));
+    setForm((prevState) => {
+      console.log("key value", prevState, key, value)
+      return ({
+        ...prevState,
+        [key]: {
+          value,
+          error: prevState[key].error ? value === "" : false,
+        },
+      })
+    });
   };
 
   return (

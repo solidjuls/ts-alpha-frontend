@@ -12,6 +12,10 @@ import { Game, GameRating } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
 
+type HomepageProps = {
+  role: number
+}
+
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
 
@@ -123,14 +127,20 @@ const PlayerInfoBox = ({
   );
 };
 
-const ResultRow = ({ game }: { game: Game }) => {
+const getGameType = (game: Game, role: number) => {
+  if (role === 2) return `${game.gameType} (${game.id})`;
+
+  return game.gameType
+}
+const ResultRow = ({ game, role }: { game: Game, role: number }) => {
+  console.log("game role", game, role)
   return (
     <PlayerInfo>
       <Text
         css={{ alignSelf: "center", width: GAMETYPE_WIDTH, ...responsive }}
         strong="bold"
       >
-        {game.gameType}
+        {getGameType(game, role)}
       </Text>
 
       <PlayerInfoBox
@@ -211,7 +221,7 @@ const EmptyState = () => {
   );
 };
 
-const Homepage: React.FC = () => {
+const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
     GAME_QUERY,
@@ -250,7 +260,7 @@ const Homepage: React.FC = () => {
         {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
-          <ResultRow key={index} game={game} />
+          <ResultRow key={index} role={role} game={game} />
         ))}
       </ResultsPanel>
       <Box>
