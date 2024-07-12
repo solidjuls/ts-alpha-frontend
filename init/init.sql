@@ -36,6 +36,8 @@ CREATE TABLE game_results (
   updated_at timestamp NULL DEFAULT NULL,
   usa_player_id bigint unsigned NOT NULL,
   ussr_player_id bigint unsigned NOT NULL,
+  usa_previous_rating int NOT NULL DEFAULT 0,
+  ussr_previous_rating int NOT NULL DEFAULT 0,
   game_type varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   game_code varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   reported_at timestamp NOT NULL,

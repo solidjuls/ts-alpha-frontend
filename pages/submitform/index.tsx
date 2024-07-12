@@ -192,7 +192,7 @@ export async function getServerSideProps({
       },
     };
   }
-  return { props: { role: payload.role } };
+  return { props: { role: payload.role || null } };
 }
 
 export default SubmitFormContainer;
