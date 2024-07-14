@@ -13,6 +13,11 @@ import jwt from "jsonwebtoken";
 
 const nodemailer = require("nodemailer");
 
+const decryptHash = (hash: any) => {
+  let buff = Buffer.from(hash, "base64");
+  return buff.toString("ascii");
+};
+
 const generateHash = (mail: string) => {
   let data = `${mail}#${new Date().toString()}`;
   let buff = Buffer.from(data);
@@ -45,12 +50,12 @@ async function sendEmail(
 
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.sendinblue.com",
+      host: "smtp-relay.brevo.com",
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "juli.arnalot@gmail.com",
-        pass: "rLaHcORsXkSpnBtF",
+        user: "787dcf001@smtp-brevo.com",
+        pass: "Y79aAymbtGnpdj5Q",
       },
     });
 
@@ -103,6 +108,29 @@ export const userRouter = trpc
       const cookies = new Cookies(ctx.req, ctx.res);
       cookies.set("auth-token");
 
+      return { success: true };
+    },
+  })
+  .mutation("reset", {
+    input: z.object({ token: z.string(), pwd: z.string() }),
+    async resolve({ input, ctx }) {
+      if (!ctx) return { success: false };
+      const token = input.token
+
+      // const cookies = new Cookies(ctx.req, ctx.res);
+      // cookies.set("auth-token");
+      const decrypted = decryptHash(token);
+      const values = decrypted.split("#");
+      const mail = values[0]
+      const updateUser = await prisma.users.update({
+        where: {
+          email: mail,
+        },
+        data: {
+          password: input.pwd,
+        },
+      });
+      console.log("update did happen");
       return { success: true };
     },
   })

@@ -36,7 +36,7 @@ const LabelInput = ({
 };
 
 const ResetPassword = () => {
-  const mutation = trpc.useMutation(["user-update"]);
+  const mutation = trpc.useMutation(["user-reset"]);
   const [pwd, setPwd] = useState<string>("");
   const [pwdConfirm, setPwdConfirm] = useState<string>("");
   const router = useRouter();
@@ -45,7 +45,7 @@ const ResetPassword = () => {
   const decrypted = decryptHash(hashKey);
   const values = decrypted.split("#");
   const date = Date.parse(values[1]);
-  console.log(Date.now() - date);
+  console.log(Date.now() - date, values);
   if (date === NaN) return <div>Link invalid</div>;
   if ((Date.now() - date) / 1000 > 3600) return <div>Link outdated</div>;
   if ((Date.now() - date) / 1000 > 3600) return <div>nowhere to go</div>;
@@ -71,10 +71,11 @@ const ResetPassword = () => {
           if (values[0]) {
             // some regex to validate mail is ok would be nice
             const pwdHashed = await hash(pwd, 12);
+            if (!hashKey) return
 // @ts-ignore
             mutation.mutate({
-              mail: values[0],
-              password: pwdHashed,
+              token: hashKey as string,
+              pwd: pwdHashed,
             });
           }
         }}
