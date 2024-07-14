@@ -17,9 +17,9 @@ const Input = styled("input", {
         "&:focus": {
           boxShadow: `0 0 0 2px red`,
         },
-        boxShadow: 'none'
-      }
-    }
+        boxShadow: "none",
+      },
+    },
   },
   all: "unset",
   display: "inline-flex",
@@ -34,7 +34,7 @@ const Input = styled("input", {
   boxShadow: `0 0 0 1px black`,
   "&:focus": {
     boxShadow: `0 0 0 2px black`,
-  }
+  },
 });
 
 export { Input };

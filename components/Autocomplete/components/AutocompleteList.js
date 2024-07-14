@@ -30,22 +30,19 @@ const ListContainer = styled("div", {
   left: 0,
 });
 
-const AutocompleteList = ({
-  children,
-  noResultsCustomText,
-  noResultsTextLocale,
-  ...rest
-}) => {
+const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, ...rest }) => {
   const { isOpen, getMenuProps } = useAutocompleteState();
 
   if (!isOpen) return null;
 
   return (
-    <Box css={{
-      position: "relative",
-      zIndex: 200,
-    }}>
-      <ListContainer {...getMenuProps({ isOpen })} {...rest} >
+    <Box
+      css={{
+        position: "relative",
+        zIndex: 200,
+      }}
+    >
+      <ListContainer {...getMenuProps({ isOpen })} {...rest}>
         {children}
       </ListContainer>
     </Box>

@@ -11,20 +11,16 @@ import {
   zGameRecreateAPI,
 } from "types/game.types";
 import { calculateRating } from "backend/controller/rating.controller";
-import {
-  getGameWithRatings,
-  getGameByGameId
-} from "backend/controller/game.controller";
+import { getGameWithRatings, getGameByGameId } from "backend/controller/game.controller";
 import { getWinnerText } from "utils/games";
 
 const submitGame = async (data: GameAPI) => {
-  const { newUsaRating, newUssrRating, usaRating, ussrRating } =
-    await calculateRating({
-      usaPlayerId: data.usaPlayerId,
-      ussrPlayerId: data.ussrPlayerId,
-      gameWinner: data.gameWinner,
-      gameType: data.gameType
-    });
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
+    usaPlayerId: data.usaPlayerId,
+    ussrPlayerId: data.ussrPlayerId,
+    gameWinner: data.gameWinner,
+    gameType: data.gameType,
+  });
 
   console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
   const dateNow = new Date(Date.now());
@@ -103,7 +99,7 @@ export const gameRouter = trpc
 
       console.log("gamesNormalized", new Date());
       const gameParsed = JSON.stringify(gamesNormalized, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
+        typeof value === "bigint" ? value.toString() : value,
       );
       console.log("gameParsed", new Date());
       return JSON.parse(gameParsed) as Game[];
@@ -132,7 +128,7 @@ export const gameRouter = trpc
       console.log("game", game);
 
       const gameParsed = JSON.stringify(game, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
+        typeof value === "bigint" ? value.toString() : value,
       );
       return JSON.parse(gameParsed);
     },
@@ -145,7 +141,7 @@ export const gameRouter = trpc
       const newGameWithId = await submitGame(input.data);
       console.log("newGameWithId", newGameWithId);
       const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
-        typeof value === "bigint" ? value.toString() : value
+        typeof value === "bigint" ? value.toString() : value,
       );
       return JSON.parse(newGameWithIdParsed);
     },
@@ -193,7 +189,7 @@ async function recreateRatingsConfirm(oldId: string) {
 
     return gamesAffected.map(
       (game, index) =>
-        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${game.ratingsUSA.ratingDifference}) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${game.ratingsUSSR.ratingDifference})`
+        `G${index} - ${game.usaPlayer} (${game.ratingsUSA.rating}) (${game.ratingsUSA.ratingDifference}) vs ${game.ussrPlayer} (${game.ratingsUSSR.rating}) (${game.ratingsUSSR.ratingDifference})`,
     );
   }
   return [];
@@ -206,7 +202,7 @@ const createNewRating = async ({
   createdAt,
   updatedAt,
   gameId,
-  gameType
+  gameType,
 }: {
   usaPlayerId: bigint;
   ussrPlayerId: bigint;
@@ -217,19 +213,13 @@ const createNewRating = async ({
   gameType: string;
 }) => {
   //we recalculate all ratings based on the games retrieved,
-  const { newUsaRating, newUssrRating, usaRating, ussrRating } =
-    await calculateRating({
-      usaPlayerId,
-      ussrPlayerId,
-      gameWinner,
-      gameType
-    });
-  console.log(
-    "newUsaRating, newUssrRating",
-    gameId,
-    newUsaRating,
-    newUssrRating
-  );
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
+    usaPlayerId,
+    ussrPlayerId,
+    gameWinner,
+    gameType,
+  });
+  console.log("newUsaRating, newUssrRating", gameId, newUsaRating, newUssrRating);
   await prisma.ratings_history.createMany({
     data: [
       {
@@ -284,7 +274,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
       ussr_player_id: true,
       game_winner: true,
       game_code: true,
-      game_type: true
+      game_type: true,
     },
     where: {
       created_at: {
@@ -316,7 +306,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
-        gameType: game.game_type
+        gameType: game.game_type,
       });
       const newGame = {
         updated_at: dateNow,
@@ -350,7 +340,7 @@ const startRecreatingRatings = async (input: GameRecreate) => {
         createdAt: game.created_at,
         updatedAt: dateNow,
         gameId: game.id,
-        gameType: game.game_type
+        gameType: game.game_type,
       });
       await prisma.game_results.update({
         data: {

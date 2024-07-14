@@ -12,12 +12,7 @@ import { Box } from "components/Atoms";
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
-const TextComponent = ({
-  labelText,
-  inputValue,
-  onInputValueChange = () => {},
-  ...rest
-}) => (
+const TextComponent = ({ labelText, inputValue, onInputValueChange = () => {}, ...rest }) => (
   <Box css={{ display: "flex", marginBottom: "16px" }}>
     <Label htmlFor="video1" css={cssLabel}>
       <FormattedMessage id={labelText} />
@@ -41,7 +36,7 @@ const UserProfile = ({ role }) => {
   const updateClick = async () => {
     // if (session?.user?.email) {
     const pwdHashed = await hash(password, 12);
-// @ts-ignore
+    // @ts-ignore
     mutation.mutate({
       mail,
       password: pwdHashed,
@@ -50,7 +45,7 @@ const UserProfile = ({ role }) => {
   };
 
   const updateAllClick = async () => {
-    const pwd = "welcome6"
+    const pwd = "welcome6";
 
     if (email) {
       const pwd = await hash("welcome6", 12);
@@ -61,14 +56,12 @@ const UserProfile = ({ role }) => {
     }
   };
 
-  console.log("email", email, mail, role)
+  console.log("email", email, mail, role);
   return (
     <Box css={{ padding: "24px" }}>
-      {role === 2 && <TextComponent
-        labelText="userMail"
-        inputValue={mail}
-        onInputValueChange={setMail}
-      />}
+      {role === 2 && (
+        <TextComponent labelText="userMail" inputValue={mail} onInputValueChange={setMail} />
+      )}
       <TextComponent
         labelText="updatePwdProfile"
         inputValue={password}
@@ -85,10 +78,7 @@ const UserProfile = ({ role }) => {
 
 export default UserProfile;
 
-export async function getServerSideProps({
-  req,
-  res,
-}) {
+export async function getServerSideProps({ req, res }) {
   const payload = getInfoFromCookies(req, res);
   if (!payload) {
     return {

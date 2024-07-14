@@ -71,8 +71,8 @@ const ResetPassword = () => {
           if (values[0]) {
             // some regex to validate mail is ok would be nice
             const pwdHashed = await hash(pwd, 12);
-            if (!hashKey) return
-// @ts-ignore
+            if (!hashKey) return;
+            // @ts-ignore
             mutation.mutate({
               token: hashKey as string,
               pwd: pwdHashed,

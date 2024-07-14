@@ -125,8 +125,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       if (["video1"].includes(key)) {
       } else {
         if (
-          (key !== "oldId" &&
-            form[key as keyof SubmitFormState].value === "") ||
+          (key !== "oldId" && form[key as keyof SubmitFormState].value === "") ||
           (checked && form[key as keyof SubmitFormState].value === "")
         ) {
           // form[key].error = true;
@@ -144,19 +143,16 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     return submit;
   };
 
-  const onInputValueChange = (
-    key: keyof SubmitFormState,
-    value: string | Date
-  ) => {
+  const onInputValueChange = (key: keyof SubmitFormState, value: string | Date) => {
     setForm((prevState) => {
-      console.log("key value", prevState, key, value)
-      return ({
+      console.log("key value", prevState, key, value);
+      return {
         ...prevState,
         [key]: {
           value,
           error: prevState[key].error ? value === "" : false,
         },
-      })
+      };
     });
   };
 

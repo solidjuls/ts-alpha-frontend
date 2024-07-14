@@ -1,10 +1,4 @@
-import {
-  useContext,
-  createContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import { useContext, createContext, useState, useEffect, ReactNode } from "react";
 import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
 import type { AuthType } from "../types/user.types";
@@ -43,9 +37,9 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [auth, setAuth] = useState<AuthType>({ name: "", email: "" });
 
   useEffect(() => {
-    const cookies = cookieCutter.get(KEY)
+    const cookies = cookieCutter.get(KEY);
     if (cookies) {
-      setAuth(JSON.parse(cookies))
+      setAuth(JSON.parse(cookies));
     }
   }, []);
 
@@ -74,8 +68,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout: LogoutFnType = async () => {
     try {
       const response = await signOut.mutateAsync();
-      if (response && response.success && setAuthentication)
-        setAuthentication({});
+      if (response && response.success && setAuthentication) setAuthentication({});
       router.push("/");
     } catch (e) {
       console.log("sign out error", e);

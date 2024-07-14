@@ -25,15 +25,9 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  process.env.NEXT_PUBLIC_URL
-    ? process.env.NEXT_PUBLIC_URL
-    : "http://localhost:3000";
+  process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
 
-async function sendEmail(
-  mail: string,
-  firstName: string | null,
-  hashedUrl: string
-) {
+async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
     from: "juli.arnalot@gmail.com",
     // to: toUser.email // in production uncomment this
@@ -86,13 +80,9 @@ export const userRouter = trpc
           message: "User doesn't exist",
         });
       }
-      const token = jwt.sign(
-        { mail: user.email, role: user.role },
-        process.env.TOKEN_SECRET,
-        {
-          expiresIn: "60d",
-        }
-      );
+      const token = jwt.sign({ mail: user.email, role: user.role }, process.env.TOKEN_SECRET, {
+        expiresIn: "60d",
+      });
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
         path: "/",
@@ -115,13 +105,13 @@ export const userRouter = trpc
     input: z.object({ token: z.string(), pwd: z.string() }),
     async resolve({ input, ctx }) {
       if (!ctx) return { success: false };
-      const token = input.token
+      const token = input.token;
 
       // const cookies = new Cookies(ctx.req, ctx.res);
       // cookies.set("auth-token");
       const decrypted = decryptHash(token);
       const values = decrypted.split("#");
-      const mail = values[0]
+      const mail = values[0];
       const updateUser = await prisma.users.update({
         where: {
           email: mail,
@@ -156,7 +146,7 @@ export const userRouter = trpc
             },
           });
           const userParsed = JSON.stringify(user, (key, value) =>
-            typeof value === "bigint" ? value.toString() : value
+            typeof value === "bigint" ? value.toString() : value,
           );
           return JSON.parse(userParsed);
         },
@@ -204,7 +194,7 @@ export const userRouter = trpc
           console.log("update did happen");
           return { success: true };
         },
-      })
+      }),
   )
   .merge(
     trpc
@@ -232,7 +222,7 @@ export const userRouter = trpc
           });
           return { success: true };
         },
-      })
+      }),
   )
   .mutation("reset-pwd", {
     input: z.object({
@@ -257,7 +247,7 @@ export const userRouter = trpc
         const aver = await sendEmail(
           input.mail,
           user.first_name,
-          `${getUrl()}/reset-password/${hash}`
+          `${getUrl()}/reset-password/${hash}`,
         );
         //console.log("checking", aver, hash);
       }

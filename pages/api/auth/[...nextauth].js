@@ -1,8 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-
-
 export default NextAuth({
   providers: [
     CredentialsProvider({
@@ -24,11 +22,11 @@ export default NextAuth({
           },
         });
         // user not found
-        console.log("user", user)
+        console.log("user", user);
         if (!user) return null;
-// llegirem i prendrem notes sobre server components
+        // llegirem i prendrem notes sobre server components
         const checkPassword = await compare(credentials.pwd, user.password);
-        console.log("checkPassword", checkPassword)
+        console.log("checkPassword", checkPassword);
         if (!checkPassword) return null;
 
         return {
@@ -61,7 +59,7 @@ export default NextAuth({
   },
   pages: {
     error: "/login",
-    signIn: "/login"
+    signIn: "/login",
   },
   session: {
     jwt: true,
