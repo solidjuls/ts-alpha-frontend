@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { createReactQueryHooks } from "@trpc/react";
-import type { inferProcedureOutput } from '@trpc/server';
-import jwt from "next-auth/jwt"
+import type { inferProcedureOutput } from "@trpc/server";
+import jwt from "next-auth/jwt";
 import { QueryClient, QueryClientProvider } from "react-query";
 import cookie from "cookie";
 import type { AppRouter } from "backend/router";
-import { getToken } from "next-auth/jwt"
+import { getToken } from "next-auth/jwt";
 
 const queryClient = new QueryClient();
 export const trpc = createReactQueryHooks<AppRouter>();

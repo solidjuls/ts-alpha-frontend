@@ -23,6 +23,6 @@ module.exports = {
     signOut: "Sign out",
     signIn: "Sign in",
     profileText: "Profile",
-    greeting: "Hi"
+    greeting: "Hi",
   },
 };

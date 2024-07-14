@@ -7,9 +7,7 @@ const useIntlContext = () => {
   const context = useContext(IntlContext);
 
   if (!context) {
-    throw new Error(
-      "You need a IntlContextProvider component to use useIntlContext"
-    );
+    throw new Error("You need a IntlContextProvider component to use useIntlContext");
   }
 
   return context;

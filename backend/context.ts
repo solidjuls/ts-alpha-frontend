@@ -7,16 +7,12 @@ import Cookies from "cookies";
 /* @ts-ignore */
 import jwt from "jsonwebtoken";
 
-export const getAccessTokenFromCookie = (
-  req: NextApiRequest | IncomingMessage
-) => {
+export const getAccessTokenFromCookie = (req: NextApiRequest | IncomingMessage) => {
   try {
     return (
       req?.headers?.cookie
         ?.split(";")
-        .find((val) =>
-          val?.includes(process.env.NEXT_PUBLIC_TOKEN_COOKIE_NAME as string)
-        )
+        .find((val) => val?.includes(process.env.NEXT_PUBLIC_TOKEN_COOKIE_NAME as string))
         ?.split("=")[1] ?? null
     );
   } catch (e) {

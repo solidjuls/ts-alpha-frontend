@@ -11,10 +11,7 @@ const RecreateRating = ({
   onInputValueChange,
 }: {
   oldId: SubmitFormValue<string>;
-  onInputValueChange: (
-    key: keyof SubmitFormState,
-    value: string | Date
-  ) => void;
+  onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
 }) => {
   return (
     <Box>
@@ -28,8 +25,8 @@ const RecreateRating = ({
         }}
       >
         <Label>
-          Add the ID of the game you want recreated. Then, enter the new data
-          using the form as usual{" "}
+          Add the ID of the game you want recreated. Then, enter the new data using the form as
+          usual{" "}
         </Label>
         <TextComponent
           labelText="oldId"

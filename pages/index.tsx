@@ -12,7 +12,7 @@ export default function Home({ role }: { role: number }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <br />
-      <Homepage role={role}/>
+      <Homepage role={role} />
     </>
   );
 }
@@ -24,7 +24,6 @@ export async function getServerSideProps({
   req: NextApiRequest;
   res: NextApiResponse;
 }) {
-
   const payload = getInfoFromCookies(req, res);
   console.log("payload", payload);
   return { props: { role: payload?.role || null } };

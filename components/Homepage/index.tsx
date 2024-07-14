@@ -13,8 +13,8 @@ import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
 
 type HomepageProps = {
-  role: number
-}
+  role: number;
+};
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -41,10 +41,7 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({
-  rating,
-  ratingDifference,
-}: Pick<GameRating, "rating" | "ratingDifference">) => {
+const Rating = ({ rating, ratingDifference }: Pick<GameRating, "rating" | "ratingDifference">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -53,21 +50,12 @@ const Rating = ({
   );
 };
 
-const RatingBox = ({
-  ratingsUSA,
-  ratingsUSSR,
-}: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
+const RatingBox = ({ ratingsUSA, ratingsUSSR }: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
-        <Rating
-          rating={ratingsUSA.rating}
-          ratingDifference={ratingsUSA.ratingDifference}
-        />
-        <Rating
-          rating={ratingsUSSR.rating}
-          ratingDifference={ratingsUSSR.ratingDifference}
-        />
+        <Rating rating={ratingsUSA.rating} ratingDifference={ratingsUSA.ratingDifference} />
+        <Rating rating={ratingsUSSR.rating} ratingDifference={ratingsUSSR.ratingDifference} />
       </Box>
     </Box>
   );
@@ -81,11 +69,7 @@ const PlayerInfoBox = ({
   ussrCountryCode,
 }: Pick<
   Game,
-  | "usaPlayer"
-  | "ussrPlayer"
-  | "gameWinner"
-  | "usaCountryCode"
-  | "ussrCountryCode"
+  "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode"
 >) => {
   return (
     <Box
@@ -106,9 +90,7 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={usaCountryCode} />
-        <Text strong={gameWinner === "1" ? "bold" : undefined}>
-          {usaPlayer}
-        </Text>
+        <Text strong={gameWinner === "1" ? "bold" : undefined}>{usaPlayer}</Text>
       </Box>
       <Box
         css={{
@@ -119,9 +101,7 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={ussrCountryCode} />
-        <Text strong={gameWinner === "2" ? "bold" : undefined}>
-          {ussrPlayer}
-        </Text>
+        <Text strong={gameWinner === "2" ? "bold" : undefined}>{ussrPlayer}</Text>
       </Box>
     </Box>
   );
@@ -130,16 +110,13 @@ const PlayerInfoBox = ({
 const getGameType = (game: Game, role: number) => {
   if (role === 2) return `${game.gameType} (${game.id})`;
 
-  return game.gameType
-}
-const ResultRow = ({ game, role }: { game: Game, role: number }) => {
-  console.log("game role", game, role)
+  return game.gameType;
+};
+const ResultRow = ({ game, role }: { game: Game; role: number }) => {
+  console.log("game role", game, role);
   return (
     <PlayerInfo>
-      <Text
-        css={{ alignSelf: "center", width: GAMETYPE_WIDTH, ...responsive }}
-        strong="bold"
-      >
+      <Text css={{ alignSelf: "center", width: GAMETYPE_WIDTH, ...responsive }} strong="bold">
         {getGameType(game, role)}
       </Text>
 
@@ -153,9 +130,7 @@ const ResultRow = ({ game, role }: { game: Game, role: number }) => {
       <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">Winner</Text>
-        <Text css={{ textAlign: "center" }}>
-          {getWinnerText(game.gameWinner)}
-        </Text>
+        <Text css={{ textAlign: "center" }}>{getWinnerText(game.gameWinner)}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
@@ -200,8 +175,7 @@ const FilterPanel = styled("div", {
   borderBottom: borderStyle,
 });
 
-const formatDateToString = (date: Date) =>
-  `${date.getDate()}/${date.getMonth() + 1}`;
+const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
   return (
@@ -252,16 +226,11 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     >
       <ResultsPanel>
         <FilterPanel>
-          <DayMonthInput
-            value={formatDateToString(dateValue)}
-            onClick={onClickDay}
-          />
+          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
         </FilterPanel>
         {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
-        {data?.map((game, index) => (
-          <ResultRow key={index} role={role} game={game} />
-        ))}
+        {data?.map((game, index) => <ResultRow key={index} role={role} game={game} />)}
       </ResultsPanel>
       <Box>
         <TopPlayerRating />

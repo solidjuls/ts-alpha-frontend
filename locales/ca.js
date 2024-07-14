@@ -20,6 +20,6 @@ module.exports = {
     signOut: "Desconectar",
     signIn: "Conectar",
     profileText: "Info d'usuari",
-    greeting: "Hola"
+    greeting: "Hola",
   },
 };

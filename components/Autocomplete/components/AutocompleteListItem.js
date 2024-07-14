@@ -35,22 +35,10 @@ Item.propTypes = {
   highlight: PropTypes.bool,
 };
 
-const AutocompleteListItem = ({
-  children,
-  id,
-  index,
-  value,
-  itemColor,
-  disabled,
-  ...rest
-}) => {
+const AutocompleteListItem = ({ children, id, index, value, itemColor, disabled, ...rest }) => {
   const { highlightedIndex, getItemProps } = useAutocompleteState();
   const { onClick, ...restItemProps } = getItemProps({ item: value, index });
-  console.log(
-    "highlightedIndex === index",
-    highlightedIndex === index,
-    restItemProps
-  );
+  console.log("highlightedIndex === index", highlightedIndex === index, restItemProps);
   return (
     <Item
       key={`${id}${index}`}

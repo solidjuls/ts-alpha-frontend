@@ -3,14 +3,7 @@ import { styled, keyframes } from "@stitches/react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { blackA } from "@radix-ui/colors";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
-import {
-  Root,
-  Trigger,
-  Content,
-  Item,
-  Arrow,
-  Separator,
-} from "@radix-ui/react-dropdown-menu";
+import { Root, Trigger, Content, Item, Arrow, Separator } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "contexts/AuthProvider";
@@ -65,9 +58,9 @@ const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "none",
   backgroundColor: "$primary",
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center'
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {

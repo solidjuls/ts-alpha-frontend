@@ -9,4 +9,4 @@ export type AuthType = {
   name?: string | undefined;
   email?: string | undefined;
   pwd?: string | undefined;
-}
+};

@@ -76,7 +76,5 @@ export type GameAPI = z.infer<typeof zGameAPI>;
 
 export type GameRecreate = z.infer<typeof zGameRecreateAPI>;
 
-
-
 type GameLeagueType = "National League" | "ITSL" | "OTSL" | "RTSL" | "Friendly";
 type GameWinnerType = "1" | "2" | "3";
