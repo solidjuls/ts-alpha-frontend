@@ -4,12 +4,7 @@ import { trpc } from "contexts/APIProvider";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
-import {
-  gameWinningOptions,
-  endType,
-  turns,
-  leagueTypes,
-} from "utils/constants";
+import { gameWinningOptions, endType, turns, leagueTypes } from "utils/constants";
 import { Button } from "components/Button";
 import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
@@ -68,16 +63,13 @@ const DropdownWithLabel = ({
 type SubmitFormProps = {
   validated: (
     form: SubmitFormState,
-    setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>
+    setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>,
   ) => boolean;
   role: number;
   checked: boolean;
   setChecked: React.Dispatch<React.SetStateAction<boolean>>;
   form: SubmitFormState;
-  onInputValueChange: (
-    key: keyof SubmitFormState,
-    value: string | Date
-  ) => void;
+  onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
   buttonDisabled: boolean;
   setButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
   setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>;
@@ -113,7 +105,7 @@ const SubmitForm = ({
   const gameSubmitMutation = trpc.useMutation(["game-submit"], {
     onSuccess: async () => {
       trpcUtils.queryClient.invalidateQueries();
-      if (window) window.location.href = "/"
+      if (window) window.location.href = "/";
     },
     onError: (error, variables, context) =>
       console.log("error gameSubmitMutation", error, variables, context),
@@ -128,8 +120,7 @@ const SubmitForm = ({
     onSuccess: () => trpcUtils.invalidateQueries(),
     onError: (error, variables, context) =>
       console.log("error gameRecreationMutation", error, variables, context),
-    onSettled: (props) =>
-      console.log("onSettled gameRecreationMutation", props),
+    onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
   });
 
   return (
@@ -142,12 +133,7 @@ const SubmitForm = ({
             text="Activate rating recreation"
             css={{ marginBottom: "8px" }}
           />
-          {checked && (
-            <RecreateRating
-              oldId={form.oldId}
-              onInputValueChange={onInputValueChange}
-            />
-          )}
+          {checked && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
         </>
       )}
       <Box
@@ -181,9 +167,7 @@ const SubmitForm = ({
           selectedInputProperty="text"
           error={form.usaPlayerId.error}
           css={{ width: typeaheadWidth }}
-          onSelect={(value: any) =>
-            onInputValueChange("usaPlayerId", value?.value)
-          }
+          onSelect={(value: any) => onInputValueChange("usaPlayerId", value?.value)}
           onBlur={() => onInputValueChange("usaPlayerId", "")}
         />
         <UserTypeahead
@@ -193,9 +177,7 @@ const SubmitForm = ({
           css={{ width: typeaheadWidth }}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          onSelect={(value: any) =>
-            onInputValueChange("ussrPlayerId", value?.value)
-          }
+          onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
         />
         <DropdownWithLabel
@@ -226,17 +208,13 @@ const SubmitForm = ({
           labelText="gameDate"
           inputValue={form.gameDate.value}
           // error={form.gameDate.error}
-          onInputValueChange={(value: Date) =>
-            onInputValueChange("gameDate", value)
-          }
+          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
         />
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
           error={form.video1.error}
-          onInputValueChange={(value: string) =>
-            onInputValueChange("video1", value)
-          }
+          onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         {!checked && (
           <Button
@@ -269,8 +247,8 @@ const SubmitForm = ({
               if (
                 window.confirm(
                   `This games will be recreated. \n ${formatResultConfirmation(
-                    result
-                  )}. Do you want to proceed?`
+                    result,
+                  )}. Do you want to proceed?`,
                 )
               ) {
                 if (validated(form, setForm)) {

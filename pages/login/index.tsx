@@ -58,9 +58,7 @@ const LoginForm: React.FC = () => {
         id="pwd"
         margin="login"
         defaultValue={pwd}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-          setPwd(event.target.value)
-        }
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPwd(event.target.value)}
         css={{ width: "300px" }}
       />
       <Button

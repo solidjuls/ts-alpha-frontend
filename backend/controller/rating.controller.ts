@@ -7,19 +7,13 @@ const getRatingDifference = (
   defeated: number,
   winner: number,
   addValue: number = 100,
-  gameType: string
+  gameType: string,
 ) => {
   console.log("defeated", defeated);
   console.log("winner", winner);
   console.log("(defeated - winner) * 0.05", (defeated - winner) * 0.05);
-  console.log(
-    "Math.round((defeated - winner) * 0.05)",
-    Math.round((defeated - winner) * 0.05)
-  );
-  console.log(
-    "Math.round((defeated - winner) * 0.05)",
-    Math.round((defeated - winner) * 0.05)
-  );
+  console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
+  console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
   console.log("addValue", addValue, gameType);
 
   let basicCalculus = (defeated - winner) * 0.05;
@@ -29,7 +23,7 @@ const getRatingDifference = (
   const newValue = Math.round(basicCalculus) + addValue;
 
   console.log("friendly", newValue);
-  console.log("non friendly",  Math.round((defeated - winner) * 0.05) + 100);
+  console.log("non friendly", Math.round((defeated - winner) * 0.05) + 100);
 
   if (addValue !== 0 && newValue <= 0) {
     console.log("Difference minimum", 1);
@@ -44,10 +38,7 @@ const getRatingDifference = (
   return newValue;
 };
 
-const getSmallerValue: (value1: number, value2: number) => BiggerLowerValue = (
-  value1,
-  value2
-) => {
+const getSmallerValue: (value1: number, value2: number) => BiggerLowerValue = (value1, value2) => {
   if (value1 > value2) return { bigger: value1, smaller: value2 };
   if (value1 < value2) return { bigger: value1, smaller: value2 };
   return { bigger: value1, smaller: value2 };
@@ -57,7 +48,7 @@ const getNewRatings = (
   usaRating: number,
   ussrRating: number,
   gameWinner: string,
-  gameType: string
+  gameType: string,
 ) => {
   let newUsaRating: number = 0;
   let newUssrRating: number = 0;
@@ -66,7 +57,7 @@ const getNewRatings = (
       ussrRating,
       usaRating,
       gameType === "FG" ? 50 : 100,
-      gameType
+      gameType,
     );
     newUsaRating = usaRating + ratingDifference;
     newUssrRating = ussrRating - ratingDifference;
@@ -75,26 +66,14 @@ const getNewRatings = (
       usaRating,
       ussrRating,
       gameType === "FG" ? 50 : 100,
-      gameType
+      gameType,
     );
     newUsaRating = usaRating - ratingDifference;
     newUssrRating = ussrRating + ratingDifference;
   } else if (gameWinner === "3") {
     const { bigger, smaller } = getSmallerValue(usaRating, ussrRating);
-    const ratingDifference: number = getRatingDifference(
-      smaller,
-      bigger,
-      0,
-      gameType
-    );
-    console.log(
-      "ratingDifference",
-      ratingDifference,
-      usaRating,
-      ussrRating,
-      bigger,
-      smaller
-    );
+    const ratingDifference: number = getRatingDifference(smaller, bigger, 0, gameType);
+    console.log("ratingDifference", ratingDifference, usaRating, ussrRating, bigger, smaller);
 
     if (usaRating <= ussrRating) {
       newUsaRating = usaRating + Math.abs(ratingDifference);
@@ -132,7 +111,7 @@ export const calculateRating = async ({
     usaRating?.rating || DEFAULT_RATING,
     ussrRating?.rating || DEFAULT_RATING,
     gameWinner,
-    gameType
+    gameType,
   );
 };
 

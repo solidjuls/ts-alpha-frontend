@@ -125,13 +125,7 @@ export const endType: Array<DropdownType> = [
   },
 ];
 
-const getEndType = ({
-  winningOption,
-  endTurn,
-}: {
-  winningOption: string;
-  endTurn: string;
-}) => {
+const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn: string }) => {
   // if TIE then Wargammes, Final Scoring
   // if endTurn <= 7 then VP Track, DEFCON, Forfeit, Timer Expired, Europe COntrol, Scoring Card Held, Cuban Missile...
 };

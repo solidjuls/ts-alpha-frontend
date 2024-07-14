@@ -10,7 +10,7 @@ const ResultsPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
   backgroundColor: "$infoForm",
-  padding: '8px',
+  padding: "8px",
   border: "solid 1px none",
   borderRadius: "12px",
   flexGrow: "1",
@@ -49,12 +49,7 @@ const Players = () => {
           <div>kaboom</div>
         </FilterPanel> */}
         {data.map((item, index) => (
-          <User
-            key={index}
-            name={item.name}
-            rating={item.rating}
-            countryCode={item.countryCode}
-          />
+          <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
         ))}
       </ResultsPanel>
     </>
