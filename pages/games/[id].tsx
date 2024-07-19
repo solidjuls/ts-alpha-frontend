@@ -1,5 +1,14 @@
-import { Box } from "components/Atoms";
+import { Box, Span, Flex } from "components/Atoms";
+import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
+
+const spanCssGameData = {
+  marginRight: "8px",
+};
+
+const spanCssRating = {
+  fontSize: "12px",
+};
 
 export default function Game() {
   const game = {
@@ -41,18 +50,18 @@ export default function Game() {
   // }
   console.log("game", game);
   return (
-    <Box
+    <Flex
       css={{
-        display: "flex",
-        flexDirection: "column",
+        backgroundColor: "white",
+        padding: "24px",
+        justifyContent: "center",
+        borderWidth: "1px",
+        borderRadius: "8px",
+        maxWidth: "48rem",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       }}
     >
-      <Box
-        css={{
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
+      <Flex css={{ alignItems: "center", marginBottom: "12px" }}>
         <PlayerName
           playerName={game.usaPlayer}
           rating={game.ratingsUSA.rating}
@@ -64,67 +73,44 @@ export default function Game() {
           rating={game.ratingsUSSR.rating}
           ratingDifference={game.ratingsUSSR.ratingDifference}
         />
-        </Box>
-        <Box
-        css={{
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <Box
-          css={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-          }}
-        >
-          <span>Tournament:</span>
-          <span>Identifier:</span>
-          <span>Won by:</span>
-          <span>In:</span>
-          <span>Via:</span>
-          <span>On:</span>
-        </Box>
-        <Box
-          css={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            borderLeft: "solid 1px black",
-            margin: "4px"
-          }}
-        >
-          <span>Tournament:</span>
-          <span>Identifier:</span>
-          <span>Won by:</span>
-          <span>In:</span>
-          <span>Via:</span>
-          <span>On:</span>
-        </Box>
-        </Box>
-    </Box>
+      </Flex>
+
+      <Box css={{ display: "grid", gap: "1rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
+        <Flex css={{ flexDirection: "column" }}>
+          <Span>Tournament:</Span>
+          <Span>Identifier:</Span>
+          <Span>Won by:</Span>
+          <Span>In:</Span>
+          <Span>Via:</Span>
+          <Span>On:</Span>
+        </Flex>
+        <Box css={{ width: "50px" }} />
+        <Flex css={{ flexDirection: "column" }}>
+          <Span>{game.game_code}</Span>
+          <Span>{game.id}</Span>
+          <Span>{game.gameWinner}</Span>
+          <Span>{game.endTurn}</Span>
+          <Span>{game.gameType}</Span>
+          <Span>{game.game_date}</Span>
+        </Flex>
+      </Box>
+    </Flex>
   );
 }
 
 const PlayerName = ({ playerName, rating, ratingDifference }) => {
   return (
-    <Box
-      css={{
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <Link href="kkk">{playerName}</Link>
-      <Box
-        css={{
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <div>{rating}</div>
-        <div>{Number(rating) - Number(ratingDifference)}</div>
-      </Box>
-    </Box>
+    <Flex css={{ flexDirection: "column" }}>
+      <Flex css={{ margin: "0 8px 0 8px" }}>
+        <Link href="/userprofile">{playerName}</Link>
+        <FlagIcon code="US" />
+      </Flex>
+
+      <Flex css={{ margin: "0 8px 0 8px" }}>
+        <Span css={spanCssRating}>{Number(rating) - Number(ratingDifference)}</Span>
+        <Span css={spanCssRating}>{rating}</Span>
+      </Flex>
+    </Flex>
   );
 };
 
