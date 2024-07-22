@@ -1,6 +1,8 @@
 import { Box, Span, Flex } from "components/Atoms";
 import { FlagIcon } from "components/FlagIcon";
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { styled } from "stitches.config";
 
 const spanCssGameData = {
   marginRight: "8px",
@@ -9,6 +11,25 @@ const spanCssGameData = {
 const spanCssRating = {
   fontSize: "12px",
 };
+
+const StyledChevronDownIcon = styled(ChevronDownIcon, {
+  position: "absolute",
+  variants: {
+    color: {
+      red: { color: 'red' },
+      green: { color: 'green' },
+    },
+  },
+});
+const StyledChevronUpIcon = styled(ChevronUpIcon, {
+  position: "absolute",
+  variants: {
+    color: {
+      red: { color: 'red' },
+      green: { color: 'green' },
+    },
+  },
+});
 
 export default function Game() {
   const game = {
@@ -52,12 +73,14 @@ export default function Game() {
   return (
     <Flex
       css={{
+        width: "100%",
+        maxWidth: "48rem",
+        flexDirection: "column",
         backgroundColor: "white",
         padding: "24px",
-        justifyContent: "center",
+        alignItems: "center",
         borderWidth: "1px",
         borderRadius: "8px",
-        maxWidth: "48rem",
         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       }}
     >
@@ -76,7 +99,7 @@ export default function Game() {
       </Flex>
 
       <Box css={{ display: "grid", gap: "1rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
-        <Flex css={{ flexDirection: "column" }}>
+        <Flex css={{ flexDirection: "column", alignItems: "end" }}>
           <Span>Tournament:</Span>
           <Span>Identifier:</Span>
           <Span>Won by:</Span>
@@ -84,8 +107,8 @@ export default function Game() {
           <Span>Via:</Span>
           <Span>On:</Span>
         </Flex>
-        <Box css={{ width: "50px" }} />
-        <Flex css={{ flexDirection: "column" }}>
+        <Box css={{ width: "5px" }} />
+        <Flex css={{ flexDirection: "column", alignItems: "start" }}>
           <Span>{game.game_code}</Span>
           <Span>{game.id}</Span>
           <Span>{game.gameWinner}</Span>
@@ -107,8 +130,10 @@ const PlayerName = ({ playerName, rating, ratingDifference }) => {
       </Flex>
 
       <Flex css={{ margin: "0 8px 0 8px" }}>
-        <Span css={spanCssRating}>{Number(rating) - Number(ratingDifference)}</Span>
+        <Span css={spanCssRating}>{Number(rating) + Number(ratingDifference)}</Span>
+        <Box css={{ position: "relative", width: "20px" }}><StyledChevronDownIcon color="red" /></Box>
         <Span css={spanCssRating}>{rating}</Span>
+        <Box css={{ position: "relative", width: "20px" }}><StyledChevronDownIcon color="green" /></Box>
       </Flex>
     </Flex>
   );

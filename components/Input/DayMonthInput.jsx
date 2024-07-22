@@ -22,6 +22,7 @@ const StyledChevronLeftIcon = styled(ChevronLeftIcon, {
   top: "11px",
   left: "9px",
 });
+
 const StyledCalendarIcon = styled(CalendarIcon, {
   position: "absolute",
   top: "11px",
