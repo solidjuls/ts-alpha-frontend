@@ -1,4 +1,5 @@
 import { Box, Span, Flex } from "components/Atoms";
+import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -31,45 +32,23 @@ const StyledChevronUpIcon = styled(ChevronUpIcon, {
   },
 });
 
-export default function Game() {
-  const game = {
-    id: 5,
-    created_at: Date.now(),
-    updated_at: Date.now(),
-    usaPlayerId: 1,
-    ussrPlayerId: 2,
-    usaRatingDifference: 232,
-    ussrRatingDifference: 442,
-    gameType: "whoknows",
-    game_code: "dfd",
-    reported_at: Date.now(),
-    gameWinner: "USSR",
-    endTurn: "7",
-    endMode: "DEFCON",
-    game_date: Date.now(),
-    video1: "megalol",
-    videoURL: "megalooooooool",
-    reporter_id: 1,
-    usaCountryCode: "CAT",
-    ussrCountryCode: "ES",
-    usaPlayer: "Juli Arnalot",
-    ussrPlayer: "Exhausted man",
-    ratingsUSA: {
-      rating: 8889,
-      ratingDifference: 176,
-    },
-    ratingsUSSR: {
-      rating: 8689,
-      ratingDifference: 176,
-    },
-  };
+export default function Game({ game }) {
   // const router = useRouter();
 
   // If the page is not yet generated, this will be displayed initially until the page is generated
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-  console.log("game", game);
+  // console.log("game", game);
+  console.log("game", game)  
+  const { data, isLoading } = trpc.useQuery([
+    "game-get",
+    // @ts-ignore
+    { id: game?.id },
+  ], { enabled: !!game?.id});
+
+  if (!data || isLoading) return null
+  console.log("data", data)
   return (
     <Flex
       css={{
@@ -86,15 +65,15 @@ export default function Game() {
     >
       <Flex css={{ alignItems: "center", marginBottom: "12px" }}>
         <PlayerName
-          playerName={game.usaPlayer}
-          rating={game.ratingsUSA.rating}
-          ratingDifference={game.ratingsUSA.ratingDifference}
+          playerName={data.usaPlayer}
+          rating={data.ratingsUSA.rating}
+          ratingDifference={data.ratingsUSA.ratingDifference}
         />
         vs
         <PlayerName
-          playerName={game.ussrPlayer}
-          rating={game.ratingsUSSR.rating}
-          ratingDifference={game.ratingsUSSR.ratingDifference}
+          playerName={data.ussrPlayer}
+          rating={data.ratingsUSSR.rating}
+          ratingDifference={data.ratingsUSSR.ratingDifference}
         />
       </Flex>
 
@@ -103,18 +82,18 @@ export default function Game() {
           <Span>Tournament:</Span>
           <Span>Identifier:</Span>
           <Span>Won by:</Span>
-          <Span>In:</Span>
+          <Span>End turn:</Span>
           <Span>Via:</Span>
-          <Span>On:</Span>
+          <Span>Date:</Span>
         </Flex>
         <Box css={{ width: "5px" }} />
         <Flex css={{ flexDirection: "column", alignItems: "start" }}>
-          <Span>{game.game_code}</Span>
-          <Span>{game.id}</Span>
-          <Span>{game.gameWinner}</Span>
-          <Span>{game.endTurn}</Span>
-          <Span>{game.gameType}</Span>
-          <Span>{game.game_date}</Span>
+          <Span>{data.gameType}</Span>
+          <Span>{data.game_code}</Span>
+          <Span>{data.gameWinner}</Span>
+          <Span>{data.endTurn}</Span>
+          <Span>{data.endMode}</Span>
+          <Span>{data.created_at}</Span>
         </Flex>
       </Box>
     </Flex>
@@ -144,13 +123,14 @@ export async function getServerSideProps({ params }) {
   // const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`);
   // const post = await res.json();
 
+  console.log("params1", params);
   // // Return 404 if post is not found
   // if (!post.id) {
   //   return {
   //     notFound: true,
   //   };
   // }
-  console.log("params", params);
+
   // Pass post data to the page via props
   return { props: { game: params } };
 }

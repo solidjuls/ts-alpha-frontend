@@ -227,39 +227,6 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  const newData = [
-    {
-      id: 5,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      usaPlayerId: 1,
-      ussrPlayerId: 2,
-      usaRatingDifference: 232,
-      ussrRatingDifference: 442,
-      gameType: "whoknows",
-      game_code: "dfd",
-      reported_at: Date.now(),
-      gameWinner: "USSR",
-      endTurn: "7",
-      endMode: "DEFCON",
-      game_date: Date.now(),
-      video1: "megalol",
-      videoURL: "megalooooooool",
-      reporter_id: 1,
-      usaCountryCode: "CAT",
-      ussrCountryCode: "ES",
-      usaPlayer: "Juli Arnalot",
-      ussrPlayer: "Exhausted man",
-      ratingsUSA: {
-        rating: 8889,
-        ratingDifference: 676,
-      },
-      ratingsUSSR: {
-        rating: 8889,
-        ratingDifference: 676,
-      },
-    },
-  ];
   return (
     <Box
       css={{
@@ -274,9 +241,9 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         <FilterPanel>
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
         </FilterPanel>
-        {/* {isLoading && <SkeletonHomepage />} */}
-        {newData?.length === 0 && <EmptyState />}
-        {newData?.map((game, index) => (
+        {isLoading && <SkeletonHomepage />}
+        {data?.length === 0 && <EmptyState />}
+        {data?.map((game, index) => (
           <Link href={`/games/${game.id}`} passHref>
             <UnstyledLink>
               <ResultRow key={index} role={role} game={game} />

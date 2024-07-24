@@ -34,6 +34,7 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
           " " +
           game.users_game_results_ussr_player_idTousers.last_name,
         gameType: game.game_type,
+        game_code: game.game_code,
         videoURL: game.video1,
         gameWinner: game.game_winner,
         ratingsUSA,
@@ -106,6 +107,7 @@ export const getGameWithRatings = async (filter?: any) => {
   console.log("games normalizedGames", new Date());
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
   console.log("games getGamesWithRating", new Date());
+  console.log("ewqee", normalizedGames)
   return getGamesWithRating;
 };
 
