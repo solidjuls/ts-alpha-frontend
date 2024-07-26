@@ -29,7 +29,7 @@ const getUrl = () =>
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
-    from: "juli.arnalot@gmail.com",
+    from: process.env.SMTP_FROM,
     // to: toUser.email // in production uncomment this
     to: mail,
     subject: "Twilight Struggle - Reset Password",
@@ -44,12 +44,12 @@ async function sendEmail(mail: string, firstName: string | null, hashedUrl: stri
 
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.brevo.com",
-      port: 587,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_POST,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "787dcf001@smtp-brevo.com",
-        pass: "Y79aAymbtGnpdj5Q",
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PWD,
       },
     });
 
