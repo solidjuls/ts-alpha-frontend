@@ -34,8 +34,7 @@ const UserProfile = ({ id }) => {
   // const mutationAll = trpc.useMutation(["user-update-all"]);
   const { email } = useSession();
   console.log("data", data);
-  // const [mail, setMail] = useState(email);
-  // const [password, setPassword] = useState("");
+
   const updateClick = async () => {
     // if (session?.user?.email) {
     const pwdHashed = await hash(password, 12);
@@ -59,7 +58,6 @@ const UserProfile = ({ id }) => {
     }
   };
 
-  // console.log("email", email, mail, role);
   return (
     <DetailContainer>
       <Box
