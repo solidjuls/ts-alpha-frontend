@@ -107,7 +107,7 @@ export const getGameWithRatings = async (filter?: any) => {
   console.log("games normalizedGames", new Date());
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
   console.log("games getGamesWithRating", new Date());
-  console.log("ewqee", normalizedGames)
+  console.log("ewqee", normalizedGames);
   return getGamesWithRating;
 };
 

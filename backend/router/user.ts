@@ -138,16 +138,17 @@ export const userRouter = trpc
         return next();
       })
       .query("get", {
-        input: z.object({ mail: z.string(), pwd: z.string() }),
+        input: z.object({ id: z.string() }),
         async resolve({ input }) {
           const user = await prisma.users.findFirst({
             where: {
-              email: input.mail,
+              id: Number(input.id),
             },
           });
           const userParsed = JSON.stringify(user, (key, value) =>
             typeof value === "bigint" ? value.toString() : value,
           );
+          console.log("user", userParsed);
           return JSON.parse(userParsed);
         },
       })

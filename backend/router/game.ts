@@ -109,13 +109,13 @@ export const gameRouter = trpc
     input: z.object({ id: z.string() }),
     async resolve({ input }) {
       const gameNormalized = await getGameWithRatings({
-        id: input.id
+        id: input.id,
       });
       const gameParsed = JSON.stringify(gameNormalized[0], (key, value) =>
         typeof value === "bigint" ? value.toString() : value,
       );
       return JSON.parse(gameParsed) as Game;
-    }
+    },
   })
   .query("getDataByGame", {
     input: z.object({ id: z.number() }),
