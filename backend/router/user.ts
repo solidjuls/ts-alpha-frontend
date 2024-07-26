@@ -41,11 +41,7 @@ async function sendEmail(mail: string, firstName: string | null, hashedUrl: stri
       <p>ITS Junta</p>
     `,
   };
-  // SMTP_FROM="juli.arnalot@gmail.com"
-  // SMTP_HOST="smtp-relay.brevo.com"
-  // SMTP_USER="787dcf001@smtp-brevo.com"
-  // SMTP_PWD="Y79aAymbtGnpdj5Q"
-  // SMTP_PORT=587
+
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
