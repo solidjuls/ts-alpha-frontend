@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 type CookiesReturn = (
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) => {
   mail: string;
   role: number;

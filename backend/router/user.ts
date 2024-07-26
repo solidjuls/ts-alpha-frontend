@@ -13,6 +13,11 @@ import jwt from "jsonwebtoken";
 
 const nodemailer = require("nodemailer");
 
+const decryptHash = (hash: any) => {
+  let buff = Buffer.from(hash, "base64");
+  return buff.toString("ascii");
+};
+
 const generateHash = (mail: string) => {
   let data = `${mail}#${new Date().toString()}`;
   let buff = Buffer.from(data);
@@ -20,17 +25,11 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  process.env.NEXT_PUBLIC_URL
-    ? process.env.NEXT_PUBLIC_URL
-    : "http://localhost:3000";
+  process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
 
-async function sendEmail(
-  mail: string,
-  firstName: string | null,
-  hashedUrl: string
-) {
+async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
-    from: "juli.arnalot@gmail.com",
+    from: process.env.SMTP_FROM,
     // to: toUser.email // in production uncomment this
     to: mail,
     subject: "Twilight Struggle - Reset Password",
@@ -42,15 +41,19 @@ async function sendEmail(
       <p>ITS Junta</p>
     `,
   };
-
+  // SMTP_FROM="juli.arnalot@gmail.com"
+  // SMTP_HOST="smtp-relay.brevo.com"
+  // SMTP_USER="787dcf001@smtp-brevo.com"
+  // SMTP_PWD="Y79aAymbtGnpdj5Q"
+  // SMTP_PORT=587
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.sendinblue.com",
-      port: 587,
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_POST,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: "juli.arnalot@gmail.com",
-        pass: "rLaHcORsXkSpnBtF",
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PWD,
       },
     });
 
@@ -81,13 +84,9 @@ export const userRouter = trpc
           message: "User doesn't exist",
         });
       }
-      const token = jwt.sign(
-        { mail: user.email, role: user.role },
-        process.env.TOKEN_SECRET,
-        {
-          expiresIn: "60d",
-        }
-      );
+      const token = jwt.sign({ mail: user.email, role: user.role }, process.env.TOKEN_SECRET, {
+        expiresIn: "60d",
+      });
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
         path: "/",
@@ -106,6 +105,29 @@ export const userRouter = trpc
       return { success: true };
     },
   })
+  .mutation("reset", {
+    input: z.object({ token: z.string(), pwd: z.string() }),
+    async resolve({ input, ctx }) {
+      if (!ctx) return { success: false };
+      const token = input.token;
+
+      // const cookies = new Cookies(ctx.req, ctx.res);
+      // cookies.set("auth-token");
+      const decrypted = decryptHash(token);
+      const values = decrypted.split("#");
+      const mail = values[0];
+      const updateUser = await prisma.users.update({
+        where: {
+          email: mail,
+        },
+        data: {
+          password: input.pwd,
+        },
+      });
+      console.log("update did happen");
+      return { success: true };
+    },
+  })
   .merge(
     trpc
       .router<Context>()
@@ -120,16 +142,17 @@ export const userRouter = trpc
         return next();
       })
       .query("get", {
-        input: z.object({ mail: z.string(), pwd: z.string() }),
+        input: z.object({ id: z.string() }),
         async resolve({ input }) {
           const user = await prisma.users.findFirst({
             where: {
-              email: input.mail,
+              id: Number(input.id),
             },
           });
           const userParsed = JSON.stringify(user, (key, value) =>
-            typeof value === "bigint" ? value.toString() : value
+            typeof value === "bigint" ? value.toString() : value,
           );
+          console.log("user", userParsed);
           return JSON.parse(userParsed);
         },
       })
@@ -176,7 +199,7 @@ export const userRouter = trpc
           console.log("update did happen");
           return { success: true };
         },
-      })
+      }),
   )
   .merge(
     trpc
@@ -204,7 +227,7 @@ export const userRouter = trpc
           });
           return { success: true };
         },
-      })
+      }),
   )
   .mutation("reset-pwd", {
     input: z.object({
@@ -229,7 +252,7 @@ export const userRouter = trpc
         const aver = await sendEmail(
           input.mail,
           user.first_name,
-          `${getUrl()}/reset-password/${hash}`
+          `${getUrl()}/reset-password/${hash}`,
         );
         //console.log("checking", aver, hash);
       }

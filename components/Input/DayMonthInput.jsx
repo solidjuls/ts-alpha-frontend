@@ -1,10 +1,6 @@
 import { styled } from "stitches.config";
 import { Box, Span } from "components/Atoms";
-import {
-  CalendarIcon,
-  ChevronRightIcon,
-  ChevronLeftIcon,
-} from "@radix-ui/react-icons";
+import { CalendarIcon, ChevronRightIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
 
 const InputDiv = styled("div", {
   height: "36px",
@@ -26,6 +22,7 @@ const StyledChevronLeftIcon = styled(ChevronLeftIcon, {
   top: "11px",
   left: "9px",
 });
+
 const StyledCalendarIcon = styled(CalendarIcon, {
   position: "absolute",
   top: "11px",

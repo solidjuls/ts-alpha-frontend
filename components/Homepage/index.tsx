@@ -11,10 +11,11 @@ import { SkeletonHomepage } from "components/Skeletons";
 import { Game, GameRating } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
+import Link from "next/link";
 
 type HomepageProps = {
-  role: number
-}
+  role: number;
+};
 
 const GAMETYPE_WIDTH = "60px";
 const ENDMODE_WIDTH = "140px";
@@ -22,10 +23,30 @@ const ENDMODE_WIDTH = "140px";
 const borderStyle = "solid 1px $greyLight";
 const PlayerInfo = styled("div", {
   display: "flex",
-  flexDirection: "row",
+  flexDirection: "column",
   borderBottom: borderStyle,
   margin: "4px",
 });
+
+const ResultsPanel = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  backgroundColor: "$infoForm",
+  border: "solid 1px none",
+  borderRadius: "12px",
+  flexGrow: "1",
+  marginBottom: "12px",
+  height: "500px",
+  overflowY: "scroll",
+});
+
+const FilterPanel = styled("div", {
+  padding: "8px",
+  margin: "8px",
+  borderBottom: borderStyle,
+});
+
+const TextSmall = styled("span", {});
 
 const responsive = {
   "@sm": {
@@ -41,10 +62,7 @@ const boxStyle = {
   justifyContent: "center",
 };
 
-const Rating = ({
-  rating,
-  ratingDifference,
-}: Pick<GameRating, "rating" | "ratingDifference">) => {
+const Rating = ({ rating, ratingDifference }: Pick<GameRating, "rating" | "ratingDifference">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row", width: "86px" }}>
       <Text>{rating}</Text>
@@ -53,21 +71,12 @@ const Rating = ({
   );
 };
 
-const RatingBox = ({
-  ratingsUSA,
-  ratingsUSSR,
-}: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
+const RatingBox = ({ ratingsUSA, ratingsUSSR }: Pick<Game, "ratingsUSA" | "ratingsUSSR">) => {
   return (
     <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box css={boxStyle}>
-        <Rating
-          rating={ratingsUSA.rating}
-          ratingDifference={ratingsUSA.ratingDifference}
-        />
-        <Rating
-          rating={ratingsUSSR.rating}
-          ratingDifference={ratingsUSSR.ratingDifference}
-        />
+        <Rating rating={ratingsUSA.rating} ratingDifference={ratingsUSA.ratingDifference} />
+        <Rating rating={ratingsUSSR.rating} ratingDifference={ratingsUSSR.ratingDifference} />
       </Box>
     </Box>
   );
@@ -81,47 +90,34 @@ const PlayerInfoBox = ({
   ussrCountryCode,
 }: Pick<
   Game,
-  | "usaPlayer"
-  | "ussrPlayer"
-  | "gameWinner"
-  | "usaCountryCode"
-  | "ussrCountryCode"
+  "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode"
 >) => {
   return (
-    <Box
-      css={{
-        ...boxStyle,
-        width: "200px",
-        "@sm": {
-          width: "100%",
-        },
-      }}
-    >
+    <Box css={{ display: "flex", flexDirection: "row" }}>
       <Box
         css={{
           display: "flex",
+          margin: "0 8px 0 8px",
           flexDirection: "row",
           lineHeight: 1,
           alignItems: "center",
         }}
       >
         <FlagIcon code={usaCountryCode} />
-        <Text strong={gameWinner === "1" ? "bold" : undefined}>
-          {usaPlayer}
-        </Text>
+        <Text strong={gameWinner === "1" ? "bold" : undefined}>{usaPlayer}</Text>
       </Box>
+      <span>vs</span>
       <Box
         css={{
           display: "flex",
+          margin: "0 8px 0 8px",
           flexDirection: "row",
           lineHeight: 1,
           alignItems: "center",
         }}
       >
         <FlagIcon code={ussrCountryCode} />
-        <Text strong={gameWinner === "2" ? "bold" : undefined}>
-          {ussrPlayer}
-        </Text>
+        <Text strong={gameWinner === "2" ? "bold" : undefined}>{ussrPlayer}</Text>
       </Box>
     </Box>
   );
@@ -130,32 +126,13 @@ const PlayerInfoBox = ({
 const getGameType = (game: Game, role: number) => {
   if (role === 2) return `${game.gameType} (${game.id})`;
 
-  return game.gameType
-}
-const ResultRow = ({ game, role }: { game: Game, role: number }) => {
-  console.log("game role", game, role)
-  return (
-    <PlayerInfo>
-      <Text
-        css={{ alignSelf: "center", width: GAMETYPE_WIDTH, ...responsive }}
-        strong="bold"
-      >
-        {getGameType(game, role)}
-      </Text>
-
-      <PlayerInfoBox
-        usaCountryCode={game.usaCountryCode}
-        ussrCountryCode={game.ussrCountryCode}
-        usaPlayer={game.usaPlayer}
-        ussrPlayer={game.ussrPlayer}
-        gameWinner={game.gameWinner}
-      />
-      <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
+  return game.gameType;
+};
+{
+  /* <RatingBox ratingsUSA={game.ratingsUSA} ratingsUSSR={game.ratingsUSSR} />
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">Winner</Text>
-        <Text css={{ textAlign: "center" }}>
-          {getWinnerText(game.gameWinner)}
-        </Text>
+        <Text css={{ textAlign: "center" }}>{getWinnerText(game.gameWinner)}</Text>
       </Box>
       <Box css={{ ...boxStyle, ...responsive }}>
         <Text strong="bold">End turn</Text>
@@ -177,31 +154,36 @@ const ResultRow = ({ game, role }: { game: Game, role: number }) => {
         target="_blank"
       >
         Link to Video
-      </A>
+      </A> */
+}
+
+const ResultRow = ({ game, role }: { game: Game; role: number }) => {
+  console.log("game role", game, role);
+  return (
+    <PlayerInfo>
+      <Box css={{ display: "flex", flexDirection: "row", alignContent: "space-around" }}>
+        <Text css={{ alignSelf: "center", ...responsive }}>
+          {/* {getGameType(game, role)} */}
+          {`Game #${game.id}`}
+        </Text>
+        <Text css={{ alignSelf: "center", ...responsive }}>
+          {/* {getGameType(game, role)} */}
+          {getGameType(game, role)}
+        </Text>
+      </Box>
+
+      <PlayerInfoBox
+        usaCountryCode={game.usaCountryCode}
+        ussrCountryCode={game.ussrCountryCode}
+        usaPlayer={game.usaPlayer}
+        ussrPlayer={game.ussrPlayer}
+        gameWinner={game.gameWinner}
+      />
     </PlayerInfo>
   );
 };
 
-const ResultsPanel = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  backgroundColor: "$infoForm",
-  border: "solid 1px none",
-  borderRadius: "12px",
-  flexGrow: "1",
-  marginBottom: "12px",
-  height: "500px",
-  overflowY: "scroll",
-});
-
-const FilterPanel = styled("div", {
-  padding: "8px",
-  margin: "8px",
-  borderBottom: borderStyle,
-});
-
-const formatDateToString = (date: Date) =>
-  `${date.getDate()}/${date.getMonth() + 1}`;
+const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() + 1}`;
 
 const EmptyState = () => {
   return (
@@ -221,6 +203,11 @@ const EmptyState = () => {
   );
 };
 
+const UnstyledLink = styled("a", {
+  all: "unset" /* Unset all styles */,
+  display: "inline" /* Reset to inline display */,
+  cursor: "pointer" /* Set cursor to pointer */,
+});
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
@@ -247,20 +234,21 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         flexDirection: "row",
         width: "100%",
         maxWidth: "1100px",
-        flexWrap: "wrap",
+        // flexWrap: "wrap",
       }}
     >
       <ResultsPanel>
         <FilterPanel>
-          <DayMonthInput
-            value={formatDateToString(dateValue)}
-            onClick={onClickDay}
-          />
+          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
         </FilterPanel>
         {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
-          <ResultRow key={index} role={role} game={game} />
+          <Link href={`/games/${game.id}`} passHref>
+            <UnstyledLink>
+              <ResultRow key={index} role={role} game={game} />
+            </UnstyledLink>
+          </Link>
         ))}
       </ResultsPanel>
       <Box>

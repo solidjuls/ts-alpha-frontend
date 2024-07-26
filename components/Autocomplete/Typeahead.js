@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useDebounce } from "use-debounce";
 import Downshift from "downshift";
-import {
-  AutocompleteInput,
-  AutocompleteList,
-  AutocompleteListItem,
-} from "./components";
+import { AutocompleteInput, AutocompleteList, AutocompleteListItem } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
 import { Box } from "components/Atoms";
 
@@ -100,9 +96,12 @@ const Typeahead = ({
         isOpen,
         highlightedIndex,
       }) => (
-        <Box {...getRootProps({})} css={{
-          display: "block",
-        }}>
+        <Box
+          {...getRootProps({})}
+          css={{
+            display: "block",
+          }}
+        >
           <AutocompleteProvider
             value={{
               isOpen,

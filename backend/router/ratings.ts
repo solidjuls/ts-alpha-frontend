@@ -30,7 +30,7 @@ export const ratingsRouter = trpc.router().query("get", {
           rating: rating?.rating,
           countryCode: player.countries?.tld_code,
         };
-      })
+      }),
     );
 
     let playersWithRatingSorted = playersWithRating

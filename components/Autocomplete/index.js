@@ -1,2 +1,2 @@
-export * from './components';
-export * from './Typeahead';
+export * from "./components";
+export * from "./Typeahead";

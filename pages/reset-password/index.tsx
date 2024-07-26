@@ -27,9 +27,9 @@ const ErrorInfo = styled("span", {
   margin: "8px",
 });
 
-const Headline = styled('strong', {
-  marginBottom: "30px", 
-})
+const Headline = styled("strong", {
+  marginBottom: "30px",
+});
 const ResetPassword = () => {
   const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
@@ -43,12 +43,8 @@ const ResetPassword = () => {
       {confirmation && <Text>An email has been sent to your account</Text>}
       {!confirmation && (
         <>
-          <Headline>
-            Add your mail and we will send you a link to reset your password
-          </Headline>
-          <Box
-            css={{ display: "flex", flexDirection: "row" }}
-          >
+          <Headline>Add your mail and we will send you a link to reset your password</Headline>
+          <Box css={{ display: "flex", flexDirection: "row" }}>
             <Label htmlFor="mail">Mail</Label>
             <Input
               id="mail"
