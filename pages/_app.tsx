@@ -12,24 +12,24 @@ import "styles/stylesGlobal.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-      <APIProvider>
-        <AuthProvider>
-          <IntlContextProvider>
-            {/* @ts-ignore */}
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              value={{
-                light: "light",
-              }}
-            >
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </ThemeProvider>
-          </IntlContextProvider>
-        </AuthProvider>
-      </APIProvider>
+    <APIProvider>
+      <AuthProvider>
+        <IntlContextProvider>
+          {/* @ts-ignore */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            value={{
+              light: "light",
+            }}
+          >
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
+        </IntlContextProvider>
+      </AuthProvider>
+    </APIProvider>
   );
 }
 

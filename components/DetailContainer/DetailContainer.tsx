@@ -3,8 +3,8 @@ import { Backbutton } from "components/Backbutton";
 import { ReactNode } from "react";
 
 type DetailContainerProps = {
-children: ReactNode
-}
+  children: ReactNode;
+};
 const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
   return (
     <Box

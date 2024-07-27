@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Box } from "components/Atoms";
 
 type FlagIcon = {
-  code: string
-}
+  code: string;
+};
 
 const WIDTH = 18;
 const HEIGHT = 12;

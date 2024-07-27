@@ -8,7 +8,8 @@
     "format:fix": "prettier --write --ignore-path .gitignore .",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ts:check": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^5.16.1",

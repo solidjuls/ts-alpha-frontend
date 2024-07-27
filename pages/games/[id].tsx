@@ -1,3 +1,5 @@
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
 import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
@@ -31,22 +33,33 @@ const StyledChevronUpIcon = styled(ChevronUpIcon, {
   },
 });
 
-export default function Game({ game }) {
+type PlayerNameProps = {
+  playerName: string;
+  userId: bigint;
+  rating: number;
+  ratingDifference: number;
+};
+
+type GameProps = {
+  gameId: string;
+};
+
+const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
 
   // If the page is not yet generated, this will be displayed initially until the page is generated
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-  // console.log("game", game);
-  console.log("game", game);
+
+  console.log("game", gameId);
   const { data, isLoading } = trpc.useQuery(
     [
       "game-get",
       // @ts-ignore
-      { id: game?.id },
+      { id: gameId },
     ],
-    { enabled: !!game?.id },
+    { enabled: !!gameId },
   );
 
   if (!data || isLoading) return null;
@@ -98,15 +111,20 @@ export default function Game({ game }) {
             <Span>{data.gameWinner}</Span>
             <Span>{data.endTurn}</Span>
             <Span>{data.endMode}</Span>
-            <Span>{data.created_at}</Span>
+            <Span>{data.created_at?.toString()}</Span>
           </Flex>
         </Box>
       </Flex>
     </DetailContainer>
   );
-}
+};
 
-const PlayerName = ({ playerName, userId, rating, ratingDifference }) => {
+const PlayerName: React.FC<PlayerNameProps> = ({
+  playerName,
+  userId,
+  rating,
+  ratingDifference,
+}) => {
   return (
     <Flex css={{ flexDirection: "column" }}>
       <Flex css={{ margin: "0 8px 0 8px" }}>
@@ -128,7 +146,7 @@ const PlayerName = ({ playerName, userId, rating, ratingDifference }) => {
   );
 };
 
-export async function getServerSideProps({ params }) {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   // Fetch data for a single post
   // const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`);
   // const post = await res.json();
@@ -142,5 +160,7 @@ export async function getServerSideProps({ params }) {
   // }
 
   // Pass post data to the page via props
-  return { props: { game: params } };
-}
+  return { props: { gameId: params?.id } };
+};
+
+export default Game;
