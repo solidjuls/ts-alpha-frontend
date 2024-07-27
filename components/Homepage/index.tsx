@@ -244,7 +244,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
-          <Link href={`/games/${game.id}`} passHref>
+          <Link key={index} href={`/games/${game.id}`} passHref>
             <UnstyledLink>
               <ResultRow key={index} role={role} game={game} />
             </UnstyledLink>

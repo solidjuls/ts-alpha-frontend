@@ -5,12 +5,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { styled } from "stitches.config";
-import { Backbutton } from "components/Backbutton";
 import { DetailContainer } from "components/DetailContainer";
-
-const spanCssGameData = {
-  marginRight: "8px",
-};
 
 const spanCssRating = {
   fontSize: "12px",
@@ -25,6 +20,7 @@ const StyledChevronDownIcon = styled(ChevronDownIcon, {
     },
   },
 });
+
 const StyledChevronUpIcon = styled(ChevronUpIcon, {
   position: "absolute",
   variants: {
