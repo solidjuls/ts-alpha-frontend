@@ -1,38 +1,34 @@
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
 import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
-import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { styled } from "stitches.config";
 import { DetailContainer } from "components/DetailContainer";
-
-const spanCssRating = {
-  fontSize: "12px",
-};
+import Text from "components/Text"
+import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import {styled} from "stitches.config"
 
 const StyledChevronDownIcon = styled(ChevronDownIcon, {
-  position: "absolute",
-  variants: {
-    color: {
-      red: { color: "red" },
-      green: { color: "green" },
+    position: "absolute",
+    variants: {
+      color: {
+        red: { color: "red" },
+        green: { color: "green" },
+      },
     },
-  },
-});
-
+  });
+  
 const StyledChevronUpIcon = styled(ChevronUpIcon, {
-  position: "absolute",
-  variants: {
-    color: {
-      red: { color: "red" },
-      green: { color: "green" },
+    position: "absolute",
+    variants: {
+      color: {
+        red: { color: "red" },
+        green: { color: "green" },
+      },
     },
-  },
-});
-
+  });
 type PlayerNameProps = {
   playerName: string;
   userId: bigint;
@@ -133,11 +129,11 @@ const PlayerName: React.FC<PlayerNameProps> = ({
       </Flex>
 
       <Flex css={{ margin: "0 8px 0 8px" }}>
-        <Span css={spanCssRating}>{Number(rating) + Number(ratingDifference)}</Span>
+        <Text fontSize="small">{Number(rating) + Number(ratingDifference)}</Text>
         <Box css={{ position: "relative", width: "20px" }}>
           <StyledChevronDownIcon color="red" />
         </Box>
-        <Span css={spanCssRating}>{rating}</Span>
+        <Text fontSize="small">{rating}</Text>
         <Box css={{ position: "relative", width: "20px" }}>
           <StyledChevronDownIcon color="green" />
         </Box>
