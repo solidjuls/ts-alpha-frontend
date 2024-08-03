@@ -27,7 +27,7 @@ const Typeahead = ({
     if (debouncedTerm) {
       onChange(debouncedTerm);
     }
-  }, [debouncedTerm]);
+  }, [debouncedTerm, onChange]);
 
   // Required to autofill input from outside
   useEffect(() => {
@@ -41,7 +41,7 @@ const Typeahead = ({
     ) {
       setValue(selectedValue);
     }
-  }, [selectedValue]);
+  }, [selectedValue, selectedInputProperty, value]);
 
   /**
    * State machine for the downshift component, here the state of the component can be managed in any way. Details explained here: https://github.com/downshift-js/downshift#onstatechange

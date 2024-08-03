@@ -10,6 +10,23 @@ CREATE TABLE countries (
   KEY countries_country_name_index (country_name)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE cities (
+	id bigint unsigned NOT NULL AUTO_INCREMENT,
+	name varchar(50) NOT NULL,
+	latitude float NOT NULL,
+	longitude float NOT NULL,
+	province varchar(100) NULL,
+	timeZoneId varchar(40) NULL,
+	PRIMARY KEY (`id`)
+)
+
+CREATE TABLE RegionalFederations (
+	id varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
+	name varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+	icon varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+	PRIMARY KEY (id)
+);
+
 CREATE TABLE users (
   id bigint unsigned NOT NULL AUTO_INCREMENT,
   name varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -23,12 +40,22 @@ CREATE TABLE users (
   first_name varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   last_name varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   last_login_at timestamp NULL DEFAULT NULL,
+  nickname varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  regionalFederationId varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  cityId bigint unsigned DEFAULT NULL,
+  phoneNumber varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  preferredGamingPlatform varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  preferredGameDuration varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  timeZoneId varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY users_email_unique (email),
   KEY users_country_id_foreign (country_id),
   KEY users_first_name_index (first_name),
-  KEY users_last_name_index (last_name)
-) ENGINE=InnoDB AUTO_INCREMENT=757 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY users_last_name_index (last_name),
+  KEY users_city_id_foreign (cityId),
+  CONSTRAINT users_city_id_foreign FOREIGN KEY (cityId) REFERENCES cities (id),
+  CONSTRAINT users_country_id_foreign FOREIGN KEY (country_id) REFERENCES countries (id)
+) ENGINE=InnoDB AUTO_INCREMENT=1524 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE game_results (
   id bigint unsigned NOT NULL AUTO_INCREMENT,

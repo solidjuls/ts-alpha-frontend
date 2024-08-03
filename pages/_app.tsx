@@ -1,4 +1,3 @@
-import { IdProvider } from "@radix-ui/react-id";
 import AuthProvider from "contexts/AuthProvider";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
@@ -13,25 +12,24 @@ import "styles/stylesGlobal.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <IdProvider>
-      <APIProvider>
-        <AuthProvider>
-          <IntlContextProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              value={{
-                light: "light",
-              }}
-            >
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </ThemeProvider>
-          </IntlContextProvider>
-        </AuthProvider>
-      </APIProvider>
-    </IdProvider>
+    <APIProvider>
+      <AuthProvider>
+        <IntlContextProvider>
+          {/* @ts-ignore */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            value={{
+              light: "light",
+            }}
+          >
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </ThemeProvider>
+        </IntlContextProvider>
+      </AuthProvider>
+    </APIProvider>
   );
 }
 

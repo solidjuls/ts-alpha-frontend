@@ -1,22 +1,13 @@
-import * as LabelPrimitive from "@radix-ui/react-label";
-import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
+import { StyledLabel, StyledLabelInfo } from "./DisplayInfo.styles";
 
-const StyledLabel = styled(LabelPrimitive.Root, {
-  fontSize: 10,
-  fontWeight: 500,
-  color: "lightgray",
-  userSelect: "none",
-});
+type DisplayInfoProps = {
+  label: string;
+  infoText: string;
+  maxWidth: string;
+};
 
-const StyledLabelInfo = styled(LabelPrimitive.Root, {
-  fontSize: 14,
-  fontWeight: 500,
-  color: "$textDark",
-  userSelect: "none",
-});
-
-const DisplayInfo = ({ label, infoText, maxWidth = "150px" }) => {
+const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "150px" }) => {
   return (
     <Flex css={{ flexDirection: "column", maxWidth }}>
       <StyledLabel htmlFor="userName">{label}</StyledLabel>

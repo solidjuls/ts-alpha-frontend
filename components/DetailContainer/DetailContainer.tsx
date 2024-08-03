@@ -1,7 +1,11 @@
 import { Box } from "components/Atoms";
 import { Backbutton } from "components/Backbutton";
+import { ReactNode } from "react";
 
-const DetailContainer = ({ children }) => {
+type DetailContainerProps = {
+  children: ReactNode;
+};
+const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
   return (
     <Box
       css={{
