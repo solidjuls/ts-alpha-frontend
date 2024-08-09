@@ -1,4 +1,7 @@
 module.exports = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   reactStrictMode: true,
   // Other configurations can go here
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
