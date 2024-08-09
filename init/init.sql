@@ -18,7 +18,7 @@ CREATE TABLE cities (
 	province varchar(100) NULL,
 	timeZoneId varchar(40) NULL,
 	PRIMARY KEY (`id`)
-)
+);
 
 CREATE TABLE RegionalFederations (
 	id varchar(8) COLLATE utf8mb4_unicode_ci NOT NULL,
