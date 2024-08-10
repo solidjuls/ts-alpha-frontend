@@ -25,7 +25,7 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
+  !!process.env.NEXT_PUBLIC_VERCEL_URL ? process.env.NEXT_PUBLIC_VERCEL_URL : "http://localhost:3000";
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
@@ -255,7 +255,7 @@ export const userRouter = trpc
         const aver = await sendEmail(
           input.mail,
           user.first_name,
-          `${getUrl()}/reset-password/${hash}`,
+          `https://${getUrl()}/reset-password/${hash}`,
         );
         //console.log("checking", aver, hash);
       }
