@@ -6,7 +6,8 @@
     "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha dev --execute 'yarn dev'",
     "dev:planetscale:prod": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
     "format:fix": "prettier --write --ignore-path .gitignore .",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "ts:check": "tsc"
