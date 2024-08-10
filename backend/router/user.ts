@@ -74,10 +74,17 @@ export const userRouter = trpc
         pwd: input.pwd,
       });
       console.log("user resolve", user);
-      if (!user) {
+      if (user === null) {
         throw new trpc.TRPCError({
           code: "UNAUTHORIZED",
           message: "User doesn't exist",
+        });
+      }
+
+      if (user === false) {
+        throw new trpc.TRPCError({
+          code: "UNAUTHORIZED",
+          message: "The password is incorrect",
         });
       }
       const token = jwt.sign({ mail: user.email, role: user.role }, process.env.TOKEN_SECRET, {

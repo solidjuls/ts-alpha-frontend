@@ -23,6 +23,11 @@ const Text = styled("p", {
         fontSize: 20,
         margin: 0
       },
+    },
+    type: {
+      error: {
+        color: "red",
+      }
     }
   },
 });
