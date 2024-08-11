@@ -80,7 +80,7 @@ def translate_side_to_enum(side_str):
     return SIDE_ENUM_MAP[side_str]
 
 
-@lru_cache()
+@lru_cache(maxsize=1500)
 def get_player_id_from_db(db_session, player_name):
     try:
         return (

@@ -49,11 +49,11 @@ class User(Base):
     first_name = sa.Column(sa.VARCHAR(255))
     last_name = sa.Column(sa.VARCHAR(255))
     last_login_at = sa.Column(sa.TIMESTAMP)
-    nickname = sa.Column(sa.VARCHAR(50))
+    # nickname = sa.Column(sa.VARCHAR(50))
     regionalFederationId = sa.Column(
         sa.VARCHAR(8), sa.ForeignKey(RegionalFederation.id)
     )
-    cityId = sa.Column(sa.BigInteger, sa.ForeignKey(City.id))
+    # cityId = sa.Column(sa.BigInteger, sa.ForeignKey(City.id))
     phoneNumber = sa.Column(sa.VARCHAR(20))
     preferredGamingPlatform = sa.Column(sa.VARCHAR(50))
     preferredGameDuration = sa.Column(sa.VARCHAR(50))
