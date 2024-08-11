@@ -11,7 +11,7 @@ type AuthContextProps = Pick<AuthType, "name" | "email"> & {
   setAuthentication?: (authProps: AuthType) => void;
   login?: LoginFnType;
   logout?: LogoutFnType;
-  errorMsg?: string
+  errorMsg?: string;
 };
 
 const KEY = "ts-user";
@@ -36,7 +36,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = trpc.useMutation(["user-signin"]);
   const signOut = trpc.useMutation(["user-signout"]);
   const [auth, setAuth] = useState<AuthType>({ name: "", email: "" });
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   useEffect(() => {
     const cookies = cookieCutter.get(KEY);
     if (cookies) {
@@ -63,7 +63,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     } catch (e) {
       console.log("login error", e.message);
-      setErrorMsg(e.message)
+      setErrorMsg(e.message);
     }
   };
 

@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { hash } from "bcryptjs";
 import { AuthType, UserType } from "types/user.types";
 import { authorize } from "backend/controller/user.controller";
+import { getRatingByPlayer } from "backend/controller/rating.controller";
 /* @ts-ignore */
 import Cookies from "cookies";
 /* @ts-ignore */
@@ -25,7 +26,9 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  !!process.env.NEXT_PUBLIC_VERCEL_URL ? process.env.NEXT_PUBLIC_VERCEL_URL : "http://localhost:3000";
+  !!process.env.NEXT_PUBLIC_VERCEL_URL
+    ? process.env.NEXT_PUBLIC_VERCEL_URL
+    : "http://localhost:3000";
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
@@ -148,11 +151,32 @@ export const userRouter = trpc
         input: z.object({ id: z.string() }),
         async resolve({ input }) {
           const user = await prisma.users.findFirst({
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              name: true,
+              email: true,
+              preferredGamingPlatform: true,
+              preferredGameDuration: true,
+              timeZoneId: true,
+              cities: {
+                select: {
+                  name: true,
+                },
+              },
+              countries: {
+                select: {
+                  country_name: true,
+                },
+              },
+            },
             where: {
               id: Number(input.id),
             },
           });
-          const userParsed = JSON.stringify(user, (key, value) =>
+          const { rating } = await getRatingByPlayer({ playerId: user?.id });
+          const userParsed = JSON.stringify({ ...user, rating }, (key, value) =>
             typeof value === "bigint" ? value.toString() : value,
           );
           console.log("user", userParsed);

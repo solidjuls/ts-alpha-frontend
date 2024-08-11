@@ -10,6 +10,7 @@ import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";
 import { Box, Flex } from "components/Atoms";
 import { DetailContainer } from "components/DetailContainer";
+import { Spinner } from "@radix-ui/themes";
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
@@ -28,6 +29,22 @@ const TextComponent = ({ labelText, inputValue, onInputValueChange = () => {}, .
   </Box>
 );
 
+const UserProfileContent = ({ data }) => (
+  <>
+    <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
+    <DisplayInfo label="Country" infoText={data?.countries?.country_name} />
+    <DisplayInfo label="Playdeck" infoText={data?.name} />
+    <DisplayInfo label="Location" infoText={data?.cities?.name} />
+    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferredGamingPlatform} />
+    <DisplayInfo label="Email" infoText={data?.email} />
+
+    <DisplayInfo label="Rating" infoText={data?.rating} />
+    <DisplayInfo label="Regional federation" infoText="-" />
+    <DisplayInfo label="Last activity date" infoText="7/11/2024" />
+    <DisplayInfo label="Time Zone" infoText={data?.timeZoneId} />
+    <DisplayInfo label="Preferred game duration" infoText={data?.preferredGameDuration} />
+  </>
+);
 const UserProfile = ({ id }) => {
   console.log("props", id);
   const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
@@ -35,6 +52,7 @@ const UserProfile = ({ id }) => {
   const { email } = useSession();
   console.log("data", data);
 
+  if (isLoading) return null;
   const updateClick = async () => {
     // if (session?.user?.email) {
     const pwdHashed = await hash(password, 12);
@@ -75,19 +93,8 @@ const UserProfile = ({ id }) => {
           boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         }}
       >
-        <DisplayInfo label="Rank" infoText="1" />
-        <DisplayInfo label="First name" infoText="Juli" />
-        <DisplayInfo label="Country" infoText="Spain" />
-        <DisplayInfo label="Playdeck" infoText="Abaddon833" />
-        <DisplayInfo label="Location" infoText="Barcelona" />
-        <DisplayInfo label="Preferred gaming platform" infoText="PC Steam (Playdeck)" />
-        <DisplayInfo label="Email" infoText="email" />
+        {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
 
-        <DisplayInfo label="Rating" infoText="7007" />
-        <DisplayInfo label="Regional federation" infoText="-" />
-        <DisplayInfo label="Last activity date" infoText="7/11/2024" />
-        <DisplayInfo label="Time Zone" infoText="Europe/London" />
-        <DisplayInfo label="Preferred game duration" infoText="45 minutes" />
         {/* {role === 2 && (
         <TextComponent labelText="userMail" inputValue={mail} onInputValueChange={setMail} />
       )} */}

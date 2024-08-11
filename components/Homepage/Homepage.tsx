@@ -7,11 +7,11 @@ import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
-import { Game, } from "types/game.types";
+import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
 import Link from "next/link";
-import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink} from "./Homepage.styles"
+import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 
 type HomepageProps = {
   role: number;
@@ -45,7 +45,9 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={usaCountryCode} />
-        <Text  fontSize="medium" strong={gameWinner === "1" ? "bold" : undefined}>{usaPlayer}</Text>
+        <Text fontSize="medium" strong={gameWinner === "1" ? "bold" : undefined}>
+          {usaPlayer}
+        </Text>
       </Box>
       <span>vs</span>
       <Box
@@ -58,7 +60,9 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={ussrCountryCode} />
-        <Text  fontSize="medium" strong={gameWinner === "2" ? "bold" : undefined}>{ussrPlayer}</Text>
+        <Text fontSize="medium" strong={gameWinner === "2" ? "bold" : undefined}>
+          {ussrPlayer}
+        </Text>
       </Box>
     </Box>
   );
@@ -116,7 +120,6 @@ const EmptyState = () => {
   );
 };
 
-
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
@@ -154,7 +157,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-              <ResultRow key={index} role={role} game={game} />
+            <ResultRow key={index} role={role} game={game} />
           </UnstyledLink>
         ))}
       </ResultsPanel>
