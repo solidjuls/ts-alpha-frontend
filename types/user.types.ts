@@ -6,6 +6,7 @@ export type UserType = {
 };
 
 export type AuthType = {
+  id?: string;
   name?: string | undefined;
   email?: string | undefined;
   pwd?: string | undefined;

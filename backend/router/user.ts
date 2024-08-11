@@ -90,16 +90,20 @@ export const userRouter = trpc
           message: "The password is incorrect",
         });
       }
-      const token = jwt.sign({ mail: user.email, role: user.role }, process.env.TOKEN_SECRET, {
-        expiresIn: "60d",
-      });
+      const token = jwt.sign(
+        { mail: user.email, role: user.role, id: user.id.toString() },
+        process.env.TOKEN_SECRET,
+        {
+          expiresIn: "60d",
+        },
+      );
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
         path: "/",
         httpOnly: true,
       });
 
-      return { email: user.email, name: user.name } as AuthType;
+      return { email: user.email, name: user.name, id: user.id.toString() } as AuthType;
     },
   })
   .mutation("signout", {

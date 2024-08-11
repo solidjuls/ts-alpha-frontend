@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export type UserProfileState = {
+  firstName: SubmitFormValue<string>;
+  lastName: SubmitFormValue<string>;
+  name: SubmitFormValue<string>;
+  email: SubmitFormValue<string>;
+  preferredGamingPlatform: SubmitFormValue<string>;
+  preferredGameDuration: SubmitFormValue<string>;
+  timeZoneId: SubmitFormValue<string>;
+};
+
 export type SubmitFormState = {
   oldId: SubmitFormValue<string>;
   gameDate: SubmitFormValue<Date>;

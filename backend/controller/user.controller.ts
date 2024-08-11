@@ -17,6 +17,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   }
 
   return {
+    id: user.id,
     email: user.email,
     name: user.first_name,
     // @ts-ignore

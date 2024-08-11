@@ -7,7 +7,7 @@ import { trpc } from "contexts/APIProvider";
 type LoginFnType = (mail: string, pwd: string) => void;
 type LogoutFnType = () => void;
 
-type AuthContextProps = Pick<AuthType, "name" | "email"> & {
+type AuthContextProps = Pick<AuthType, "name" | "email" | "id"> & {
   setAuthentication?: (authProps: AuthType) => void;
   login?: LoginFnType;
   logout?: LogoutFnType;
@@ -35,7 +35,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
   const signIn = trpc.useMutation(["user-signin"]);
   const signOut = trpc.useMutation(["user-signout"]);
-  const [auth, setAuth] = useState<AuthType>({ name: "", email: "" });
+  const [auth, setAuth] = useState<AuthType>({ name: "", email: "", id: "" });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   useEffect(() => {
     const cookies = cookieCutter.get(KEY);
@@ -80,6 +80,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
+        id: auth.id,
         email: auth.email,
         name: auth.name,
         setAuthentication,
