@@ -72,11 +72,12 @@ export const userRouter = trpc
     input: z.object({ mail: z.string(), pwd: z.string() }),
     async resolve({ input, ctx }) {
       if (!ctx) return null;
+      
       const user = await authorize({
         email: input.mail,
         pwd: input.pwd,
       });
-      console.log("user resolve", user);
+
       if (user === null) {
         throw new trpc.TRPCError({
           code: "UNAUTHORIZED",
