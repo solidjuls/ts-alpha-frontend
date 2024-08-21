@@ -50,14 +50,14 @@ class User(Base):
     last_name = sa.Column(sa.VARCHAR(255))
     last_login_at = sa.Column(sa.TIMESTAMP)
     # nickname = sa.Column(sa.VARCHAR(50))
-    regionalFederationId = sa.Column(
+    regional_federation_id = sa.Column(
         sa.VARCHAR(8), sa.ForeignKey(RegionalFederation.id)
     )
-    # cityId = sa.Column(sa.BigInteger, sa.ForeignKey(City.id))
-    phoneNumber = sa.Column(sa.VARCHAR(20))
-    preferredGamingPlatform = sa.Column(sa.VARCHAR(50))
-    preferredGameDuration = sa.Column(sa.VARCHAR(50))
-    timeZoneId = sa.Column(sa.VARCHAR(40))
+    city_id = sa.Column(sa.BigInteger, sa.ForeignKey(City.id))
+    phone_number = sa.Column(sa.VARCHAR(20))
+    preferred_gaming_platform = sa.Column(sa.VARCHAR(50))
+    preferred_game_duration = sa.Column(sa.VARCHAR(50))
+    timezone_id = sa.Column(sa.VARCHAR(40))
 
 
 class GameResult(Base):
