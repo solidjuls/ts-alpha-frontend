@@ -20,23 +20,32 @@ def cl_args():
 
 
 def get_user_record_by_name(db_session, player_name):
-    full_name = models.User.first_name + ' ' + models.User.last_name
+    full_name = models.User.first_name + " " + models.User.last_name
 
-    try: 
+    try:
         return db_session.query(models.User).filter(full_name == player_name).one()
     except Exception as exp:
-        print(f'Could not find {player_name}')
+        print(f"Could not find {player_name}")
         raise exp
-        
+
 
 @lru_cache(maxsize=15000)
 def get_id_from_city_table(db_session, city_name, us_federation=None):
-    try: 
-        city_rec = db_session.query(models.City).filter(models.City.name == city_name).one()
+    try:
+        city_rec = (
+            db_session.query(models.City).filter(models.City.name == city_name).one()
+        )
     except sa_exc.MultipleResultsFound:
         try:
             if us_federation:
-                city_rec = db_session.query(models.City).filter(models.City.name == city_name, models.City.province == us_federation).one()
+                city_rec = (
+                    db_session.query(models.City)
+                    .filter(
+                        models.City.name == city_name,
+                        models.City.province == us_federation,
+                    )
+                    .one()
+                )
             else:
                 # print(f'Multiple cities found (no Us federation) for: {city_name}')
                 return None
@@ -49,35 +58,36 @@ def get_id_from_city_table(db_session, city_name, us_federation=None):
     return city_rec.id
 
 
-
 def update_playdek_city(db_session, input_filepath):
     with open(input_filepath, mode="r") as infile:
         reader = csv.DictReader(infile)
 
         issues = []
-        
-        for i, row in enumerate(reader):
-            user_record = get_user_record_by_name(db_session, row['NAME '])
-            user_record.name = row['Playdek ID']
 
-            city_name = row['Normalized City']
-            us_federation = row['US Federation'] if row['US Federation'] else None
+        for i, row in enumerate(reader):
+            user_record = get_user_record_by_name(db_session, row["NAME "])
+            user_record.name = row["Playdek ID"]
+
+            city_name = row["Normalized City"]
+            us_federation = row["US Federation"] if row["US Federation"] else None
             if city_name:
                 city_id = get_id_from_city_table(db_session, city_name, us_federation)
                 user_record.city_id = city_id
                 if not city_id:
-                    issues.append({
-                        'name': row['NAME '],
-                        'city_name': city_name,
-                        'us_federation': us_federation or ''
-                    })
+                    issues.append(
+                        {
+                            "name": row["NAME "],
+                            "city_name": city_name,
+                            "us_federation": us_federation or "",
+                        }
+                    )
         db_session.commit()
 
-
-        with open('errors.csv', 'w', newline='') as output_file:
+        with open("errors.csv", "w", newline="") as output_file:
             dict_writer = csv.DictWriter(output_file, issues[0].keys())
             dict_writer.writeheader()
             dict_writer.writerows(issues)
+
 
 def run(
     input_filepath,
