@@ -15,14 +15,21 @@ module.exports = {
     videoLink1: "Video Link 1",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
-    mail: "Mail",
+    mail: "EMail",
     password: "Password",
-    userMail: "Mail",
+    userMail: "Email",
     updatePwdProfile: "Password",
     updatePwdProfileButton: "Update",
     signOut: "Sign out",
     signIn: "Sign in",
     profileText: "Profile",
     greeting: "Hi",
+
+    firstName: "First Name",
+    lastName: "Last Name",
+    playdeckName: "Playdeck Name",
+    preferredGamingPlatform: "Preferred Gaming Platform",
+    preferredGameDuration: "Preferred Game Duration",
+    timeZone: "Timezone"
   },
 };

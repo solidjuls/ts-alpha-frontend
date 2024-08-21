@@ -7,7 +7,7 @@ const cssFlexTextComponent = {
   flexDirection: "column",
   marginBottom: "16px",
 };
-const cssLabel = { marginBottom: 8, marginRight: 15, width: "160px" };
+const cssLabel = { marginBottom: 8, marginRight: 15, width: "200px" };
 
 const WithLabel = ({ labelText, children }) => {
   return (

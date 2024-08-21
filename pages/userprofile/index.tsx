@@ -13,30 +13,13 @@ const UserProfileContainer = () => {
   const { data, isLoading } = trpc.useQuery(["user-get", { id }], {
     enabled: id !== undefined && id !== "",
   });
+
   // const [form, setForm] = useState<UserProfileState>(initialState);
 
-  const validated = () => {
-    let submit = true;
-    Object.keys(form).forEach((key: string) => {
-      if (["video1"].includes(key)) {
-      } else {
-        if (form[key as keyof UserProfileState].value === "") {
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          submit = false;
-        }
-      }
-    });
-    return submit;
-  };
+
 
   if (isLoading) return <Spinner size="3" />;
-  console.log("idd", data);
+  console.log("id", data);
   if (!data) return null;
   return <UserProfileForm data={data} />;
 };

@@ -162,9 +162,9 @@ export const userRouter = trpc
               last_name: true,
               name: true,
               email: true,
-              preferredGamingPlatform: true,
-              preferredGameDuration: true,
-              timeZoneId: true,
+              preferred_gaming_platform: true,
+              preferred_game_duration: true,
+              timezone_id: true,
               cities: {
                 select: {
                   name: true,
@@ -229,6 +229,39 @@ export const userRouter = trpc
             },
           });
           console.log("update did happen");
+          return { success: true };
+        },
+      })
+      .mutation("update-profile", {
+        input: z.object({
+          firstName: z.string(),
+          lastName: z.string(),
+          name: z.string(),
+          email: z.string(),
+          preferredGamingPlatform: z.string(),
+          preferredGameDuration: z.string(),
+          timeZoneId: z.string(),
+        }),
+        async resolve({ input }) {
+          console.log("update-profile", input);
+          // const token = await jwt.getToken({ req, secret })
+          // console.log("JSON Web Token", token)
+
+          const updateUser = await prisma.users.update({
+            where: {
+              email: input.email,
+            },
+            data: {
+              first_name: input.firstName,
+              last_name: input.lastName,
+              name: input.name,
+              email: input.email,
+              preferred_gaming_platform: input.preferredGamingPlatform,
+              preferred_game_duration: input.preferredGameDuration,
+              timezone_id: input.timeZoneId,
+            },
+          });
+          console.log("update did happen", updateUser);
           return { success: true };
         },
       }),

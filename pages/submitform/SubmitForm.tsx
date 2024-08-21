@@ -10,9 +10,8 @@ import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
 import { Checkbox } from "components/Checkbox";
-import WithLabel from "./WithLabel";
-import DropdownMenu, { DropdownItemType } from "components/DropdownMenu";
 import type { SubmitFormState } from "types/game.types";
+import { DropdownWithLabel } from "components/EditFormComponents";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -22,43 +21,12 @@ const formStyles = {
   backgroundColor: "White",
   width: "640px",
   alignSelf: "center",
+  padding: "12px",
   // boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
   "@sm": {
     width: "100%",
   },
 };
-
-type DropdownWithLabelProps = {
-  labelText: string;
-  selectedItem: string;
-  onSelect: (value: string) => void;
-  items: DropdownItemType[];
-  selectedValueProperty?: string;
-  selectedInputProperty?: string;
-  error: boolean;
-  css: any;
-};
-
-const DropdownWithLabel = ({
-  labelText,
-  selectedItem,
-  onSelect,
-  items,
-  error,
-  css,
-  ...rest
-}: DropdownWithLabelProps) => (
-  <WithLabel labelText={labelText}>
-    <DropdownMenu
-      items={items}
-      selectedItem={selectedItem}
-      onSelect={onSelect}
-      css={css}
-      {...rest}
-      error={error}
-    />
-  </WithLabel>
-);
 
 type SubmitFormProps = {
   validated: (
@@ -140,7 +108,6 @@ const SubmitForm = ({
         css={{
           flexDirection: "column",
           alignItems: "flex-start",
-          padding: "12px",
         }}
       >
         <TextComponent

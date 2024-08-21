@@ -13,19 +13,19 @@ import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
 
 const StyledLink = styled(Link, {
-  textDecoration: 'none',
-  color: 'Black',
+  textDecoration: "none",
+  color: "Black",
   variants: {
     borderBottom: {
       usa: {
-        borderBottom: '2px solid blue'
+        borderBottom: "2px solid blue",
       },
       ussr: {
-        borderBottom: '2px solid red'
-      }
-    }
-  }
-})
+        borderBottom: "2px solid red",
+      },
+    },
+  },
+});
 
 const StyledChevronDownIcon = styled(ChevronDownIcon, {
   position: "absolute",
@@ -181,7 +181,9 @@ const PlayerName: React.FC<PlayerNameProps> = ({
       <Flex css={{ margin: "0 8px 0 8px" }}>
         {!isUSSR ? (
           <>
-            <StyledLink borderBottom="usa" href={`/userprofile/${userId}`}>{playerName}</StyledLink>
+            <StyledLink borderBottom="usa" href={`/userprofile/${userId}`}>
+              {playerName}
+            </StyledLink>
             <Flex css={{ flexDirection: "column" }}>
               <FlagIcon code="US" />
             </Flex>
@@ -191,7 +193,9 @@ const PlayerName: React.FC<PlayerNameProps> = ({
             <Flex css={{ flexDirection: "column" }}>
               <FlagIcon code="US" />
             </Flex>
-            <StyledLink borderBottom="ussr" href={`/userprofile/${userId}`}>{playerName}</StyledLink>
+            <StyledLink borderBottom="ussr" href={`/userprofile/${userId}`}>
+              {playerName}
+            </StyledLink>
           </>
         )}
       </Flex>
