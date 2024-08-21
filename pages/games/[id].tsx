@@ -36,6 +36,7 @@ type PlayerNameProps = {
   userId: bigint;
   rating: number;
   ratingDifference: number;
+  isUSSR?: boolean;
 };
 
 type GameProps = {
@@ -44,7 +45,7 @@ type GameProps = {
 
 const GameContent = ({ data }) => (
   <>
-    <Flex css={{ alignItems: "center", marginBottom: "12px" }}>
+    <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
       <PlayerName
         playerName={data.usaPlayer}
         userId={data.usaPlayerId}
@@ -57,10 +58,11 @@ const GameContent = ({ data }) => (
         userId={data.ussrPlayerId}
         rating={data.ratingsUSSR.rating}
         ratingDifference={data.ratingsUSSR.ratingDifference}
+        isUSSR
       />
     </Flex>
 
-    <Box css={{ display: "grid", gap: "1rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
+    <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
       <Flex css={{ flexDirection: "column", alignItems: "end" }}>
         <Span>Tournament:</Span>
         <Span>Identifier:</Span>
@@ -74,7 +76,7 @@ const GameContent = ({ data }) => (
         <Span>{data.gameType}</Span>
         <Span>{data.game_code}</Span>
         <Span>{getWinnerText(data.gameWinner)}</Span>
-        <Span>{data.endTurn}</Span>
+        <Span>{data.endTurn || "-"}</Span>
         <Span>{data.endMode}</Span>
         <Span>{data.created_at?.toString()}</Span>
       </Flex>
@@ -125,29 +127,60 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   );
 };
 
+const ChevronContainer = ({ rating, finalRating }) =>
+  rating < finalRating ? (
+    <StyledChevronUpIcon color="green" />
+  ) : (
+    <StyledChevronDownIcon color="red" />
+  );
+const Rating = ({ rating, ratingDifference, isUSSR }) => {
+  const finalRating = Number(rating) + Number(ratingDifference);
+
+  return !isUSSR ? (
+    <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
+      <Text fontSize="small">{rating}</Text>
+      <Box css={{ position: "relative", marginLeft: "4px", width: "15px" }}>
+        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
+      </Box>
+      <Text fontSize="small">{finalRating}</Text>
+    </Flex>
+  ) : (
+    <Flex css={{ margin: "0 8px 0 8px" }}>
+      <Text fontSize="small">{finalRating}</Text>
+      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
+        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
+      </Box>
+      <Text fontSize="small">{rating}</Text>
+    </Flex>
+  );
+};
 const PlayerName: React.FC<PlayerNameProps> = ({
   playerName,
   userId,
   rating,
   ratingDifference,
+  isUSSR,
 }) => {
   return (
     <Flex css={{ flexDirection: "column" }}>
       <Flex css={{ margin: "0 8px 0 8px" }}>
-        <Link href={`/userprofile/${userId}`}>{playerName}</Link>
-        <FlagIcon code="US" />
+        {!isUSSR ? (
+          <>
+            <Link href={`/userprofile/${userId}`}>{playerName}</Link>
+            <Flex css={{ flexDirection: "column" }}>
+              <FlagIcon code="US" />
+            </Flex>
+          </>
+        ) : (
+          <>
+            <Flex css={{ flexDirection: "column" }}>
+              <FlagIcon code="US" />
+            </Flex>
+            <Link href={`/userprofile/${userId}`}>{playerName}</Link>
+          </>
+        )}
       </Flex>
-
-      <Flex css={{ margin: "0 8px 0 8px" }}>
-        <Text fontSize="small">{Number(rating) + Number(ratingDifference)}</Text>
-        <Box css={{ position: "relative", width: "20px" }}>
-          <StyledChevronDownIcon color="red" />
-        </Box>
-        <Text fontSize="small">{rating}</Text>
-        <Box css={{ position: "relative", width: "20px" }}>
-          <StyledChevronDownIcon color="green" />
-        </Box>
-      </Flex>
+      <Rating rating={rating} ratingDifference={ratingDifference} isUSSR={isUSSR} />
     </Flex>
   );
 };
