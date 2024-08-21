@@ -45,7 +45,7 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={usaCountryCode} />
-        <Text fontSize="medium" strong={gameWinner === "1" ? "bold" : undefined}>
+        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USA" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
       </Box>
@@ -60,7 +60,7 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={ussrCountryCode} />
-        <Text fontSize="medium" strong={gameWinner === "2" ? "bold" : undefined}>
+        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USSR" ? "bold" : undefined}>
           {ussrPlayer}
         </Text>
       </Box>

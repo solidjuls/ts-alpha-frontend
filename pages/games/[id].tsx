@@ -10,6 +10,7 @@ import Text from "components/Text";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
+import { getWinnerText } from "utils/games";
 
 const StyledChevronDownIcon = styled(ChevronDownIcon, {
   position: "absolute",
@@ -72,7 +73,7 @@ const GameContent = ({ data }) => (
       <Flex css={{ flexDirection: "column", alignItems: "start" }}>
         <Span>{data.gameType}</Span>
         <Span>{data.game_code}</Span>
-        <Span>{data.gameWinner}</Span>
+        <Span>{getWinnerText(data.gameWinner)}</Span>
         <Span>{data.endTurn}</Span>
         <Span>{data.endMode}</Span>
         <Span>{data.created_at?.toString()}</Span>
