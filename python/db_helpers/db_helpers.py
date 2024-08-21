@@ -34,7 +34,8 @@ def get_mysql_args():
     for input_type, val in mysql_arg_map.items():
         mysql_arg_map[input_type] = prompt_for_db_input(input_type, val)
 
-    print(mysql_arg_map)
+    # port has to be recast as int, python input likes to make it a string
+    mysql_arg_map["port"] = int(mysql_arg_map["port"])
 
     return mysql_arg_map
 

@@ -49,3 +49,13 @@ python -m python.initial_data_seeding.games_to_json \
 * `games_output_file` can be anything - store it locally wherever makes sense for you.
 
 If any rows fail in this script, it should be researched, as it will cause issues with rating calculations if games are missed. I do not output failure rows for this reason, and simply let the script fail.
+
+### Add Playdek City
+
+One off script to help fill in some data that was missing in the Users migration above. Probably not that useful for much now, but keeping for posterity. Not written in a particularly reusable way, so it may need to be edited to work properly.
+
+Run with
+
+```bash
+python3 -m python.initial_data_seeding.add_playdek_city -ip <players_database_input_file>
+```
