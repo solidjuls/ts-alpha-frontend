@@ -6,7 +6,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { useState } from "react";
 import type { UserProfileState } from "types/game.types";
 import { getInfoFromCookies } from "utils/cookies";
-import { UserProfileForm } from "./UserProfileForm";
+import UserProfileForm from "./UserProfileForm";
 
 const UserProfileContainer = () => {
   const { id } = useSession();

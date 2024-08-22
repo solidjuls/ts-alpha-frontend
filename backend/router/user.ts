@@ -26,8 +26,8 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  !!process.env.NEXT_PUBLIC_VERCEL_URL
-    ? process.env.NEXT_PUBLIC_VERCEL_URL
+  !!process.env.NEXT_PUBLIC_URL
+    ? process.env.NEXT_PUBLIC_URL
     : "http://localhost:3000";
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {

@@ -280,4 +280,4 @@ console.log("form", form)
   );
 };
 
-export { UserProfileForm };
+export default UserProfileForm;
