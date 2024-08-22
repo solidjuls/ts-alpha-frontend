@@ -61,7 +61,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box css={containerStyles}>
-      <Header openSidebar={() => setIsOpen(!isOpen)} />
+      {/* <Header openSidebar={() => setIsOpen(!isOpen)} /> */}
       {isOpen ? <Sidebar /> : <HorizontalNavigation />}
       <Main css={contentStyles}>{children}</Main>
       {/* <Footer /> */}

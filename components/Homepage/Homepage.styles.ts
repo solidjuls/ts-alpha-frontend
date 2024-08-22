@@ -5,9 +5,28 @@ const borderStyle = "solid 1px $greyLight";
 export const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "column",
-  borderBottom: borderStyle,
+  // borderBottom: borderStyle,
+  padding: '4px',
   margin: "4px",
+  borderWidth: '1px',
+  borderRadius: '6px',
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
 });
+
+const StyledCardRow = styled("div", {
+  display: 'grid',
+  gap: '1rem',
+  gridTemplateColumns: 'min-content 3fr 2fr min-content',
+  paddingInlineStart: '8px',
+  paddingInlineEnd: '8px',
+  paddingTop: '4px',
+  paddingBottom: '4px',
+  borderWidth: '1px',
+  borderRadius: '6px',
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+})
 
 export const ResultsPanel = styled("div", {
   display: "flex",

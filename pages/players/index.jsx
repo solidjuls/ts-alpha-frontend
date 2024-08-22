@@ -51,15 +51,6 @@ const CardColumn = ({ header, value, countryCode }) => {
     </Flex>
   </Flex></>
 }
-const CardRow = () => {
-  return 
-}
-
-const FilterPanel = styled("div", {
-  padding: "8px",
-  margin: "8px",
-  borderBottom: borderStyle,
-});
 
 // const getAllFlags: (data: UserType[]) => string[] = (data) =>
 //   data.reduce((prev: string[], curr: UserType) => {

@@ -35,6 +35,7 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
           game.users_game_results_ussr_player_idTousers.last_name,
         gameType: game.game_type,
         game_code: game.game_code,
+        gameDate: game.game_date,
         videoURL: game.video1,
         gameWinner: game.game_winner,
         ratingsUSA,
@@ -80,7 +81,7 @@ export const getGameWithRatings = async (filter?: any) => {
     where: {
       ...filter,
     },
-    take: 15,
+    take: 30,
     orderBy: [
       {
         created_at: "desc",
