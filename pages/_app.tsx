@@ -1,6 +1,7 @@
 import AuthProvider from "contexts/AuthProvider";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
+import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
@@ -9,6 +10,7 @@ import type { AppRouter } from "backend/router";
 
 import "styles/date.css";
 import "styles/stylesGlobal.css";
+import "@radix-ui/themes/styles.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -23,9 +25,11 @@ function App({ Component, pageProps }: AppProps) {
               light: "light",
             }}
           >
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
+            <Theme>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </Theme>
           </ThemeProvider>
         </IntlContextProvider>
       </AuthProvider>

@@ -10,9 +10,7 @@ import { getToken } from "next-auth/jwt";
 const queryClient = new QueryClient();
 export const trpc = createReactQueryHooks<AppRouter>();
 const trpcClient = trpc.createClient({
-  url: !!process.env.NEXT_PUBLIC_VERCEL_URL
-    ? `/api/trpc`
-    : "http://localhost:3000/api/trpc",
+  url: !!process.env.NEXT_PUBLIC_VERCEL_URL ? `/api/trpc` : "http://localhost:3000/api/trpc",
   // headers() {
   //   console.log("taking value from cookies here", getCookies())
   //   return {

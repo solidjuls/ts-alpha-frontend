@@ -33,13 +33,13 @@ const ErrorInfo = styled("span", {
 });
 
 const LoginForm: React.FC = () => {
-  const { login } = useSession();
+  const { login, errorMsg } = useSession();
   const [mail, setMail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
 
   return (
     <>
-      <h1>Sign up</h1>
+      <h1>Login</h1>
       <Label htmlFor="mail">
         <FormattedMessage id="mail" />
       </Label>
@@ -72,6 +72,7 @@ const LoginForm: React.FC = () => {
       <Link href="/reset-password" passHref>
         <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
       </Link>
+      {errorMsg && <Text type="error">{errorMsg}</Text>}
     </>
   );
 };

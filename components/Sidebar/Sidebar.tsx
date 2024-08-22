@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
+import { useSession } from "contexts/AuthProvider";
+import { styled } from "stitches.config";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { FormattedMessage } from "react-intl";
+import { UserAvatar } from "components/UserAvatar";
 
 const sidebarItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
@@ -13,12 +18,43 @@ const sidebarItemStyles = {
 
 const horizontalItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
-  backgroundColor: "#24292f",
+  backgroundColor: "#E2E8F0",
   cursor: "pointer",
-  color: "white",
+  color: "black",
   padding: "8px 16px",
   margin: 0,
 };
+
+const Flex = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  variants: {
+    display: {
+      none: {
+        display: "none",
+      },
+    },
+  },
+});
+
+const StyledText = styled(Text, {
+  display: "flex",
+  cursor: "pointer",
+  color: "$textLight",
+  "@sm": {
+    display: "none",
+  },
+});
+
+const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
+  display: "none",
+  "@sm": {
+    display: "flex",
+    justifyContent: "flex-start",
+    cursor: "pointer",
+  },
+});
 
 const Items = ({ styles }: any) => {
   return (
@@ -37,21 +73,36 @@ const Items = ({ styles }: any) => {
   );
 };
 const HorizontalNavigation = () => {
+  const { name } = useSession();
+  
   return (
-    <Box
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: "#24292f",
-        width: "100%",
-      }}
-    >
-      <Items styles={horizontalItemStyles} />
-    </Box>
+    <Flex css={{ justifyContent: 'space-between', backgroundColor: "#E2E8F0" }}>
+      <Box
+        css={{
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
+        <Items styles={horizontalItemStyles} />
+      </Box>
+      {!name && (
+            <Link href="/login" passHref>
+              <StyledText>
+                <FormattedMessage id="signIn" />
+              </StyledText>
+            </Link>
+          )}
+          {name && (
+            <Flex>
+              <UserAvatar name={name} />
+            </Flex>
+          )}
+    </Flex>
   );
 };
 
 const Sidebar = () => {
+  
   return (
     <Box css={{ position: "relative" }}>
       <Box

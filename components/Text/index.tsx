@@ -13,17 +13,22 @@ const Text = styled("p", {
     fontSize: {
       small: {
         fontSize: 12,
-        margin: 0
+        margin: 0,
       },
       medium: {
         fontSize: 16,
-        margin: 0
+        margin: 0,
       },
       big: {
         fontSize: 20,
-        margin: 0
+        margin: 0,
       },
-    }
+    },
+    type: {
+      error: {
+        color: "red",
+      },
+    },
   },
 });
 

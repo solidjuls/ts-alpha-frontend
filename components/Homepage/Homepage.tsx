@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
-import { Box } from "components/Atoms";
+import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
 import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
-import { Game, } from "types/game.types";
+import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
-import Link from "next/link";
-import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink} from "./Homepage.styles"
+import { dateFormat } from "utils/dates";
+import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 
 type HomepageProps = {
   role: number;
@@ -45,7 +45,9 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={usaCountryCode} />
-        <Text  fontSize="medium" strong={gameWinner === "1" ? "bold" : undefined}>{usaPlayer}</Text>
+        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USA" ? "bold" : undefined}>
+          {usaPlayer}
+        </Text>
       </Box>
       <span>vs</span>
       <Box
@@ -58,7 +60,9 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={ussrCountryCode} />
-        <Text  fontSize="medium" strong={gameWinner === "2" ? "bold" : undefined}>{ussrPlayer}</Text>
+        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USSR" ? "bold" : undefined}>
+          {ussrPlayer}
+        </Text>
       </Box>
     </Box>
   );
@@ -74,7 +78,7 @@ const ResultRow = ({ game, role }: { game: Game; role: number }) => {
   console.log("game role", game, role);
   return (
     <PlayerInfo>
-      <Box css={{ display: "flex", flexDirection: "row", margin: "0 0 4 0" }}>
+      <Flex css={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "0 0 0 8px" }}>
         <Text fontSize="small" css={{ alignSelf: "center", ...responsive }}>
           {/* {getGameType(game, role)} */}
           {`Game #${game.id}`}
@@ -83,7 +87,8 @@ const ResultRow = ({ game, role }: { game: Game; role: number }) => {
           {/* {getGameType(game, role)} */}
           {getGameType(game, role)}
         </Text>
-      </Box>
+        <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
+      </Flex>
 
       <PlayerInfoBox
         usaCountryCode={game.usaCountryCode}
@@ -115,7 +120,6 @@ const EmptyState = () => {
     </Box>
   );
 };
-
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
@@ -154,7 +158,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-              <ResultRow key={index} role={role} game={game} />
+            <ResultRow key={index} role={role} game={game} />
           </UnstyledLink>
         ))}
       </ResultsPanel>

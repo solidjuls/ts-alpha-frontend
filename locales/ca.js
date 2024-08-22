@@ -21,5 +21,12 @@ module.exports = {
     signIn: "Conectar",
     profileText: "Info d'usuari",
     greeting: "Hola",
+
+    firstName: "Nom",
+    lastName: "Cognom",
+    playdeckName: "Nick a Playdeck",
+    preferredGamingPlatform: "Plataforma de joc",
+    preferredGameDduration: "Duració per defecte",
+    timeZone: "Timezone"
   },
 };

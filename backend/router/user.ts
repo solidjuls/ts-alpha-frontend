@@ -6,6 +6,7 @@ import crypto from "crypto";
 import { hash } from "bcryptjs";
 import { AuthType, UserType } from "types/user.types";
 import { authorize } from "backend/controller/user.controller";
+import { getRatingByPlayer } from "backend/controller/rating.controller";
 /* @ts-ignore */
 import Cookies from "cookies";
 /* @ts-ignore */
@@ -25,7 +26,9 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
+  !!process.env.NEXT_PUBLIC_URL
+    ? process.env.NEXT_PUBLIC_URL
+    : "http://localhost:3000";
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
@@ -69,27 +72,39 @@ export const userRouter = trpc
     input: z.object({ mail: z.string(), pwd: z.string() }),
     async resolve({ input, ctx }) {
       if (!ctx) return null;
+
       const user = await authorize({
         email: input.mail,
         pwd: input.pwd,
       });
-      console.log("user resolve", user);
-      if (!user) {
+
+      if (user === null) {
         throw new trpc.TRPCError({
           code: "UNAUTHORIZED",
           message: "User doesn't exist",
         });
       }
-      const token = jwt.sign({ mail: user.email, role: user.role }, process.env.TOKEN_SECRET, {
-        expiresIn: "60d",
-      });
+
+      if (user === false) {
+        throw new trpc.TRPCError({
+          code: "UNAUTHORIZED",
+          message: "The password is incorrect",
+        });
+      }
+      const token = jwt.sign(
+        { mail: user.email, role: user.role, id: user.id.toString() },
+        process.env.TOKEN_SECRET,
+        {
+          expiresIn: "60d",
+        },
+      );
 
       new Cookies(ctx.req, ctx.res).set("auth-token", token, {
         path: "/",
         httpOnly: true,
       });
 
-      return { email: user.email, name: user.name } as AuthType;
+      return { email: user.email, name: user.name, id: user.id.toString() } as AuthType;
     },
   })
   .mutation("signout", {
@@ -141,11 +156,32 @@ export const userRouter = trpc
         input: z.object({ id: z.string() }),
         async resolve({ input }) {
           const user = await prisma.users.findFirst({
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              name: true,
+              email: true,
+              preferred_gaming_platform: true,
+              preferred_game_duration: true,
+              timezone_id: true,
+              cities: {
+                select: {
+                  name: true,
+                },
+              },
+              countries: {
+                select: {
+                  country_name: true,
+                },
+              },
+            },
             where: {
               id: Number(input.id),
             },
           });
-          const userParsed = JSON.stringify(user, (key, value) =>
+          const { rating } = await getRatingByPlayer({ playerId: user?.id });
+          const userParsed = JSON.stringify({ ...user, rating }, (key, value) =>
             typeof value === "bigint" ? value.toString() : value,
           );
           console.log("user", userParsed);
@@ -193,6 +229,39 @@ export const userRouter = trpc
             },
           });
           console.log("update did happen");
+          return { success: true };
+        },
+      })
+      .mutation("update-profile", {
+        input: z.object({
+          firstName: z.string(),
+          lastName: z.string(),
+          name: z.string(),
+          email: z.string(),
+          preferredGamingPlatform: z.string(),
+          preferredGameDuration: z.string(),
+          timeZoneId: z.string(),
+        }),
+        async resolve({ input }) {
+          console.log("update-profile", input);
+          // const token = await jwt.getToken({ req, secret })
+          // console.log("JSON Web Token", token)
+
+          const updateUser = await prisma.users.update({
+            where: {
+              email: input.email,
+            },
+            data: {
+              first_name: input.firstName,
+              last_name: input.lastName,
+              name: input.name,
+              email: input.email,
+              preferred_gaming_platform: input.preferredGamingPlatform,
+              preferred_game_duration: input.preferredGameDuration,
+              timezone_id: input.timeZoneId,
+            },
+          });
+          console.log("update did happen", updateUser);
           return { success: true };
         },
       }),
@@ -248,7 +317,7 @@ export const userRouter = trpc
         const aver = await sendEmail(
           input.mail,
           user.first_name,
-          `${getUrl()}/reset-password/${hash}`,
+          `https://${getUrl()}/reset-password/${hash}`,
         );
         //console.log("checking", aver, hash);
       }

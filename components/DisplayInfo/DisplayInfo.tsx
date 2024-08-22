@@ -11,7 +11,7 @@ const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "
   return (
     <Flex css={{ flexDirection: "column", maxWidth }}>
       <StyledLabel htmlFor="userName">{label}</StyledLabel>
-      <StyledLabelInfo id="userName">{infoText}</StyledLabelInfo>
+      <StyledLabelInfo id="userName">{infoText || "-"}</StyledLabelInfo>
     </Flex>
   );
 };

@@ -93,6 +93,8 @@ const DropdownMenu = ({
   error: boolean;
   css: Stitches.CSS;
 }) => {
+  let selectedItemMapped = items.find((item) => item.value?.toLowerCase() === selectedItem?.toLowerCase())?.text
+
   return (
     <Root>
       <StyledTrigger css={css} border={error ? "error" : undefined}>
@@ -108,7 +110,7 @@ const DropdownMenu = ({
                 marginLeft: "8px",
               }}
             >
-              {items.find((item) => item.value === selectedItem)?.text}
+              {selectedItemMapped}
             </Span>
           </SelectedItemDiv>
           <StyledTriangleDownIcon />

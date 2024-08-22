@@ -98,7 +98,14 @@ model users {
   first_name                                      String?           @db.VarChar(255)
   last_name                                       String?           @db.VarChar(255)
   last_login_at                                   DateTime?         @db.Timestamp(0)
+  regional_federation_id                          String?           @db.VarChar(8)
+  city_id                                         BigInt?           @db.UnsignedBigInt
+  phone_number                                    String?           @db.VarChar(20)
+  preferred_gaming_platform                       String?           @db.VarChar(50)
+  preferred_game_duration                         String?           @db.VarChar(50)
+  timezone_id                                     String?           @db.VarChar(40)
   countries                                       countries?        @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
+  cities                                          cities?           @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_city_id_foreign")
   game_results_game_results_reporter_idTousers    game_results[]    @relation("game_results_reporter_idTousers")
   game_results_game_results_usa_player_idTousers  game_results[]    @relation("game_results_usa_player_idTousers")
   game_results_game_results_ussr_player_idTousers game_results[]    @relation("game_results_ussr_player_idTousers")
@@ -107,6 +114,7 @@ model users {
   @@index([country_id], map: "users_country_id_foreign")
   @@index([first_name], map: "users_first_name_index")
   @@index([last_name], map: "users_last_name_index")
+  @@index([city_id], map: "users_city_id_foreign")
 }
 
 model failed_jobs {
@@ -156,4 +164,20 @@ model user_game_stats {
   ussr_victories Int       @default(0)
   ussr_losses    Int       @default(0)
   ussr_ties      Int       @default(0)
+}
+
+model cities {
+  id         BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String  @db.VarChar(50)
+  latitude   Float   @db.Float
+  longitude  Float   @db.Float
+  province   String? @db.VarChar(100)
+  timeZoneId String? @db.VarChar(40)
+  users      users[]
+}
+
+model regional_federations {
+  code String @id @db.VarChar(8)
+  name String @db.VarChar(50)
+  icon String @db.VarChar(20)
 }

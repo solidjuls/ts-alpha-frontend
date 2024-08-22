@@ -56,15 +56,15 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
+  backgroundColor: 'transparent',
   border: "none",
-  backgroundColor: "$primary",
   cursor: "pointer",
   display: "flex",
   alignItems: "center",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color: "$backgroundColorLight",
+  color: "black",
 });
 
 const slideUpAndFade = keyframes({
@@ -99,7 +99,7 @@ const StyledSeparator = styled(Separator, {
 const StyledText = styled(Text, {
   display: "flex",
   cursor: "pointer",
-  color: "$textLight",
+  color: "black",
   "@sm": {
     display: "none",
   },
@@ -107,7 +107,6 @@ const StyledText = styled(Text, {
 
 const StyledContent = styled(Content, {
   minWidth: 120,
-  backgroundColor: "white",
   borderRadius: 6,
   padding: 5,
   boxShadow:
