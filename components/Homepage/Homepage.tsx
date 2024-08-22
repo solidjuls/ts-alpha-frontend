@@ -12,6 +12,8 @@ import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
+import UserTypeahead from "pages/submitform/UserTypeahead";
+import MultiSelect from "components/MultiSelect";
 
 type HomepageProps = {
   role: number;
@@ -128,6 +130,10 @@ const EmptyState = () => {
   );
 };
 
+const FilterUser = () => {
+return <MultiSelect />
+}
+
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const { data, isLoading } = trpc.useQuery([
@@ -160,6 +166,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       <ResultsPanel>
         <FilterPanel>
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
+          <FilterUser />
         </FilterPanel>
         {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}

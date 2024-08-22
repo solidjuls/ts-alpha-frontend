@@ -13,7 +13,7 @@ const WithLabel = ({ labelText, children }) => {
   return (
     <Box css={cssFlexTextComponent}>
       <Label htmlFor="dropdown" css={cssLabel}>
-        <FormattedMessage id={labelText} />
+        {labelText ? <FormattedMessage id={labelText} /> : labelText}
       </Label>
       {children}
     </Box>

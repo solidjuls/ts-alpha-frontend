@@ -20,7 +20,7 @@ const useTypeaheadState = () => {
 
   return { userSuggestions, onChange };
 };
-const UserTypeahead = ({ labelText, selectedItem, onSelect, css, error, ...rest }) => {
+const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
   const { userSuggestions, onChange } = useTypeaheadState();
 
   return (
@@ -36,7 +36,7 @@ const UserTypeahead = ({ labelText, selectedItem, onSelect, css, error, ...rest 
         // onBlur={setValue}
         {...rest}
       >
-        <Typeahead.Input css={css} error={error} placeholder="Type the player name..." />
+        <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {userSuggestions.length > 0 && (
           <Typeahead.List css={css}>
             {userSuggestions.map(({ value, text }, index) => (

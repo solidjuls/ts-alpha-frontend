@@ -134,6 +134,7 @@ const SubmitForm = ({
           selectedInputProperty="text"
           error={form.usaPlayerId.error}
           css={{ width: typeaheadWidth }}
+          placeholder="Type the player name..."
           onSelect={(value: any) => onInputValueChange("usaPlayerId", value?.value)}
           onBlur={() => onInputValueChange("usaPlayerId", "")}
         />
@@ -144,6 +145,7 @@ const SubmitForm = ({
           css={{ width: typeaheadWidth }}
           selectedValueProperty="value"
           selectedInputProperty="text"
+          placeholder="Type the player name..."
           onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
         />
