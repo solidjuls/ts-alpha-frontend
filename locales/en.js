@@ -15,7 +15,7 @@ module.exports = {
     videoLink1: "Video Link 1",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
-    mail: "EMail",
+    mail: "Email",
     password: "Password",
     userMail: "Email",
     updatePwdProfile: "Password",
@@ -30,6 +30,6 @@ module.exports = {
     playdeckName: "Playdeck Name",
     preferredGamingPlatform: "Preferred Gaming Platform",
     preferredGameDuration: "Preferred Game Duration",
-    timeZone: "Timezone"
+    timeZone: "Timezone",
   },
 };

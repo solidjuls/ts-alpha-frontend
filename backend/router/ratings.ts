@@ -31,7 +31,7 @@ export const ratingsRouter = trpc.router().query("get", {
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
           countryCode: player.countries?.tld_code,
-          lastActivity: player.last_login_at
+          lastActivity: player.last_login_at,
         };
       }),
     );

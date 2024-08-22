@@ -1,7 +1,7 @@
 import { styled } from "stitches.config";
 import { trpc } from "contexts/APIProvider";
 import { Flex } from "components/Atoms";
-import Text from "components/Text"
+import Text from "components/Text";
 import { SkeletonHomepage } from "components/Skeletons";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
@@ -15,7 +15,7 @@ const borderStyle = "solid 1px $greyLight";
 const ResultsPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
-  gap: '0.5rem',
+  gap: "0.5rem",
   backgroundColor: "$infoForm",
   padding: "8px",
   border: "solid 1px none",
@@ -23,34 +23,38 @@ const ResultsPanel = styled("div", {
   flexGrow: "1",
   marginBottom: "12px",
   overflowY: "scroll",
-  width: '100%',
-  maxWidth: '1000px',
+  width: "100%",
+  maxWidth: "1000px",
   height: "500px",
 });
 
 const StyledCardRow = styled("div", {
-  display: 'grid',
-  gap: '1rem',
-  gridTemplateColumns: 'min-content 3fr 2fr min-content',
-  paddingInlineStart: '8px',
-  paddingInlineEnd: '8px',
-  paddingTop: '4px',
-  paddingBottom: '4px',
-  borderWidth: '1px',
-  borderRadius: '6px',
+  display: "grid",
+  gap: "1rem",
+  gridTemplateColumns: "min-content 3fr 2fr min-content",
+  paddingInlineStart: "8px",
+  paddingInlineEnd: "8px",
+  paddingTop: "4px",
+  paddingBottom: "4px",
+  borderWidth: "1px",
+  borderRadius: "6px",
   border: "solid 1px $greyLight",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-})
+});
 
 const CardColumn = ({ header, value, countryCode }) => {
-  return <><Flex css={{ flexDirection: 'column'}}>
-    <Text fontSize="small">{header}</Text>
-    <Flex css={{ alignItems: "center"}}>
-      {countryCode && <FlagIcon code={countryCode} />}
-      <Text fontSize="medium">{value}</Text>
-    </Flex>
-  </Flex></>
-}
+  return (
+    <>
+      <Flex css={{ flexDirection: "column" }}>
+        <Text fontSize="small">{header}</Text>
+        <Flex css={{ alignItems: "center" }}>
+          {countryCode && <FlagIcon code={countryCode} />}
+          <Text fontSize="medium">{value}</Text>
+        </Flex>
+      </Flex>
+    </>
+  );
+};
 
 // const getAllFlags: (data: UserType[]) => string[] = (data) =>
 //   data.reduce((prev: string[], curr: UserType) => {
@@ -73,8 +77,8 @@ const Players = () => {
         {data.map((item, index) => (
           <UnstyledLink key={index} href={`/userprofile/${item.id}`} passHref>
             <StyledCardRow>
-              <CardColumn header="Rank:" value={index+1} />
-              <CardColumn header="Player:" value={item.name} countryCode={item.countryCode}/>
+              <CardColumn header="Rank:" value={index + 1} />
+              <CardColumn header="Player:" value={item.name} countryCode={item.countryCode} />
               <CardColumn header="Last activity date:" value="-" />
               <CardColumn header="Rating:" value={item.rating} />
             </StyledCardRow>

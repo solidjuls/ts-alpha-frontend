@@ -41,7 +41,7 @@ const Flex = styled("div", {
 const StyledText = styled(Text, {
   display: "flex",
   cursor: "pointer",
-  color: "$textLight",
+  color: "black",
   "@sm": {
     display: "none",
   },
@@ -55,28 +55,32 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
     cursor: "pointer",
   },
 });
-
+export const UnstyledLink = styled(Link, {
+  all: "unset" /* Unset all styles */,
+  display: "inline" /* Reset to inline display */,
+  cursor: "pointer" /* Set cursor to pointer */,
+});
 const Items = ({ styles }: any) => {
   return (
     <>
-      <Link href="/" passHref>
+      <UnstyledLink href="/" passHref>
         <Text css={styles}>Home Page</Text>
-      </Link>
-      <Link href="/players" passHref>
+      </UnstyledLink>
+      <UnstyledLink href="/players" passHref>
         <Text css={styles}>Player List</Text>
-      </Link>
+      </UnstyledLink>
       {/* <Text css={styles}>Federations</Text> */}
-      <Link href="/submitform" passHref>
+      <UnstyledLink href="/submitform" passHref>
         <Text css={styles}>Submit Form</Text>
-      </Link>
+      </UnstyledLink>
     </>
   );
 };
 const HorizontalNavigation = () => {
   const { name } = useSession();
-  
+
   return (
-    <Flex css={{ justifyContent: 'space-between', backgroundColor: "#E2E8F0" }}>
+    <Flex css={{ justifyContent: "space-between", backgroundColor: "#E2E8F0" }}>
       <Box
         css={{
           display: "flex",
@@ -86,23 +90,22 @@ const HorizontalNavigation = () => {
         <Items styles={horizontalItemStyles} />
       </Box>
       {!name && (
-            <Link href="/login" passHref>
-              <StyledText>
-                <FormattedMessage id="signIn" />
-              </StyledText>
-            </Link>
-          )}
-          {name && (
-            <Flex>
-              <UserAvatar name={name} />
-            </Flex>
-          )}
+        <UnstyledLink href="/login" passHref>
+          <StyledText>
+            <FormattedMessage id="signIn" />
+          </StyledText>
+        </UnstyledLink>
+      )}
+      {name && (
+        <Flex>
+          <UserAvatar name={name} />
+        </Flex>
+      )}
     </Flex>
   );
 };
 
 const Sidebar = () => {
-  
   return (
     <Box css={{ position: "relative" }}>
       <Box

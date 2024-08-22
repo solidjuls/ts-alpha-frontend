@@ -170,21 +170,20 @@ const UserProfileForm = ({ data }) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-        if (form[key as keyof UserProfileState].value === "") {
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          console.log("key", key, form[key as keyof UserProfileState].value)
-          submit = false;
-        }
+      if (form[key as keyof UserProfileState].value === "") {
+        setForm((prevState: any) => ({
+          ...prevState,
+          [key]: {
+            ...prevState[key],
+            error: true,
+          },
+        }));
+        console.log("key", key, form[key as keyof UserProfileState].value);
+        submit = false;
+      }
     });
     return submit;
   };
-
 
   const onInputValueChange = (key: keyof UserProfileState, value: string | Date) => {
     setForm((prevState) => {
@@ -205,7 +204,7 @@ const UserProfileForm = ({ data }) => {
     });
     return payloadObject;
   };
-console.log("form", form)
+  console.log("form", form);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent
@@ -260,22 +259,22 @@ console.log("form", form)
         error={form?.timeZoneId.error}
       />
       <Button
-            // disabled={buttonDisabled}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={async (event) => {
-              if (validated()) {
-                event.currentTarget.disabled = true;
-                // @ts-ignore
-                const ddd = normalizeData(form)
-                console.log("valida", ddd)
-                await userUpdateMutation.mutate({
-                  ...normalizeData(form),
-                });
-              }
-            }}
-          >
-            Submit
-          </Button>
+        // disabled={buttonDisabled}
+        css={{ width: "200px", fontSize: "18px" }}
+        onClick={async (event) => {
+          if (validated()) {
+            event.currentTarget.disabled = true;
+            // @ts-ignore
+            const ddd = normalizeData(form);
+            console.log("valida", ddd);
+            await userUpdateMutation.mutate({
+              ...normalizeData(form),
+            });
+          }
+        }}
+      >
+        Submit
+      </Button>
     </Form>
   );
 };

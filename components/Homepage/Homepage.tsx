@@ -78,7 +78,14 @@ const ResultRow = ({ game, role }: { game: Game; role: number }) => {
   console.log("game role", game, role);
   return (
     <PlayerInfo>
-      <Flex css={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "0 0 0 8px" }}>
+      <Flex
+        css={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          margin: "0 0 0 8px",
+        }}
+      >
         <Text fontSize="small" css={{ alignSelf: "center", ...responsive }}>
           {/* {getGameType(game, role)} */}
           {`Game #${game.id}`}

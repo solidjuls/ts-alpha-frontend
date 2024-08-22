@@ -16,8 +16,6 @@ const UserProfileContainer = () => {
 
   // const [form, setForm] = useState<UserProfileState>(initialState);
 
-
-
   if (isLoading) return <Spinner size="3" />;
   console.log("id", data);
   if (!data) return null;

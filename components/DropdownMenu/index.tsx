@@ -93,7 +93,9 @@ const DropdownMenu = ({
   error: boolean;
   css: Stitches.CSS;
 }) => {
-  let selectedItemMapped = items.find((item) => item.value?.toLowerCase() === selectedItem?.toLowerCase())?.text
+  let selectedItemMapped = items.find(
+    (item) => item.value?.toLowerCase() === selectedItem?.toLowerCase(),
+  )?.text;
 
   return (
     <Root>

@@ -56,7 +56,7 @@ const StyledImage = styled(AvatarPrimitive.Image, {
 
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
-  backgroundColor: 'transparent',
+  backgroundColor: "transparent",
   border: "none",
   cursor: "pointer",
   display: "flex",
