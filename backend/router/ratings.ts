@@ -10,6 +10,7 @@ const getAllPlayers = async () =>
       id: true,
       first_name: true,
       last_name: true,
+      last_login_at: true,
       countries: {
         select: {
           tld_code: true,
@@ -26,9 +27,11 @@ export const ratingsRouter = trpc.router().query("get", {
       players.map(async (player) => {
         const rating = await getRatingByPlayer({ playerId: player.id });
         return {
+          id: player.id.toString(),
           name: player.first_name + " " + player.last_name,
           rating: rating?.rating,
           countryCode: player.countries?.tld_code,
+          lastActivity: player.last_login_at
         };
       }),
     );
