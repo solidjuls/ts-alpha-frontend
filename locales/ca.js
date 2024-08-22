@@ -27,6 +27,6 @@ module.exports = {
     playdeckName: "Nick a Playdeck",
     preferredGamingPlatform: "Plataforma de joc",
     preferredGameDduration: "Duració per defecte",
-    timeZone: "Timezone"
+    timeZone: "Timezone",
   },
 };

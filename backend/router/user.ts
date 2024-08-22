@@ -26,9 +26,7 @@ const generateHash = (mail: string) => {
 };
 
 const getUrl = () =>
-  !!process.env.NEXT_PUBLIC_URL
-    ? process.env.NEXT_PUBLIC_URL
-    : "http://localhost:3000";
+  !!process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
 
 async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
   const message = {
@@ -299,27 +297,28 @@ export const userRouter = trpc
       mail: z.string(),
     }),
     async resolve({ input }) {
-      const user = await prisma.users.findFirst({
-        select: {
-          id: true,
-          first_name: true,
-        },
-        where: {
-          email: input.mail,
-        },
-      });
+      // const user = await prisma.users.findFirst({
+      //   select: {
+      //     id: true,
+      //     first_name: true,
+      //   },
+      //   where: {
+      //     email: input.mail,
+      //   },
+      // });
 
-      if (user) {
+      // if (user) {
+      if (true) {
         const hash = generateHash(input.mail);
 
         // const decrypted = decryptHash(hash);
         // console.log("hash", decrypted);
         const aver = await sendEmail(
           input.mail,
-          user.first_name,
+          "user.first_name",
           `https://${getUrl()}/reset-password/${hash}`,
         );
-        //console.log("checking", aver, hash);
+        console.log("sendEmail output", aver);
       }
       return { success: true };
     },

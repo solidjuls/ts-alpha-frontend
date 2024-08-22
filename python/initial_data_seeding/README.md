@@ -23,9 +23,9 @@ python3 -m python.initial_data_seeding.import_users \
  -flf <first_last_name_input_file>
 ```
 
-* The `players_database_input_file` should be the path to a downloaded CSV from the [Tasos Twilight Struggle Book - Players Database Sheet](https://docs.google.com/spreadsheets/d/1pTEf6pVvTIBlTCR7Zk8kaf3OYI6biEhTerAdhLN1_tY/edit?gid=555059173#gid=555059173).
-* The `players_accurate_name_input_file` should be the path to a downloaded CSV from the [Twilight Struggle Official Rating - Stats Sheet](https://docs.google.com/spreadsheets/d/1WPCgYqUxEcWqrt7bdOQXnTxjOtjLj-Je-2RcJ53ygKM/edit?gid=1754799574#gid=1754799574).
-* The `first_last_name_input_file` should be the path to a downloaded CSV from the [Tasos Twilight Struggle Book - Tournament Registrations Sheet](https://docs.google.com/spreadsheets/d/1pTEf6pVvTIBlTCR7Zk8kaf3OYI6biEhTerAdhLN1_tY/edit?gid=1604809537#gid=1604809537).
+- The `players_database_input_file` should be the path to a downloaded CSV from the [Tasos Twilight Struggle Book - Players Database Sheet](https://docs.google.com/spreadsheets/d/1pTEf6pVvTIBlTCR7Zk8kaf3OYI6biEhTerAdhLN1_tY/edit?gid=555059173#gid=555059173).
+- The `players_accurate_name_input_file` should be the path to a downloaded CSV from the [Twilight Struggle Official Rating - Stats Sheet](https://docs.google.com/spreadsheets/d/1WPCgYqUxEcWqrt7bdOQXnTxjOtjLj-Je-2RcJ53ygKM/edit?gid=1754799574#gid=1754799574).
+- The `first_last_name_input_file` should be the path to a downloaded CSV from the [Tasos Twilight Struggle Book - Tournament Registrations Sheet](https://docs.google.com/spreadsheets/d/1pTEf6pVvTIBlTCR7Zk8kaf3OYI6biEhTerAdhLN1_tY/edit?gid=1604809537#gid=1604809537).
 
 The script will ask you for DB credential information before doing the commits.
 
@@ -45,7 +45,7 @@ python -m python.initial_data_seeding.games_to_json \
  -op <games_output_file>
 ```
 
-* The `games_input_file` should be the path to a downloaded CSV from the [Twilight Struggle Official Rating - Games Sheet](https://docs.google.com/spreadsheets/d/1WPCgYqUxEcWqrt7bdOQXnTxjOtjLj-Je-2RcJ53ygKM/edit?gid=426377424#gid=426377424).
-* `games_output_file` can be anything - store it locally wherever makes sense for you.
+- The `games_input_file` should be the path to a downloaded CSV from the [Twilight Struggle Official Rating - Games Sheet](https://docs.google.com/spreadsheets/d/1WPCgYqUxEcWqrt7bdOQXnTxjOtjLj-Je-2RcJ53ygKM/edit?gid=426377424#gid=426377424).
+- `games_output_file` can be anything - store it locally wherever makes sense for you.
 
 If any rows fail in this script, it should be researched, as it will cause issues with rating calculations if games are missed. I do not output failure rows for this reason, and simply let the script fail.
