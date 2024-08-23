@@ -41,8 +41,8 @@ export const ResultsPanel = styled("div", {
 });
 
 export const FilterPanel = styled("div", {
-  display: 'flex',
-  flexDirection: 'row',
+  display: "flex",
+  flexDirection: "row",
   padding: "8px",
   margin: "8px",
   borderBottom: borderStyle,

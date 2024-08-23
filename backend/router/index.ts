@@ -10,10 +10,10 @@ export const appRouter = trpc.router({
   user: userRouter,
   game: gameRouter,
   rating: ratingsRouter,
-})
-  // .router<Context>()
-  // .merge("user-", userRouter)
-  // .merge("game-", gameRouter)
-  // .merge("rating-", ratingsRouter);
+});
+// .router<Context>()
+// .merge("user-", userRouter)
+// .merge("game-", gameRouter)
+// .merge("rating-", ratingsRouter);
 
 export type AppRouter = typeof appRouter;

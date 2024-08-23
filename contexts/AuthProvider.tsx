@@ -3,6 +3,7 @@ import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
 import type { AuthType } from "../types/user.types";
 import { trpc } from "utils/trpc";
+import { useFetch } from "hooks/useFetch";
 
 type LoginFnType = (mail: string, pwd: string) => void;
 type LogoutFnType = () => void;
@@ -33,8 +34,8 @@ type AuthProviderProps = {
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const router = useRouter();
-  const signIn = trpc.useMutation(["user-signin"]);
-  const signOut = trpc.useMutation(["user-signout"]);
+  // const signIn = trpc.useMutation(["user-signin"]);
+  // const signOut = trpc.useMutation(["user-signout"]);
   const [auth, setAuth] = useState<AuthType>({ name: "", email: "", id: "" });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   useEffect(() => {
@@ -52,14 +53,23 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login: LoginFnType = async (mail, pwd) => {
     try {
       // @ts-ignore
-      const response = await signIn.mutateAsync({
-        mail,
-        pwd,
+      console.log("eo!");
+      const data = await fetch("/api/user/login", {
+        method: "POST",
+        body: JSON.stringify({
+          mail,
+          pwd,
+        }),
       });
-      console.log("response", response);
-      if (response && setAuthentication) {
+      const user = await data.json();
+      // const response = await signIn.mutateAsync({
+      //   mail,
+      //   pwd,
+      // });
+      // console.log("response", response);
+      if (user && setAuthentication) {
         router.push("/");
-        setAuthentication(response);
+        setAuthentication(user);
       }
     } catch (e) {
       console.log("login error", e.message);
@@ -69,7 +79,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout: LogoutFnType = async () => {
     try {
-      const response = await signOut.mutateAsync();
+      const data = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const response = await data.json();
       if (response && response.success && setAuthentication) setAuthentication({});
       router.push("/");
     } catch (e) {

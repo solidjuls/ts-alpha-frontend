@@ -6,7 +6,7 @@ import { IntlContextProvider } from "contexts/IntlContext";
 // import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
 // import { withTRPC } from "@trpc/next";
-import { trpc } from "utils/trpc"
+import { trpc } from "utils/trpc";
 import type { AppRouter } from "backend/router";
 
 import "styles/date.css";
@@ -15,24 +15,24 @@ import "@radix-ui/themes/styles.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <trpc.Provider>
-        <IntlContextProvider>
-          {/* @ts-ignore */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            value={{
-              light: "light",
-            }}
-          >
-            <Theme>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </Theme>
-          </ThemeProvider>
-        </IntlContextProvider>
-    </trpc.Provider>
+    <AuthProvider>
+      <IntlContextProvider>
+        {/* @ts-ignore */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          value={{
+            light: "light",
+          }}
+        >
+          <Theme>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Theme>
+        </ThemeProvider>
+      </IntlContextProvider>
+    </AuthProvider>
   );
 }
 

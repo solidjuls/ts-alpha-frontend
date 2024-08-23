@@ -68,28 +68,28 @@ const SubmitForm = ({
   setForm,
 }: SubmitFormProps) => {
   const router = useRouter();
-  const trpcUtils = trpc.useContext();
+  // const trpcUtils = trpc.useContext();
 
-  const gameSubmitMutation = trpc.useMutation(["game-submit"], {
-    onSuccess: async () => {
-      trpcUtils.queryClient.invalidateQueries();
-      if (window) window.location.href = "/";
-    },
-    onError: (error, variables, context) =>
-      console.log("error gameSubmitMutation", error, variables, context),
-  });
-  const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
-    onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-    onError: (error, variables, context) =>
-      console.log("error gameConfirmRecreation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  });
-  const gameRecreationMutation = trpc.useMutation(["game-restore"], {
-    onSuccess: () => trpcUtils.invalidateQueries(),
-    onError: (error, variables, context) =>
-      console.log("error gameRecreationMutation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
-  });
+  // const gameSubmitMutation = trpc.useMutation(["game-submit"], {
+  //   onSuccess: async () => {
+  //     trpcUtils.queryClient.invalidateQueries();
+  //     if (window) window.location.href = "/";
+  //   },
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameSubmitMutation", error, variables, context),
+  // });
+  // const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
+  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameConfirmRecreation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
+  // });
+  // const gameRecreationMutation = trpc.useMutation(["game-restore"], {
+  //   onSuccess: () => trpcUtils.invalidateQueries(),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameRecreationMutation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
+  // });
 
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
@@ -127,7 +127,7 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <UserTypeahead
+        {/* <UserTypeahead
           labelText="playerUSA"
           selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
@@ -148,7 +148,7 @@ const SubmitForm = ({
           placeholder="Type the player name..."
           onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
-        />
+        /> */}
         <DropdownWithLabel
           labelText="gameWinner"
           items={gameWinningOptions}

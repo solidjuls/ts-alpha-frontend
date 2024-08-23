@@ -31,6 +31,7 @@
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "bcryptjs": "^2.4.3",
+    "cookie": "^0.6.0",
     "cookie-cutter": "^0.2.0",
     "cookies": "^0.8.0",
     "crypto": "^1.0.1",

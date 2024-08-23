@@ -9,10 +9,10 @@
 // export default trpc;
 
 // src/utils/trpc.ts
-import { createTRPCNext } from '@trpc/next';
-import { httpBatchLink } from '@trpc/client';
-import type { AppRouter } from 'backend/router';
-import superjson from 'superjson';
+import { createTRPCNext } from "@trpc/next";
+import { httpBatchLink } from "@trpc/client";
+import type { AppRouter } from "backend/router";
+import superjson from "superjson";
 
 export const trpc = createTRPCNext<AppRouter>({
   config() {
@@ -20,10 +20,10 @@ export const trpc = createTRPCNext<AppRouter>({
       transformer: superjson,
       links: [
         httpBatchLink({
-          url: '/api/trpc',
+          url: "/api/trpc",
         }),
       ],
     };
   },
-  ssr: true
+  ssr: true,
 });

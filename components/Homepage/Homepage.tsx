@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // import { trpc } from "contexts/APIProvider";
-import { trpc } from 'utils/trpc'
+import { trpc } from "utils/trpc";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
@@ -132,16 +132,21 @@ const EmptyState = () => {
 };
 
 const FilterUser = () => {
-return <MultiSelect />
-}
+  return <MultiSelect />;
+};
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const { data, isLoading } = trpc.useQuery([
-    GAME_QUERY,
-    // @ts-ignore
-    { d: dateValue.toDateString() },
-  ]);
+  useEffect(() => {
+    fetch("/api/user")
+      .then((resp) => resp.json())
+      .then((resp) => console.log("a veure", resp));
+  }, []);
+  // const { data, isLoading } = trpc.useQuery([
+  //   GAME_QUERY,
+  //   // @ts-ignore
+  //   { d: dateValue.toDateString() },
+  // ]);
 
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
@@ -169,17 +174,15 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
           <FilterUser />
         </FilterPanel>
-        {isLoading && <SkeletonHomepage />}
+        {/* {isLoading && <SkeletonHomepage />}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
           </UnstyledLink>
-        ))}
+        ))} */}
       </ResultsPanel>
-      <Box>
-        <TopPlayerRating />
-      </Box>
+      <Box>{/* <TopPlayerRating /> */}</Box>
     </Box>
   );
 };

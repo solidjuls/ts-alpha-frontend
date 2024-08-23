@@ -12,7 +12,7 @@ export default function Home({ role }: { role: number }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <br />
-      {/* <Homepage role={role} /> */}
+      <Homepage role={role} />
     </>
   );
 }
