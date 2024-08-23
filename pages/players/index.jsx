@@ -1,5 +1,5 @@
 import { styled } from "stitches.config";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { Flex } from "components/Atoms";
 import Text from "components/Text";
 import { SkeletonHomepage } from "components/Skeletons";

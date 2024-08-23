@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Form } from "components/Atoms";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import Text from "components/Text";
 import { Input } from "components/Input";
 import { Label } from "components/Label";

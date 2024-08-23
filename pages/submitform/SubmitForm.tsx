@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "next/router";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";

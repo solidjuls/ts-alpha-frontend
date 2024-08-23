@@ -1,5 +1,5 @@
 import { useDebounce } from "use-debounce";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { getInfoFromCookies } from "utils/cookies";

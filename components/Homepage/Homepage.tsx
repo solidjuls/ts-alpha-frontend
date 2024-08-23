@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
+// import { trpc } from "contexts/APIProvider";
+import { trpc } from 'utils/trpc'
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";

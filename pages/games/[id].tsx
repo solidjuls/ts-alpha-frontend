@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";

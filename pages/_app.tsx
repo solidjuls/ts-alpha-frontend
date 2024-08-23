@@ -3,9 +3,10 @@ import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
-import APIProvider from "contexts/APIProvider";
+// import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
-import { withTRPC } from "@trpc/next";
+// import { withTRPC } from "@trpc/next";
+import { trpc } from "utils/trpc"
 import type { AppRouter } from "backend/router";
 
 import "styles/date.css";
@@ -14,8 +15,7 @@ import "@radix-ui/themes/styles.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <APIProvider>
-      <AuthProvider>
+    <trpc.Provider>
         <IntlContextProvider>
           {/* @ts-ignore */}
           <ThemeProvider
@@ -32,37 +32,8 @@ function App({ Component, pageProps }: AppProps) {
             </Theme>
           </ThemeProvider>
         </IntlContextProvider>
-      </AuthProvider>
-    </APIProvider>
+    </trpc.Provider>
   );
 }
 
-export default withTRPC<AppRouter>({
-  config({ ctx }) {
-    /**
-     * If you want to use SSR, you need to use the server's full URL
-     * @link https://trpc.io/docs/ssr
-     */
-    console.log("process.env.NEXT_PUBLIC_VERCEL_ENV", process.env.NEXT_PUBLIC_VERCEL_URL);
-    const url = !!process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `/api/trpc`
-      : "http://localhost:3000/api/trpc";
-
-    return {
-      //transformer: superjson,
-      url,
-      /**
-       * @link https://react-query.tanstack.com/reference/QueryClient
-       */
-      queryClientConfig: {
-        defaultOptions: {
-          queries: { staleTime: Infinity, refetchOnWindowFocus: false },
-        },
-      },
-    };
-  },
-  /**
-   * @link https://trpc.io/docs/ssr
-   */
-  ssr: true,
-})(App);
+export default App;

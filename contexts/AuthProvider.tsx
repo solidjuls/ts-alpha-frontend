@@ -2,7 +2,7 @@ import { useContext, createContext, useState, useEffect, ReactNode } from "react
 import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
 import type { AuthType } from "../types/user.types";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 
 type LoginFnType = (mail: string, pwd: string) => void;
 type LogoutFnType = () => void;

@@ -3,7 +3,7 @@ import { Form } from "components/Atoms";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import { UserProfileState } from "types/game.types";
 import { Button } from "components/Button";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";

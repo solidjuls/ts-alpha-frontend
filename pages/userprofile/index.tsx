@@ -1,6 +1,6 @@
 import { Spinner } from "@radix-ui/themes";
 import { EditTextComponent } from "components/EditFormComponents";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { useSession } from "contexts/AuthProvider";
 import { NextApiRequest, NextApiResponse } from "next";
 import { useState } from "react";

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
 

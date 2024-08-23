@@ -1,7 +1,7 @@
 "use client"
 import { useMemo, useState, useTransition } from 'react';
 import * as Ariakit from '@ariakit/react';
-import { matchSorter } from 'match-sorter';
+// import { matchSorter } from 'match-sorter';
 
 const list = [
   'Apple',
@@ -99,7 +99,7 @@ const MultiSelect = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedValues, setSelectedValues] = useState(['Bacon']);
 
-  const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
+  // const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
 
   return (
     <Ariakit.ComboboxProvider
@@ -124,7 +124,7 @@ const MultiSelect = () => {
         style={popoverStyles}
         aria-busy={isPending}
       >
-        {matches.map((value) => (
+        {list.map((value) => (
           <Ariakit.ComboboxItem
             key={value}
             value={value}
@@ -135,7 +135,7 @@ const MultiSelect = () => {
             {value}
           </Ariakit.ComboboxItem>
         ))}
-        {!matches.length && <div className="no-results">No results found</div>}
+        {!list.length && <div className="no-results">No results found</div>}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );

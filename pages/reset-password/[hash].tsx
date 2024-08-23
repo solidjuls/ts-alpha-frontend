@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
+import { trpc } from "utils/trpc";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";
