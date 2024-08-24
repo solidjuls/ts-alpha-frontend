@@ -1,9 +1,10 @@
-import { trpc } from "utils/trpc";
+import axios from "axios";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { User } from "components/User";
 import { SkeletonPlayers } from "components/Skeletons";
+import { useEffect } from "react";
 
 const SidePanelStyled = styled("div", {
   display: "flex",
@@ -27,7 +28,13 @@ const Announcement = () => {
 
 const TopPlayerRating = () => {
   // @ts-ignore
-  const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
+  // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    axios.get('/api/rating').then(resp => console.log("resp", resp))
+  }, [])
+
+  if(data) return null
 
   return (
     <SidePanelStyled>
@@ -41,7 +48,7 @@ const TopPlayerRating = () => {
       >
         Top Players
       </Text>
-      {isLoading && <SkeletonPlayers />}
+      {/* {isLoading && <SkeletonPlayers />} */}
       <Box>
         {data?.map((item, index) => (
           <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
