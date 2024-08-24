@@ -13,7 +13,6 @@ import { getWinnerText } from "utils/games";
 import { GAME_QUERY } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
-import UserTypeahead from "pages/submitform/UserTypeahead";
 import MultiSelect from "components/MultiSelect";
 
 type HomepageProps = {
@@ -137,7 +136,7 @@ const FilterUser = () => {
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [localData, setLocalData] = useState();
+  const [data, setData] = useState();
   // const { data, isLoading } = trpc.useQuery([
   //   GAME_QUERY,
   //   // @ts-ignore
@@ -145,7 +144,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   // ]);
 
   useEffect(() => {
-    axios.get("/api/game").then((resp) => console.log("resp", resp));
+    axios.get("/api/game").then((resp) => setData(resp.data));
   }, []);
 
   const onClickDay = (clickedItem: "left" | "right") => {
@@ -174,13 +173,13 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
           <FilterUser />
         </FilterPanel>
-        {/* {isLoading && <SkeletonHomepage />}
+        {/* {isLoading && <SkeletonHomepage />} */}
         {data?.length === 0 && <EmptyState />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
           </UnstyledLink>
-        ))} */}
+        ))}
       </ResultsPanel>
       <Box>{/* <TopPlayerRating /> */}</Box>
     </Box>
