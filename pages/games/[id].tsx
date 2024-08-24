@@ -1,7 +1,7 @@
+import axios from "axios"
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
-import { trpc } from "utils/trpc";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -11,6 +11,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
+import { useEffect } from "react";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -106,19 +107,15 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
+  const isLoading = false
+  useEffect(() => {
+    if (gameId) {
+      axios.get(`/api/game/${gameId}`).then(resp => console.log(resp))
+    }
+  }, [])
 
-  console.log("game", gameId);
-  const { data, isLoading } = trpc.useQuery(
-    [
-      "game-get",
-      // @ts-ignore
-      { id: gameId },
-    ],
-    { enabled: !!gameId },
-  );
-
-  if (!data || isLoading) return null;
-  console.log("data", data);
+  //if (!data || isLoading) return null;
+  //console.log("data", data);
   return (
     <DetailContainer>
       <Flex

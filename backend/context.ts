@@ -25,14 +25,14 @@ function getUserFromHeader(req: NextApiRequest, res: NextApiResponse) {
     // there has two options cookie based or bearer based
     const secret = process.env.APP_SECRET_KEY as string;
     const cookies = new Cookies(req, res);
-    var token = cookies.get("auth-token");
+    var token = cookies.get("token");
 
     if (!token) return null;
-    // let token = req.headers["auth-token"]?.split(" ")[1] ?? null;
+    // let token = req.headers["token"]?.split(" ")[1] ?? null;
     // cookies.parse(req.headers.cookie);
-    // const token = cookies['auth-token']
+    // const token = cookies['token']
     console.log("create context", token);
-    // console.log("create context", req.headers.cookie["auth-token"]);
+    // console.log("create context", req.headers.cookie["token"]);
     // if (!token) token = getAccessTokenFromCookie(req);
     // if (!token) return null;
 

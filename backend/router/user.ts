@@ -97,7 +97,7 @@ export const userRouter = trpc
         },
       );
 
-      new Cookies(ctx.req, ctx.res).set("auth-token", token, {
+      new Cookies(ctx.req, ctx.res).set("token", token, {
         path: "/",
         httpOnly: true,
       });
@@ -109,7 +109,7 @@ export const userRouter = trpc
     async resolve({ ctx }) {
       if (!ctx) return { success: false };
       const cookies = new Cookies(ctx.req, ctx.res);
-      cookies.set("auth-token");
+      cookies.set("token");
 
       return { success: true };
     },
@@ -121,7 +121,7 @@ export const userRouter = trpc
       const token = input.token;
 
       // const cookies = new Cookies(ctx.req, ctx.res);
-      // cookies.set("auth-token");
+      // cookies.set("token");
       const decrypted = decryptHash(token);
       const values = decrypted.split("#");
       const mail = values[0];

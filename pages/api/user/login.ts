@@ -5,11 +5,12 @@ import jwt from "jsonwebtoken";
 import { authorize } from "backend/controller/user.controller";
 
 export default async function handler(req, res) {
-  const { mail, pwd } = JSON.parse(req.body);
+  const { mail, pwd } = req.body
   const user = await authorize({
     email: mail,
     pwd,
   });
+  console.log("mail", user)
 
   if (user === null) {
     res.status(401).json({
@@ -25,7 +26,6 @@ export default async function handler(req, res) {
     });
   }
 
-  console.log("bumbum", user);
   const token = jwt.sign(
     { mail: user.email, role: user.role, id: user.id.toString() },
     process.env.TOKEN_SECRET,
@@ -33,10 +33,11 @@ export default async function handler(req, res) {
       expiresIn: "60d",
     },
   );
-
+  
+  console.log("bumbum", token);
   res.setHeader(
     "Set-Cookie",
-    cookie.serialize("auth-token", token, {
+    cookie.serialize("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",

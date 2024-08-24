@@ -1,5 +1,5 @@
 import { useDebounce } from "use-debounce";
-import { trpc } from "utils/trpc";
+import axios from "axios"
 import type { NextApiRequest, NextApiResponse } from "next";
 import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
 import { getInfoFromCookies } from "utils/cookies";
@@ -11,7 +11,6 @@ import {
   SubmitFormState,
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
-import { useFetch } from "hooks/useFetch";
 
 type SubmitFormProps = {
   role: number;

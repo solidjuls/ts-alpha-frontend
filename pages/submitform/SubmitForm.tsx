@@ -1,6 +1,6 @@
 import React from "react";
+import axios from "axios"
 import { useRouter } from "next/router";
-import { trpc } from "utils/trpc";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
@@ -68,7 +68,6 @@ const SubmitForm = ({
   setForm,
 }: SubmitFormProps) => {
   const router = useRouter();
-  // const trpcUtils = trpc.useContext();
 
   // const gameSubmitMutation = trpc.useMutation(["game-submit"], {
   //   onSuccess: async () => {
@@ -193,9 +192,9 @@ const SubmitForm = ({
               if (validated(form, setForm)) {
                 event.currentTarget.disabled = true;
                 // @ts-ignore
-                await gameSubmitMutation.mutate({
-                  data: normalizeData(form),
-                });
+                await axios.post('/api/game/submit', {
+                    data: normalizeData(form),
+                  });
               }
             }}
           >
@@ -209,25 +208,25 @@ const SubmitForm = ({
             onClick={async (event) => {
               // event.currentTarget.disabled = true;
               // @ts-ignore
-              const result = await gameConfirmRecreation.mutateAsync({
-                id: form.oldId.value,
-              });
-              console.log("result", result);
-              if (
-                window.confirm(
-                  `This games will be recreated. \n ${formatResultConfirmation(
-                    result,
-                  )}. Do you want to proceed?`,
-                )
-              ) {
-                if (validated(form, setForm)) {
-                  // @ts-ignore
-                  await gameRecreationMutation.mutateAsync({
-                    data: normalizeData(form),
-                  });
-                  // setButtonDisabled(true);
-                }
-              }
+              // const result = await gameConfirmRecreation.mutateAsync({
+              //   id: form.oldId.value,
+              // });
+              // console.log("result", result);
+              // if (
+              //   window.confirm(
+              //     `This games will be recreated. \n ${formatResultConfirmation(
+              //       result,
+              //     )}. Do you want to proceed?`,
+              //   )
+              // ) {
+              //   if (validated(form, setForm)) {
+              //     // @ts-ignore
+              //     await gameRecreationMutation.mutateAsync({
+              //       data: normalizeData(form),
+              //     });
+              //     // setButtonDisabled(true);
+              //   }
+              // }
             }}
           >
             Recreate Game

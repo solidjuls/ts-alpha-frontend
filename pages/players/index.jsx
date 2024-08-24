@@ -1,10 +1,12 @@
+import axios from "axios"
 import { styled } from "stitches.config";
-import { trpc } from "utils/trpc";
 import { Flex } from "components/Atoms";
 import Text from "components/Text";
 import { SkeletonHomepage } from "components/Skeletons";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -65,8 +67,13 @@ const CardColumn = ({ header, value, countryCode }) => {
 //   }, []);
 
 const Players = () => {
-  const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
-
+  // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
+  const [data, setData] = useState([])
+  useEffect(() => {
+    if (gameId) {
+      axios.get('/api/rating/').then(resp => console.log(resp))
+    }
+  }, [])
   if (isLoading) return <SkeletonHomepage />;
   if (!data) return null;
 
