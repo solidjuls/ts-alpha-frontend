@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import axios from "axios";
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
@@ -69,13 +69,15 @@ const CardColumn = ({ header, value, countryCode }) => {
 
 const Players = () => {
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
+  const isMounted = useRef(null)
   const [data, setData] = useState([]);
   useEffect(() => {
-    if (gameId) {
-      axios.get("/api/rating/").then((resp) => console.log(resp));
+    if (!isMounted.current) {
+      isMounted.current = true
+      axios.get("/api/rating?n=-1").then((resp) => setData(resp.data));
     }
   }, []);
-  if (isLoading) return <SkeletonHomepage />;
+  // if (isLoading) return <SkeletonHomepage />;
   if (!data) return null;
 
   return (
