@@ -36,7 +36,6 @@ const LabelInput = ({
 };
 
 const ResetPassword = () => {
-  const mutation = trpc.useMutation(["user-reset"]);
   const [pwd, setPwd] = useState<string>("");
   const [pwdConfirm, setPwdConfirm] = useState<string>("");
   const router = useRouter();
@@ -73,10 +72,10 @@ const ResetPassword = () => {
             const pwdHashed = await hash(pwd, 12);
             if (!hashKey) return;
             // @ts-ignore
-            mutation.mutate({
+            await axios.post(`/api/user/reset-password`, {
               token: hashKey as string,
               pwd: pwdHashed,
-            });
+            })
           }
         }}
       >
