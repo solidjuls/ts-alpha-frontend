@@ -11,7 +11,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -102,20 +102,25 @@ const GameContent = ({ data }) => (
 
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
-
+  const isMounted = useRef(null);
+  const [data, setData] = useState(null);
   // If the page is not yet generated, this will be displayed initially until the page is generated
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
   const isLoading = false;
   useEffect(() => {
-    if (gameId) {
-      axios.get(`/api/game/${gameId}`).then((resp) => console.log(resp));
+    if (!isMounted.current) {
+      console.log(gameId);
+      isMounted.current = true;
+      if (gameId) {
+        axios.get(`/api/game?id=${gameId}`).then((resp) => setData(resp.data));
+      }
     }
   }, []);
 
-  //if (!data || isLoading) return null;
-  //console.log("data", data);
+  if (!data) return null;
+  console.log("data", data);
   return (
     <DetailContainer>
       <Flex
@@ -133,7 +138,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
           boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         }}
       >
-        {isLoading ? <Spinner size="3" /> : <GameContent data={data} />}
+        {isLoading ? <Spinner size="3" /> : <GameContent data={data[0]} />}
       </Flex>
     </DetailContainer>
   );

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState, useRef } from "react";
 import axios from "axios";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
@@ -36,8 +36,11 @@ const TopPlayerRating = () => {
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
-      axios.get("/api/rating?n=5").then((resp) => setData(resp.data)).finally(() => setIsLoading(false));
-      setIsLoading(true)
+      axios
+        .get("/api/rating?n=5")
+        .then((resp) => setData(resp.data))
+        .finally(() => setIsLoading(false));
+      setIsLoading(true);
     }
   }, [isLoading, setData]);
 
