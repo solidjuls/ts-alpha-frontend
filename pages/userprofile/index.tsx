@@ -1,22 +1,22 @@
+import axios from "axios";
 import { Spinner } from "@radix-ui/themes";
 import { EditTextComponent } from "components/EditFormComponents";
-import { trpc } from "utils/trpc";
 import { useSession } from "contexts/AuthProvider";
 import { NextApiRequest, NextApiResponse } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UserProfileState } from "types/game.types";
 import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
 
 const UserProfileContainer = () => {
+  const [data, setData] = useState(null);
   const { id } = useSession();
-  const { data, isLoading } = trpc.useQuery(["user-get", { id }], {
-    enabled: id !== undefined && id !== "",
-  });
-
+  useEffect(() => {
+    axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
+  }, [id]);
   // const [form, setForm] = useState<UserProfileState>(initialState);
 
-  if (isLoading) return <Spinner size="3" />;
+  // if (isLoading) return <Spinner size="3" />;
   console.log("id", data);
   if (!data) return null;
   return <UserProfileForm data={data} />;

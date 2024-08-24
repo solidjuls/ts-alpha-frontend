@@ -29,12 +29,12 @@ const Announcement = () => {
 const TopPlayerRating = () => {
   // @ts-ignore
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
-  const [data, setData] = useState(null)
+  const [data, setData] = useState(null);
   useEffect(() => {
-    axios.get('/api/rating').then(resp => console.log("resp", resp))
-  }, [])
+    axios.get("/api/rating").then((resp) => console.log("resp", resp));
+  }, []);
 
-  if(data) return null
+  if (data) return null;
 
   return (
     <SidePanelStyled>

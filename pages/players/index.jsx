@@ -1,4 +1,5 @@
-import axios from "axios"
+import { useEffect } from "react";
+import axios from "axios";
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
 import Text from "components/Text";
@@ -68,12 +69,12 @@ const CardColumn = ({ header, value, countryCode }) => {
 
 const Players = () => {
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   useEffect(() => {
     if (gameId) {
-      axios.get('/api/rating/').then(resp => console.log(resp))
+      axios.get("/api/rating/").then((resp) => console.log(resp));
     }
-  }, [])
+  }, []);
   if (isLoading) return <SkeletonHomepage />;
   if (!data) return null;
 

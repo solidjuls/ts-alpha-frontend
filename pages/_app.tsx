@@ -11,24 +11,24 @@ import "@radix-ui/themes/styles.css";
 
 function App({ Component, pageProps }: AppProps) {
   return (
-        <AuthProvider>
-          <IntlContextProvider>
-            {/* @ts-ignore */}
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              value={{
-                light: "light",
-              }}
-            >
-              <Theme>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-              </Theme>
-            </ThemeProvider>
-          </IntlContextProvider>
-        </AuthProvider>
+    <AuthProvider>
+      <IntlContextProvider>
+        {/* @ts-ignore */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          value={{
+            light: "light",
+          }}
+        >
+          <Theme>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Theme>
+        </ThemeProvider>
+      </IntlContextProvider>
+    </AuthProvider>
   );
 }
 

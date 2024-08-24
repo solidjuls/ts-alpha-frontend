@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "utils/trpc";
+import axios from "axios";
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";
@@ -47,7 +47,12 @@ const UserProfileContent = ({ data }) => (
 );
 const UserProfile = ({ id }) => {
   console.log("props", id);
-  const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
+  }, []);
+
+  // const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
   // const mutationAll = trpc.useMutation(["user-update-all"]);
   const { email } = useSession();
   console.log("data", data);

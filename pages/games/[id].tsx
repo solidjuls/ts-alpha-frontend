@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from "axios";
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
@@ -107,12 +107,12 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-  const isLoading = false
+  const isLoading = false;
   useEffect(() => {
     if (gameId) {
-      axios.get(`/api/game/${gameId}`).then(resp => console.log(resp))
+      axios.get(`/api/game/${gameId}`).then((resp) => console.log(resp));
     }
-  }, [])
+  }, []);
 
   //if (!data || isLoading) return null;
   //console.log("data", data);

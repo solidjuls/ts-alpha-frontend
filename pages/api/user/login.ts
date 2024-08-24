@@ -5,12 +5,12 @@ import jwt from "jsonwebtoken";
 import { authorize } from "backend/controller/user.controller";
 
 export default async function handler(req, res) {
-  const { mail, pwd } = req.body
+  const { mail, pwd } = req.body;
   const user = await authorize({
     email: mail,
     pwd,
   });
-  console.log("mail", user)
+  console.log("mail", user);
 
   if (user === null) {
     res.status(401).json({
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       expiresIn: "60d",
     },
   );
-  
+
   console.log("bumbum", token);
   res.setHeader(
     "Set-Cookie",

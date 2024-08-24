@@ -1,9 +1,9 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { Form } from "components/Atoms";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import { UserProfileState } from "types/game.types";
 import { Button } from "components/Button";
-import { trpc } from "utils/trpc";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -160,12 +160,12 @@ const initialState: UserProfileState = {
 
 const UserProfileForm = ({ data }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data) || initialState);
-  const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
-    onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-    onError: (error, variables, context) =>
-      console.log("error gameConfirmRecreation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  });
+  // const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
+  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameConfirmRecreation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
+  // });
 
   const validated = () => {
     let submit = true;
@@ -265,9 +265,9 @@ const UserProfileForm = ({ data }) => {
           if (validated()) {
             event.currentTarget.disabled = true;
             // @ts-ignore
-            const ddd = normalizeData(form);
-            console.log("valida", ddd);
-            await userUpdateMutation.mutate({
+            // const ddd = normalizeData(form);
+            // console.log("valida", ddd);
+            await axios.post("/api/user/", {
               ...normalizeData(form),
             });
           }

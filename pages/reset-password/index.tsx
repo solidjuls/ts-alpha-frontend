@@ -34,7 +34,7 @@ const ResetPassword = () => {
   const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
   // const mutation = trpc.useMutation(["user-reset-pwd"]);
-  
+
   return (
     <Form css={formStyles}>
       <Head>
@@ -58,7 +58,7 @@ const ResetPassword = () => {
             onClick={() => {
               if (mail) {
                 // @ts-ignore
-                axios.post(`/api/user/reset-password/`).then(resp => setConfirmation(true))
+                axios.post(`/api/user/reset-password/`).then((resp) => setConfirmation(true));
               }
               // call reset endpoint
             }}

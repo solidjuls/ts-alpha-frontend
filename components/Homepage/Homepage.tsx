@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FlagIcon } from "components/FlagIcon";
@@ -137,7 +137,7 @@ const FilterUser = () => {
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [localData, setLocalData] = useState()
+  const [localData, setLocalData] = useState();
   // const { data, isLoading } = trpc.useQuery([
   //   GAME_QUERY,
   //   // @ts-ignore
@@ -145,9 +145,9 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   // ]);
 
   useEffect(() => {
-    axios.get('/api/game').then(resp => console.log("resp", resp))
-  }, [])
-  
+    axios.get("/api/game").then((resp) => console.log("resp", resp));
+  }, []);
+
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
     if (clickedItem === "left") {

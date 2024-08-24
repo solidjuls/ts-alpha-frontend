@@ -1,5 +1,5 @@
 import React from "react";
-import axios from "axios"
+import axios from "axios";
 import { useRouter } from "next/router";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
@@ -126,7 +126,7 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        {/* <UserTypeahead
+        <UserTypeahead
           labelText="playerUSA"
           selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
@@ -147,7 +147,7 @@ const SubmitForm = ({
           placeholder="Type the player name..."
           onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
           onBlur={() => onInputValueChange("ussrPlayerId", "")}
-        /> */}
+        />
         <DropdownWithLabel
           labelText="gameWinner"
           items={gameWinningOptions}
@@ -192,9 +192,9 @@ const SubmitForm = ({
               if (validated(form, setForm)) {
                 event.currentTarget.disabled = true;
                 // @ts-ignore
-                await axios.post('/api/game/submit', {
-                    data: normalizeData(form),
-                  });
+                await axios.post("/api/game/submit", {
+                  data: normalizeData(form),
+                });
               }
             }}
           >

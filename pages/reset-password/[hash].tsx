@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios"
+import axios from "axios";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";

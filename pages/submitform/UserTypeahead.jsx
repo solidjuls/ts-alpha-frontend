@@ -1,13 +1,16 @@
-import { useState } from "react";
-import { trpc } from "utils/trpc";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
 
 const useTypeaheadState = () => {
-  const { data } = trpc.useQuery(["user-get-all"]);
-  const userList = data?.map((user) => ({ value: user.id, text: user.name })) || [];
   const [userSuggestions, setUserSuggestions] = useState([]);
-  //console.log("userList", userList);
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    axios.get("/api/user").then((resp) => console.log(resp));
+  }, []);
+
+  const userList = data?.map((user) => ({ value: user.id, text: user.name })) || [];
   const onChange = (input) => {
     setUserSuggestions(
       userList?.filter((user) => {
