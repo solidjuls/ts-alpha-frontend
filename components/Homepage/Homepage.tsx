@@ -181,7 +181,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
           </UnstyledLink>
         ))}
       </ResultsPanel>
-      <Box>{/* <TopPlayerRating /> */}</Box>
+      <Box><TopPlayerRating /></Box>
     </Box>
   );
 };

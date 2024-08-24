@@ -1,3 +1,4 @@
+import { useState, useRef } from "react"
 import axios from "axios";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
@@ -29,12 +30,18 @@ const Announcement = () => {
 const TopPlayerRating = () => {
   // @ts-ignore
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
+  const isMounted = useRef(false);
   const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    axios.get("/api/rating").then((resp) => console.log("resp", resp));
-  }, []);
+    if (!isMounted.current) {
+      isMounted.current = true;
+      axios.get("/api/rating?n=5").then((resp) => setData(resp.data)).finally(() => setIsLoading(false));
+      setIsLoading(true)
+    }
+  }, [isLoading, setData]);
 
-  if (data) return null;
+  if (!data) return null;
 
   return (
     <SidePanelStyled>
