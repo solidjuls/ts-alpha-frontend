@@ -69,14 +69,7 @@ const CardColumn = ({ header, value, countryCode }) => {
 
 const Players = () => {
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
-  const isMounted = useRef(null)
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true
-      axios.get("/api/rating?n=-1").then((resp) => setData(resp.data));
-    }
-  }, []);
+  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=-1" })
   // if (isLoading) return <SkeletonHomepage />;
   if (!data) return null;
 

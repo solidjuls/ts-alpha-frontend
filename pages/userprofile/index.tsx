@@ -1,20 +1,14 @@
-import axios from "axios";
 import { Spinner } from "@radix-ui/themes";
 import { EditTextComponent } from "components/EditFormComponents";
 import { useSession } from "contexts/AuthProvider";
 import { NextApiRequest, NextApiResponse } from "next";
-import { useEffect, useState } from "react";
-import type { UserProfileState } from "types/game.types";
 import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const UserProfileContainer = () => {
-  const [data, setData] = useState(null);
   const { id } = useSession();
-  useEffect(() => {
-    axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
-  }, [id]);
-  // const [form, setForm] = useState<UserProfileState>(initialState);
+  const { data, error} = useFetchInitialData({ url: `/api/user?id=${id}` })
 
   // if (isLoading) return <Spinner size="3" />;
   console.log("id", data);

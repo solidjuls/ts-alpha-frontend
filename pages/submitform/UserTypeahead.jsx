@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const useTypeaheadState = () => {
   const [userSuggestions, setUserSuggestions] = useState([]);
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    axios.get("/api/user").then((resp) => console.log(resp));
-  }, []);
 
-  const userList = data?.map((user) => ({ value: user.id, text: user.name })) || [];
+const { data, error} = useFetchInitialData({ url: "/api/user" })
+if (!data) return null
+console.log(data)
+  const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
+
   const onChange = (input) => {
     setUserSuggestions(
       userList?.filter((user) => {

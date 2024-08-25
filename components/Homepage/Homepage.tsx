@@ -14,6 +14,7 @@ import { GAME_QUERY } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 type HomepageProps = {
   role: number;
@@ -136,17 +137,14 @@ const FilterUser = () => {
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [data, setData] = useState();
+  // const [data, setData] = useState();
   // const { data, isLoading } = trpc.useQuery([
   //   GAME_QUERY,
   //   // @ts-ignore
   //   { d: dateValue.toDateString() },
   // ]);
-
-  useEffect(() => {
-    axios.get("/api/game").then((resp) => setData(resp.data));
-  }, []);
-
+  const {data, isLoading } = useFetchInitialData({ url: "/api/game" })
+  
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
     if (clickedItem === "left") {
@@ -158,6 +156,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
+  if(isLoading) return null
   return (
     <Box
       css={{

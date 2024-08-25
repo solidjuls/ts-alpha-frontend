@@ -1,4 +1,3 @@
-import axios from "axios";
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
@@ -11,7 +10,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
-import { useEffect, useRef, useState } from "react";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -102,23 +101,11 @@ const GameContent = ({ data }) => (
 
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
-  const isMounted = useRef(null);
-  const [data, setData] = useState(null);
   // If the page is not yet generated, this will be displayed initially until the page is generated
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-  const isLoading = false;
-  useEffect(() => {
-    if (!isMounted.current) {
-      console.log(gameId);
-      isMounted.current = true;
-      if (gameId) {
-        axios.get(`/api/game?id=${gameId}`).then((resp) => setData(resp.data));
-      }
-    }
-  }, []);
-
+  const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` })
   if (!data) return null;
   console.log("data", data);
   return (

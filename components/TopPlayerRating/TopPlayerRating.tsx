@@ -5,7 +5,7 @@ import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { User } from "components/User";
 import { SkeletonPlayers } from "components/Skeletons";
-import { useEffect } from "react";
+import useFetchInitialData from 'hooks/useFetchInitialData'
 
 const SidePanelStyled = styled("div", {
   display: "flex",
@@ -30,20 +30,7 @@ const Announcement = () => {
 const TopPlayerRating = () => {
   // @ts-ignore
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
-  const isMounted = useRef(false);
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      axios
-        .get("/api/rating?n=5")
-        .then((resp) => setData(resp.data))
-        .finally(() => setIsLoading(false));
-      setIsLoading(true);
-    }
-  }, [isLoading, setData]);
-
+  const {data, isLoading } = useFetchInitialData({ url: "/api/rating?n=5" })
   if (!data) return null;
 
   return (
@@ -58,7 +45,7 @@ const TopPlayerRating = () => {
       >
         Top Players
       </Text>
-      {/* {isLoading && <SkeletonPlayers />} */}
+      {isLoading && <SkeletonPlayers />}
       <Box>
         {data?.map((item, index) => (
           <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
