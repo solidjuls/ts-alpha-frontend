@@ -1,5 +1,3 @@
-import { useState, useRef } from "react";
-import axios from "axios";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";

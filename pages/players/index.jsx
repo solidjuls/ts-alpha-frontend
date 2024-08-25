@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import axios from "axios";
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
 import Text from "components/Text";

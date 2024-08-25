@@ -1,5 +1,4 @@
 import { useDebounce } from "use-debounce";
-import axios from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
 import { getInfoFromCookies } from "utils/cookies";

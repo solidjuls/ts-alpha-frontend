@@ -30,6 +30,7 @@
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "axios": "^1.7.5",
+    "axios-cache-interceptor": "^1.5.3",
     "bcryptjs": "^2.4.3",
     "cookie": "^0.6.0",
     "cookie-cutter": "^0.2.0",

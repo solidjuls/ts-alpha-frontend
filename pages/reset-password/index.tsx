@@ -7,7 +7,7 @@ import { Button } from "components/Button";
 import Head from "next/head";
 import { styled } from "stitches.config";
 import { FormattedMessage } from "react-intl";
-import axios from "axios";
+import getAxiosInstance from "utils/axios";
 
 const formStyles = {
   display: "flex",
@@ -58,7 +58,7 @@ const ResetPassword = () => {
             onClick={() => {
               if (mail) {
                 // @ts-ignore
-                axios.post(`/api/user/reset-password/`).then((resp) => setConfirmation(true));
+                getAxiosInstance().post(`/api/user/reset-password/`).then((resp) => setConfirmation(true));
               }
               // call reset endpoint
             }}

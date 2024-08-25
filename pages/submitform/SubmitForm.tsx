@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
@@ -12,6 +11,7 @@ import UserTypeahead from "./UserTypeahead";
 import { Checkbox } from "components/Checkbox";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
+import getAxiosInstance from 'utils/axios'
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -192,7 +192,7 @@ const SubmitForm = ({
               if (validated(form, setForm)) {
                 event.currentTarget.disabled = true;
                 // @ts-ignore
-                await axios.post("/api/game/submit", {
+                await getAxiosInstance().post("/api/game/submit", {
                   data: normalizeData(form),
                 });
               }

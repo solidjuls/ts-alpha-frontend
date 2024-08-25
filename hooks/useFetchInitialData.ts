@@ -1,4 +1,4 @@
-import axios from "axios";
+import getAxiosInstance from "utils/axios"
 import { useEffect, useRef, useState } from "react";
 
 const useFetchInitialData = ({ url }) => {
@@ -10,7 +10,7 @@ const useFetchInitialData = ({ url }) => {
   useEffect(() => {
     if (!isMounted.current) {
       isMounted.current = true;
-      axios
+      getAxiosInstance()
         .get(url)
         .then((resp) => {
           setData(resp.data);

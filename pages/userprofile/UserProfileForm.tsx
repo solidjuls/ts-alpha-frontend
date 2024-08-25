@@ -1,9 +1,9 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Form } from "components/Atoms";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import { UserProfileState } from "types/game.types";
 import { Button } from "components/Button";
+import getAxiosInstance from "utils/axios";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -267,7 +267,7 @@ const UserProfileForm = ({ data }) => {
           if (validated()) {
             event.currentTarget.disabled = true;
             // @ts-ignore
-            await axios.post("/api/user/", {
+            await getAxiosInstance().post("/api/user/", {
               ...normalizeData(form),
             });
           }

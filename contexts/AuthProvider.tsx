@@ -1,4 +1,4 @@
-import axios from "axios";
+import getAxiosInstance from "utils/axios";
 import { useContext, createContext, useState, useEffect, ReactNode } from "react";
 import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
@@ -50,7 +50,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login: LoginFnType = async (mail, pwd) => {
     try {
       // @ts-ignore
-      const { data } = await axios.post("/api/user/login", {
+      const { data } = await getAxiosInstance().post("/api/user/login", {
         mail,
         pwd,
       });
@@ -68,7 +68,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout: LogoutFnType = async () => {
     try {
-      const { data } = await axios.post("/api/user/signout");
+      const { data } = await getAxiosInstance().post("/api/user/signout");
       if (data && data.success && setAuthentication) setAuthentication({});
       router.push("/");
     } catch (e) {

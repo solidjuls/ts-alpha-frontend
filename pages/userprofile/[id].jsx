@@ -1,5 +1,3 @@
-import { useState } from "react";
-import axios from "axios";
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";

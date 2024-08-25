@@ -1,11 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
 import { Box } from "components/Atoms";
 import { PasswordInput } from "components/Input";
+import getAxiosInstance from "utils/axios";
 
 const decryptHash = (hash: any) => {
   let buff = Buffer.from(hash, "base64");
@@ -72,7 +72,7 @@ const ResetPassword = () => {
             const pwdHashed = await hash(pwd, 12);
             if (!hashKey) return;
             // @ts-ignore
-            await axios.post(`/api/user/reset-password`, {
+            await getAxiosInstance().post(`/api/user/reset-password`, {
               token: hashKey as string,
               pwd: pwdHashed,
             });
