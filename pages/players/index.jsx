@@ -5,7 +5,7 @@ import { SkeletonHomepage } from "components/Skeletons";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import useFetchInitialData from 'hooks/useFetchInitialData'
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,

@@ -59,37 +59,17 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children, name }: { children: ReactNode, name: string }) => {
+const Layout = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <Box css={containerStyles}>
       {/* <Header openSidebar={() => setIsOpen(!isOpen)} /> */}
-      {isOpen ? <Sidebar /> : <HorizontalNavigation name={name} />}
+      {isOpen ? <Sidebar /> : <HorizontalNavigation />}
       <Main css={contentStyles}>{children}</Main>
       {/* <Footer /> */}
     </Box>
   );
 };
 
-export async function getServerSideProps({
-  req,
-  res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
-  const payload = getInfoFromCookies(req, res);
-  console.log("payload", payload);
-  if (!payload) {
-    return { props: { name: payload.name } };
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
-  return { props: { role: payload.role || null } };
-}
-
-export { Layout };
+export default Layout;

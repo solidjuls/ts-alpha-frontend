@@ -11,7 +11,7 @@ import UserTypeahead from "./UserTypeahead";
 import { Checkbox } from "components/Checkbox";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
-import getAxiosInstance from 'utils/axios'
+import getAxiosInstance from "utils/axios";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";

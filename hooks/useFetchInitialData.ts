@@ -1,4 +1,4 @@
-import getAxiosInstance from "utils/axios"
+import getAxiosInstance from "utils/axios";
 import { useEffect, useRef, useState } from "react";
 
 const useFetchInitialData = ({ url }) => {

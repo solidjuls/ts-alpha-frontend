@@ -58,7 +58,9 @@ const ResetPassword = () => {
             onClick={() => {
               if (mail) {
                 // @ts-ignore
-                getAxiosInstance().post(`/api/user/reset-password/`).then((resp) => setConfirmation(true));
+                getAxiosInstance()
+                  .post(`/api/user/reset-password/`)
+                  .then((resp) => setConfirmation(true));
               }
               // call reset endpoint
             }}

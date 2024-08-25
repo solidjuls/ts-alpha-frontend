@@ -31,19 +31,13 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, role }) => {
   const router = useRouter();
-  const [auth, setAuth] = useState<AuthType>({ name: "", email: "", id: "" });
+  const [auth, setAuth] = useState<AuthType>({ name, email, id, role });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  useEffect(() => {
-    const cookies = cookieCutter.get(KEY);
-    if (cookies) {
-      setAuth(JSON.parse(cookies));
-    }
-  }, []);
 
   const setAuthentication = (authProps: AuthType) => {
-    cookieCutter.set(KEY, JSON.stringify(authProps));
+    // cookieCutter.set(KEY, JSON.stringify(authProps));
     setAuth(authProps);
   };
 
@@ -76,6 +70,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  console.log("auth", auth);
   return (
     <AuthContext.Provider
       value={{

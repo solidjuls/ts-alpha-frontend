@@ -22,6 +22,7 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
 
   return {
     id: payload.id,
+    name: payload.name,
     mail: payload.mail,
     role: payload.role,
   };

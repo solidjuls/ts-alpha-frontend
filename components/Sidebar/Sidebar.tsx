@@ -76,7 +76,8 @@ const Items = ({ styles }: any) => {
     </>
   );
 };
-const HorizontalNavigation = ({ name }) => {
+const HorizontalNavigation = () => {
+  const { name } = useSession();
   return (
     <Flex css={{ justifyContent: "space-between", backgroundColor: "#E2E8F0" }}>
       <Box
@@ -118,6 +119,5 @@ const Sidebar = () => {
     </Box>
   );
 };
-
 
 export { Sidebar, HorizontalNavigation };
