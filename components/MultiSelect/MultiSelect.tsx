@@ -1,44 +1,9 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import * as Ariakit from "@ariakit/react";
-// import { matchSorter } from 'match-sorter';
+import { matchSorter } from 'match-sorter';
+import useFetchInitialData from "hooks/useFetchInitialData";
 
-const list = [
-  "Apple",
-  "Bacon",
-  "Banana",
-  "Broccoli",
-  "Burger",
-  "Cake",
-  "Candy",
-  "Carrot",
-  "Cherry",
-  "Chocolate",
-  "Cookie",
-  "Cucumber",
-  "Donut",
-  "Fish",
-  "Fries",
-  "Grape",
-  "Green apple",
-  "Hot dog",
-  "Ice cream",
-  "Kiwi",
-  "Lemon",
-  "Lollipop",
-  "Onion",
-  "Orange",
-  "Pasta",
-  "Pineapple",
-  "Pizza",
-  "Potato",
-  "Salad",
-  "Sandwich",
-  "Steak",
-  "Strawberry",
-  "Tomato",
-  "Watermelon",
-];
 
 const popoverStyles = {
   position: "relative",
@@ -62,7 +27,7 @@ const popoverStyles = {
 
 const comboBoxStyles = {
   height: "2.5rem",
-  width: "250px",
+  width: "130px",
   borderRadius: "0.375rem",
   borderStyle: "none",
   backgroundColor: "hsl(204 20% 100%)",
@@ -94,13 +59,16 @@ const comboboxItem = {
     backgroundColor: "hsl(204 100% 80% / 0.4)",
   },
 };
+const getNameFromUsers = (data) => data?.map(item => item.name)
 const MultiSelect = () => {
+  const { data, error } = useFetchInitialData({ url: "/api/user" });
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
-  const [selectedValues, setSelectedValues] = useState(["Bacon"]);
+  const [selectedValues, setSelectedValues] = useState([]);
 
-  // const matches = useMemo(() => matchSorter(list, searchValue), [searchValue]);
-
+  if(!data) return null
+  const matches = useMemo(() => matchSorter(getNameFromUsers(data), searchValue), [data, searchValue]);
+console.log("match", selectedValues)
   return (
     <Ariakit.ComboboxProvider
       selectedValue={selectedValues}
@@ -111,29 +79,19 @@ const MultiSelect = () => {
         });
       }}
     >
-      <Ariakit.ComboboxLabel className="label">Your favorite food</Ariakit.ComboboxLabel>
-      <Ariakit.Combobox placeholder="e.g., Apple, Burger" style={comboBoxStyles} />
+
+      <Ariakit.Combobox placeholder="Select players" style={comboBoxStyles} />
       <Ariakit.ComboboxPopover sameWidth gutter={8} style={popoverStyles} aria-busy={isPending}>
-        {list.map((value) => (
+        {matches.map((value) => (
           <Ariakit.ComboboxItem key={value} value={value} focusOnHover style={comboboxItem}>
             <Ariakit.ComboboxItemCheck />
             {value}
           </Ariakit.ComboboxItem>
         ))}
-        {!list.length && <div className="no-results">No results found</div>}
+        {!matches.length && <div className="no-results">No results found</div>}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
 };
-
-// function App() {
-//   return (
-//     <>
-//       <div>
-//         <Example />
-//       </div>
-//     </>
-//   );
-// }
 
 export default MultiSelect;
