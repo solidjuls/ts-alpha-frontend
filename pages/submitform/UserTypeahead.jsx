@@ -6,9 +6,9 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 const useTypeaheadState = () => {
   const [userSuggestions, setUserSuggestions] = useState([]);
 
-const { data, error} = useFetchInitialData({ url: "/api/user" })
-if (!data) return null
-console.log(data)
+  const { data, error } = useFetchInitialData({ url: "/api/user" });
+  if (!data) return null;
+  console.log(data);
   const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
 
   const onChange = (input) => {

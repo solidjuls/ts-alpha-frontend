@@ -6,13 +6,13 @@ import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
 
-const UserProfileContainer = () => {
-  const { id } = useSession();
-  const { data, error} = useFetchInitialData({ url: `/api/user?id=${id}` })
+const UserProfileContainer = ({ id }) => {
+  // const { id } = useSession();
+  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
   // if (isLoading) return <Spinner size="3" />;
   console.log("id", data);
-  if (!data) return null;
+  if (isLoading) return null;
   return <UserProfileForm data={data} />;
 };
 
@@ -33,7 +33,7 @@ export async function getServerSideProps({
       },
     };
   }
-  return { props: { role: payload.role || null } };
+  return { props: { id: payload.id || null } };
 }
 
 export default UserProfileContainer;

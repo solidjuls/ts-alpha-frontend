@@ -105,7 +105,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-  const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` })
+  const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` });
   if (!data) return null;
   console.log("data", data);
   return (

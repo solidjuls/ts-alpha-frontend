@@ -75,7 +75,7 @@ const ResetPassword = () => {
             await axios.post(`/api/user/reset-password`, {
               token: hashKey as string,
               pwd: pwdHashed,
-            })
+            });
           }
         }}
       >

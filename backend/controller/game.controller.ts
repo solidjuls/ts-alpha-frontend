@@ -1,5 +1,6 @@
 import { prisma } from "backend/utils/prisma";
-import { Game } from "types/game.types";
+import { Game, GameAPI } from "types/game.types";
+import { calculateRating } from "./rating.controller";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -123,3 +124,81 @@ export const getGameByGameId = async (id: string) =>
       id: Number(id),
     },
   });
+
+const submitGame = async (data: GameAPI) => {
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
+    usaPlayerId: data.usaPlayerId,
+    ussrPlayerId: data.ussrPlayerId,
+    gameWinner: data.gameWinner,
+    gameType: data.gameType,
+  });
+
+  console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
+  const dateNow = new Date(Date.now());
+  const newGame = {
+    created_at: dateNow,
+    updated_at: dateNow,
+    usa_player_id: BigInt(data.usaPlayerId),
+    ussr_player_id: BigInt(data.ussrPlayerId),
+    usa_previous_rating: usaRating,
+    ussr_previous_rating: ussrRating,
+    game_type: data.gameType,
+    game_code: data.gameCode,
+    reported_at: dateNow,
+    game_winner: data.gameWinner,
+    end_turn: Number(data.endTurn),
+    end_mode: data.endMode,
+    game_date: new Date(Date.parse(data.gameDate)),
+    video1: data.video1 || null,
+    reporter_id: BigInt(data.usaPlayerId),
+  };
+
+  return await prisma.game_results.create({
+    data: {
+      ...newGame,
+      ratings_history: {
+        create: [
+          {
+            player_id: BigInt(data.usaPlayerId),
+            rating: newUsaRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+          {
+            player_id: BigInt(data.ussrPlayerId),
+            rating: newUssrRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+        ],
+      },
+    },
+  });
+};
+
+export const submit = async (data) => {
+  const newGameWithId = await submitGame(data);
+  console.log("newGameWithId", newGameWithId);
+  const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
+    typeof value === "bigint" ? value.toString() : value,
+  );
+  return JSON.parse(newGameWithIdParsed);
+};

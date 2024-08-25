@@ -95,6 +95,7 @@ const gameDurations = [
 ];
 
 const getInitialState = (data) => {
+  console.log("do you run?");
   return {
     firstName: {
       value: data.first_name,
@@ -159,7 +160,8 @@ const initialState: UserProfileState = {
 };
 
 const UserProfileForm = ({ data }) => {
-  const [form, setForm] = useState<UserProfileState>(getInitialState(data) || initialState);
+  console.log(getInitialState(data));
+  const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   // const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
   //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
   //   onError: (error, variables, context) =>
@@ -265,8 +267,6 @@ const UserProfileForm = ({ data }) => {
           if (validated()) {
             event.currentTarget.disabled = true;
             // @ts-ignore
-            // const ddd = normalizeData(form);
-            // console.log("valida", ddd);
             await axios.post("/api/user/", {
               ...normalizeData(form),
             });

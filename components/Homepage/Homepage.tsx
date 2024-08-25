@@ -143,8 +143,8 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   //   // @ts-ignore
   //   { d: dateValue.toDateString() },
   // ]);
-  const {data, isLoading } = useFetchInitialData({ url: "/api/game" })
-  
+  const { data, isLoading } = useFetchInitialData({ url: "/api/game" });
+
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
     if (clickedItem === "left") {
@@ -156,7 +156,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  if(isLoading) return null
+  if (isLoading) return null;
   return (
     <Box
       css={{

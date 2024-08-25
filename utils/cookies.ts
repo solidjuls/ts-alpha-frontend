@@ -17,10 +17,11 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
   if (!token) return null;
 
   const payload = jwt.verify(token, process.env.TOKEN_SECRET);
-
+  console.log("p", payload);
   if (!payload) return null;
 
   return {
+    id: payload.id,
     mail: payload.mail,
     role: payload.role,
   };

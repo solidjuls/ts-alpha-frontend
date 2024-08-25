@@ -50,7 +50,7 @@ export const getAll = async () => {
     name: `${user.first_name} ${user.last_name}`,
     countryCode: user.countries?.tld_code,
   })) as UserType[];
-}
+};
 
 export const get = async (id) => {
   const user = await prisma.users.findFirst({
@@ -84,4 +84,23 @@ export const get = async (id) => {
   );
   console.log("user", userParsed);
   return JSON.parse(userParsed);
-}
+};
+
+export const update = async (input) => {
+  const updateUser = await prisma.users.update({
+    where: {
+      email: input.email,
+    },
+    data: {
+      first_name: input.firstName,
+      last_name: input.lastName,
+      name: input.name,
+      email: input.email,
+      preferred_gaming_platform: input.preferredGamingPlatform,
+      preferred_game_duration: input.preferredGameDuration,
+      timezone_id: input.timeZoneId,
+    },
+  });
+  console.log("update did happen", updateUser);
+  return { success: true };
+};

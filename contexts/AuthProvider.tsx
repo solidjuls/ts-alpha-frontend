@@ -58,6 +58,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data && setAuthentication) {
         router.push("/");
         setAuthentication(data);
+        console.log("setAuthentication", data);
       }
     } catch (e) {
       console.log("login error", e.message);

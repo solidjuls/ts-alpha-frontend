@@ -52,7 +52,7 @@ const UserProfile = ({ id }) => {
   // useEffect(() => {
   //   axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
   // }, []);
-  const { data, isLoading} = useFetchInitialData({ url: `/api/user?id=${id}` })
+  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
   // const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
   // const mutationAll = trpc.useMutation(["user-update-all"]);
