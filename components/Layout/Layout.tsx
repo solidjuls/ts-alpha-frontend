@@ -4,6 +4,8 @@ import Image from "next/image";
 import Header from "components/Header";
 import { Sidebar, HorizontalNavigation } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
+import { NextApiRequest, NextApiResponse } from "next/types";
+import { getInfoFromCookies } from "utils/cookies";
 
 const containerStyles = {
   display: "flex",
@@ -57,16 +59,37 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = ({ children, name }: { children: ReactNode, name: string }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <Box css={containerStyles}>
       {/* <Header openSidebar={() => setIsOpen(!isOpen)} /> */}
-      {isOpen ? <Sidebar /> : <HorizontalNavigation />}
+      {isOpen ? <Sidebar /> : <HorizontalNavigation name={name} />}
       <Main css={contentStyles}>{children}</Main>
       {/* <Footer /> */}
     </Box>
   );
 };
+
+export async function getServerSideProps({
+  req,
+  res,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+}) {
+  const payload = getInfoFromCookies(req, res);
+  console.log("payload", payload);
+  if (!payload) {
+    return { props: { name: payload.name } };
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+  return { props: { role: payload.role || null } };
+}
 
 export { Layout };
