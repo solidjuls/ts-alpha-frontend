@@ -148,9 +148,7 @@ async function sendEmail(mail: string, firstName: string | null, hashedUrl: stri
 
   return await new Promise((res, rej) => {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_POST,
-      secure: false, // true for 465, false for other ports
+      service: 'gmail',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PWD,
