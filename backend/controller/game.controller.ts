@@ -82,7 +82,7 @@ export const getGameWithRatings = async (filter?: any) => {
     where: {
       ...filter,
     },
-    take: 2,
+    take: 30,
     orderBy: [
       {
         created_at: "desc",

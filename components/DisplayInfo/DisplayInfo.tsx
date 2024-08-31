@@ -7,7 +7,7 @@ type DisplayInfoProps = {
   maxWidth: string;
 };
 
-const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "150px" }) => {
+const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "300px" }) => {
   return (
     <Flex css={{ flexDirection: "column", maxWidth }}>
       <StyledLabel htmlFor="userName">{label}</StyledLabel>

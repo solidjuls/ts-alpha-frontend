@@ -4,7 +4,7 @@ import cookie from "cookie";
 export default function loginHandler(req, res) {
   if (req.method === "POST") {
     const { username, password } = req.body;
-
+    console.log("passa per aqui?????");
     // Verify user credentials (hardcoded for simplicity)
     if (username === "admin" && password === "password") {
       // Create JWT payload

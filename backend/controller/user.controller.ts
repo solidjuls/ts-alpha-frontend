@@ -22,6 +22,15 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     return false;
   }
 
+  const updateUser = await prisma.users.update({
+    where: {
+      email,
+    },
+    data: {
+      last_login_at: new Date(),
+    },
+  });
+  console.log("updateUser on login", updateUser);
   return {
     id: user.id,
     email: user.email,
@@ -60,6 +69,7 @@ export const get = async (id) => {
       last_name: true,
       name: true,
       email: true,
+      last_login_at: true,
       preferred_gaming_platform: true,
       preferred_game_duration: true,
       timezone_id: true,
@@ -96,6 +106,7 @@ export const update = async (input) => {
       last_name: input.lastName,
       name: input.name,
       email: input.email,
+      last_login_at: new Date(),
       preferred_gaming_platform: input.preferredGamingPlatform,
       preferred_game_duration: input.preferredGameDuration,
       timezone_id: input.timeZoneId,

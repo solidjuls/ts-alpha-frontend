@@ -11,6 +11,7 @@ import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { dateFormat } from "utils/dates";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -93,7 +94,7 @@ const GameContent = ({ data }) => (
         <Span>{getWinnerText(data.gameWinner)}</Span>
         <Span>{data.endTurn || "-"}</Span>
         <Span>{data.endMode}</Span>
-        <Span>{data.created_at?.toString()}</Span>
+        <Span>{dateFormat(new Date(data.created_at))}</Span>
       </Flex>
     </Box>
   </>

@@ -10,6 +10,7 @@ import { Box, Flex } from "components/Atoms";
 import { DetailContainer } from "components/DetailContainer";
 import { Spinner } from "@radix-ui/themes";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { dateFormat } from "utils/dates";
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
@@ -39,7 +40,10 @@ const UserProfileContent = ({ data }) => (
 
     <DisplayInfo label="Rating" infoText={data?.rating} />
     <DisplayInfo label="Regional federation" infoText="-" />
-    <DisplayInfo label="Last activity date" infoText="7/11/2024" />
+    <DisplayInfo
+      label="Last activity date"
+      infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
+    />
     <DisplayInfo label="Time Zone" infoText={data?.timeZoneId} />
     <DisplayInfo label="Preferred game duration" infoText={data?.preferredGameDuration} />
   </>
