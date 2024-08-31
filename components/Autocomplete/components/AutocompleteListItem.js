@@ -3,18 +3,39 @@ import { styled } from "stitches.config";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
+const styledItemStyles = {
+  fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+  fontSize: "$2",
+  lineHeight: "1",
+  color: "$textDark",
+  cursor: "pointer",
+  borderRadius: "$1",
+  padding: "4px 8px 4px 8px",
+  transition: "all 50ms",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  position: "relative",
+
+  "&:focus": {
+    outline: "none",
+    backgroundColor: "darkBlue",
+    color: "$textLight",
+  },
+};
+
 const Item = styled("div", {
   position: "relative",
   cursor: "pointer",
   display: "block",
   lineHeight: 1,
   color: "$textDark",
-  fontSize: 12,
-  padding: "8px 16px",
+  fontSize: "$2",
+  padding: "4px 8px 4px 8px",
   backgroundColor: "$backgroundColorLight",
   variants: {
     color: {
-      lightgray: { backgroundColor: "$gray500" },
+      lightgray: { backgroundColor: "darkBlue", color: "white" },
       white: { backgroundColor: "$backgroundColorLight" },
     },
   },
@@ -38,7 +59,6 @@ Item.propTypes = {
 const AutocompleteListItem = ({ children, id, index, value, itemColor, disabled, ...rest }) => {
   const { highlightedIndex, getItemProps } = useAutocompleteState();
   const { onClick, ...restItemProps } = getItemProps({ item: value, index });
-  console.log("highlightedIndex === index", highlightedIndex === index, restItemProps);
   return (
     <Item
       key={`${id}${index}`}

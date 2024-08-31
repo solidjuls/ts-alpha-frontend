@@ -1,9 +1,8 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
 import * as Ariakit from "@ariakit/react";
-import { matchSorter } from 'match-sorter';
+import { matchSorter } from "match-sorter";
 import useFetchInitialData from "hooks/useFetchInitialData";
-
 
 const popoverStyles = {
   position: "relative",
@@ -59,16 +58,19 @@ const comboboxItem = {
     backgroundColor: "hsl(204 100% 80% / 0.4)",
   },
 };
-const getNameFromUsers = (data) => data?.map(item => item.name)
+const getNameFromUsers = (data) => data?.map((item) => item.name);
 const MultiSelect = () => {
   const { data, error } = useFetchInitialData({ url: "/api/user" });
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
 
-  if(!data) return null
-  const matches = useMemo(() => matchSorter(getNameFromUsers(data), searchValue), [data, searchValue]);
-console.log("match", selectedValues)
+  if (!data) return null;
+  const matches = useMemo(
+    () => matchSorter(getNameFromUsers(data), searchValue),
+    [data, searchValue],
+  );
+  console.log("match", selectedValues);
   return (
     <Ariakit.ComboboxProvider
       selectedValue={selectedValues}
@@ -79,7 +81,6 @@ console.log("match", selectedValues)
         });
       }}
     >
-
       <Ariakit.Combobox placeholder="Select players" style={comboBoxStyles} />
       <Ariakit.ComboboxPopover sameWidth gutter={8} style={popoverStyles} aria-busy={isPending}>
         {matches.map((value) => (

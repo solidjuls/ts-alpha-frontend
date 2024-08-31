@@ -12,11 +12,11 @@ export const i18ns = {
 };
 
 const ListContainer = styled("div", {
-  border: 2,
   borderRadius: 1,
   marginTop: 1,
   marginBottom: 1,
-  padding: 0,
+
+  borderRadius: "4px",
   backgroundColor: "white",
   outline: 0,
   zIndex: 200,
@@ -30,7 +30,7 @@ const ListContainer = styled("div", {
   left: 0,
 });
 
-const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, ...rest }) => {
+const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, css, ...rest }) => {
   const { isOpen, getMenuProps } = useAutocompleteState();
 
   if (!isOpen) return null;
@@ -42,7 +42,7 @@ const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, 
         zIndex: 200,
       }}
     >
-      <ListContainer {...getMenuProps({ isOpen })} {...rest}>
+      <ListContainer {...getMenuProps({ isOpen })} style={css} {...rest}>
         {children}
       </ListContainer>
     </Box>

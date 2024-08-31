@@ -12,6 +12,7 @@ const useTypeaheadState = () => {
   const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
 
   const onChange = (input) => {
+    console.log("onChange executed", input);
     setUserSuggestions(
       userList?.filter((user) => {
         if (user.text.toLowerCase().includes(input.toLowerCase())) {
@@ -25,7 +26,7 @@ const useTypeaheadState = () => {
 };
 const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
   const { userSuggestions, onChange } = useTypeaheadState();
-
+  console.log("rerender");
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -41,7 +42,7 @@ const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, er
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {userSuggestions.length > 0 && (
-          <Typeahead.List css={css}>
+          <Typeahead.List css={{ ...css, width: "270px" }}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>

@@ -65,14 +65,20 @@ const Items = ({ styles }: any) => {
   return (
     <>
       <UnstyledLink href="/" passHref>
-        <Text strong="bold" css={styles}>Home Page</Text>
+        <Text strong="bold" css={styles}>
+          Home Page
+        </Text>
       </UnstyledLink>
       <UnstyledLink href="/players" passHref>
-        <Text strong="bold" css={styles}>Player List</Text>
+        <Text strong="bold" css={styles}>
+          Player List
+        </Text>
       </UnstyledLink>
       {/* <Text css={styles}>Federations</Text> */}
       <UnstyledLink href="/submitform" passHref>
-        <Text strong="bold" css={styles}>Submit Form</Text>
+        <Text strong="bold" css={styles}>
+          Submit Form
+        </Text>
       </UnstyledLink>
     </>
   );

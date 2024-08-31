@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { useDebounce } from "use-debounce";
 import Downshift from "downshift";
@@ -22,12 +22,14 @@ const Typeahead = ({
   const [value, setValue] = useState(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedTerm] = useDebounce(searchTerm, debounceTime);
-
+  //const [memoizedOnChange] = useCallback(() => onChange, [])
+  const [memoizedDebouncedTerm] = useMemo(() => debouncedTerm, [debouncedTerm]);
   useEffect(() => {
-    if (debouncedTerm) {
-      onChange(debouncedTerm);
+    if (memoizedDebouncedTerm) {
+      console.log("onChange", memoizedDebouncedTerm);
+      onChange(memoizedDebouncedTerm);
     }
-  }, [debouncedTerm, onChange]);
+  }, [memoizedDebouncedTerm]);
 
   // Required to autofill input from outside
   useEffect(() => {
@@ -73,7 +75,6 @@ const Typeahead = ({
   };
 
   const handleStateChange = (changes, actions) => {
-    console.log("changes.type", changes.type);
     if (changes.type === Downshift.stateChangeTypes.keyDownEscape) {
       resetState();
     } else {

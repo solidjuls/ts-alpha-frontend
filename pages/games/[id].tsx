@@ -138,7 +138,6 @@ const ChevronContainer = ({ rating, previousRating }) =>
     <StyledChevronDownIcon color="red" />
   );
 const Rating = ({ rating, previousRating, isUSSR }) => {
-
   return !isUSSR ? (
     <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
       <Text fontSize="small">{previousRating}</Text>

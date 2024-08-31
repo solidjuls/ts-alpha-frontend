@@ -57,7 +57,7 @@ const StyledContent = styled(Content, {
   backgroundColor: "white",
   boxShadow: "0 0 15px $colors$shadow",
   border: "solid 1px black",
-  padding: "$1",
+  zIndex: "99",
 });
 
 const StyledTriangleDownIcon = styled(TriangleDownIcon, {
