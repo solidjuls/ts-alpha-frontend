@@ -12,7 +12,7 @@ type CookiesReturn = (
 } | null;
 
 export const getInfoFromCookies: CookiesReturn = (req, res) => {
-  const token = req.cookies["token"];
+  const token = req?.cookies["token"];
 
   if (!token) return null;
 
