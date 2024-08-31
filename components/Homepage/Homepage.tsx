@@ -14,6 +14,7 @@ import { dateFormat } from "utils/dates";
 import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { Spinner } from "@radix-ui/themes";
 
 type HomepageProps = {
   role: number;
@@ -155,7 +156,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  if (isLoading) return null;
+  if (isLoading) return <Spinner size="3" />;
   return (
     <Box
       css={{

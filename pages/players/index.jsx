@@ -6,6 +6,7 @@ import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { Spinner } from "@radix-ui/themes";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -68,8 +69,7 @@ const CardColumn = ({ header, value, countryCode }) => {
 const Players = () => {
   // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
   const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=-1" });
-  // if (isLoading) return <SkeletonHomepage />;
-  if (!data) return null;
+  if (isLoading) return <Spinner size="3" />;
 
   return (
     <>
