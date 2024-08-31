@@ -99,6 +99,7 @@ const StyledSeparator = styled(Separator, {
 const StyledText = styled(Text, {
   display: "flex",
   cursor: "pointer",
+  fontWeight: "600",
   color: "black",
   "@sm": {
     display: "none",
