@@ -25,6 +25,5 @@ export async function getServerSideProps({
   res: NextApiResponse;
 }) {
   const payload = getInfoFromCookies(req, res);
-  console.log("payload", payload);
   return { props: { role: payload?.role || null } };
 }

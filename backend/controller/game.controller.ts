@@ -9,12 +9,12 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
     gamesWithRatingRelated.map(async (game: any) => {
       const ratingsUSA = {
         rating: game.ratingHistoryUSA,
-        ratingDifference: game.ratingHistoryUSA - game.usa_previous_rating,
+        previousRating: game.usa_previous_rating,
       };
 
       const ratingsUSSR = {
         rating: game.ratingHistoryUSSR,
-        ratingDifference: game.ratingHistoryUSSR - game.ussr_previous_rating,
+        previousRating: game.ussr_previous_rating,
       };
 
       return {
@@ -82,7 +82,7 @@ export const getGameWithRatings = async (filter?: any) => {
     where: {
       ...filter,
     },
-    take: 30,
+    take: 2,
     orderBy: [
       {
         created_at: "desc",

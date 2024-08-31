@@ -194,7 +194,7 @@ export async function getServerSideProps({
   res: NextApiResponse;
 }) {
   const payload = getInfoFromCookies(req, res);
-  console.log("payload", payload);
+
   if (!payload) {
     return {
       redirect: {

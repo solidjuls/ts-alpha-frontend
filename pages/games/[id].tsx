@@ -50,7 +50,7 @@ type PlayerNameProps = {
   playerName: string;
   userId: bigint;
   rating: number;
-  ratingDifference: number;
+  previousRating: number;
   isUSSR?: boolean;
 };
 
@@ -65,14 +65,14 @@ const GameContent = ({ data }) => (
         playerName={data.usaPlayer}
         userId={data.usaPlayerId}
         rating={data.ratingsUSA.rating}
-        ratingDifference={data.ratingsUSA.ratingDifference}
+        previousRating={data.ratingsUSA.previousRating}
       />
       vs
       <PlayerName
         playerName={data.ussrPlayer}
         userId={data.ussrPlayerId}
         rating={data.ratingsUSSR.rating}
-        ratingDifference={data.ratingsUSSR.ratingDifference}
+        previousRating={data.ratingsUSSR.previousRating}
         isUSSR
       />
     </Flex>
@@ -131,30 +131,29 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   );
 };
 
-const ChevronContainer = ({ rating, finalRating }) =>
-  rating < finalRating ? (
+const ChevronContainer = ({ rating, previousRating }) =>
+  rating > previousRating ? (
     <StyledChevronUpIcon color="green" />
   ) : (
     <StyledChevronDownIcon color="red" />
   );
-const Rating = ({ rating, ratingDifference, isUSSR }) => {
-  const finalRating = Number(rating) + Number(ratingDifference);
+const Rating = ({ rating, previousRating, isUSSR }) => {
 
   return !isUSSR ? (
     <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
-      <Text fontSize="small">{rating}</Text>
+      <Text fontSize="small">{previousRating}</Text>
       <Box css={{ position: "relative", marginLeft: "4px", width: "15px" }}>
-        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
+        <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
       </Box>
-      <Text fontSize="small">{finalRating}</Text>
+      <Text fontSize="small">{rating}</Text>
     </Flex>
   ) : (
     <Flex css={{ margin: "0 8px 0 8px" }}>
-      <Text fontSize="small">{finalRating}</Text>
-      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
-        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
-      </Box>
       <Text fontSize="small">{rating}</Text>
+      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
+        <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
+      </Box>
+      <Text fontSize="small">{previousRating}</Text>
     </Flex>
   );
 };
@@ -162,7 +161,7 @@ const PlayerName: React.FC<PlayerNameProps> = ({
   playerName,
   userId,
   rating,
-  ratingDifference,
+  previousRating,
   isUSSR,
 }) => {
   return (
@@ -188,7 +187,7 @@ const PlayerName: React.FC<PlayerNameProps> = ({
           </>
         )}
       </Flex>
-      <Rating rating={rating} ratingDifference={ratingDifference} isUSSR={isUSSR} />
+      <Rating rating={rating} previousRating={previousRating} isUSSR={isUSSR} />
     </Flex>
   );
 };

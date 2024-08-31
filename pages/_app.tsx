@@ -44,7 +44,6 @@ App.getInitialProps = async (appContext: AppContext) => {
     pageProps = await Component.getInitialProps(ctx); // Fetch the specific page's initial props
   }
 
-  console.log("payload", payload);
   if (!payload) {
     return { ...pageProps };
   }

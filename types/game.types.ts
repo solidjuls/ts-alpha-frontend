@@ -72,7 +72,7 @@ export const zGameRecreateAPI = zGameAPI.extend({
 
 export type GameRating = {
   rating: number;
-  ratingDifference: number;
+  previousRating: number;
 };
 
 export type BiggerLowerValue = {
