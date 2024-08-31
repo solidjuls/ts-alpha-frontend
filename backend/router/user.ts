@@ -12,58 +12,6 @@ import Cookies from "cookies";
 /* @ts-ignore */
 import jwt from "jsonwebtoken";
 
-const nodemailer = require("nodemailer");
-
-const decryptHash = (hash: any) => {
-  let buff = Buffer.from(hash, "base64");
-  return buff.toString("ascii");
-};
-
-const generateHash = (mail: string) => {
-  let data = `${mail}#${new Date().toString()}`;
-  let buff = Buffer.from(data);
-  return buff.toString("base64");
-};
-
-const getUrl = () =>
-  !!process.env.NEXT_PUBLIC_URL ? process.env.NEXT_PUBLIC_URL : "http://localhost:3000";
-
-async function sendEmail(mail: string, firstName: string | null, hashedUrl: string) {
-  const message = {
-    from: process.env.SMTP_FROM,
-    // to: toUser.email // in production uncomment this
-    to: mail,
-    subject: "Twilight Struggle - Reset Password",
-    html: `
-      <h3> Hello ${firstName} </h3>
-      <p>Click this link ${hashedUrl} within the next hour to reset your password. </p>
-      
-      <p>Regards</p>
-      <p>ITS Junta</p>
-    `,
-  };
-
-  return await new Promise((res, rej) => {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_POST,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PWD,
-      },
-    });
-
-    transporter.sendMail(message, function (err: any, info: any) {
-      if (err) {
-        rej(err);
-      } else {
-        res(info);
-      }
-    });
-  });
-}
-
 export const userRouter = trpc
   .router<Context>()
   .mutation("signin", {
