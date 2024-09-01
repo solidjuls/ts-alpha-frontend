@@ -8,9 +8,9 @@ const useTypeaheadState = () => {
 
   const { data, error } = useFetchInitialData({ url: "/api/user" });
   if (!data) return null;
-  console.log(data);
-  const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
 
+  const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
+  console.log("userSuggestions", data, userSuggestions);
   const onChange = (input) => {
     console.log("onChange executed", input);
     setUserSuggestions(

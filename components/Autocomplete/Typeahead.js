@@ -22,15 +22,12 @@ const Typeahead = ({
   const [value, setValue] = useState(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedTerm] = useDebounce(searchTerm, debounceTime);
-  //const [memoizedOnChange] = useCallback(() => onChange, [])
-  const [memoizedDebouncedTerm] = useMemo(() => debouncedTerm, [debouncedTerm]);
-  useEffect(() => {
-    if (memoizedDebouncedTerm) {
-      console.log("onChange", memoizedDebouncedTerm);
-      onChange(memoizedDebouncedTerm);
-    }
-  }, [memoizedDebouncedTerm]);
 
+  useEffect(() => {
+    if (debouncedTerm) {
+      onChange(debouncedTerm);
+    }
+  }, [debouncedTerm]);
   // Required to autofill input from outside
   useEffect(() => {
     // clear input value
