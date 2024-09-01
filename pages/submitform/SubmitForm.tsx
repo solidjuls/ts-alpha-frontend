@@ -209,13 +209,22 @@ const SubmitForm = ({
                 try {
                   setIsSubmitting(true);
                   // @ts-ignore
-                  await getAxiosInstance().post("/api/game/submit", {
-                    data: normalizeData(form),
-                  });
-                  // console.log("getAxiosInstance().storage", getAxiosInstance().storage)
-                  // getAxiosInstance().storage.remove('/api/game');
+                  await getAxiosInstance().post(
+                    "/api/game/submit",
+                    {
+                      data: normalizeData(form),
+                    },
+                    {
+                      cache: {
+                        update: {
+                          "game-list": "delete",
+                        },
+                      },
+                    },
+                  );
                   router.push("/");
-                } catch {
+                } catch (e) {
+                  console.log("error", e);
                   setErrorMsg("There was an error submitting the result");
                 } finally {
                   setIsSubmitting(false);

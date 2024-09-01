@@ -167,11 +167,13 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   //   // @ts-ignore
   //   { d: dateValue.toDateString() },
   // ]);
-  const { data, isLoading } = useFetchInitialData({ url: `/api/game` });
+  const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
   const onPageChange = async (page: string) => {
     setIsLoadingPagination(true);
-    const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`);
+    const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
+      id: `games-list-${page}`,
+    });
     setIsLoadingPagination(false);
     setPaginatedData(paginatedData.data);
   };
