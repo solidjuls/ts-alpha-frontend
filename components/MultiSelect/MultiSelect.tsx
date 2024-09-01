@@ -65,11 +65,11 @@ const MultiSelect = () => {
   const [searchValue, setSearchValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
 
-  if (!data) return null;
   const matches = useMemo(
     () => matchSorter(getNameFromUsers(data), searchValue),
     [data, searchValue],
   );
+  if (!data) return null;
   console.log("match", selectedValues);
   return (
     <Ariakit.ComboboxProvider
