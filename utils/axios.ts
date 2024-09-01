@@ -18,6 +18,9 @@ export const getAxiosInstance = (): AxiosCacheInstance => {
         baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.example.com",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*", // You can specify specific domains instead of "*"
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
       }),
       {
