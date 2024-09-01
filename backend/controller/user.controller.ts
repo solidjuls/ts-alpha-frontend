@@ -123,7 +123,8 @@ const decryptHash = (hash: any) => {
 };
 
 const generateHash = (mail: string) => {
-  let data = `${mail}#${new Date().toString()}`;
+  const date = new Date()
+  let data = `${mail}#${date.toString()}`;
   let buff = Buffer.from(data);
   return buff.toString("base64");
 };
