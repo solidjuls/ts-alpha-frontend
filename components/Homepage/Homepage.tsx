@@ -9,7 +9,7 @@ import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
-import { GAME_QUERY } from "utils/constants";
+import { GAME_QUERY, leagueTypes } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
@@ -17,6 +17,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
+import { DropdownWithLabel } from "components/EditFormComponents";
 
 type HomepageProps = {
   role: number;
@@ -141,10 +142,10 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
       <StyledResultsPanel>
-        <FilterPanel>
+        {/* <FilterPanel>
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
           <FilterUser />
-        </FilterPanel>
+        </FilterPanel> */}
         {isLoading && <SkeletonHomepage />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
@@ -160,6 +161,7 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
+  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   // const { data, isLoading } = trpc.useQuery([
   //   GAME_QUERY,
   //   // @ts-ignore
@@ -168,7 +170,9 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/game` });
 
   const onPageChange = async (page: string) => {
+    setIsLoadingPagination(true);
     const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`);
+    setIsLoadingPagination(false);
     setPaginatedData(paginatedData.data);
   };
 
@@ -184,6 +188,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   };
 
   const games = !paginatedData ? data : paginatedData;
+  const loading = isLoading || isLoadingPagination;
   console.log("games", data, paginatedData);
   return (
     <Box
@@ -197,7 +202,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     >
       <ResultsPanel
         data={games}
-        isLoading={isLoading}
+        isLoading={loading}
         dateValue={dateValue}
         onPageChange={onPageChange}
         onClickDay={onClickDay}

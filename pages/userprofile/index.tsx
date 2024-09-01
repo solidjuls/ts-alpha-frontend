@@ -11,7 +11,7 @@ const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
   if (isLoading) return <Spinner size="3" />;
-  console.log("id", data);
+
   return <UserProfileForm data={data} />;
 };
 

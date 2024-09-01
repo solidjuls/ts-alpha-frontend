@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
@@ -12,6 +12,7 @@ import { Checkbox } from "components/Checkbox";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import getAxiosInstance from "utils/axios";
+import { Spinner } from "@radix-ui/themes";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -68,7 +69,9 @@ const SubmitForm = ({
   setForm,
 }: SubmitFormProps) => {
   const router = useRouter();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationMsg, setConfirmationMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   // const gameSubmitMutation = trpc.useMutation(["game-submit"], {
   //   onSuccess: async () => {
   //     trpcUtils.queryClient.invalidateQueries();
@@ -186,19 +189,26 @@ const SubmitForm = ({
         />
         {!checked && (
           <Button
-            // disabled={buttonDisabled}
+            disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
-            onClick={async (event) => {
+            onClick={async () => {
               if (validated(form, setForm)) {
-                event.currentTarget.disabled = true;
-                // @ts-ignore
-                await getAxiosInstance().post("/api/game/submit", {
-                  data: normalizeData(form),
-                });
+                try {
+                  setIsSubmitting(true);
+                  // @ts-ignore
+                  await getAxiosInstance().post("/api/game/submit", {
+                    data: normalizeData(form),
+                  });
+                  router.push("/");
+                } catch {
+                  setErrorMsg("There was an error submitting the result");
+                } finally {
+                  setIsSubmitting(false);
+                }
               }
             }}
           >
-            Submit
+            {isSubmitting ? <Spinner size="3" /> : "Submit"}
           </Button>
         )}
         {checked && (
