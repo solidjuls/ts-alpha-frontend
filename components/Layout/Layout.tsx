@@ -4,6 +4,8 @@ import Image from "next/image";
 import Header from "components/Header";
 import { Sidebar, HorizontalNavigation } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
+import { NextApiRequest, NextApiResponse } from "next/types";
+import { getInfoFromCookies } from "utils/cookies";
 
 const containerStyles = {
   display: "flex",
@@ -57,8 +59,9 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <Box css={containerStyles}>
       {/* <Header openSidebar={() => setIsOpen(!isOpen)} /> */}
@@ -69,4 +72,4 @@ const Layout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export { Layout };
+export default Layout;

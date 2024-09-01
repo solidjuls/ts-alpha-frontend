@@ -41,6 +41,7 @@ const Flex = styled("div", {
 const StyledText = styled(Text, {
   display: "flex",
   cursor: "pointer",
+  fontWeight: "600",
   color: "black",
   "@sm": {
     display: "none",
@@ -64,21 +65,26 @@ const Items = ({ styles }: any) => {
   return (
     <>
       <UnstyledLink href="/" passHref>
-        <Text css={styles}>Home Page</Text>
+        <Text strong="bold" css={styles}>
+          Home Page
+        </Text>
       </UnstyledLink>
       <UnstyledLink href="/players" passHref>
-        <Text css={styles}>Player List</Text>
+        <Text strong="bold" css={styles}>
+          Player List
+        </Text>
       </UnstyledLink>
       {/* <Text css={styles}>Federations</Text> */}
       <UnstyledLink href="/submitform" passHref>
-        <Text css={styles}>Submit Form</Text>
+        <Text strong="bold" css={styles}>
+          Submit Form
+        </Text>
       </UnstyledLink>
     </>
   );
 };
 const HorizontalNavigation = () => {
   const { name } = useSession();
-
   return (
     <Flex css={{ justifyContent: "space-between", backgroundColor: "#E2E8F0" }}>
       <Box

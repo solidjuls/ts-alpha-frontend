@@ -1,5 +1,6 @@
 import { prisma } from "backend/utils/prisma";
-import { Game } from "types/game.types";
+import { Game, GameAPI } from "types/game.types";
+import { calculateRating } from "./rating.controller";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -8,12 +9,12 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
     gamesWithRatingRelated.map(async (game: any) => {
       const ratingsUSA = {
         rating: game.ratingHistoryUSA,
-        ratingDifference: game.ratingHistoryUSA - game.usa_previous_rating,
+        previousRating: game.usa_previous_rating,
       };
 
       const ratingsUSSR = {
         rating: game.ratingHistoryUSSR,
-        ratingDifference: game.ratingHistoryUSSR - game.ussr_previous_rating,
+        previousRating: game.ussr_previous_rating,
       };
 
       return {
@@ -46,7 +47,11 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter?: any) => {
+export const getGameWithRatings = async (filter?: any, p: string) => {
+  const pageSize = 20;
+  const page = Number(p);
+  const skip = (page - 1) * pageSize;
+
   const games = await prisma.game_results.findMany({
     include: {
       users_game_results_usa_player_idTousers: {
@@ -81,7 +86,8 @@ export const getGameWithRatings = async (filter?: any) => {
     where: {
       ...filter,
     },
-    take: 30,
+    skip,
+    take: pageSize,
     orderBy: [
       {
         created_at: "desc",
@@ -123,3 +129,85 @@ export const getGameByGameId = async (id: string) =>
       id: Number(id),
     },
   });
+
+const submitGame = async (data: GameAPI) => {
+  const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
+    usaPlayerId: data.usaPlayerId,
+    ussrPlayerId: data.ussrPlayerId,
+    gameWinner: data.gameWinner,
+    gameType: data.gameType,
+  });
+
+  console.log("newUsaRating, newUssrRating", newUsaRating, newUssrRating);
+  const dateNow = new Date(Date.now());
+  const newGame = {
+    created_at: dateNow,
+    updated_at: dateNow,
+    usa_player_id: BigInt(data.usaPlayerId),
+    ussr_player_id: BigInt(data.ussrPlayerId),
+    usa_previous_rating: usaRating,
+    ussr_previous_rating: ussrRating,
+    game_type: data.gameType,
+    game_code: data.gameCode,
+    reported_at: dateNow,
+    game_winner: data.gameWinner,
+    end_turn: Number(data.endTurn),
+    end_mode: data.endMode,
+    game_date: new Date(Date.parse(data.gameDate)),
+    video1: data.video1 || null,
+    reporter_id: BigInt(data.usaPlayerId),
+  };
+
+  return await prisma.game_results.create({
+    data: {
+      ...newGame,
+      ratings_history: {
+        create: [
+          {
+            player_id: BigInt(data.usaPlayerId),
+            rating: newUsaRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+          {
+            player_id: BigInt(data.ussrPlayerId),
+            rating: newUssrRating,
+            game_code: data.gameCode,
+            created_at: dateNow,
+            updated_at: dateNow,
+            total_games: 0,
+            friendly_games: 0,
+            usa_victories: 0,
+            usa_losses: 0,
+            usa_ties: 0,
+            ussr_victories: 0,
+            ussr_losses: 0,
+            ussr_ties: 0,
+          },
+        ],
+      },
+    },
+  });
+};
+
+export const submit = async (data) => {
+  try {
+    const newGameWithId = await submitGame(data);
+    console.log("newGameWithId", newGameWithId);
+    const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value,
+    );
+    return JSON.parse(newGameWithIdParsed);
+  } catch (e) {
+    throw e;
+  }
+};

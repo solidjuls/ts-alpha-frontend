@@ -1,24 +1,17 @@
 import { Spinner } from "@radix-ui/themes";
 import { EditTextComponent } from "components/EditFormComponents";
-import { trpc } from "contexts/APIProvider";
 import { useSession } from "contexts/AuthProvider";
 import { NextApiRequest, NextApiResponse } from "next";
-import { useState } from "react";
-import type { UserProfileState } from "types/game.types";
 import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
-const UserProfileContainer = () => {
-  const { id } = useSession();
-  const { data, isLoading } = trpc.useQuery(["user-get", { id }], {
-    enabled: id !== undefined && id !== "",
-  });
-
-  // const [form, setForm] = useState<UserProfileState>(initialState);
+const UserProfileContainer = ({ id }) => {
+  // const { id } = useSession();
+  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
   if (isLoading) return <Spinner size="3" />;
-  console.log("id", data);
-  if (!data) return null;
+
   return <UserProfileForm data={data} />;
 };
 
@@ -30,7 +23,7 @@ export async function getServerSideProps({
   res: NextApiResponse;
 }) {
   const payload = getInfoFromCookies(req, res);
-  console.log("payload", payload);
+
   if (!payload) {
     return {
       redirect: {
@@ -39,7 +32,7 @@ export async function getServerSideProps({
       },
     };
   }
-  return { props: { role: payload.role || null } };
+  return { props: { id: payload.id || null } };
 }
 
 export default UserProfileContainer;

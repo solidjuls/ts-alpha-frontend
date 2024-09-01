@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { FormattedMessage } from "react-intl";
@@ -11,6 +9,8 @@ import { getInfoFromCookies } from "utils/cookies";
 import { Box, Flex } from "components/Atoms";
 import { DetailContainer } from "components/DetailContainer";
 import { Spinner } from "@radix-ui/themes";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import { dateFormat } from "utils/dates";
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
@@ -40,19 +40,28 @@ const UserProfileContent = ({ data }) => (
 
     <DisplayInfo label="Rating" infoText={data?.rating} />
     <DisplayInfo label="Regional federation" infoText="-" />
-    <DisplayInfo label="Last activity date" infoText="7/11/2024" />
+    <DisplayInfo
+      label="Last activity date"
+      infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
+    />
     <DisplayInfo label="Time Zone" infoText={data?.timeZoneId} />
     <DisplayInfo label="Preferred game duration" infoText={data?.preferredGameDuration} />
   </>
 );
 const UserProfile = ({ id }) => {
   console.log("props", id);
-  const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
+  // const [data, setData] = useState(null);
+  // useEffect(() => {
+  //   axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
+  // }, []);
+  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
+
+  // const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
   // const mutationAll = trpc.useMutation(["user-update-all"]);
   const { email } = useSession();
   console.log("data", data);
 
-  if (isLoading) return null;
+  // if (isLoading) return null;
   const updateClick = async () => {
     // if (session?.user?.email) {
     const pwdHashed = await hash(password, 12);

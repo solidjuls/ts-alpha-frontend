@@ -1,8 +1,8 @@
+import getAxiosInstance from "utils/axios";
 import { useContext, createContext, useState, useEffect, ReactNode } from "react";
 import cookieCutter from "cookie-cutter";
 import { useRouter } from "next/router";
 import type { AuthType } from "../types/user.types";
-import { trpc } from "contexts/APIProvider";
 
 type LoginFnType = (mail: string, pwd: string) => void;
 type LogoutFnType = () => void;
@@ -31,35 +31,28 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, role }) => {
   const router = useRouter();
-  const signIn = trpc.useMutation(["user-signin"]);
-  const signOut = trpc.useMutation(["user-signout"]);
-  const [auth, setAuth] = useState<AuthType>({ name: "", email: "", id: "" });
+  const [auth, setAuth] = useState<AuthType>({ name, email, id, role });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  useEffect(() => {
-    const cookies = cookieCutter.get(KEY);
-    if (cookies) {
-      setAuth(JSON.parse(cookies));
-    }
-  }, []);
 
   const setAuthentication = (authProps: AuthType) => {
-    cookieCutter.set(KEY, JSON.stringify(authProps));
+    // cookieCutter.set(KEY, JSON.stringify(authProps));
     setAuth(authProps);
   };
 
   const login: LoginFnType = async (mail, pwd) => {
     try {
       // @ts-ignore
-      const response = await signIn.mutateAsync({
+      const { data } = await getAxiosInstance().post("/api/user/login", {
         mail,
         pwd,
       });
-      console.log("response", response);
-      if (response && setAuthentication) {
+
+      if (data && setAuthentication) {
         router.push("/");
-        setAuthentication(response);
+        setAuthentication(data);
+        console.log("setAuthentication", data);
       }
     } catch (e) {
       console.log("login error", e.message);
@@ -69,14 +62,15 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout: LogoutFnType = async () => {
     try {
-      const response = await signOut.mutateAsync();
-      if (response && response.success && setAuthentication) setAuthentication({});
+      const { data } = await getAxiosInstance().post("/api/user/signout");
+      if (data && data.success && setAuthentication) setAuthentication({});
       router.push("/");
     } catch (e) {
       console.log("sign out error", e);
     }
   };
 
+  console.log("auth", auth);
   return (
     <AuthContext.Provider
       value={{

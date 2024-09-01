@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import Cookies from "cookies";
+import cookie from "cookie";
 import jwt from "jsonwebtoken";
 // import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -12,17 +12,17 @@ type CookiesReturn = (
 } | null;
 
 export const getInfoFromCookies: CookiesReturn = (req, res) => {
-  const cookies = new Cookies(req, res);
-  const token = cookies.get("auth-token");
+  const token = req?.cookies["token"];
 
   if (!token) return null;
 
   const payload = jwt.verify(token, process.env.TOKEN_SECRET);
-  // check date
 
   if (!payload) return null;
 
   return {
+    id: payload.id,
+    name: payload.name,
     mail: payload.mail,
     role: payload.role,
   };

@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const useTypeaheadState = () => {
-  const { data } = trpc.useQuery(["user-get-all"]);
-  const userList = data?.map((user) => ({ value: user.id, text: user.name })) || [];
   const [userSuggestions, setUserSuggestions] = useState([]);
-  //console.log("userList", userList);
+
+  const { data, error } = useFetchInitialData({ url: "/api/user" });
+  if (!data) return null;
+
+  const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
+  console.log("userSuggestions", data, userSuggestions);
   const onChange = (input) => {
+    console.log("onChange executed", input);
     setUserSuggestions(
       userList?.filter((user) => {
         if (user.text.toLowerCase().includes(input.toLowerCase())) {
@@ -20,9 +24,9 @@ const useTypeaheadState = () => {
 
   return { userSuggestions, onChange };
 };
-const UserTypeahead = ({ labelText, selectedItem, onSelect, css, error, ...rest }) => {
+const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
   const { userSuggestions, onChange } = useTypeaheadState();
-
+  console.log("rerender");
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -36,9 +40,9 @@ const UserTypeahead = ({ labelText, selectedItem, onSelect, css, error, ...rest 
         // onBlur={setValue}
         {...rest}
       >
-        <Typeahead.Input css={css} error={error} placeholder="Type the player name..." />
+        <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {userSuggestions.length > 0 && (
-          <Typeahead.List css={css}>
+          <Typeahead.List css={{ ...css, width: "270px" }}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>

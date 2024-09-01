@@ -3,7 +3,9 @@ import { Form } from "components/Atoms";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import { UserProfileState } from "types/game.types";
 import { Button } from "components/Button";
-import { trpc } from "contexts/APIProvider";
+import getAxiosInstance from "utils/axios";
+import { Spinner } from "@radix-ui/themes";
+import Text from "components/Text";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -95,6 +97,7 @@ const gameDurations = [
 ];
 
 const getInitialState = (data) => {
+  console.log("do you run?");
   return {
     firstName: {
       value: data.first_name,
@@ -159,13 +162,18 @@ const initialState: UserProfileState = {
 };
 
 const UserProfileForm = ({ data }) => {
-  const [form, setForm] = useState<UserProfileState>(getInitialState(data) || initialState);
-  const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
-    onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-    onError: (error, variables, context) =>
-      console.log("error gameConfirmRecreation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  });
+  console.log(getInitialState(data));
+  const [form, setForm] = useState<UserProfileState>(getInitialState(data));
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationMsg, setConfirmationMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
+  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameConfirmRecreation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
+  // });
 
   const validated = () => {
     let submit = true;
@@ -258,22 +266,29 @@ const UserProfileForm = ({ data }) => {
         css={{ width: inputWidth }}
         error={form?.timeZoneId.error}
       />
+      {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}
+      {errorMsg && <Text type="error">{errorMsg}</Text>}
       <Button
-        // disabled={buttonDisabled}
+        disabled={isSubmitting}
         css={{ width: "200px", fontSize: "18px" }}
-        onClick={async (event) => {
+        onClick={async () => {
           if (validated()) {
-            event.currentTarget.disabled = true;
-            // @ts-ignore
-            const ddd = normalizeData(form);
-            console.log("valida", ddd);
-            await userUpdateMutation.mutate({
-              ...normalizeData(form),
-            });
+            try {
+              setIsSubmitting(true);
+              // @ts-ignore
+              await getAxiosInstance().post("/api/user/", {
+                ...normalizeData(form),
+              });
+              setConfirmationMsg("Profile updated correctly");
+            } catch {
+              setErrorMsg("There was an error updating the profile");
+            } finally {
+              setIsSubmitting(false);
+            }
           }
         }}
       >
-        Submit
+        {isSubmitting ? <Spinner size="3" /> : "Submit"}
       </Button>
     </Form>
   );

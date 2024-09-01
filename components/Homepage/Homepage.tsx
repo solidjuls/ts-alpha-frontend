@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
+"use client";
+import { useEffect, useState } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
@@ -9,9 +9,15 @@ import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
-import { GAME_QUERY } from "utils/constants";
+import { GAME_QUERY, leagueTypes } from "utils/constants";
 import { dateFormat } from "utils/dates";
-import { PlayerInfo, ResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
+import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
+import MultiSelect from "components/MultiSelect";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import { Spinner } from "@radix-ui/themes";
+import { Pagination } from "components/Pagination";
+import getAxiosInstance from "utils/axios";
+import { DropdownWithLabel } from "components/EditFormComponents";
 
 type HomepageProps = {
   role: number;
@@ -75,7 +81,7 @@ const getGameType = (game: Game, role: number) => {
 };
 
 const ResultRow = ({ game, role }: { game: Game; role: number }) => {
-  console.log("game role", game, role);
+  // console.log("game role", game, role);
   return (
     <PlayerInfo>
       <Flex
@@ -128,13 +134,49 @@ const EmptyState = () => {
   );
 };
 
+const FilterUser = () => {
+  return <MultiSelect />;
+};
+
+const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoading }) => {
+  return (
+    <Flex css={{ flexDirection: "column", width: "100%" }}>
+      <StyledResultsPanel>
+        {/* <FilterPanel>
+          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
+          <FilterUser />
+        </FilterPanel> */}
+        {isLoading && <SkeletonHomepage />}
+        {data?.map((game, index) => (
+          <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
+            <ResultRow key={index} role={role} game={game} />
+          </UnstyledLink>
+        ))}
+      </StyledResultsPanel>
+      <Pagination totalPages={100} onPageChange={onPageChange} />
+    </Flex>
+  );
+};
+
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const { data, isLoading } = trpc.useQuery([
-    GAME_QUERY,
-    // @ts-ignore
-    { d: dateValue.toDateString() },
-  ]);
+  const [paginatedData, setPaginatedData] = useState(null);
+  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
+  // const { data, isLoading } = trpc.useQuery([
+  //   GAME_QUERY,
+  //   // @ts-ignore
+  //   { d: dateValue.toDateString() },
+  // ]);
+  const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
+
+  const onPageChange = async (page: string) => {
+    setIsLoadingPagination(true);
+    const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
+      id: `games-list-${page}`,
+    });
+    setIsLoadingPagination(false);
+    setPaginatedData(paginatedData.data);
+  };
 
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
@@ -147,6 +189,9 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
+  const games = !paginatedData ? data : paginatedData;
+  const loading = isLoading || isLoadingPagination;
+  console.log("games", data, paginatedData);
   return (
     <Box
       css={{
@@ -157,18 +202,14 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         // flexWrap: "wrap",
       }}
     >
-      <ResultsPanel>
-        <FilterPanel>
-          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
-        </FilterPanel>
-        {isLoading && <SkeletonHomepage />}
-        {data?.length === 0 && <EmptyState />}
-        {data?.map((game, index) => (
-          <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-            <ResultRow key={index} role={role} game={game} />
-          </UnstyledLink>
-        ))}
-      </ResultsPanel>
+      <ResultsPanel
+        data={games}
+        isLoading={loading}
+        dateValue={dateValue}
+        onPageChange={onPageChange}
+        onClickDay={onClickDay}
+        role={role}
+      />
       <Box>
         <TopPlayerRating />
       </Box>

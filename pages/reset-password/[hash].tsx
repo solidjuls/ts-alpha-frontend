@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { trpc } from "contexts/APIProvider";
 import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
 import { Box } from "components/Atoms";
 import { PasswordInput } from "components/Input";
+import getAxiosInstance from "utils/axios";
 
 const decryptHash = (hash: any) => {
   let buff = Buffer.from(hash, "base64");
@@ -36,9 +36,9 @@ const LabelInput = ({
 };
 
 const ResetPassword = () => {
-  const mutation = trpc.useMutation(["user-reset"]);
   const [pwd, setPwd] = useState<string>("");
   const [pwdConfirm, setPwdConfirm] = useState<string>("");
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const router = useRouter();
   const { hash: hashKey } = router.query;
 
@@ -48,7 +48,19 @@ const ResetPassword = () => {
   console.log(Date.now() - date, values);
   if (date === NaN) return <div>Link invalid</div>;
   if ((Date.now() - date) / 1000 > 3600) return <div>Link outdated</div>;
-  if ((Date.now() - date) / 1000 > 3600) return <div>nowhere to go</div>;
+
+  const validate = ({ hash }) => {
+    if (pwd !== pwdConfirm) {
+      setErrorMsg("Passwords don't match");
+      return false;
+    }
+    if (!hash) {
+      console.log("hash", hash);
+      setErrorMsg("Unexpected error. Try to reset the password again");
+      return false;
+    }
+    return true;
+  };
 
   return (
     <Box
@@ -66,17 +78,19 @@ const ResetPassword = () => {
         inputValue={pwdConfirm}
         onChange={setPwdConfirm}
       />
+      {errorMsg && <Label css={{ color: "red" }}>{errorMsg}</Label>}
       <Button
         onClick={async () => {
-          if (values[0]) {
+          if (validate({ hash: values[0] })) {
             // some regex to validate mail is ok would be nice
             const pwdHashed = await hash(pwd, 12);
             if (!hashKey) return;
             // @ts-ignore
-            mutation.mutate({
+            await getAxiosInstance().post(`/api/user/reset-password`, {
               token: hashKey as string,
               pwd: pwdHashed,
             });
+            router.push("/login");
           }
         }}
       >

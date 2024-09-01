@@ -147,3 +147,14 @@ export const gameWinningOptions: Array<DropdownType> = [
     text: "Tie",
   },
 ];
+
+export const gameSides: Array<DropdownType> = [
+  {
+    value: "1",
+    text: "USA",
+  },
+  {
+    value: "2",
+    text: "URSS",
+  },
+];

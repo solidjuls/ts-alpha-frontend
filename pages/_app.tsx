@@ -1,68 +1,59 @@
 import AuthProvider from "contexts/AuthProvider";
-import type { AppProps } from "next/app";
+import type { AppContext, AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
-import APIProvider from "contexts/APIProvider";
 import Layout from "components/Layout";
-import { withTRPC } from "@trpc/next";
-import type { AppRouter } from "backend/router";
 
 import "styles/date.css";
 import "styles/stylesGlobal.css";
 import "@radix-ui/themes/styles.css";
+import { getInfoFromCookies } from "utils/cookies";
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps, name, id, email, role }: AppProps) {
   return (
-    <APIProvider>
-      <AuthProvider>
-        <IntlContextProvider>
-          {/* @ts-ignore */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            value={{
-              light: "light",
-            }}
-          >
-            <Theme>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </Theme>
-          </ThemeProvider>
-        </IntlContextProvider>
-      </AuthProvider>
-    </APIProvider>
+    <AuthProvider name={name} email={email} id={id} role={role}>
+      <IntlContextProvider>
+        {/* @ts-ignore */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          value={{
+            light: "light",
+          }}
+        >
+          <Theme>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Theme>
+        </ThemeProvider>
+      </IntlContextProvider>
+    </AuthProvider>
   );
 }
 
-export default withTRPC<AppRouter>({
-  config({ ctx }) {
-    /**
-     * If you want to use SSR, you need to use the server's full URL
-     * @link https://trpc.io/docs/ssr
-     */
-    console.log("process.env.NEXT_PUBLIC_VERCEL_ENV", process.env.NEXT_PUBLIC_VERCEL_URL);
-    const url = !!process.env.NEXT_PUBLIC_VERCEL_URL
-      ? `/api/trpc`
-      : "http://localhost:3000/api/trpc";
+App.getInitialProps = async (appContext: AppContext) => {
+  const { ctx, Component } = appContext;
+  const { req, res } = appContext.ctx;
 
-    return {
-      //transformer: superjson,
-      url,
-      /**
-       * @link https://react-query.tanstack.com/reference/QueryClient
-       */
-      queryClientConfig: {
-        defaultOptions: {
-          queries: { staleTime: Infinity, refetchOnWindowFocus: false },
-        },
-      },
-    };
-  },
-  /**
-   * @link https://trpc.io/docs/ssr
-   */
-  ssr: true,
-})(App);
+  const payload = getInfoFromCookies(req, res);
+
+  let pageProps = {};
+  if (Component.getInitialProps) {
+    pageProps = await Component.getInitialProps(ctx); // Fetch the specific page's initial props
+  }
+
+  if (!payload) {
+    return { ...pageProps };
+  }
+  return {
+    ...pageProps,
+    name: payload.name,
+    id: payload.id,
+    email: payload.mail,
+    role: payload.role,
+  };
+};
+
+export default App;

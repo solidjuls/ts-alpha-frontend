@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { trpc } from "contexts/APIProvider";
+import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
-import { gameWinningOptions, endType, turns, leagueTypes } from "utils/constants";
+import { gameWinningOptions, endType, turns, leagueTypes, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
@@ -12,6 +12,9 @@ import UserTypeahead from "./UserTypeahead";
 import { Checkbox } from "components/Checkbox";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
+import getAxiosInstance from "utils/axios";
+import { Spinner } from "@radix-ui/themes";
+import { useSession } from "contexts/AuthProvider";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -48,14 +51,6 @@ const formatResultConfirmation = (result: string[]) =>
     return `${prev} ${current} \n`;
   }, "");
 
-const normalizeData = (form: any) => {
-  let payloadObject: any = {};
-  Object.keys(form).map((key: string) => {
-    payloadObject[key] = form[key].value;
-  });
-  return payloadObject;
-};
-
 const SubmitForm = ({
   validated,
   role,
@@ -67,30 +62,51 @@ const SubmitForm = ({
   setButtonDisabled,
   setForm,
 }: SubmitFormProps) => {
+  const { id } = useSession();
   const router = useRouter();
-  const trpcUtils = trpc.useContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationMsg, setConfirmationMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  // const gameSubmitMutation = trpc.useMutation(["game-submit"], {
+  //   onSuccess: async () => {
+  //     trpcUtils.queryClient.invalidateQueries();
+  //     if (window) window.location.href = "/";
+  //   },
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameSubmitMutation", error, variables, context),
+  // });
+  // const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
+  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameConfirmRecreation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
+  // });
+  // const gameRecreationMutation = trpc.useMutation(["game-restore"], {
+  //   onSuccess: () => trpcUtils.invalidateQueries(),
+  //   onError: (error, variables, context) =>
+  //     console.log("error gameRecreationMutation", error, variables, context),
+  //   onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
+  // });
 
-  const gameSubmitMutation = trpc.useMutation(["game-submit"], {
-    onSuccess: async () => {
-      trpcUtils.queryClient.invalidateQueries();
-      if (window) window.location.href = "/";
-    },
-    onError: (error, variables, context) =>
-      console.log("error gameSubmitMutation", error, variables, context),
-  });
-  const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
-    onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-    onError: (error, variables, context) =>
-      console.log("error gameConfirmRecreation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  });
-  const gameRecreationMutation = trpc.useMutation(["game-restore"], {
-    onSuccess: () => trpcUtils.invalidateQueries(),
-    onError: (error, variables, context) =>
-      console.log("error gameRecreationMutation", error, variables, context),
-    onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
-  });
+  const normalizeData = (localForm: any) => {
+    let payloadObject: any = {};
+    if (localForm.playedAs.value === "1") {
+      payloadObject["usaPlayerId"] = id;
+      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+    } else if (localForm.playedAs.value === "2") {
+      payloadObject["ussrPlayerId"] = id;
+      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+    }
 
+    Object.keys(localForm).map((key: string) => {
+      if (key !== "playedAs" && key !== "opponentWas") {
+        payloadObject[key] = localForm[key].value;
+      }
+    });
+    console.log("payloadObject", payloadObject);
+    return payloadObject;
+  };
+  console.log("form", form);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {role === 2 && (
@@ -127,25 +143,26 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <UserTypeahead
-          labelText="playerUSA"
-          selectedItem={form.usaPlayerId.value}
+        <DropdownWithLabel
+          labelText="PlayedAs"
+          items={gameSides}
+          selectedItem={form.playedAs.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.usaPlayerId.error}
-          css={{ width: typeaheadWidth }}
-          onSelect={(value: any) => onInputValueChange("usaPlayerId", value?.value)}
-          onBlur={() => onInputValueChange("usaPlayerId", "")}
+          error={form.playedAs.error}
+          css={{ width: dropdownWidth }}
+          onSelect={(value) => onInputValueChange("playedAs", value)}
         />
         <UserTypeahead
-          labelText="playerURSS"
-          selectedItem={form.ussrPlayerId.value}
-          error={form.ussrPlayerId.error}
-          css={{ width: typeaheadWidth }}
+          labelText="opponentWas"
+          selectedItem={form.opponentWas.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
-          onBlur={() => onInputValueChange("ussrPlayerId", "")}
+          error={form.opponentWas.error}
+          css={{ width: typeaheadWidth }}
+          placeholder="Type the player name..."
+          onSelect={(value: any) => onInputValueChange("opponentWas", value?.value)}
+          onBlur={() => onInputValueChange("opponentWas", "")}
         />
         <DropdownWithLabel
           labelText="gameWinner"
@@ -185,21 +202,40 @@ const SubmitForm = ({
         />
         {!checked && (
           <Button
-            // disabled={buttonDisabled}
+            disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
-            onClick={async (event) => {
+            onClick={async () => {
               if (validated(form, setForm)) {
-                event.currentTarget.disabled = true;
-                // @ts-ignore
-                await gameSubmitMutation.mutate({
-                  data: normalizeData(form),
-                });
+                try {
+                  setIsSubmitting(true);
+                  // @ts-ignore
+                  await getAxiosInstance().post(
+                    "/api/game/submit",
+                    {
+                      data: normalizeData(form),
+                    },
+                    {
+                      cache: {
+                        update: {
+                          "game-list": "delete",
+                        },
+                      },
+                    },
+                  );
+                  router.push("/");
+                } catch (e) {
+                  console.log("error", e);
+                  setErrorMsg("There was an error submitting the result");
+                } finally {
+                  setIsSubmitting(false);
+                }
               }
             }}
           >
-            Submit
+            {isSubmitting ? <Spinner size="3" /> : "Submit"}
           </Button>
         )}
+        {errorMsg && <Text type="error">{errorMsg}</Text>}
         {checked && (
           <Button
             // disabled={buttonDisabled}
@@ -207,25 +243,25 @@ const SubmitForm = ({
             onClick={async (event) => {
               // event.currentTarget.disabled = true;
               // @ts-ignore
-              const result = await gameConfirmRecreation.mutateAsync({
-                id: form.oldId.value,
-              });
-              console.log("result", result);
-              if (
-                window.confirm(
-                  `This games will be recreated. \n ${formatResultConfirmation(
-                    result,
-                  )}. Do you want to proceed?`,
-                )
-              ) {
-                if (validated(form, setForm)) {
-                  // @ts-ignore
-                  await gameRecreationMutation.mutateAsync({
-                    data: normalizeData(form),
-                  });
-                  // setButtonDisabled(true);
-                }
-              }
+              // const result = await gameConfirmRecreation.mutateAsync({
+              //   id: form.oldId.value,
+              // });
+              // console.log("result", result);
+              // if (
+              //   window.confirm(
+              //     `This games will be recreated. \n ${formatResultConfirmation(
+              //       result,
+              //     )}. Do you want to proceed?`,
+              //   )
+              // ) {
+              //   if (validated(form, setForm)) {
+              //     // @ts-ignore
+              //     await gameRecreationMutation.mutateAsync({
+              //       data: normalizeData(form),
+              //     });
+              //     // setButtonDisabled(true);
+              //   }
+              // }
             }}
           >
             Recreate Game

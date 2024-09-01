@@ -1,7 +1,6 @@
 import { useDebounce } from "use-debounce";
-import { trpc } from "contexts/APIProvider";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import {
   GameAPI,
@@ -82,11 +81,11 @@ const initialState: SubmitFormState = {
     value: "",
     error: false,
   },
-  usaPlayerId: {
+  opponentWas: {
     value: "",
     error: false,
   },
-  ussrPlayerId: {
+  playedAs: {
     value: "",
     error: false,
   },
@@ -109,15 +108,31 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  const [id] = useDebounce(form.oldId.value, 1000);
-  const { data } = trpc.useQuery(["game-getDataByGame", { id: Number(id) }], {
-    enabled: id !== undefined && id !== "",
-    onSuccess: (data) => {
-      if (data) {
-        setForm(restoreDataFromAPI(data, id));
-      }
-    },
-  });
+  // const [id] = useDebounce(form.oldId.value, 1000);
+  // const options = useMemo(
+  //   () => ({
+  //     method: 'POST',
+  //   body: JSON.stringify({ id: Number(id) })
+  //   }),
+  //   [],
+  // );
+  // const { data, loading, error } = useFetch('/api/game', options)
+
+  // if (loading) return  <div>loading!</div>
+  // if (error) return  <div>error!</div>
+
+  //   if (data) {
+  //       setForm(restoreDataFromAPI(data, id));
+  //     }
+
+  // const { data } = trpc.useQuery(["game-getDataByGame", { id: Number(id) }], {
+  //   enabled: id !== undefined && id !== "",
+  //   onSuccess: (data) => {
+  //     if (data) {
+  //       setForm(restoreDataFromAPI(data, id));
+  //     }
+  //   },
+  // });
 
   const validated = () => {
     let submit = true;
@@ -179,7 +194,7 @@ export async function getServerSideProps({
   res: NextApiResponse;
 }) {
   const payload = getInfoFromCookies(req, res);
-  console.log("payload", payload);
+
   if (!payload) {
     return {
       redirect: {

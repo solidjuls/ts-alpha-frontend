@@ -1,7 +1,6 @@
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
-import { trpc } from "contexts/APIProvider";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -11,6 +10,8 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText } from "utils/games";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import { dateFormat } from "utils/dates";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -50,7 +51,7 @@ type PlayerNameProps = {
   playerName: string;
   userId: bigint;
   rating: number;
-  ratingDifference: number;
+  previousRating: number;
   isUSSR?: boolean;
 };
 
@@ -65,14 +66,14 @@ const GameContent = ({ data }) => (
         playerName={data.usaPlayer}
         userId={data.usaPlayerId}
         rating={data.ratingsUSA.rating}
-        ratingDifference={data.ratingsUSA.ratingDifference}
+        previousRating={data.ratingsUSA.previousRating}
       />
       vs
       <PlayerName
         playerName={data.ussrPlayer}
         userId={data.ussrPlayerId}
         rating={data.ratingsUSSR.rating}
-        ratingDifference={data.ratingsUSSR.ratingDifference}
+        previousRating={data.ratingsUSSR.previousRating}
         isUSSR
       />
     </Flex>
@@ -93,7 +94,7 @@ const GameContent = ({ data }) => (
         <Span>{getWinnerText(data.gameWinner)}</Span>
         <Span>{data.endTurn || "-"}</Span>
         <Span>{data.endMode}</Span>
-        <Span>{data.created_at?.toString()}</Span>
+        <Span>{dateFormat(new Date(data.created_at))}</Span>
       </Flex>
     </Box>
   </>
@@ -101,23 +102,12 @@ const GameContent = ({ data }) => (
 
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
-
   // If the page is not yet generated, this will be displayed initially until the page is generated
   // if (router.isFallback) {
   //   return <div>Loading...</div>;
   // }
-
-  console.log("game", gameId);
-  const { data, isLoading } = trpc.useQuery(
-    [
-      "game-get",
-      // @ts-ignore
-      { id: gameId },
-    ],
-    { enabled: !!gameId },
-  );
-
-  if (!data || isLoading) return null;
+  const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` });
+  if (!data) return null;
   console.log("data", data);
   return (
     <DetailContainer>
@@ -136,36 +126,34 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
           boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         }}
       >
-        {isLoading ? <Spinner size="3" /> : <GameContent data={data} />}
+        {isLoading ? <Spinner size="3" /> : <GameContent data={data[0]} />}
       </Flex>
     </DetailContainer>
   );
 };
 
-const ChevronContainer = ({ rating, finalRating }) =>
-  rating < finalRating ? (
+const ChevronContainer = ({ rating, previousRating }) =>
+  rating > previousRating ? (
     <StyledChevronUpIcon color="green" />
   ) : (
     <StyledChevronDownIcon color="red" />
   );
-const Rating = ({ rating, ratingDifference, isUSSR }) => {
-  const finalRating = Number(rating) + Number(ratingDifference);
-
+const Rating = ({ rating, previousRating, isUSSR }) => {
   return !isUSSR ? (
     <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
-      <Text fontSize="small">{rating}</Text>
+      <Text fontSize="small">{previousRating}</Text>
       <Box css={{ position: "relative", marginLeft: "4px", width: "15px" }}>
-        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
+        <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
       </Box>
-      <Text fontSize="small">{finalRating}</Text>
+      <Text fontSize="small">{rating}</Text>
     </Flex>
   ) : (
     <Flex css={{ margin: "0 8px 0 8px" }}>
-      <Text fontSize="small">{finalRating}</Text>
-      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
-        <ChevronContainer rating={Number(rating)} finalRating={finalRating} />
-      </Box>
       <Text fontSize="small">{rating}</Text>
+      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
+        <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
+      </Box>
+      <Text fontSize="small">{previousRating}</Text>
     </Flex>
   );
 };
@@ -173,7 +161,7 @@ const PlayerName: React.FC<PlayerNameProps> = ({
   playerName,
   userId,
   rating,
-  ratingDifference,
+  previousRating,
   isUSSR,
 }) => {
   return (
@@ -199,7 +187,7 @@ const PlayerName: React.FC<PlayerNameProps> = ({
           </>
         )}
       </Flex>
-      <Rating rating={rating} ratingDifference={ratingDifference} isUSSR={isUSSR} />
+      <Rating rating={rating} previousRating={previousRating} isUSSR={isUSSR} />
     </Flex>
   );
 };

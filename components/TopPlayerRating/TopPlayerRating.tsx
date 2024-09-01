@@ -1,9 +1,9 @@
-import { trpc } from "contexts/APIProvider";
 import { styled } from "stitches.config";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { User } from "components/User";
 import { SkeletonPlayers } from "components/Skeletons";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const SidePanelStyled = styled("div", {
   display: "flex",
@@ -27,7 +27,9 @@ const Announcement = () => {
 
 const TopPlayerRating = () => {
   // @ts-ignore
-  const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
+  // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
+  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=5" });
+  if (!data) return null;
 
   return (
     <SidePanelStyled>

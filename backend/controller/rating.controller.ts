@@ -3,6 +3,21 @@ import { BiggerLowerValue } from "types/game.types";
 
 const DEFAULT_RATING = 5000;
 
+export const getAllPlayers = async () =>
+  await prisma.users.findMany({
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      last_login_at: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
+    },
+  });
+
 const getRatingDifference = (
   defeated: number,
   winner: number,

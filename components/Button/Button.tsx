@@ -1,7 +1,8 @@
 import { styled } from "stitches.config";
 
 const Button = styled("button", {
-  display: "inline-block",
+  display: "flex",
+  justifyContent: "center",
   padding: "8px",
   cursor: "pointer",
   // margin: "0 0.3em 0.3em 0",
