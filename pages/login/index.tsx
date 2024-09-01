@@ -13,6 +13,7 @@ import { useSession } from "contexts/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { Box, Form } from "components/Atoms";
+import { Spinner } from "@radix-ui/themes";
 
 const formStyles = {
   display: "flex",
@@ -36,6 +37,20 @@ const LoginForm: React.FC = () => {
   const { login, errorMsg } = useSession();
   const [mail, setMail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
+  const [validationErrorMsg, setValidationErrorMsg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  function validate() {
+    if (!mail) {
+      setValidationErrorMsg("Email is empty");
+      return false;
+    }
+    if (!pwd) {
+      setValidationErrorMsg("Password is empty");
+      return false;
+    }
+    return true;
+  }
 
   return (
     <>
@@ -61,13 +76,22 @@ const LoginForm: React.FC = () => {
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPwd(event.target.value)}
         css={{ width: "300px" }}
       />
+      {validationErrorMsg && <Text css={{ color: "red" }}>{validationErrorMsg}</Text>}
       <Button
+        disabled={isLoading}
         onClick={async (e) => {
           e.preventDefault();
-          if (login) await login(mail, pwd);
+          try {
+            if (login && validate()) {
+              setIsLoading(true);
+              await login(mail, pwd);
+            }
+          } finally {
+            setIsLoading(false);
+          }
         }}
       >
-        Login
+        {isLoading ? <Spinner size="3" /> : <b>Login</b>}
       </Button>
       <Link href="/reset-password" passHref>
         <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
