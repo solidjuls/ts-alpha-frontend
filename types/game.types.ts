@@ -16,8 +16,8 @@ export type SubmitFormState = {
   gameWinner: SubmitFormValue<GameWinner>;
   gameCode: SubmitFormValue<string>;
   gameType: SubmitFormValue<string>;
-  usaPlayerId: SubmitFormValue<string>;
-  ussrPlayerId: SubmitFormValue<string>;
+  opponentWas: SubmitFormValue<string>;
+  playedAs: SubmitFormValue<string>;
   endTurn: SubmitFormValue<string>;
   endMode: SubmitFormValue<string>;
   video1: SubmitFormValue<string>;

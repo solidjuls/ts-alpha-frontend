@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
-import { gameWinningOptions, endType, turns, leagueTypes } from "utils/constants";
+import { gameWinningOptions, endType, turns, leagueTypes, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
@@ -13,6 +14,7 @@ import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
+import { useSession } from "contexts/AuthProvider";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -49,14 +51,6 @@ const formatResultConfirmation = (result: string[]) =>
     return `${prev} ${current} \n`;
   }, "");
 
-const normalizeData = (form: any) => {
-  let payloadObject: any = {};
-  Object.keys(form).map((key: string) => {
-    payloadObject[key] = form[key].value;
-  });
-  return payloadObject;
-};
-
 const SubmitForm = ({
   validated,
   role,
@@ -68,6 +62,7 @@ const SubmitForm = ({
   setButtonDisabled,
   setForm,
 }: SubmitFormProps) => {
+  const { id } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -93,6 +88,25 @@ const SubmitForm = ({
   //   onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
   // });
 
+  const normalizeData = (localForm: any) => {
+    let payloadObject: any = {};
+    if (localForm.playedAs.value === "1") {
+      payloadObject["usaPlayerId"] = id;
+      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+    } else if (localForm.playedAs.value === "2") {
+      payloadObject["ussrPlayerId"] = id;
+      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+    }
+
+    Object.keys(localForm).map((key: string) => {
+      if (key !== "playedAs" && key !== "opponentWas") {
+        payloadObject[key] = localForm[key].value;
+      }
+    });
+    console.log("payloadObject", payloadObject);
+    return payloadObject;
+  };
+  console.log("form", form);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {role === 2 && (
@@ -129,27 +143,26 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <UserTypeahead
-          labelText="playerUSA"
-          selectedItem={form.usaPlayerId.value}
+        <DropdownWithLabel
+          labelText="PlayedAs"
+          items={gameSides}
+          selectedItem={form.playedAs.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.usaPlayerId.error}
-          css={{ width: typeaheadWidth }}
-          placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange("usaPlayerId", value?.value)}
-          onBlur={() => onInputValueChange("usaPlayerId", "")}
+          error={form.playedAs.error}
+          css={{ width: dropdownWidth }}
+          onSelect={(value) => onInputValueChange("playedAs", value)}
         />
         <UserTypeahead
-          labelText="playerURSS"
-          selectedItem={form.ussrPlayerId.value}
-          error={form.ussrPlayerId.error}
-          css={{ width: typeaheadWidth }}
+          labelText="opponentWas"
+          selectedItem={form.opponentWas.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
+          error={form.opponentWas.error}
+          css={{ width: typeaheadWidth }}
           placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange("ussrPlayerId", value?.value)}
-          onBlur={() => onInputValueChange("ussrPlayerId", "")}
+          onSelect={(value: any) => onInputValueChange("opponentWas", value?.value)}
+          onBlur={() => onInputValueChange("opponentWas", "")}
         />
         <DropdownWithLabel
           labelText="gameWinner"
@@ -199,6 +212,8 @@ const SubmitForm = ({
                   await getAxiosInstance().post("/api/game/submit", {
                     data: normalizeData(form),
                   });
+                  // console.log("getAxiosInstance().storage", getAxiosInstance().storage)
+                  // getAxiosInstance().storage.remove('/api/game');
                   router.push("/");
                 } catch {
                   setErrorMsg("There was an error submitting the result");
@@ -211,6 +226,7 @@ const SubmitForm = ({
             {isSubmitting ? <Spinner size="3" /> : "Submit"}
           </Button>
         )}
+        {errorMsg && <Text type="error">{errorMsg}</Text>}
         {checked && (
           <Button
             // disabled={buttonDisabled}

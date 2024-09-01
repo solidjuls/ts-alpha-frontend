@@ -1,10 +1,15 @@
 import axios, { AxiosInstance } from "axios";
-import { setupCache, CacheAxiosResponse, CacheRequestConfig } from "axios-cache-interceptor";
+import {
+  setupCache,
+  CacheInstance,
+  CacheAxiosResponse,
+  CacheRequestConfig,
+} from "axios-cache-interceptor";
 
 // Define the API instance as `let` so we can reassign it in a singleton pattern
-let api: AxiosInstance | undefined;
+let api: CacheInstance | undefined;
 
-export const getAxiosInstance = (): AxiosInstance => {
+export const getAxiosInstance = (): CacheInstance => {
   if (!api) {
     // Create the axios instance with caching only once
     api = setupCache(

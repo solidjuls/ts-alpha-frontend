@@ -81,11 +81,11 @@ const initialState: SubmitFormState = {
     value: "",
     error: false,
   },
-  usaPlayerId: {
+  opponentWas: {
     value: "",
     error: false,
   },
-  ussrPlayerId: {
+  playedAs: {
     value: "",
     error: false,
   },

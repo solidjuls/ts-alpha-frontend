@@ -6,8 +6,7 @@ module.exports = {
     gameRecreateId: "Game ID",
     checkID: "Check ID",
     oldId: "Old Check ID",
-    playerUSA: "USA Player *",
-    playerURSS: "URSS Player *",
+    opponentWas: "Your opponent was:",
     gameWinner: "Game winner",
     endTurn: "End Turn",
     endType: "How did it end?",
@@ -25,6 +24,7 @@ module.exports = {
     profileText: "Profile",
     greeting: "Hi",
 
+    PlayedAs: "I played as:",
     firstName: "First Name",
     lastName: "Last Name",
     playdeckName: "Playdeck Name",

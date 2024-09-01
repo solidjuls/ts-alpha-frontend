@@ -4,8 +4,7 @@ module.exports = {
     typeOfGame: "Tipus de partida",
     gameRecreateId: "ID joc",
     checkID: "ID",
-    playerUSA: "Jugador USA *",
-    playerURSS: "Jugador URSS *",
+    opponentWas: "El meu oponent es:",
     gameWinner: "Guanyador",
     endTurn: "Torn final",
     endType: "Com ha acabat?",
@@ -22,6 +21,7 @@ module.exports = {
     profileText: "Info d'usuari",
     greeting: "Hola",
 
+    PlayedAs: "I played as:",
     firstName: "Nom",
     lastName: "Cognom",
     playdeckName: "Nick a Playdeck",

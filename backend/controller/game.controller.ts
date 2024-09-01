@@ -200,10 +200,14 @@ const submitGame = async (data: GameAPI) => {
 };
 
 export const submit = async (data) => {
-  const newGameWithId = await submitGame(data);
-  console.log("newGameWithId", newGameWithId);
-  const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
-    typeof value === "bigint" ? value.toString() : value,
-  );
-  return JSON.parse(newGameWithIdParsed);
+  try {
+    const newGameWithId = await submitGame(data);
+    console.log("newGameWithId", newGameWithId);
+    const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
+      typeof value === "bigint" ? value.toString() : value,
+    );
+    return JSON.parse(newGameWithIdParsed);
+  } catch (e) {
+    throw e;
+  }
 };
