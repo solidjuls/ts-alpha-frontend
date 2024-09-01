@@ -106,7 +106,7 @@ const SubmitForm = ({
     console.log("payloadObject", payloadObject);
     return payloadObject;
   };
-  console.log("form", form);
+  console.log("id", id);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {role === 2 && (
@@ -205,6 +205,10 @@ const SubmitForm = ({
             disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
             onClick={async () => {
+              if (!id) {
+                setErrorMsg("Error submitting your result. Refresh the page and try again");
+                return;
+              }
               if (validated(form, setForm)) {
                 try {
                   setIsSubmitting(true);

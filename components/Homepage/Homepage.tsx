@@ -146,7 +146,6 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
           <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
           <FilterUser />
         </FilterPanel> */}
-        {isLoading && <SkeletonHomepage />}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
