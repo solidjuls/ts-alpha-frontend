@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@ariakit/react": "^0.4.10",
-    "@prisma/client": "^5.18.0",
+    "@prisma/client": "^5.19.0",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-avatar": "^1.1.0",
     "@radix-ui/react-checkbox": "^1.1.1",
@@ -39,7 +39,6 @@
     "next-auth": "^4.24.7",
     "next-themes": "^0.3.0",
     "nodemailer": "^6.7.2",
-    "prisma": "^5.18.0",
     "react": "18.3.1",
     "react-day-picker": "^7.4.10",
     "react-dom": "18.3.1",
@@ -55,6 +54,7 @@
     "eslint": "7",
     "eslint-config-next": "12.0.4",
     "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "prisma": "^5.19.0"
   }
 }

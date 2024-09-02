@@ -26,8 +26,7 @@ const Announcement = () => {
 };
 
 const TopPlayerRating = () => {
-  // @ts-ignore
-  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=5" });
+  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1&pso=5" });
   if (!data) return null;
 
   return (
