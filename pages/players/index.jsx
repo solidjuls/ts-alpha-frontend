@@ -10,8 +10,6 @@ import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 
-
-
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
   cursor: "pointer" /* Set cursor to pointer */,
@@ -32,7 +30,6 @@ const ResultsStyleWrapper = styled("div", {
   maxWidth: "1000px",
   height: "500px",
 });
-
 
 export const StyledResultsPanel = styled("div", {
   display: "flex",
@@ -76,10 +73,10 @@ const CardColumn = ({ header, value, countryCode }) => {
 
 const ResultsPanel = ({ data, onPageChange, isLoading }) => {
   return (
-    <Flex css={{ flexDirection: "column", width: "100%", height:"100%" }}>
+    <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
       <StyledResultsPanel>
         {data?.map((player, index) => (
-            <PlayerRow key={index} index={index} player={player} />
+          <PlayerRow key={index} index={index} player={player} />
         ))}
       </StyledResultsPanel>
     </Flex>
@@ -89,21 +86,25 @@ const ResultsPanel = ({ data, onPageChange, isLoading }) => {
 const formatDateString = (dateStr) => {
   if (dateStr) {
     const utcDate = new Date(dateStr);
-    return utcDate.toLocaleString('fr-FR')
+    return utcDate.toLocaleString("fr-FR");
   }
-}
+};
 
-const PlayerRow = ({index, player}) => {
-  return(
-  <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
-    <StyledCardRow>
-      <CardColumn header="Rank:" value={player.rank} />
-      <CardColumn header="Player:" value={player.name} countryCode={player.countryCode} />
-      <CardColumn header="Last activity date:" value={(formatDateString(player.lastActivity) || "-")} />
-      <CardColumn header="Rating:" value={player.rating} />
-    </StyledCardRow>
-  </UnstyledLink>)
-}
+const PlayerRow = ({ index, player }) => {
+  return (
+    <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
+      <StyledCardRow>
+        <CardColumn header="Rank:" value={player.rank} />
+        <CardColumn header="Player:" value={player.name} countryCode={player.countryCode} />
+        <CardColumn
+          header="Last activity date:"
+          value={formatDateString(player.lastActivity) || "-"}
+        />
+        <CardColumn header="Rating:" value={player.rating} />
+      </StyledCardRow>
+    </UnstyledLink>
+  );
+};
 
 const Players = () => {
   const [paginatedData, setPaginatedData] = useState(null);
@@ -115,17 +116,18 @@ const Players = () => {
   const onPageChange = async (page) => {
     setIsLoadingPagination(true);
     const paginatedData = await getAxiosInstance().get(`/api/rating?p=${page}`, {
-      id: `player-list-${page}`});
+      id: `player-list-${page}`,
+    });
 
     setIsLoadingPagination(false);
     setPaginatedData(paginatedData.data);
   };
 
   const calculateTotalPages = (data) => {
-    const totalPlayers = (data)[0].totalPlayers
-    const resultsPerPage = 20
-    return Math.ceil(totalPlayers/resultsPerPage)
-  }
+    const totalPlayers = data[0].totalPlayers;
+    const resultsPerPage = 20;
+    return Math.ceil(totalPlayers / resultsPerPage);
+  };
 
   return (
     <>
@@ -137,9 +139,12 @@ const Players = () => {
           isLoading={isLoadingPagination}
         />
       </ResultsStyleWrapper>
-      <Pagination totalPages={calculateTotalPages(paginatedData || data)} onPageChange={onPageChange} />
+      <Pagination
+        totalPages={calculateTotalPages(paginatedData || data)}
+        onPageChange={onPageChange}
+      />
     </>
-  )
+  );
 };
 
 export default Players;

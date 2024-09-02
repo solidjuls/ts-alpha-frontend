@@ -1,15 +1,15 @@
 import { prisma } from "backend/utils/prisma";
-import { getTopNRatedPlayers } from '@prisma/client/sql';
+import { getTopNRatedPlayers } from "@prisma/client/sql";
 import { BiggerLowerValue } from "types/game.types";
 
 const DEFAULT_RATING = 5000;
 
-export const getAllPlayers = async (p, pageSizeOverride = null) =>{
-  const pageSize = (pageSizeOverride || 20);
-  const page = Number(p)
+export const getAllPlayers = async (p, pageSizeOverride = null) => {
+  const pageSize = pageSizeOverride || 20;
+  const page = Number(p);
   let skip = (page - 1) * pageSize;
-  return await prisma.$queryRawTyped(getTopNRatedPlayers(pageSize, skip))
-}
+  return await prisma.$queryRawTyped(getTopNRatedPlayers(pageSize, skip));
+};
 
 const getRatingDifference = (
   defeated: number,
