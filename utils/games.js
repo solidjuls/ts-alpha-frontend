@@ -1,3 +1,5 @@
+import { turns } from "utils/constants";
+
 export const getWinnerText = (gameWinner) => {
   if (gameWinner === "1") {
     return "USA";
@@ -5,4 +7,8 @@ export const getWinnerText = (gameWinner) => {
     return "USSR";
   }
   return "TIE";
+};
+
+export const getTurnText = (turnNumber) => {
+  return turns.find((turn) => turn.value === String(turnNumber))?.text;
 };

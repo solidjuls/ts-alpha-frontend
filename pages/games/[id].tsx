@@ -9,7 +9,7 @@ import Text from "components/Text";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { styled } from "stitches.config";
 import { Spinner } from "@radix-ui/themes";
-import { getWinnerText } from "utils/games";
+import { getWinnerText, getTurnText } from "utils/games";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
 
@@ -92,7 +92,7 @@ const GameContent = ({ data }) => (
         <Span>{data.gameType}</Span>
         <Span>{data.game_code}</Span>
         <Span>{getWinnerText(data.gameWinner)}</Span>
-        <Span>{data.endTurn || "-"}</Span>
+        <Span>{getTurnText(data.endTurn)}</Span>
         <Span>{data.endMode}</Span>
         <Span>{dateFormat(new Date(data.created_at))}</Span>
       </Flex>

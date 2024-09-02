@@ -13,7 +13,7 @@ export type UserProfileState = {
 export type SubmitFormState = {
   oldId: SubmitFormValue<string>;
   gameDate: SubmitFormValue<Date>;
-  gameWinner: SubmitFormValue<GameWinner>;
+  gameWinner: SubmitFormValue<GameWinner> | null;
   gameCode: SubmitFormValue<string>;
   gameType: SubmitFormValue<string>;
   opponentWas: SubmitFormValue<string>;
