@@ -7,7 +7,6 @@ import UserProfileForm from "./UserProfileForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
 
 const UserProfileContainer = ({ id }) => {
-  // const { id } = useSession();
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
   if (isLoading) return <Spinner size="3" />;

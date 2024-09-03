@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Form } from "components/Atoms";
 import Text from "components/Text";
 import { Input } from "components/Input";
@@ -6,7 +6,6 @@ import { Label } from "components/Label";
 import { Button } from "components/Button";
 import Head from "next/head";
 import { styled } from "stitches.config";
-import { FormattedMessage } from "react-intl";
 import getAxiosInstance from "utils/axios";
 
 const formStyles = {
@@ -33,7 +32,6 @@ const Headline = styled("strong", {
 const ResetPassword = () => {
   const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
-  // const mutation = trpc.useMutation(["user-reset-pwd"]);
 
   return (
     <Form css={formStyles}>
@@ -55,14 +53,16 @@ const ResetPassword = () => {
             />
           </Box>
           <Button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               if (mail) {
                 // @ts-ignore
+                console.log("calling", mail);
                 getAxiosInstance()
                   .post(`/api/user/reset-password/`, {
                     mail,
                   })
-                  .then((resp) => setConfirmation(true));
+                  .then(() => setConfirmation(true));
               }
               // call reset endpoint
             }}

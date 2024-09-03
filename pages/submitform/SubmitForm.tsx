@@ -67,26 +67,6 @@ const SubmitForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  // const gameSubmitMutation = trpc.useMutation(["game-submit"], {
-  //   onSuccess: async () => {
-  //     trpcUtils.queryClient.invalidateQueries();
-  //     if (window) window.location.href = "/";
-  //   },
-  //   onError: (error, variables, context) =>
-  //     console.log("error gameSubmitMutation", error, variables, context),
-  // });
-  // const gameConfirmRecreation = trpc.useMutation(["game-restoreConfirm"], {
-  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-  //   onError: (error, variables, context) =>
-  //     console.log("error gameConfirmRecreation", error, variables, context),
-  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  // });
-  // const gameRecreationMutation = trpc.useMutation(["game-restore"], {
-  //   onSuccess: () => trpcUtils.invalidateQueries(),
-  //   onError: (error, variables, context) =>
-  //     console.log("error gameRecreationMutation", error, variables, context),
-  //   onSettled: (props) => console.log("onSettled gameRecreationMutation", props),
-  // });
 
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};

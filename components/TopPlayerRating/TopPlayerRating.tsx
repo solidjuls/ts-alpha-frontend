@@ -27,7 +27,6 @@ const Announcement = () => {
 
 const TopPlayerRating = () => {
   // @ts-ignore
-  // const { data, isLoading } = trpc.useQuery(["rating-get", { n: 5 }]);
   const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=5" });
   if (!data) return null;
 

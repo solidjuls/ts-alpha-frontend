@@ -161,11 +161,6 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
-  // const { data, isLoading } = trpc.useQuery([
-  //   GAME_QUERY,
-  //   // @ts-ignore
-  //   { d: dateValue.toDateString() },
-  // ]);
   const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
   const onPageChange = async (page: string) => {
@@ -190,7 +185,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const games = !paginatedData ? data : paginatedData;
   const loading = isLoading || isLoadingPagination;
-  console.log("games", data, paginatedData);
+
   return (
     <Box
       css={{

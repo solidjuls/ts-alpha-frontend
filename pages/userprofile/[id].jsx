@@ -49,41 +49,10 @@ const UserProfileContent = ({ data }) => (
   </>
 );
 const UserProfile = ({ id }) => {
-  console.log("props", id);
-  // const [data, setData] = useState(null);
-  // useEffect(() => {
-  //   axios.get(`/api/user/${id}`).then((resp) => console.log(resp));
-  // }, []);
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
-  // const { data, isLoading } = trpc.useQuery(["user-get", { id }]);
-  // const mutationAll = trpc.useMutation(["user-update-all"]);
   const { email } = useSession();
   console.log("data", data);
-
-  // if (isLoading) return null;
-  const updateClick = async () => {
-    // if (session?.user?.email) {
-    const pwdHashed = await hash(password, 12);
-    // @ts-ignore
-    mutation.mutate({
-      mail,
-      password: pwdHashed,
-    });
-    // }
-  };
-
-  const updateAllClick = async () => {
-    const pwd = "welcome6";
-
-    if (email) {
-      const pwd = await hash("welcome6", 12);
-
-      mutationAll.mutate({
-        password: pwd,
-      });
-    }
-  };
 
   return (
     <DetailContainer>
@@ -103,20 +72,6 @@ const UserProfile = ({ id }) => {
         }}
       >
         {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
-
-        {/* {role === 2 && (
-        <TextComponent labelText="userMail" inputValue={mail} onInputValueChange={setMail} />
-      )} */}
-        {/* <TextComponent
-        labelText="updatePwdProfile"
-        inputValue={password}
-        onInputValueChange={setPassword}
-      />
-      <Button onClick={updateClick}>
-        <FormattedMessage id="updatePwdProfileButton" />
-      </Button> */}
-        {/* <Button onClick={updateAllClick}>Update All Passwords</Button> */}
-        {/* <LanguagePicker /> */}
       </Box>
     </DetailContainer>
   );

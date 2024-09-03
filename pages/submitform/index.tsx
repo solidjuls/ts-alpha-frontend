@@ -108,32 +108,6 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  // const [id] = useDebounce(form.oldId.value, 1000);
-  // const options = useMemo(
-  //   () => ({
-  //     method: 'POST',
-  //   body: JSON.stringify({ id: Number(id) })
-  //   }),
-  //   [],
-  // );
-  // const { data, loading, error } = useFetch('/api/game', options)
-
-  // if (loading) return  <div>loading!</div>
-  // if (error) return  <div>error!</div>
-
-  //   if (data) {
-  //       setForm(restoreDataFromAPI(data, id));
-  //     }
-
-  // const { data } = trpc.useQuery(["game-getDataByGame", { id: Number(id) }], {
-  //   enabled: id !== undefined && id !== "",
-  //   onSuccess: (data) => {
-  //     if (data) {
-  //       setForm(restoreDataFromAPI(data, id));
-  //     }
-  //   },
-  // });
-
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
