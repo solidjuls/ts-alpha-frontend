@@ -18,6 +18,7 @@ import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 import { DropdownWithLabel } from "components/EditFormComponents";
+import { styled } from "stitches.config";
 
 type HomepageProps = {
   role: number;
@@ -81,7 +82,6 @@ const getGameType = (game: Game, role: number) => {
 };
 
 const ResultRow = ({ game, role }: { game: Game; role: number }) => {
-  // console.log("game role", game, role);
   return (
     <PlayerInfo>
       <Flex
@@ -157,6 +157,27 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
   );
 };
 
+const ResponsiveContainer = styled('div', {
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  maxWidth: "1100px",
+  variants: {
+    direction: {
+      row: {
+        flexDirection: "row",
+      },
+      column: {
+        flexDirection: "column",
+      },
+    },
+  },
+
+  // '@sm': {
+  //   display: "flex",
+  //   flexDirection: "column",
+  // }
+})
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
@@ -187,15 +208,10 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const loading = isLoading || isLoadingPagination;
 
   return (
-    <Box
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        maxWidth: "1100px",
-        // flexWrap: "wrap",
-      }}
-    >
+    <ResponsiveContainer direction={{
+      '@initial': 'row',
+      '@sm': "column"
+    }}>
       <ResultsPanel
         data={games}
         isLoading={loading}
@@ -207,7 +223,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       <Box>
         <TopPlayerRating />
       </Box>
-    </Box>
+    </ResponsiveContainer>
   );
 };
 

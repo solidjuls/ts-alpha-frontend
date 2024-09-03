@@ -34,7 +34,6 @@ export default async function handler(req, res) {
     },
   );
 
-  console.log("bumbum", token);
   res.setHeader(
     "Set-Cookie",
     cookie.serialize("token", token, {

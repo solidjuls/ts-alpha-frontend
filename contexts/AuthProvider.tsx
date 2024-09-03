@@ -70,7 +70,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, 
     }
   };
 
-  console.log("auth", auth);
   return (
     <AuthContext.Provider
       value={{

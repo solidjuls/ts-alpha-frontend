@@ -36,8 +36,6 @@ export const StyledResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
   marginBottom: "12px",
-  height: "500px",
-  overflowY: "scroll",
 });
 
 export const FilterPanel = styled("div", {
