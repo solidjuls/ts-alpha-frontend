@@ -132,9 +132,11 @@ const SubmitForm = ({
           onInputValueChange={(value) => onInputValueChange("gameCode", value)}
           css={{ width: "50px" }}
           error={form.gameCode.error}
+          key="checkID"
         />
         <DropdownWithLabel
           labelText="typeOfGame"
+          key="gameType"
           items={leagueTypes}
           selectedItem={form.gameType.value}
           selectedValueProperty="value"
@@ -168,6 +170,8 @@ const SubmitForm = ({
           labelText="gameWinner"
           items={gameWinningOptions}
           selectedItem={form.gameWinner.value as string}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
           error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
           onSelect={(value: string) => onInputValueChange("gameWinner", value)}

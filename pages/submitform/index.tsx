@@ -70,7 +70,7 @@ const initialState: SubmitFormState = {
     error: false,
   },
   gameWinner: {
-    value: "1",
+    value: null,
     error: false,
   },
   gameCode: {
@@ -155,6 +155,21 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         }
       }
     });
+    // If turn == final scoring, then end mode must also equal final scoring
+    if (form["endTurn"].value === "11" && form["endMode"].value !== "Final Scoring") {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["endTurn"]: {
+          ...prevState["endTurn"],
+          error: true,
+        },
+        ["endMode"]: {
+          ...prevState["endMode"],
+          error: true,
+        },
+      }));
+      submit = false;
+    }
     return submit;
   };
 

@@ -84,6 +84,10 @@ export const turns: Array<DropdownType> = [
     text: "10",
     value: "10",
   },
+  {
+    text: "Final Scoring",
+    value: "11",
+  },
 ];
 
 export const endType: Array<DropdownType> = [
@@ -140,7 +144,7 @@ export const gameWinningOptions: Array<DropdownType> = [
   },
   {
     value: "2",
-    text: "URSS",
+    text: "USSR",
   },
   {
     value: "3",
@@ -155,6 +159,6 @@ export const gameSides: Array<DropdownType> = [
   },
   {
     value: "2",
-    text: "URSS",
+    text: "USSR",
   },
 ];

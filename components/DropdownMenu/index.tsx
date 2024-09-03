@@ -73,6 +73,7 @@ const SelectedItemDiv = styled("div", {
   textAlign: "left",
   lineHeight: 2.3,
   fontSize: 15,
+  color: "$textDark",
 });
 
 export type DropdownItemType = {
