@@ -43,11 +43,6 @@ const ResetPassword = () => {
   const { hash: hashKey } = router.query;
 
   const decrypted = decryptHash(hashKey);
-  const values = decrypted.split("#");
-  const date = Date.parse(values[1]);
-  console.log(Date.now() - date, values);
-  if (date === NaN) return <div>Link invalid</div>;
-  if ((Date.now() - date) / 1000 > 3600) return <div>Link outdated</div>;
 
   const validate = ({ hash }) => {
     if (pwd !== pwdConfirm) {
@@ -81,7 +76,7 @@ const ResetPassword = () => {
       {errorMsg && <Label css={{ color: "red" }}>{errorMsg}</Label>}
       <Button
         onClick={async () => {
-          if (validate({ hash: values[0] })) {
+          if (validate({ hash: decrypted })) {
             // some regex to validate mail is ok would be nice
             const pwdHashed = await hash(pwd, 12);
             if (!hashKey) return;

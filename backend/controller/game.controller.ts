@@ -94,7 +94,6 @@ export const getGameWithRatings = async (filter?: any, p: string) => {
       },
     ],
   });
-  console.log("games findMany", new Date());
   const normalizedGames = games.map((game) => {
     let ratingHistoryUSA = 0;
     let ratingHistoryUSSR = 0;
@@ -111,10 +110,7 @@ export const getGameWithRatings = async (filter?: any, p: string) => {
       ratingHistoryUSSR,
     };
   });
-  console.log("games normalizedGames", new Date());
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
-  console.log("games getGamesWithRating", new Date());
-  console.log("ewqee", normalizedGames);
   return getGamesWithRating;
 };
 

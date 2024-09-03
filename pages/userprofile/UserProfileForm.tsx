@@ -130,7 +130,6 @@ const UserProfileForm = ({ data }) => {
             error: true,
           },
         }));
-        console.log("key", key, form[key as keyof UserProfileState].value);
         submit = false;
       }
     });

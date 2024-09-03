@@ -93,7 +93,6 @@ export const get = async (id) => {
   const userParsed = JSON.stringify({ ...user, rating }, (key, value) =>
     typeof value === "bigint" ? value.toString() : value,
   );
-  console.log("user", userParsed);
   return JSON.parse(userParsed);
 };
 
@@ -123,9 +122,7 @@ const decryptHash = (hash: any) => {
 };
 
 const generateHash = (mail: string) => {
-  const date = new Date()
-  let data = `${mail}#${date.toString()}`;
-  let buff = Buffer.from(data);
+  let buff = Buffer.from(mail);
   return buff.toString("base64");
 };
 
@@ -178,13 +175,10 @@ export const resetPasswordMail = async ({ mail }) => {
   });
 
   if (!user) return { success: false };
-  console.log("sendEmail output", user, mail);
   const hash = generateHash(mail);
 
-  // const decrypted = decryptHash(hash);
-  // console.log("hash", decrypted);
-  const aver = await sendEmail(mail, user.first_name, `https://${getUrl()}/reset-password/${hash}`);
-  console.log("sendEmail output", aver);
+  const mailOutput = await sendEmail(mail, user.first_name, `https://${getUrl()}/reset-password/${hash}`);
+  console.log("sendEmail output", mailOutput);
 
   return { success: true };
 };

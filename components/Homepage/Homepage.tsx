@@ -190,7 +190,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const games = !paginatedData ? data : paginatedData;
   const loading = isLoading || isLoadingPagination;
-  console.log("games", data, paginatedData);
+
   return (
     <Box
       css={{
