@@ -52,6 +52,7 @@ type PlayerNameProps = {
   userId: bigint;
   rating: number;
   previousRating: number;
+  countryCode: string;
   isUSSR?: boolean;
 };
 
@@ -67,6 +68,7 @@ const GameContent = ({ data }) => (
         userId={data.usaPlayerId}
         rating={data.ratingsUSA.rating}
         previousRating={data.ratingsUSA.previousRating}
+        countryCode={data.usaCountryCode}
       />
       vs
       <PlayerName
@@ -74,6 +76,7 @@ const GameContent = ({ data }) => (
         userId={data.ussrPlayerId}
         rating={data.ratingsUSSR.rating}
         previousRating={data.ratingsUSSR.previousRating}
+        countryCode={data.ussrCountryCode}
         isUSSR
       />
     </Flex>
@@ -162,24 +165,25 @@ const PlayerName: React.FC<PlayerNameProps> = ({
   userId,
   rating,
   previousRating,
+  countryCode,
   isUSSR,
 }) => {
   return (
     <Flex css={{ flexDirection: "column" }}>
-      <Flex css={{ margin: "0 8px 0 8px" }}>
+      <Flex css={{ margin: "0 8px 0 8px", display: "flex", alignItems: "flex-end" }}>
         {!isUSSR ? (
           <>
             <StyledLink borderBottom="usa" href={`/userprofile/${userId}`}>
               {playerName}
             </StyledLink>
             <Flex css={{ flexDirection: "column" }}>
-              <FlagIcon code="US" />
+              <FlagIcon code={countryCode} />
             </Flex>
           </>
         ) : (
           <>
             <Flex css={{ flexDirection: "column" }}>
-              <FlagIcon code="US" />
+              <FlagIcon code={countryCode} />
             </Flex>
             <StyledLink borderBottom="ussr" href={`/userprofile/${userId}`}>
               {playerName}

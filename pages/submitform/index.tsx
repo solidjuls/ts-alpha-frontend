@@ -145,13 +145,13 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       submit = false;
     }
     // Wargammes can only be used if turn 8, 9, 10
-    if(form["endMode"].value === "Wargames" && !["8", "9", "10"].includes(form["endTurn"].value)) {
+    if (form["endMode"].value === "Wargames" && !["8", "9", "10"].includes(form["endTurn"].value)) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
           ...prevState["endTurn"],
           error: true,
-        }
+        },
       }));
       submit = false;
     }
