@@ -97,22 +97,9 @@ const gameDurations = [
 ];
 
 const getInitialState = (data) => {
-  console.log("do you run?");
   return {
-    firstName: {
-      value: data.first_name,
-      error: false,
-    },
-    lastName: {
-      value: data.last_name,
-      error: false,
-    },
     name: {
       value: data.name,
-      error: false,
-    },
-    email: {
-      value: data.email,
       error: false,
     },
     preferredGamingPlatform: {
@@ -123,57 +110,14 @@ const getInitialState = (data) => {
       value: data.preferred_game_duration,
       error: false,
     },
-    timeZoneId: {
-      value: data.timezone_id,
-      error: false,
-    },
   };
 };
 
-const initialState: UserProfileState = {
-  firstName: {
-    value: "",
-    error: false,
-  },
-  lastName: {
-    value: "",
-    error: false,
-  },
-  name: {
-    value: "",
-    error: false,
-  },
-  email: {
-    value: "",
-    error: false,
-  },
-  preferredGamingPlatform: {
-    value: "",
-    error: false,
-  },
-  preferredGameDuration: {
-    value: "",
-    error: false,
-  },
-  timeZoneId: {
-    value: "",
-    error: false,
-  },
-};
-
 const UserProfileForm = ({ data }) => {
-  console.log(getInitialState(data));
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
-  // const userUpdateMutation = trpc.useMutation(["user-update-profile"], {
-  //   onSuccess: (props) => console.log("success gameConfirmRecreation", props),
-  //   onError: (error, variables, context) =>
-  //     console.log("error gameConfirmRecreation", error, variables, context),
-  //   onSettled: (props) => console.log("onSettled gameConfirmRecreation", props),
-  // });
 
   const validated = () => {
     let submit = true;
@@ -212,36 +156,15 @@ const UserProfileForm = ({ data }) => {
     });
     return payloadObject;
   };
-  console.log("form", form);
+
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      <EditTextComponent
-        labelText="firstName"
-        inputValue={form?.firstName.value}
-        onInputValueChange={(value) => onInputValueChange("firstName", value)}
-        css={{ width: inputWidth }}
-        error={form?.firstName.error}
-      />
-      <EditTextComponent
-        labelText="lastName"
-        inputValue={form?.lastName.value}
-        onInputValueChange={(value) => onInputValueChange("lastName", value)}
-        css={{ width: inputWidth }}
-        error={form?.lastName.error}
-      />
       <EditTextComponent
         labelText="playdeckName"
         inputValue={form?.name.value}
         onInputValueChange={(value) => onInputValueChange("name", value)}
         css={{ width: inputWidth }}
         error={form?.name.error}
-      />
-      <EditTextComponent
-        labelText="mail"
-        inputValue={form?.email.value}
-        onInputValueChange={(value) => onInputValueChange("email", value)}
-        css={{ width: inputWidth }}
-        error={form?.email.error}
       />
       <DropdownWithLabel
         labelText="preferredGamingPlatform"
@@ -258,13 +181,6 @@ const UserProfileForm = ({ data }) => {
         css={{ width: dropdownWidth }}
         selectedItem={form.preferredGameDuration.value}
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
-      />
-      <EditTextComponent
-        labelText="timeZone"
-        inputValue={form?.timeZoneId.value}
-        onInputValueChange={(value) => onInputValueChange("timeZoneId", value)}
-        css={{ width: inputWidth }}
-        error={form?.timeZoneId.error}
       />
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}
       {errorMsg && <Text type="error">{errorMsg}</Text>}
