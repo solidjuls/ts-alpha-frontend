@@ -67,7 +67,6 @@ const CardColumn = ({ header, value, countryCode }) => {
 //   }, []);
 
 const Players = () => {
-  // const { data, isLoading } = trpc.useQuery(["rating-get", { n: -1 }]);
   const { data, isLoading } = useFetchInitialData({ url: "/api/rating?n=-1" });
   if (isLoading) return <Spinner size="3" />;
 
