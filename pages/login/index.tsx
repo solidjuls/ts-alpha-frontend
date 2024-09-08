@@ -23,7 +23,7 @@ const formStyles = {
   alignItems: "center",
   alignSelf: "center",
   backgroundColor: "White",
-  width: "640px",
+  width: "100%",
   height: "400px",
   boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
 };

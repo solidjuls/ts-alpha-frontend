@@ -121,7 +121,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
           height: "250px",
           flexDirection: "column",
           backgroundColor: "white",
-          padding: "24px",
+          padding: "24px 0 0 0",
           alignItems: "center",
           justifyContent: isLoading ? "center" : "flex-start",
           border: "solid 1px lightgray",
