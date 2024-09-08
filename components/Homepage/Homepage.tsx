@@ -140,11 +140,13 @@ const FilterUser = () => {
 
 const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoading }) => {
   if (isLoading) {
-    return <Flex css={{ width: "100%" }}>
-      <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
-        <Spinner />
-      </StyledResultsPanel>
-    </Flex>
+    return (
+      <Flex css={{ width: "100%" }}>
+        <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
+          <Spinner />
+        </StyledResultsPanel>
+      </Flex>
+    );
   }
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
@@ -210,7 +212,6 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const games = !paginatedData ? data : paginatedData;
   const loading = isLoading || isLoadingPagination;
 
-  
   return (
     <ResponsiveContainer
       direction={{

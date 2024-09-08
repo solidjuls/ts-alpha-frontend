@@ -36,7 +36,7 @@ export const StyledResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
   marginBottom: "12px",
-  minHeight: "600px"
+  minHeight: "600px",
 });
 
 export const FilterPanel = styled("div", {
