@@ -5,7 +5,7 @@ module.exports = {
     typeOfGame: "Type of game",
     gameRecreateId: "Game ID",
     checkID: "Check ID",
-    oldId: "Old Check ID",
+    oldId: "Old game id",
     opponentWas: "Your opponent was:",
     gameWinner: "Game winner",
     endTurn: "End Turn",

@@ -54,7 +54,7 @@ const formatResultConfirmation = (result: string[]) =>
 const SubmitForm = ({
   validated,
   role,
-  checked,
+  recreate,
   setChecked,
   form,
   onInputValueChange,
@@ -86,20 +86,15 @@ const SubmitForm = ({
     console.log("payloadObject", payloadObject);
     return payloadObject;
   };
-  console.log("id", id);
+  console.log("id", recreate);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {role === 2 && (
+      {/* {role === 2 && (
         <>
-          <Checkbox
-            checked={checked}
-            onCheckedChange={(value: boolean) => setChecked(value)}
-            text="Activate rating recreation"
-            css={{ marginBottom: "8px" }}
-          />
-          {checked && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
+          {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
         </>
-      )}
+      )} */}
+      {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
       <Box
         css={{
           flexDirection: "column",
@@ -184,7 +179,7 @@ const SubmitForm = ({
           error={form.video1.error}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
-        {!checked && (
+        {!recreate && (
           <Button
             disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
@@ -224,11 +219,36 @@ const SubmitForm = ({
           </Button>
         )}
         {errorMsg && <Text type="error">{errorMsg}</Text>}
-        {checked && (
+        {recreate && (
           <Button
             // disabled={buttonDisabled}
             css={{ width: "200px", fontSize: "18px" }}
             onClick={async (event) => {
+              if (validated(form, setForm)) {
+                try {
+                  setIsSubmitting(true);
+                  // @ts-ignore
+                  await getAxiosInstance().post(
+                    "/api/game/recreate",
+                    {
+                      data: normalizeData(form),
+                    },
+                    {
+                      cache: {
+                        update: {
+                          "game-list": "delete",
+                        },
+                      },
+                    },
+                  );
+                  router.push("/");
+                } catch (e) {
+                  console.log("error", e);
+                  setErrorMsg("There was an error submitting the result");
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }
               // event.currentTarget.disabled = true;
               // @ts-ignore
               // const result = await gameConfirmRecreation.mutateAsync({

@@ -119,6 +119,11 @@ const Items = ({ styles }: any) => {
           Submit Form
         </Text>
       </UnstyledLink>
+      <UnstyledLink href="/recreateform" passHref>
+        <Text strong="bold" css={horizontalItemStyles}>
+          Recreate Form
+        </Text>
+      </UnstyledLink>
     </>
   );
 };
@@ -217,6 +222,13 @@ const VerticalSidebar = () => {
               <Item>
                 <Text strong="bold" css={horizontalItemStyles}>
                   Submit Form
+                </Text>
+              </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/recreateform" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  Recreate Form
                 </Text>
               </Item>
             </UnstyledLink>

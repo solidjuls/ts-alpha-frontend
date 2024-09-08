@@ -6,14 +6,14 @@ export default async function handler(req, res) {
   authenticateJWT(req, res, async () => {
     if (req.method === "POST") {
       try {
-        const newGameWithId = await submit(req.body.data);
-        // const newGameWithId = await startRecreatingRatings({ oldId: 19127, ...req.body.data, gameWinner: "1"});
+        // const newGameWithId = await submit(req.body.data);
+        const newGameWithId = await startRecreatingRatings(req.body.data);
         console.log("newGameWithId", newGameWithId);
         const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
           typeof value === "bigint" ? value.toString() : value,
         );
 
-        res.status(200).json(newGameWithIdParsed);
+        res.status(500).json(newGameWithIdParsed);
       } catch {
         res.status(500).json("Error submitting result");
       }
