@@ -18,6 +18,7 @@ import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 import { DropdownWithLabel } from "components/EditFormComponents";
+import { styled } from "stitches.config";
 
 type HomepageProps = {
   role: number;
@@ -81,7 +82,6 @@ const getGameType = (game: Game, role: number) => {
 };
 
 const ResultRow = ({ game, role }: { game: Game; role: number }) => {
-  // console.log("game role", game, role);
   return (
     <PlayerInfo>
       <Flex
@@ -139,6 +139,13 @@ const FilterUser = () => {
 };
 
 const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoading }) => {
+  if (isLoading) {
+    return <Flex css={{ width: "100%" }}>
+      <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
+        <Spinner />
+      </StyledResultsPanel>
+    </Flex>
+  }
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
       <StyledResultsPanel>
@@ -156,6 +163,23 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
     </Flex>
   );
 };
+
+const ResponsiveContainer = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  maxWidth: "1100px",
+  variants: {
+    direction: {
+      row: {
+        flexDirection: "row",
+      },
+      column: {
+        flexDirection: "column",
+      },
+    },
+  },
+});
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
@@ -186,14 +210,12 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const games = !paginatedData ? data : paginatedData;
   const loading = isLoading || isLoadingPagination;
 
+  
   return (
-    <Box
-      css={{
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        maxWidth: "1100px",
-        // flexWrap: "wrap",
+    <ResponsiveContainer
+      direction={{
+        "@initial": "row",
+        "@sm": "column",
       }}
     >
       <ResultsPanel
@@ -207,7 +229,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       <Box>
         <TopPlayerRating />
       </Box>
-    </Box>
+    </ResponsiveContainer>
   );
 };
 

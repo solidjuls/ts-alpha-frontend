@@ -12,7 +12,7 @@ const topRatingAlignStyles = {
 const User = ({ name, rating, countryCode }: UserType) => {
   return (
     <Box css={topRatingAlignStyles}>
-      <Box css={{ display: "flex", flexDirection: "row" }}>
+      <Box css={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
         <FlagIcon code={countryCode} />
         <Text>{name}</Text>
       </Box>
