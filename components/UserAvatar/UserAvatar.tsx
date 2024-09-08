@@ -144,11 +144,9 @@ const UserAvatar = ({ name }: { name: string }) => {
           <StyledTriangleDownIcon />
         </StyledTrigger>
         <StyledContent align="end">
-          <StyledItem>
-            <Link href="/userprofile" passHref>
-              {intl.formatMessage({ id: "profileText" })}
-            </Link>
-          </StyledItem>
+          <Link href="/userprofile" passHref>
+            <StyledItem>{intl.formatMessage({ id: "profileText" })}</StyledItem>
+          </Link>
           <StyledSeparator />
           <StyledItem
             onClick={async () => {

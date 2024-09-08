@@ -2,10 +2,39 @@ import Link from "next/link";
 import { Box } from "components/Atoms";
 import Text from "components/Text";
 import { useSession } from "contexts/AuthProvider";
-import { styled } from "stitches.config";
+import { styled, keyframes } from "stitches.config";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { FormattedMessage } from "react-intl";
 import { UserAvatar } from "components/UserAvatar";
+import {
+  Root,
+  Trigger,
+  Content,
+  Portal,
+  Item,
+  Arrow,
+  Separator,
+} from "@radix-ui/react-dropdown-menu";
+
+const slideUpAndFade = keyframes({
+  "0%": { opacity: 0, transform: "translateY(2px)" },
+  "100%": { opacity: 1, transform: "translateY(0)" },
+});
+
+const slideRightAndFade = keyframes({
+  "0%": { opacity: 0, transform: "translateX(-2px)" },
+  "100%": { opacity: 1, transform: "translateX(0)" },
+});
+
+const slideDownAndFade = keyframes({
+  "0%": { opacity: 0, transform: "translateY(-2px)" },
+  "100%": { opacity: 1, transform: "translateY(0)" },
+});
+
+const slideLeftAndFade = keyframes({
+  "0%": { opacity: 0, transform: "translateX(2px)" },
+  "100%": { opacity: 1, transform: "translateX(0)" },
+});
 
 const sidebarItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
@@ -49,11 +78,21 @@ const StyledText = styled(Text, {
 });
 
 const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
-  display: "none",
+  padding: "8px 16px",
+
   "@sm": {
     display: "flex",
     justifyContent: "flex-start",
     cursor: "pointer",
+  },
+});
+
+const HorizontalNavigationLayout = styled(Flex, {
+  justifyContent: "space-between",
+  backgroundColor: "#E2E8F0",
+  width: "100%",
+  "@sm": {
+    display: "none",
   },
 });
 export const UnstyledLink = styled(Link, {
@@ -83,10 +122,24 @@ const Items = ({ styles }: any) => {
     </>
   );
 };
+
+const VerticalNavigation = () => {
+  const { name } = useSession();
+  return (
+    <Flex
+      css={{
+        backgroundColor: "#E2E8F0",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    ></Flex>
+  );
+};
+
 const HorizontalNavigation = () => {
   const { name } = useSession();
   return (
-    <Flex css={{ justifyContent: "space-between", backgroundColor: "#E2E8F0" }}>
+    <HorizontalNavigationLayout>
       <Box
         css={{
           display: "flex",
@@ -107,24 +160,99 @@ const HorizontalNavigation = () => {
           <UserAvatar name={name} />
         </Flex>
       )}
+    </HorizontalNavigationLayout>
+  );
+};
+
+const StyledContent = styled(Content, {
+  minWidth: 120,
+  borderRadius: 6,
+  padding: 5,
+  boxShadow:
+    "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
+  "@media (prefers-reduced-motion: no-preference)": {
+    animationDuration: "400ms",
+    animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
+    willChange: "transform, opacity",
+    '&[data-state="open"]': {
+      '&[data-side="top"]': { animationName: slideDownAndFade },
+      '&[data-side="right"]': { animationName: slideLeftAndFade },
+      '&[data-side="bottom"]': { animationName: slideUpAndFade },
+      '&[data-side="left"]': { animationName: slideRightAndFade },
+    },
+  },
+});
+
+const VerticalSidebarLayout = styled(Flex, {
+  display: "none",
+  "@sm": {
+    display: "flex",
+  },
+});
+const VerticalSidebar = () => {
+  const { name } = useSession();
+  return (
+    <VerticalSidebarLayout>
+      <Root>
+        <Trigger>
+          <StyledHamburgerMenuIcon />
+        </Trigger>
+        <Portal>
+          <StyledContent align="end">
+            <UnstyledLink href="/" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  Home Page
+                </Text>
+              </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/players" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  Player List
+                </Text>
+              </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/submitform" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  Submit Form
+                </Text>
+              </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/userprofile" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  <FormattedMessage id="profileText" />
+                </Text>
+              </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/login" passHref>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  {name ? <FormattedMessage id="signOut" /> : <FormattedMessage id="signIn" />}
+                </Text>
+              </Item>
+            </UnstyledLink>
+          </StyledContent>
+        </Portal>
+      </Root>
+    </VerticalSidebarLayout>
+  );
+};
+const Navigation = () => {
+  return (
+    <Flex
+      css={{
+        backgroundColor: "#E2E8F0",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
+      <VerticalSidebar />
+      <HorizontalNavigation />
     </Flex>
   );
 };
 
-const Sidebar = () => {
-  return (
-    <Box css={{ position: "relative" }}>
-      <Box
-        css={{
-          width: "100%",
-          backgroundColor: "white",
-          border: "solid 1px black",
-        }}
-      >
-        <Items styles={sidebarItemStyles} />
-      </Box>
-    </Box>
-  );
-};
-
-export { Sidebar, HorizontalNavigation };
+export { Navigation };

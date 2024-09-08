@@ -6,6 +6,8 @@ import { Sidebar, HorizontalNavigation } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
 import { NextApiRequest, NextApiResponse } from "next/types";
 import { getInfoFromCookies } from "utils/cookies";
+import { Navigation } from "components/Sidebar/Sidebar";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 const containerStyles = {
   display: "flex",
@@ -59,13 +61,11 @@ const Footer = () => {
     </StyledFooter>
   );
 };
-const Layout = ({ children }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
 
+const Layout = ({ children }) => {
   return (
     <Box css={containerStyles}>
-      {/* <Header openSidebar={() => setIsOpen(!isOpen)} /> */}
-      {isOpen ? <Sidebar /> : <HorizontalNavigation />}
+      <Navigation />
       <Main css={contentStyles}>{children}</Main>
       {/* <Footer /> */}
     </Box>

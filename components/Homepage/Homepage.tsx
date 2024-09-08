@@ -157,7 +157,7 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
   );
 };
 
-const ResponsiveContainer = styled('div', {
+const ResponsiveContainer = styled("div", {
   display: "flex",
   flexDirection: "row",
   width: "100%",
@@ -172,12 +172,7 @@ const ResponsiveContainer = styled('div', {
       },
     },
   },
-
-  // '@sm': {
-  //   display: "flex",
-  //   flexDirection: "column",
-  // }
-})
+});
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
@@ -208,10 +203,12 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const loading = isLoading || isLoadingPagination;
 
   return (
-    <ResponsiveContainer direction={{
-      '@initial': 'row',
-      '@sm': "column"
-    }}>
+    <ResponsiveContainer
+      direction={{
+        "@initial": "row",
+        "@sm": "column",
+      }}
+    >
       <ResultsPanel
         data={games}
         isLoading={loading}
