@@ -128,7 +128,7 @@ export const calculateRating = async ({
 };
 
 export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playerId: bigint }) => {
-  const client = prismaTransaction || prisma;
+  const client = !prismaTransaction ? prisma : prismaTransaction;
   return await client.ratings_history.findFirst({
     select: {
       rating: true,

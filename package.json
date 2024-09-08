@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "migration": "node utils/migrationProcess.js",
     "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha dev --execute 'yarn dev'",
     "dev:planetscale:prod": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
     "format:fix": "prettier --write --ignore-path .gitignore .",
@@ -38,6 +39,7 @@
     "next": "^14.2.6",
     "next-auth": "^4.24.7",
     "next-themes": "^0.3.0",
+    "node-fetch": "2",
     "nodemailer": "^6.7.2",
     "prisma": "^5.19.1",
     "react": "18.3.1",
