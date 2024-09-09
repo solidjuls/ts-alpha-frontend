@@ -12,6 +12,8 @@ import { Spinner } from "@radix-ui/themes";
 import { getWinnerText, getTurnText } from "utils/games";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
+import { Button } from "components/Button";
+import { UnstyledLink } from "components/Homepage/Homepage.styles";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -60,48 +62,68 @@ type GameProps = {
   gameId: string;
 };
 
-const GameContent = ({ data }) => (
-  <>
-    <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
-      <PlayerName
-        playerName={data.usaPlayer}
-        userId={data.usaPlayerId}
-        rating={data.ratingsUSA.rating}
-        previousRating={data.ratingsUSA.previousRating}
-        countryCode={data.usaCountryCode}
-      />
-      vs
-      <PlayerName
-        playerName={data.ussrPlayer}
-        userId={data.ussrPlayerId}
-        rating={data.ratingsUSSR.rating}
-        previousRating={data.ratingsUSSR.previousRating}
-        countryCode={data.ussrCountryCode}
-        isUSSR
-      />
-    </Flex>
+const GameContent = ({ data }) => {
+  const {
+    id,
+    gameDate,
+    gameWinner,
+    game_code,
+    gameType,
+    endTurn,
+    endMode,
+    usaPlayerId,
+    ussrPlayerId,
+  } = data;
+  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
-    <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
-      <Flex css={{ flexDirection: "column", alignItems: "end" }}>
-        <Span>Tournament:</Span>
-        <Span>Identifier:</Span>
-        <Span>Won by:</Span>
-        <Span>End turn:</Span>
-        <Span>Via:</Span>
-        <Span>Date:</Span>
+  return (
+    <>
+      <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
+        <PlayerName
+          playerName={data.usaPlayer}
+          userId={data.usaPlayerId}
+          rating={data.ratingsUSA.rating}
+          previousRating={data.ratingsUSA.previousRating}
+          countryCode={data.usaCountryCode}
+        />
+        vs
+        <PlayerName
+          playerName={data.ussrPlayer}
+          userId={data.ussrPlayerId}
+          rating={data.ratingsUSSR.rating}
+          previousRating={data.ratingsUSSR.previousRating}
+          countryCode={data.ussrCountryCode}
+          isUSSR
+        />
       </Flex>
-      <Box css={{ width: "5px" }} />
-      <Flex css={{ flexDirection: "column", alignItems: "start" }}>
-        <Span>{data.gameType}</Span>
-        <Span>{data.game_code}</Span>
-        <Span>{getWinnerText(data.gameWinner)}</Span>
-        <Span>{getTurnText(data.endTurn)}</Span>
-        <Span>{data.endMode}</Span>
-        <Span>{dateFormat(new Date(data.created_at))}</Span>
-      </Flex>
-    </Box>
-  </>
-);
+
+      <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
+        <Flex css={{ flexDirection: "column", alignItems: "end" }}>
+          <Span>Tournament:</Span>
+          <Span>Identifier:</Span>
+          <Span>Won by:</Span>
+          <Span>End turn:</Span>
+          <Span>Via:</Span>
+          <Span>Date:</Span>
+        </Flex>
+        <Box css={{ width: "5px" }} />
+        <Flex css={{ flexDirection: "column", alignItems: "start" }}>
+          <Span>{data.gameType}</Span>
+          <Span>{data.game_code}</Span>
+          <Span>{getWinnerText(data.gameWinner)}</Span>
+          <Span>{getTurnText(data.endTurn)}</Span>
+          <Span>{data.endMode}</Span>
+          <Span>{dateFormat(new Date(data.created_at))}</Span>
+        </Flex>
+      </Box>
+      <Button>
+        <UnstyledLink href={linkToRecreate} target="_blank">
+          <b>Recreate game</b>
+        </UnstyledLink>
+      </Button>
+    </>
+  );
+};
 
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();

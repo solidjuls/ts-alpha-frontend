@@ -6,10 +6,8 @@ import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
 import { gameWinningOptions, endType, turns, leagueTypes, gameSides } from "utils/constants";
 import { Button } from "components/Button";
-import { GAME_QUERY } from "utils/constants";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
-import { Checkbox } from "components/Checkbox";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import getAxiosInstance from "utils/axios";
@@ -54,7 +52,7 @@ const formatResultConfirmation = (result: string[]) =>
 const SubmitForm = ({
   validated,
   role,
-  checked,
+  recreate,
   setChecked,
   form,
   onInputValueChange,
@@ -70,12 +68,14 @@ const SubmitForm = ({
 
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
-    if (localForm.playedAs.value === "1") {
-      payloadObject["usaPlayerId"] = id;
-      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
-    } else if (localForm.playedAs.value === "2") {
-      payloadObject["ussrPlayerId"] = id;
-      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+    if (!recreate) {
+      if (localForm.playedAs.value === "1") {
+        payloadObject["usaPlayerId"] = id;
+        payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+      } else if (localForm.playedAs.value === "2") {
+        payloadObject["ussrPlayerId"] = id;
+        payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+      }
     }
 
     Object.keys(localForm).map((key: string) => {
@@ -86,20 +86,16 @@ const SubmitForm = ({
     console.log("payloadObject", payloadObject);
     return payloadObject;
   };
-  console.log("id", id);
+  console.log("id", recreate);
+  const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {role === 2 && (
+      {/* {role === 2 && (
         <>
-          <Checkbox
-            checked={checked}
-            onCheckedChange={(value: boolean) => setChecked(value)}
-            text="Activate rating recreation"
-            css={{ marginBottom: "8px" }}
-          />
-          {checked && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
+          {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
         </>
-      )}
+      )} */}
+      {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
       <Box
         css={{
           flexDirection: "column",
@@ -125,26 +121,39 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <DropdownWithLabel
-          labelText="PlayedAs"
-          items={gameSides}
-          selectedItem={form.playedAs.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
-          error={form.playedAs.error}
-          css={{ width: dropdownWidth }}
-          onSelect={(value) => onInputValueChange("playedAs", value)}
-        />
+        {!recreate ? (
+          <DropdownWithLabel
+            labelText="PlayedAs"
+            items={gameSides}
+            selectedItem={form.playedAs.value}
+            selectedValueProperty="value"
+            selectedInputProperty="text"
+            error={form.playedAs.error}
+            css={{ width: dropdownWidth }}
+            onSelect={(value) => onInputValueChange("playedAs", value)}
+          />
+        ) : (
+          <UserTypeahead
+            labelText="usaPlayer"
+            selectedItem={form.usaPlayerId.value}
+            selectedValueProperty="value"
+            selectedInputProperty="text"
+            error={form.usaPlayerId.error}
+            placeholder="Type the player name..."
+            css={{ width: typeaheadWidth }}
+            onSelect={(value) => onInputValueChange("usaPlayerId", value?.value)}
+          />
+        )}
         <UserTypeahead
-          labelText="opponentWas"
-          selectedItem={form.opponentWas.value}
+          labelText={!recreate ? "opponentWas" : "ussrPlayer"}
+          selectedItem={form[opponentFormProp].value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.opponentWas.error}
+          error={form[opponentFormProp].error}
           css={{ width: typeaheadWidth }}
           placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange("opponentWas", value?.value)}
-          onBlur={() => onInputValueChange("opponentWas", "")}
+          onSelect={(value: any) => onInputValueChange(opponentFormProp, value?.value)}
+          onBlur={() => onInputValueChange(opponentFormProp, "")}
         />
         <DropdownWithLabel
           labelText="gameWinner"
@@ -184,7 +193,7 @@ const SubmitForm = ({
           error={form.video1.error}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
-        {!checked && (
+        {!recreate && (
           <Button
             disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
@@ -224,11 +233,36 @@ const SubmitForm = ({
           </Button>
         )}
         {errorMsg && <Text type="error">{errorMsg}</Text>}
-        {checked && (
+        {recreate && (
           <Button
             // disabled={buttonDisabled}
             css={{ width: "200px", fontSize: "18px" }}
             onClick={async (event) => {
+              if (validated(form, setForm)) {
+                try {
+                  setIsSubmitting(true);
+                  // @ts-ignore
+                  await getAxiosInstance().post(
+                    "/api/game/recreate",
+                    {
+                      data: normalizeData(form),
+                    },
+                    {
+                      cache: {
+                        update: {
+                          "game-list": "delete",
+                        },
+                      },
+                    },
+                  );
+                  router.push("/");
+                } catch (e) {
+                  console.log("error", e);
+                  setErrorMsg("There was an error submitting the result");
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }
               // event.currentTarget.disabled = true;
               // @ts-ignore
               // const result = await gameConfirmRecreation.mutateAsync({

@@ -21,6 +21,8 @@ module.exports = {
     profileText: "Info d'usuari",
     greeting: "Hola",
 
+    usaPlayer: "USA Player:",
+    ussrPlayer: "USSR Player:",
     PlayedAs: "I played as:",
     firstName: "Nom",
     lastName: "Cognom",
