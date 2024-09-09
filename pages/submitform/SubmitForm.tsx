@@ -70,12 +70,14 @@ const SubmitForm = ({
 
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
-    if (localForm.playedAs.value === "1") {
-      payloadObject["usaPlayerId"] = id;
-      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
-    } else if (localForm.playedAs.value === "2") {
-      payloadObject["ussrPlayerId"] = id;
-      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+    if (!recreate) {
+      if (localForm.playedAs.value === "1") {
+        payloadObject["usaPlayerId"] = id;
+        payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+      } else if (localForm.playedAs.value === "2") {
+        payloadObject["ussrPlayerId"] = id;
+        payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+      }
     }
 
     Object.keys(localForm).map((key: string) => {
@@ -87,6 +89,7 @@ const SubmitForm = ({
     return payloadObject;
   };
   console.log("id", recreate);
+  const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {/* {role === 2 && (
@@ -120,26 +123,39 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <DropdownWithLabel
-          labelText="PlayedAs"
-          items={gameSides}
-          selectedItem={form.playedAs.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
-          error={form.playedAs.error}
-          css={{ width: dropdownWidth }}
-          onSelect={(value) => onInputValueChange("playedAs", value)}
-        />
+        {!recreate ? (
+          <DropdownWithLabel
+            labelText="PlayedAs"
+            items={gameSides}
+            selectedItem={form.playedAs.value}
+            selectedValueProperty="value"
+            selectedInputProperty="text"
+            error={form.playedAs.error}
+            css={{ width: dropdownWidth }}
+            onSelect={(value) => onInputValueChange("playedAs", value)}
+          />
+        ) : (
+          <UserTypeahead
+            labelText="usaPlayer"
+            selectedItem={form.usaPlayerId.value}
+            selectedValueProperty="value"
+            selectedInputProperty="text"
+            error={form.usaPlayerId.error}
+            placeholder="Type the player name..."
+            css={{ width: typeaheadWidth }}
+            onSelect={(value) => onInputValueChange("usaPlayerId", value?.value)}
+          />
+        )}
         <UserTypeahead
-          labelText="opponentWas"
-          selectedItem={form.opponentWas.value}
+          labelText={!recreate ? "opponentWas" : "ussrPlayer"}
+          selectedItem={form[opponentFormProp].value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.opponentWas.error}
+          error={form[opponentFormProp].error}
           css={{ width: typeaheadWidth }}
           placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange("opponentWas", value?.value)}
-          onBlur={() => onInputValueChange("opponentWas", "")}
+          onSelect={(value: any) => onInputValueChange(opponentFormProp, value?.value)}
+          onBlur={() => onInputValueChange(opponentFormProp, "")}
         />
         <DropdownWithLabel
           labelText="gameWinner"

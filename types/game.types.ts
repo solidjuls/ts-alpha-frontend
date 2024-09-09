@@ -6,18 +6,31 @@ export type UserProfileState = {
   preferredGameDuration: SubmitFormValue<string>;
 };
 
-export type SubmitFormState = {
-  oldId: SubmitFormValue<string>;
-  gameDate: SubmitFormValue<Date>;
-  gameWinner: SubmitFormValue<GameWinner> | null;
-  gameCode: SubmitFormValue<string>;
-  gameType: SubmitFormValue<string>;
-  opponentWas: SubmitFormValue<string>;
-  playedAs: SubmitFormValue<string>;
-  endTurn: SubmitFormValue<string>;
-  endMode: SubmitFormValue<string>;
-  video1: SubmitFormValue<string>;
-};
+export type SubmitFormState =
+  | {
+      oldId: SubmitFormValue<string>;
+      gameDate: SubmitFormValue<Date>;
+      gameWinner: SubmitFormValue<GameWinner> | null;
+      gameCode: SubmitFormValue<string>;
+      gameType: SubmitFormValue<string>;
+      opponentWas: SubmitFormValue<string>;
+      playedAs: SubmitFormValue<string>;
+      endTurn: SubmitFormValue<string>;
+      endMode: SubmitFormValue<string>;
+      video1: SubmitFormValue<string>;
+    }
+  | {
+      oldId: SubmitFormValue<string>;
+      gameDate: SubmitFormValue<Date>;
+      gameWinner: SubmitFormValue<GameWinner> | null;
+      gameCode: SubmitFormValue<string>;
+      gameType: SubmitFormValue<string>;
+      endTurn: SubmitFormValue<string>;
+      endMode: SubmitFormValue<string>;
+      video1: SubmitFormValue<string>;
+      usaPlayerId?: SubmitFormValue<string>;
+      ussrPlayerId?: SubmitFormValue<string>;
+    };
 
 export type SubmitFormValue<T> = {
   value: T;

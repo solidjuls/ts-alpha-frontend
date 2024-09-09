@@ -13,7 +13,7 @@ export default async function handler(req, res) {
           typeof value === "bigint" ? value.toString() : value,
         );
 
-        res.status(500).json(newGameWithIdParsed);
+        res.status(200).json(newGameWithIdParsed);
       } catch {
         res.status(500).json("Error submitting result");
       }

@@ -12,6 +12,7 @@ import {
 import SubmitForm from "../SubmitForm/SubmitForm";
 import RecreateRating from "../SubmitForm/RecreateRating";
 import TextComponent from "../SubmitForm/TextComponent";
+import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 
 type SubmitFormProps = {
   role: number;
@@ -61,52 +62,88 @@ const restoreDataFromAPI = (data: any, id: any) => {
     },
   };
 };
+// {
+//   "id": "19173",
+//   "created_at": "2024-09-08T16:17:07.000Z",
+//   "endMode": "",
+//   "endTurn": 0,
+//   "usaPlayerId": "2389",
+//   "ussrPlayerId": "1807",
+//   "usaCountryCode": "CA",
+//   "ussrCountryCode": "US",
+//   "usaPlayer": "Marty Davis",
+//   "ussrPlayer": "Dave Rubin",
+//   "gameType": "ITSL 2006 - Season 1",
+//   "game_code": "D000",
+//   "gameDate": "2005-12-31T23:00:00.000Z",
+//   "videoURL": null,
+//   "gameWinner": "2",
+//   "ratingsUSA": {
+//       "rating": 4723,
+//       "previousRating": 4819
+//   },
+//   "ratingsUSSR": {
+//       "rating": 4987,
+//       "previousRating": 4891
+//   }
+// }
+const initializeState = (searchParams: ReadonlyURLSearchParams) => {
+  const oldId = searchParams.get("id");
+  const gameDate = searchParams.get("gameDate");
+  const gameWinner = searchParams.get("gameWinner") as GameWinner;
+  const game_code = searchParams.get("game_code");
+  const gameType = searchParams.get("gameType");
+  const endTurn = searchParams.get("endTurn");
+  const endMode = searchParams.get("endMode");
+  const video1 = searchParams.get("video1");
 
-const initialState: SubmitFormState = {
-  oldId: {
-    value: "",
-    error: false,
-  },
-  gameDate: {
-    value: new Date(),
-    error: false,
-  },
-  gameWinner: {
-    value: null,
-    error: false,
-  },
-  gameCode: {
-    value: "",
-    error: false,
-  },
-  gameType: {
-    value: "",
-    error: false,
-  },
-  opponentWas: {
-    value: "",
-    error: false,
-  },
-  playedAs: {
-    value: "",
-    error: false,
-  },
-  endTurn: {
-    value: "",
-    error: false,
-  },
-  endMode: {
-    value: "",
-    error: false,
-  },
-  video1: {
-    value: "",
-    error: false,
-  },
+  return {
+    oldId: {
+      value: oldId ? oldId : "",
+      error: false,
+    },
+    gameDate: {
+      value: gameDate ? new Date(gameDate) : new Date(),
+      error: false,
+    },
+    gameWinner: {
+      value: gameWinner ? gameWinner : null,
+      error: false,
+    },
+    gameCode: {
+      value: game_code ? game_code : "",
+      error: false,
+    },
+    gameType: {
+      value: gameType ? gameType : "",
+      error: false,
+    },
+    ussrPlayerId: {
+      value: "",
+      error: false,
+    },
+    usaPlayerId: {
+      value: "",
+      error: false,
+    },
+    endTurn: {
+      value: endTurn ? endTurn : "",
+      error: false,
+    },
+    endMode: {
+      value: endMode ? endMode : "",
+      error: false,
+    },
+    video1: {
+      value: video1 ? video1 : "",
+      error: false,
+    },
+  };
 };
 
 const RecreateFormContainer = ({ role }: SubmitFormProps) => {
-  const [form, setForm] = useState<SubmitFormState>(initialState);
+  const searchParams = useSearchParams();
+  const [form, setForm] = useState<SubmitFormState>(() => initializeState(searchParams));
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [checked, setChecked] = useState(false);
 
