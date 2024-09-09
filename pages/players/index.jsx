@@ -9,6 +9,8 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
+import { FilterPanel } from "components/Homepage/Homepage.styles.ts";
+import MultiSelect from "components/MultiSelect";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -124,14 +126,29 @@ const Players = () => {
   };
 
   const calculateTotalPages = (data) => {
-    const totalPlayers = data[0].totalPlayers;
     const resultsPerPage = 20;
+    const totalPlayers = data[0].isTruncated ? resultsPerPage : data[0].totalPlayers;
     return Math.ceil(totalPlayers / resultsPerPage);
+  };
+
+  const handleFilterChange = async (selectedPlayers) => {
+    setIsLoadingPagination(true);
+    const paginatedData = await getAxiosInstance().get(
+      `/api/rating?p=1&pso=20&playerFilter=${selectedPlayers}`,
+      {
+        selectedPlayers: selectedPlayers,
+      },
+    );
+    setIsLoadingPagination(false);
+    setPaginatedData(paginatedData.data);
   };
 
   return (
     <>
       <h1>Players list</h1>
+      <FilterPanel>
+        <MultiSelect onChange={handleFilterChange} />
+      </FilterPanel>
       <ResultsStyleWrapper>
         <ResultsPanel
           data={paginatedData || data}

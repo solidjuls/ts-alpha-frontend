@@ -26,7 +26,7 @@ const popoverStyles = {
 
 const comboBoxStyles = {
   height: "2.5rem",
-  width: "130px",
+  width: "300px",
   borderRadius: "0.375rem",
   borderStyle: "none",
   backgroundColor: "hsl(204 20% 100%)",
@@ -59,22 +59,29 @@ const comboboxItem = {
   },
 };
 const getNameFromUsers = (data) => data?.map((item) => item.name);
-const MultiSelect = () => {
+const MultiSelect = (props) => {
   const { data, error } = useFetchInitialData({ url: "/api/user" });
   const [isPending, startTransition] = useTransition();
   const [searchValue, setSearchValue] = useState("");
   const [selectedValues, setSelectedValues] = useState([]);
+
+  const setSelectedValueAndChange = (selectedValues) => {
+    setSelectedValues(selectedValues);
+    const selectedPlayers = selectedValues.map(
+      (playerName) => (data?.filter((rec) => playerName === rec.name))[0].id,
+    );
+    props.onChange(selectedPlayers);
+  };
 
   const matches = useMemo(
     () => matchSorter(getNameFromUsers(data), searchValue),
     [data, searchValue],
   );
   if (!data) return null;
-  console.log("match", selectedValues);
   return (
     <Ariakit.ComboboxProvider
       selectedValue={selectedValues}
-      setSelectedValue={setSelectedValues}
+      setSelectedValue={setSelectedValueAndChange}
       setValue={(value) => {
         startTransition(() => {
           setSearchValue(value);
