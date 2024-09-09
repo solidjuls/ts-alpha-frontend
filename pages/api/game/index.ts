@@ -1,5 +1,4 @@
 import { getGameWithRatings } from "backend/controller/game.controller";
-import { authenticateJWT } from "pages/api/auth/middleware";
 
 export default async function handler(req, res) {
   const { id, p = 1 } = req.query;
