@@ -63,8 +63,18 @@ type GameProps = {
 };
 
 const GameContent = ({ data }) => {
-  const { id, gameDate, gameWinner, game_code, gameType, endTurn, endMode, usaPlayerId, ussrPlayerId } = data
-  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`
+  const {
+    id,
+    gameDate,
+    gameWinner,
+    game_code,
+    gameType,
+    endTurn,
+    endMode,
+    usaPlayerId,
+    ussrPlayerId,
+  } = data;
+  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
   return (
     <>
@@ -107,7 +117,9 @@ const GameContent = ({ data }) => {
         </Flex>
       </Box>
       <Button>
-        <UnstyledLink href={linkToRecreate} target="_blank"><b>Recreate game</b></UnstyledLink>
+        <UnstyledLink href={linkToRecreate} target="_blank">
+          <b>Recreate game</b>
+        </UnstyledLink>
       </Button>
     </>
   );

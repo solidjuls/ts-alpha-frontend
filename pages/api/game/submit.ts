@@ -1,5 +1,4 @@
 import { submit } from "backend/controller/game.controller";
-import { startRecreatingRatings } from "backend/controller/rating.controller";
 import { authenticateJWT } from "pages/api/auth/middleware";
 
 export default async function handler(req, res) {
@@ -7,7 +6,6 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       try {
         const newGameWithId = await submit(req.body.data);
-        // const newGameWithId = await startRecreatingRatings({ oldId: 19127, ...req.body.data, gameWinner: "1"});
         console.log("newGameWithId", newGameWithId);
         const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
           typeof value === "bigint" ? value.toString() : value,

@@ -1,17 +1,8 @@
-import { useDebounce } from "use-debounce";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
+import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
-import {
-  GameAPI,
-  GameWinner,
-  GameRecreate,
-  SubmitFormValue,
-  SubmitFormState,
-} from "types/game.types";
-import SubmitForm from "../SubmitForm/SubmitForm";
-import RecreateRating from "../SubmitForm/RecreateRating";
-import TextComponent from "../SubmitForm/TextComponent";
+import { GameWinner, SubmitFormState } from "types/game.types";
+import SubmitForm from "../submitform/SubmitForm";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 
 type SubmitFormProps = {
@@ -62,31 +53,7 @@ const restoreDataFromAPI = (data: any, id: any) => {
     },
   };
 };
-// {
-//   "id": "19173",
-//   "created_at": "2024-09-08T16:17:07.000Z",
-//   "endMode": "",
-//   "endTurn": 0,
-//   "usaPlayerId": "2389",
-//   "ussrPlayerId": "1807",
-//   "usaCountryCode": "CA",
-//   "ussrCountryCode": "US",
-//   "usaPlayer": "Marty Davis",
-//   "ussrPlayer": "Dave Rubin",
-//   "gameType": "ITSL 2006 - Season 1",
-//   "game_code": "D000",
-//   "gameDate": "2005-12-31T23:00:00.000Z",
-//   "videoURL": null,
-//   "gameWinner": "2",
-//   "ratingsUSA": {
-//       "rating": 4723,
-//       "previousRating": 4819
-//   },
-//   "ratingsUSSR": {
-//       "rating": 4987,
-//       "previousRating": 4891
-//   }
-// }
+
 const initializeState = (searchParams: ReadonlyURLSearchParams) => {
   const oldId = searchParams.get("id");
   const gameDate = searchParams.get("gameDate");
