@@ -11,6 +11,7 @@ import { DetailContainer } from "components/DetailContainer";
 import { Spinner } from "@radix-ui/themes";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
+import { ResultsPanel } from "components/Homepage/Homepage";
 
 const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
 
@@ -51,28 +52,42 @@ const UserProfileContent = ({ data }) => (
 const UserProfile = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
+  const gameDataResult = useFetchInitialData({ url: `/api/game?userFilter=${id}&pageSize=10` });
+
   const { email } = useSession();
-  console.log("data", data);
 
   return (
-    <DetailContainer>
-      <Box
-        css={{
-          display: "grid",
-          gap: "0.25rem",
-          gridTemplateColumns: "1fr 2fr",
-          maxWidth: "48rem",
-          backgroundColor: "white",
-          padding: "24px 0 24px 24px",
-          alignItems: "left",
-          border: "solid 1px lightgray",
-          borderRadius: "8px",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        }}
+    <Box>
+      <DetailContainer>
+        <Box
+          css={{
+            display: "grid",
+            gap: "0.25rem",
+            gridTemplateColumns: "1fr 2fr",
+            maxWidth: "48rem",
+            backgroundColor: "white",
+            padding: "24px 0 24px 24px",
+            alignItems: "left",
+            border: "solid 1px lightgray",
+            borderRadius: "8px",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+            width: "1000px",
+          }}
+        >
+          {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
+        </Box>
+      </DetailContainer>
+      <Flex
+        css={{ width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
       >
-        {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
-      </Box>
-    </DetailContainer>
+        Recent Games
+        {gameDataResult.isLoading ? (
+          <Spinner size="3" />
+        ) : (
+          <ResultsPanel data={gameDataResult.data} excludePagination={true} />
+        )}
+      </Flex>
+    </Box>
   );
 };
 

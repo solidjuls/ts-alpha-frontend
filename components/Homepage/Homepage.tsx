@@ -138,7 +138,15 @@ const FilterUser = () => {
   return <MultiSelect />;
 };
 
-const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoading }) => {
+export const ResultsPanel = ({
+  data,
+  dateValue,
+  onClickDay,
+  role,
+  onPageChange,
+  isLoading,
+  excludePagination,
+}) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -161,7 +169,7 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
           </UnstyledLink>
         ))}
       </StyledResultsPanel>
-      <Pagination totalPages={100} onPageChange={onPageChange} />
+      {!excludePagination && <Pagination totalPages={100} onPageChange={onPageChange} />}
     </Flex>
   );
 };
