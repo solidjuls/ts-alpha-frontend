@@ -15,8 +15,7 @@ export const UnstyledLink = styled(Link, {
   cursor: "pointer" /* Set cursor to pointer */,
 });
 
-const borderStyle = "solid 1px $greyLight";
-const ResultsStyleWrapper = styled("div", {
+const PlayerStyleWrapper = styled("div", {
   display: "flex",
   flexDirection: "column",
   gap: "0.5rem",
@@ -31,7 +30,7 @@ const ResultsStyleWrapper = styled("div", {
   height: "500px",
 });
 
-export const StyledResultsPanel = styled("div", {
+export const StyledPlayerPanel = styled("div", {
   display: "flex",
   flexDirection: "column",
   backgroundColor: "$infoForm",
@@ -71,14 +70,14 @@ const CardColumn = ({ header, value, countryCode }) => {
   );
 };
 
-const ResultsPanel = ({ data }) => {
+const PlayerPanel = ({ data }) => {
   return (
     <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
-      <StyledResultsPanel>
+      <StyledPlayerPanel>
         {data?.map((player, index) => (
           <PlayerRow key={index} index={index} player={player} />
         ))}
-      </StyledResultsPanel>
+      </StyledPlayerPanel>
     </Flex>
   );
 };
@@ -108,42 +107,42 @@ const PlayerRow = ({ index, player }) => {
 
 const Players = () => {
   const [paginatedData, setPaginatedData] = useState(null);
-  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
-  const [currentPage, setPage] = useState("1");
-  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  const [isLoadingPagination, setIsLoadingPagination] = useState(true);
+  const [currentPage, setPage] = useState(1);
 
   useEffect(() => {
+    setIsLoadingPagination(true);
     getAxiosInstance()
       .get(`/api/rating?p=${currentPage}`, {
         id: `player-list-${currentPage}`,
       })
       .then((paginatedData) => paginatedData.data)
-      .then(setPaginatedData);
+      .then(setPaginatedData)
+      .finally(() => setIsLoadingPagination(false));
   }, [currentPage]);
 
-  if (isLoading || isLoadingPagination) return <Spinner size="3" />;
-
   const onPageChange = (page) => {
-    setIsLoadingPagination(true);
-    setPage(page);
-    setIsLoadingPagination(false);
+    setPage(parseInt(page));
   };
+
+  if (isLoadingPagination || !paginatedData) return <Spinner size="3" />;
 
   const calculateTotalPages = (data) => {
     const totalPlayers = data[0].totalPlayers;
-    const resultsPerPage = 20;
-    return Math.ceil(totalPlayers / resultsPerPage);
+    const playersPerPage = 20;
+    return Math.ceil(totalPlayers / playersPerPage);
   };
 
   return (
     <>
       <h1>Players list</h1>
-      <ResultsStyleWrapper>
-        <ResultsPanel data={paginatedData || data} />
-      </ResultsStyleWrapper>
+      <PlayerStyleWrapper>
+        <PlayerPanel data={paginatedData} />
+      </PlayerStyleWrapper>
       <Pagination
-        totalPages={calculateTotalPages(paginatedData || data)}
+        totalPages={calculateTotalPages(paginatedData)}
         onPageChange={onPageChange}
+        currentPage={currentPage}
       />
     </>
   );

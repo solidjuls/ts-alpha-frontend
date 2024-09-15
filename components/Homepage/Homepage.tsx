@@ -138,7 +138,15 @@ const FilterUser = () => {
   return <MultiSelect />;
 };
 
-const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoading }) => {
+const ResultsPanel = ({
+  data,
+  dateValue,
+  onClickDay,
+  role,
+  onPageChange,
+  currentPage,
+  isLoading,
+}) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -161,7 +169,7 @@ const ResultsPanel = ({ data, dateValue, onClickDay, role, onPageChange, isLoadi
           </UnstyledLink>
         ))}
       </StyledResultsPanel>
-      <Pagination totalPages={100} onPageChange={onPageChange} />
+      <Pagination totalPages={100} onPageChange={onPageChange} currentPage={currentPage} />
     </Flex>
   );
 };
@@ -186,23 +194,22 @@ const ResponsiveContainer = styled("div", {
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
-  const [currentPage, setPage] = useState("1");
+  const [currentPage, setPage] = useState(1);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
-  const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
   useEffect(() => {
+    setIsLoadingPagination(true);
     getAxiosInstance()
       .get(`/api/game?p=${currentPage}`, {
         id: `games-list-${currentPage}`,
       })
       .then((paginatedData) => paginatedData.data)
-      .then(setPaginatedData);
+      .then(setPaginatedData)
+      .finally(() => setIsLoadingPagination(false));
   }, [currentPage]);
 
   const onPageChange = (page: string) => {
-    setIsLoadingPagination(true);
-    setPage(page);
-    setIsLoadingPagination(false);
+    setPage(parseInt(page));
   };
 
   const onClickDay = (clickedItem: "left" | "right") => {
@@ -216,8 +223,8 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  const games = !paginatedData ? data : paginatedData;
-  const loading = isLoading || isLoadingPagination;
+  const games = paginatedData || null;
+  const loading = isLoadingPagination;
 
   return (
     <ResponsiveContainer
@@ -231,6 +238,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         isLoading={loading}
         dateValue={dateValue}
         onPageChange={onPageChange}
+        currentPage={currentPage}
         onClickDay={onClickDay}
         role={role}
       />
