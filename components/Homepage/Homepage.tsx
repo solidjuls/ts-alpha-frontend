@@ -186,16 +186,23 @@ const ResponsiveContainer = styled("div", {
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [paginatedData, setPaginatedData] = useState(null);
+  const [currentPage, setPage] = useState("1");
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
-  const onPageChange = async (page: string) => {
+  useEffect(() => {
+    getAxiosInstance()
+      .get(`/api/game?p=${currentPage}`, {
+        id: `games-list-${currentPage}`,
+      })
+      .then((paginatedData) => paginatedData.data)
+      .then(setPaginatedData);
+  }, [currentPage]);
+
+  const onPageChange = (page: string) => {
     setIsLoadingPagination(true);
-    const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
-      id: `games-list-${page}`,
-    });
+    setPage(page);
     setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
   };
 
   const onClickDay = (clickedItem: "left" | "right") => {

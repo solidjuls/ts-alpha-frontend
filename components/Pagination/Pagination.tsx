@@ -22,8 +22,9 @@ const PaginationComponent = ({ totalPages, onPageChange }) => {
       <Button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
         <ChevronLeftIcon />
       </Button>
-      <Label>{currentPage}</Label>
-      <Label>of {totalPages}</Label>
+      <Label>
+        {currentPage} of {totalPages}
+      </Label>
       <Button onClick={() => handlePageChange(currentPage + 1)}>
         <ChevronRightIcon />
       </Button>

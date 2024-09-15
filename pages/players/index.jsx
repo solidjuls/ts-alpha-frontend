@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
@@ -71,7 +71,7 @@ const CardColumn = ({ header, value, countryCode }) => {
   );
 };
 
-const ResultsPanel = ({ data, onPageChange, isLoading }) => {
+const ResultsPanel = ({ data }) => {
   return (
     <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
       <StyledResultsPanel>
@@ -109,18 +109,24 @@ const PlayerRow = ({ index, player }) => {
 const Players = () => {
   const [paginatedData, setPaginatedData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
+  const [currentPage, setPage] = useState("1");
   const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
 
-  if (isLoading) return <Spinner size="3" />;
+  useEffect(() => {
+    getAxiosInstance()
+      .get(`/api/rating?p=${currentPage}`, {
+        id: `player-list-${currentPage}`,
+      })
+      .then((paginatedData) => paginatedData.data)
+      .then(setPaginatedData);
+  }, [currentPage]);
 
-  const onPageChange = async (page) => {
+  if (isLoading || isLoadingPagination) return <Spinner size="3" />;
+
+  const onPageChange = (page) => {
     setIsLoadingPagination(true);
-    const paginatedData = await getAxiosInstance().get(`/api/rating?p=${page}`, {
-      id: `player-list-${page}`,
-    });
-
+    setPage(page);
     setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
   };
 
   const calculateTotalPages = (data) => {
@@ -133,11 +139,7 @@ const Players = () => {
     <>
       <h1>Players list</h1>
       <ResultsStyleWrapper>
-        <ResultsPanel
-          data={paginatedData || data}
-          onPageChange={onPageChange}
-          isLoading={isLoadingPagination}
-        />
+        <ResultsPanel data={paginatedData || data} />
       </ResultsStyleWrapper>
       <Pagination
         totalPages={calculateTotalPages(paginatedData || data)}
