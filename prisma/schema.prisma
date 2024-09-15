@@ -181,3 +181,67 @@ model regional_federations {
   name String @db.VarChar(50)
   icon String @db.VarChar(20)
 }
+
+model tournament_types {
+  id                    BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at            DateTime? @db.Timestamp(0)
+  updated_at            DateTime? @db.Timestamp(0)
+  tournament_type_name  String    @db.VarChar(100)
+}
+
+model tournaments {
+  id                                        BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  tournament_type_id                        BigInt              @db.UnsignedBigInt
+  created_at                                DateTime?           @db.Timestamp(0)
+  updated_at                                DateTime?           @db.Timestamp(0)
+  description                               Text?               @db.Text()
+  start_date                                Date?               @db.Date(0)
+  end_date                                  Date?               @db.Date(0)
+  format                                    String?             @db.VarChar(100)
+  registration_status                       String?             @db.VarChar(100)
+  spreadsheet_link                          String?             @db.VarChar(255)
+  edition                                   String?             @db.VarChar(100)
+  game_duration                             String?             @db.VarChar(100)
+  tournament_status                         String?             @db.VarChar(100)
+  admins                                    Json
+
+  tournaments_tournament_type_id_foreign    tournament_types?   @relation("tournaments_tournament_type_id_foreign", fields: [tournament_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournaments_tournament_type_id_foreign")
+  
+  @@index([tournament_type_id], map: "tournaments_tournament_type_id_foreign")
+}
+
+model tournament_schedule {
+  id                                            BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  tournament_id                                 BigInt        @db.UnsignedBigInt
+  created_at                                    DateTime?     @db.Timestamp(0)
+  updated_at                                    DateTime?     @db.Timestamp(0)
+  usa_player_id                                 BigInt        @db.UnsignedBigInt
+  ussr_player_id                                BigInt        @db.UnsignedBigInt
+  game_type                                     String        @db.VarChar(255)
+  game_code                                     String        @db.VarChar(255)
+  game_due_date                                 Date          @db.Date(0) 
+
+  tournaments_schedule_tournament_id_foreign    tournaments?  @relation("tournaments_schedule_tournament_id_foreign", fields: [tournament_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournaments_schedule_tournament_id_foreign")
+  tournament_schedule_usa_player_id_foreign     users?        @relation("tournament_schedule_usa_player_id_foreign", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournament_schedule_usa_player_id_foreign")
+  tournament_schedule_ussr_player_id_foreign    users?        @relation("tournament_schedule_ussr_player_id_foreign", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournament_schedule_ussr_player_id_foreign")
+
+  @@index([tournament_id], map: "tournaments_schedule_tournament_id_foreign")
+  @@index([usa_player_id], map: "tournament_schedule_usa_player_id_foreign")
+  @@index([ussr_player_id], map: "tournament_schedule_ussr_player_id_foreign")
+}
+
+
+model tournament_schedule {
+  id                                              BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  tournament_id                                   BigInt        @db.UnsignedBigInt
+  created_at                                      DateTime?     @db.Timestamp(0)
+  updated_at                                      DateTime?     @db.Timestamp(0)
+	user_id bigint                                  BigInt        @db.UnsignedBigInt
+	on_waitlist                                     boolean       @db.boolean
+
+  tournament_registrations_tournament_id_foreign  tournaments?  @relation("tournament_registrations_tournament_id_foreign", fields: [tournament_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournament_registrations_tournament_id_foreign")
+  tournament_registrations_user_id_foreign        users?        @relation("tournament_registrations_user_id_foreign", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournament_registrations_user_id_foreign")
+
+  @@index([tournament_id], map: "tournament_registrations_tournament_id_foreign")
+  @@index([user_id], map: "tournament_registrations_user_id_foreign")
+}
