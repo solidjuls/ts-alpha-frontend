@@ -143,7 +143,7 @@ class Tournament(Base):
 
 
 class TournamentSchedule(Base):
-    __tablename__ = "tournament_schedule"
+    __tablename__ = "tournament_schedules"
 
     def __str__(self):
         output = ""

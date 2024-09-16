@@ -31,7 +31,7 @@ CREATE TABLE tournaments (
   CONSTRAINT tournaments_tournament_type_id_foreign FOREIGN KEY (tournament_type_id) REFERENCES tournament_types (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE tournament_schedule (
+CREATE TABLE tournament_schedules (
   id bigint unsigned NOT NULL AUTO_INCREMENT,
   tournament_id bigint unsigned NOT NULL,
   created_at timestamp NULL DEFAULT NULL,
