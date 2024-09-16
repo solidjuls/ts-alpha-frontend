@@ -187,7 +187,8 @@ model tournament_types {
   id                   BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
   created_at           DateTime?     @db.Timestamp(0)
   updated_at           DateTime?     @db.Timestamp(0)
-  tournament_type_name String        @unique(map: "unique_tournament_type_name") @db.VarChar(100)
+  tournament_type_code String        @unique(map: "unique_tournament_type_code") @db.VarChar(50)
+  tournament_type_display_name String        @unique(map: "unique_tournament_type_code") @db.VarChar(255)
   tournament           tournaments[]
 }
 

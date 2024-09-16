@@ -105,7 +105,8 @@ class TournamentType(Base):
     id = sa.Column(sa.BigInteger, primary_key=True)
     created_at = sa.Column(sa.TIMESTAMP)
     updated_at = sa.Column(sa.TIMESTAMP)
-    tournament_type_name = sa.Column(sa.VARCHAR(100), unique=True)
+    tournament_type_code = sa.Column(sa.VARCHAR(50), unique=True)
+    tournament_type_display_name = sa.Column(sa.VARCHAR(255))
 
 
 class Tournament(Base):

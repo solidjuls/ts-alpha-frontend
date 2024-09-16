@@ -2,10 +2,11 @@ CREATE table tournament_types (
   id bigint unsigned NOT NULL AUTO_INCREMENT,
   created_at timestamp NULL DEFAULT NULL,
   updated_at timestamp NULL DEFAULT NULL,
-  tournament_type_name varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  tournament_type_code varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  tournament_type_display_name varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   
   PRIMARY KEY (id),
-  CONSTRAINT unique_tournament_type_name UNIQUE (tournament_type_name)
+  CONSTRAINT tournament_type_code UNIQUE (tournament_type_code)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tournaments (
