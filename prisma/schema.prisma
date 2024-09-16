@@ -184,12 +184,12 @@ model regional_federations {
 }
 
 model tournament_types {
-  id                   BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
-  created_at           DateTime?     @db.Timestamp(0)
-  updated_at           DateTime?     @db.Timestamp(0)
-  tournament_type_code String        @unique(map: "unique_tournament_type_code") @db.VarChar(50)
-  tournament_type_display_name String        @unique(map: "unique_tournament_type_code") @db.VarChar(255)
-  tournament           tournaments[]
+  id                           BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at                   DateTime?     @db.Timestamp(0)
+  updated_at                   DateTime?     @db.Timestamp(0)
+  tournament_type_code         String        @unique(map: "tournament_type_code") @db.VarChar(50)
+  tournament_type_display_name String        @db.VarChar(255)
+  tournament                   tournaments[]
 }
 
 model tournaments {
@@ -229,7 +229,7 @@ model tournament_registrations {
   @@index([user_id], map: "tournament_registrations_user_id_foreign")
 }
 
-model tournament_schedule {
+model tournament_schedules {
   id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   tournament_id  BigInt    @db.UnsignedBigInt
   created_at     DateTime? @db.Timestamp(0)
