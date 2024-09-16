@@ -105,7 +105,7 @@ class TournamentType(Base):
     id = sa.Column(sa.BigInteger, primary_key=True)
     created_at = sa.Column(sa.TIMESTAMP)
     updated_at = sa.Column(sa.TIMESTAMP)
-    tournament_type_name = sa.Column(sa.VARCHAR(100))
+    tournament_type_name = sa.Column(sa.VARCHAR(100), unique=True)
 
 
 class Tournament(Base):
@@ -137,6 +137,10 @@ class Tournament(Base):
     tournament_status = sa.Column(sa.VARCHAR(100))
     admins = sa.JSON
 
+    sa.UniqueConstraint(
+        "tournament_type_id", "edition", name="unique_tournament_type_id_edition"
+    )
+
 
 class TournamentSchedule(Base):
     __tablename__ = "tournament_schedule"
@@ -158,9 +162,12 @@ class TournamentSchedule(Base):
     )
     usa_player_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
     ussr_player_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
-    game_type = sa.Column(sa.VARCHAR(255), nullable=False)
     game_code = sa.Column(sa.VARCHAR(255), nullable=False)
     game_due_date = sa.Column(sa.Date)
+
+    sa.UniqueConstraint(
+        "tournament_id", "game_code", name="unique_tournament_id_game_code"
+    )
 
 
 class TournamentRegistration(Base):
@@ -181,3 +188,5 @@ class TournamentRegistration(Base):
     tournament_id = sa.Column(sa.BigInteger, sa.ForeignKey(Tournament.id))
     user_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
     on_waitlist = sa.Column(sa.Boolean, nullable=False)
+
+    sa.UniqueConstraint("tournament_id", "user_id", name="unique_tournament_id_user_id")

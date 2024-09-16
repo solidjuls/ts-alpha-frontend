@@ -187,6 +187,8 @@ model tournament_types {
   created_at            DateTime? @db.Timestamp(0)
   updated_at            DateTime? @db.Timestamp(0)
   tournament_type_name  String    @db.VarChar(100)
+
+  @@unique(name="unique_tournament_type_name", [tournament_type_name])
 }
 
 model tournaments {
@@ -208,6 +210,7 @@ model tournaments {
   tournaments_tournament_type_id_foreign    tournament_types?   @relation("tournaments_tournament_type_id_foreign", fields: [tournament_type_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournaments_tournament_type_id_foreign")
   
   @@index([tournament_type_id], map: "tournaments_tournament_type_id_foreign")
+  @@unique(name="unique_tournament_type_id_edition", [tournament_type_id, edition])
 }
 
 model tournament_schedule {
@@ -217,7 +220,6 @@ model tournament_schedule {
   updated_at                                    DateTime?     @db.Timestamp(0)
   usa_player_id                                 BigInt        @db.UnsignedBigInt
   ussr_player_id                                BigInt        @db.UnsignedBigInt
-  game_type                                     String        @db.VarChar(255)
   game_code                                     String        @db.VarChar(255)
   game_due_date                                 Date          @db.Date(0) 
 
@@ -228,6 +230,7 @@ model tournament_schedule {
   @@index([tournament_id], map: "tournaments_schedule_tournament_id_foreign")
   @@index([usa_player_id], map: "tournament_schedule_usa_player_id_foreign")
   @@index([ussr_player_id], map: "tournament_schedule_ussr_player_id_foreign")
+  @@unique(name="unique_tournament_id_game_code", [tournament_id, game_code])
 }
 
 
@@ -244,4 +247,5 @@ model tournament_schedule {
 
   @@index([tournament_id], map: "tournament_registrations_tournament_id_foreign")
   @@index([user_id], map: "tournament_registrations_user_id_foreign")
+  @@unique(name="unique_tournament_id_user_id", [tournament_id, user_id])
 }

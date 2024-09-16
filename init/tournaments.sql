@@ -4,7 +4,8 @@ CREATE table tournament_types (
   updated_at timestamp NULL DEFAULT NULL,
   tournament_type_name varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  CONSTRAINT unique_tournament_type_name UNIQUE (tournament_type_name)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tournaments (
@@ -25,6 +26,8 @@ CREATE TABLE tournaments (
   
   PRIMARY KEY (id),
   KEY tournaments_tournament_type_id_foreign (tournament_type_id),
+  
+  CONSTRAINT unique_tournament_type_id_edition UNIQUE (tournament_type_id, edition),
   CONSTRAINT tournaments_tournament_type_id_foreign FOREIGN KEY (tournament_type_id) REFERENCES tournament_types (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -35,7 +38,6 @@ CREATE TABLE tournament_schedule (
   updated_at timestamp NULL DEFAULT NULL,
   usa_player_id bigint unsigned NOT NULL,
   ussr_player_id bigint unsigned NOT NULL,
-  game_type varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   game_code varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   game_due_date date NOT NULL,
   
@@ -43,6 +45,7 @@ CREATE TABLE tournament_schedule (
   KEY tournament_schedule_tournament_id_foreign (tournament_id),
   KEY tournament_schedule_usa_player_id_foreign (usa_player_id),
   KEY tournament_schedule_ussr_player_id_foreign (ussr_player_id),
+  CONSTRAINT unique_tournament_id_game_code UNIQUE (tournament_id, game_code),
   CONSTRAINT tournaments_schedule_tournament_id_foreign FOREIGN KEY (tournament_id) REFERENCES tournaments (id),
   CONSTRAINT tournament_schedule_usa_player_id_foreign FOREIGN KEY (usa_player_id) REFERENCES users (id),
   CONSTRAINT tournament_schedule_ussr_player_id_foreign FOREIGN KEY (ussr_player_id) REFERENCES users (id)
@@ -58,7 +61,8 @@ CREATE TABLE tournament_registrations (
 
 	PRIMARY KEY (id),
 	KEY tournament_registrations_tournament_id_foreign (tournament_id),
-  	KEY tournament_registrations_user_id_foreign (user_id),
-	CONSTRAINT tournament_registrations_tournament_id_foreign FOREIGN KEY (tournament_id) REFERENCES tournaments (id),
-	CONSTRAINT tournament_registrations_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id)
+  KEY tournament_registrations_user_id_foreign (user_id),
+  CONSTRAINT unique_tournament_id_user_id UNIQUE (tournament_id, user_id),
+  CONSTRAINT tournament_registrations_tournament_id_foreign FOREIGN KEY (tournament_id) REFERENCES tournaments (id),
+  CONSTRAINT tournament_registrations_user_id_foreign FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
