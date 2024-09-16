@@ -4,7 +4,7 @@ import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
-import { gameWinningOptions, endType, turns, leagueTypes, gameSides } from "utils/constants";
+import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
@@ -13,6 +13,7 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
 import { useSession } from "contexts/AuthProvider";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -65,7 +66,14 @@ const SubmitForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
+  const { data } = useFetchInitialData({
+    url: `/api/game/tournaments`,
+    cacheId: "tournament-list",
+  });
+  const leagueTypes = data?.map(item => ({
+    value: item.code,
+    text: item.text,
+  }))
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
     if (!recreate) {
@@ -86,15 +94,10 @@ const SubmitForm = ({
     console.log("payloadObject", payloadObject);
     return payloadObject;
   };
-  console.log("id", recreate);
+
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {/* {role === 2 && (
-        <>
-          {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
-        </>
-      )} */}
       {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
       <Box
         css={{

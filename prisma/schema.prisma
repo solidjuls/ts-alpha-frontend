@@ -181,3 +181,9 @@ model regional_federations {
   name String @db.VarChar(50)
   icon String @db.VarChar(20)
 }
+
+model constants {
+  id   Int     @id @default(autoincrement())
+  code String? @db.VarChar(255)
+  text String? @db.VarChar(500)
+}

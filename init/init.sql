@@ -1,3 +1,8 @@
+CREATE TABLE constants (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code NVARCHAR(255),
+    text NVARCHAR(500)
+);
 
 CREATE TABLE countries (
   id bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -1195,3 +1200,15 @@ INSERT INTO users (name,email,email_verified_at,password,remember_token,created_
 	 ('','gegitor@gmail.com',NULL,'','','2021-11-12 09:36:00','2021-11-12 09:36:00',181,'Ziemowit','Pazderski',NULL),
 	 ('','1770674040@qq.com',NULL,'','','2021-11-12 09:36:00','2021-11-12 09:36:00',48,'Ziqing','Wang',NULL),
 	 ('','pinkzu83@gmail.com',NULL,'','','2021-11-12 09:36:00','2021-11-12 09:36:00',70,'Zulema','Moreno',NULL);
+
+
+INSERT INTO constants (text, code) VALUES
+('National / Regional League', 'National League'),
+('ITSL', 'ITSL'),
+('OTSL', 'OTSL'),
+('RTSL', 'RTSL'),
+('TS Convention', 'TSC'),
+('TS World Cup', 'TSWC'),
+('Champions League', 'CL'),
+('Friendly Game', 'FG'),
+('Grand Slam', 'GS');

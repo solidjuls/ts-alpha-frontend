@@ -4,44 +4,6 @@ type DropdownType = {
 };
 
 export const GAME_QUERY = "game-getAll";
-export const leagueTypes: Array<DropdownType> = [
-  {
-    text: "National / Regional League",
-    value: "National League",
-  },
-  {
-    text: "ITSL",
-    value: "ITSL",
-  },
-  {
-    text: "OTSL",
-    value: "OTSL",
-  },
-  {
-    text: "RTSL",
-    value: "RTSL",
-  },
-  {
-    text: "TS Convention",
-    value: "TSC",
-  },
-  {
-    text: "TS World Cup",
-    value: "TSWC",
-  },
-  {
-    text: "Champions League",
-    value: "CL",
-  },
-  {
-    text: "Friendly Game",
-    value: "FG",
-  },
-  {
-    text: "Grand Slam",
-    value: "GS",
-  },
-];
 
 export const turns: Array<DropdownType> = [
   {
