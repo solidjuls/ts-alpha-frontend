@@ -88,3 +88,105 @@ class GameResult(Base):
     video2 = sa.Column(sa.VARCHAR(255))
     video3 = sa.Column(sa.VARCHAR(255))
     reporter_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id))
+
+
+class TournamentType(Base):
+    __tablename__ = "tournament_types"
+
+    def __str__(self):
+        output = ""
+        for c in self.__table__.columns:
+            output += "{}: {}\n".format(c.name, getattr(self, c.name))
+        return output
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    id = sa.Column(sa.BigInteger, primary_key=True)
+    created_at = sa.Column(sa.TIMESTAMP)
+    updated_at = sa.Column(sa.TIMESTAMP)
+    tournament_type_name = sa.Column(sa.VARCHAR(100), unique=True)
+
+
+class Tournament(Base):
+    __tablename__ = "tournaments"
+
+    def __str__(self):
+        output = ""
+        for c in self.__table__.columns:
+            output += "{}: {}\n".format(c.name, getattr(self, c.name))
+        return output
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    id = sa.Column(sa.BigInteger, primary_key=True)
+    created_at = sa.Column(sa.TIMESTAMP)
+    updated_at = sa.Column(sa.TIMESTAMP)
+    tournament_type_id = sa.Column(
+        sa.BigInteger, sa.ForeignKey(TournamentType.id), nullable=False
+    )
+    description = sa.Column(sa.TEXT)
+    start_date = sa.Column(sa.Date)
+    end_date = sa.Column(sa.Date)
+    format = sa.Column(sa.VARCHAR(100))
+    registration_status = sa.Column(sa.VARCHAR(100))
+    spreadsheet_link = sa.Column(sa.VARCHAR(255))
+    edition = sa.Column(sa.VARCHAR(100))
+    game_duration = sa.Column(sa.VARCHAR(100))
+    tournament_status = sa.Column(sa.VARCHAR(100))
+    admins = sa.JSON
+
+    sa.UniqueConstraint(
+        "tournament_type_id", "edition", name="unique_tournament_type_id_edition"
+    )
+
+
+class TournamentSchedule(Base):
+    __tablename__ = "tournament_schedules"
+
+    def __str__(self):
+        output = ""
+        for c in self.__table__.columns:
+            output += "{}: {}\n".format(c.name, getattr(self, c.name))
+        return output
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    id = sa.Column(sa.BigInteger, primary_key=True)
+    created_at = sa.Column(sa.TIMESTAMP)
+    updated_at = sa.Column(sa.TIMESTAMP)
+    tournament_id = sa.Column(
+        sa.BigInteger, sa.ForeignKey(Tournament.id), nullable=False
+    )
+    usa_player_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
+    ussr_player_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
+    game_code = sa.Column(sa.VARCHAR(255), nullable=False)
+    game_due_date = sa.Column(sa.Date)
+
+    sa.UniqueConstraint(
+        "tournament_id", "game_code", name="unique_tournament_id_game_code"
+    )
+
+
+class TournamentRegistration(Base):
+    __tablename__ = "tournament_registrations"
+
+    def __str__(self):
+        output = ""
+        for c in self.__table__.columns:
+            output += "{}: {}\n".format(c.name, getattr(self, c.name))
+        return output
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+    id = sa.Column(sa.BigInteger, primary_key=True)
+    created_at = sa.Column(sa.TIMESTAMP)
+    updated_at = sa.Column(sa.TIMESTAMP)
+    tournament_id = sa.Column(sa.BigInteger, sa.ForeignKey(Tournament.id))
+    user_id = sa.Column(sa.BigInteger, sa.ForeignKey(User.id), nullable=False)
+    on_waitlist = sa.Column(sa.Boolean, nullable=False)
+
+    sa.UniqueConstraint("tournament_id", "user_id", name="unique_tournament_id_user_id")
