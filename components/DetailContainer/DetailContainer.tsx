@@ -17,7 +17,7 @@ const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
       }}
     >
       <Backbutton />
-        {children}
+      {children}
     </Box>
   );
 };

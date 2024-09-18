@@ -130,9 +130,9 @@ export const getTournamentNames = async () => {
   return await prisma.constants.findMany({
     select: {
       code: true,
-      text: true
-    }
-  })
+      text: true,
+    },
+  });
 };
 
 const submitGame = async (data: GameAPI) => {

@@ -16,16 +16,17 @@ You'll also likely want to set up a `.env.development.local` file in the root di
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
 ## @prisma/client/sql Import Errors
 
 If you're having issues with import errors associated with the above file, you may need to generate the SQL for prisma.
 This can be done with:
+
 ```bash
  npx prisma generate --sql
 ```
 
 If it's not seeing your local env variables, you may install dotenv (`npm install -g dotenv-cli`) and run it with:
+
 ```bash
  dotenv -e .env.development.local -- npx prisma generate --sql
 ```
