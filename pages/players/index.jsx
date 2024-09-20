@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
@@ -23,7 +23,6 @@ const ResultsStyleWrapper = styled("div", {
   flexDirection: "column",
   gap: "0.5rem",
   backgroundColor: "$infoForm",
-  padding: "8px",
   border: "solid 1px none",
   borderRadius: "12px",
   flexGrow: "1",
@@ -48,6 +47,7 @@ export const StyledResultsPanel = styled("div", {
 const StyledCardRow = styled("div", {
   display: "grid",
   gap: "1rem",
+  margin: "4px",
   gridTemplateColumns: "min-content 3fr 2fr min-content",
   paddingInlineStart: "8px",
   paddingInlineEnd: "8px",
@@ -108,10 +108,14 @@ const PlayerRow = ({ index, player }) => {
   );
 };
 
+const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
+
 const Players = () => {
   const [paginatedData, setPaginatedData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
+  const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
   if (isLoading) return <Spinner size="3" />;
 
@@ -147,7 +151,11 @@ const Players = () => {
     <>
       <h1>Players list</h1>
       <FilterPanel>
-        <MultiSelect onChange={handleFilterChange} />
+        <MultiSelect
+          onChange={handleFilterChange}
+          items={usersMemo}
+          placeholder="Select Players..."
+        />
       </FilterPanel>
       <ResultsStyleWrapper>
         <ResultsPanel

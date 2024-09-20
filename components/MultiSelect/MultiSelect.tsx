@@ -4,31 +4,28 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { MultiSelect } from "primereact/multiselect";
 import { globalMultiselectStyles } from "stitches.config";
 
-const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
-const MultiSelectComponent = ({ items }) => {
-  const { data, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+const PlayerMultiSelect = ({ items, onChange, placeholder }) => {
   const [selectedValues, setSelectedValues] = useState([]);
 
-  const dataMemo = useMemo(() => {
-    return getNameFromUsers(data);
-  }, [data]);
-
-  if (!data) return null;
+  if (!items) return null;
   globalMultiselectStyles();
   return (
     <MultiSelect
+      className="w-full"
       value={selectedValues}
       showSelectAll={false}
-      onChange={(e) => setSelectedValues(e.value)}
-      options={dataMemo}
+      onChange={(e) => {
+        onChange(e.value.map((item) => item.code));
+        setSelectedValues(e.value);
+      }}
+      options={items}
       optionLabel="name"
-      filter
-      placeholder="Select Players..."
+      placeholder={placeholder}
       maxSelectedLabels={0}
+      filter
       showClear
-      className="w-full"
     />
   );
 };
 
-export default MultiSelectComponent;
+export default PlayerMultiSelect;
