@@ -16,9 +16,7 @@ export default async function handler(req, res) {
 
   if (toFilter) {
     const toFilterArray = toFilter.split(",");
-    filter["OR"] = [
-      { game_type: { in: toFilterArray } },
-    ];
+    filter["OR"] = [{ game_type: { in: toFilterArray } }];
   }
   const gameNormalized = await getGameWithRatings(filter, p, parseInt(pageSize));
 

@@ -134,65 +134,98 @@ const EmptyState = () => {
 };
 
 const FilterUser = ({ onFilterChange, users }) => {
-  const usersMemo = useMemo(() => users?.map((item) => ({ code: item.id, name: item.name })), [users]);
+  const usersMemo = useMemo(
+    () => users?.map((item) => ({ code: item.id, name: item.name })),
+    [users],
+  );
   const handleFilterChange = async (selectedPlayers) => {
-    onFilterChange({ selectedPlayers })
+    onFilterChange({ selectedPlayers });
   };
 
-  
-  return <MultiSelect
-  onChange={handleFilterChange}
-  items={usersMemo}
-  placeholder="Select Players..."
-/>
+  return (
+    <Box css={{ marginRight: "8px" }}>
+      <MultiSelect
+        onChange={handleFilterChange}
+        items={usersMemo}
+        placeholder="Select Players..."
+      />
+    </Box>
+  );
 };
 const FilterTournament = ({ onFilterChange, tournaments }) => {
-  const tournamentsMemo = useMemo(() => tournaments?.map((item) => ({ code: item.code, name: item.text })), [tournaments]);
+  const tournamentsMemo = useMemo(
+    () => tournaments?.map((item) => ({ code: item.code, name: item.text })),
+    [tournaments],
+  );
 
   const handleFilterChange = async (selectedTournaments) => {
-    onFilterChange({ selectedTournaments })
+    onFilterChange({ selectedTournaments });
   };
 
-  
-  return <MultiSelect
-  onChange={handleFilterChange}
-  items={tournamentsMemo}
-  placeholder="Select Tournaments..."
-/>
+  return (
+    <Box css={{ marginRight: "8px" }}>
+      <MultiSelect
+        onChange={handleFilterChange}
+        items={tournamentsMemo}
+        placeholder="Select Tournaments..."
+      />
+    </Box>
+  );
 };
 
 const Filter = ({ onFilterChange }) => {
-  const { data: tournaments } = useFetchInitialData({ url: "/api/game/tournaments", cacheId: "tournaments-list" });
+  const { data: tournaments } = useFetchInitialData({
+    url: "/api/game/tournaments",
+    cacheId: "tournaments-list",
+  });
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const [ selectedTournaments, setSelectedTournaments] = useState([])
-  const [ selectedPlayers, setSelectedPlayers] = useState([])
+  const [selectedTournaments, setSelectedTournaments] = useState([]);
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
 
   const onHandleFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
     if (selectedTournaments) {
-      setSelectedTournaments(selectedTournaments)
+      setSelectedTournaments(selectedTournaments);
     }
     if (selectedPlayers) {
-      setSelectedPlayers(selectedPlayers)
+      setSelectedPlayers(selectedPlayers);
     }
-  }
+  };
 
+  const onClear = () => {
+    let url = "/api/game?p=1&pso=20";
+    setSelectedTournaments([]);
+    setSelectedPlayers([]);
+    onFilterChange(url);
+  };
+  // --blue-50: #f4fafe;
+  // --blue-100: #cae6fc;
+  // --blue-200: #a0d2fa;
+  // --blue-300: #75bef8;
+  // --blue-400: #4baaf5;
+  // --blue-500: #2196f3;
+  // --blue-600: #1c80cf;
+  // --blue-700: #1769aa;
+  // --blue-800: #125386;
   const onApply = () => {
-    let url = '/api/game?p=1&pso=20'
+    let url = "/api/game?p=1&pso=20";
     if (selectedTournaments.length > 0) {
-      url = `${url}&toFilter=${selectedTournaments}`
+      url = `${url}&toFilter=${selectedTournaments}`;
     }
     if (selectedPlayers.length > 0) {
-      url = `${url}&userFilter=${selectedPlayers}`
+      url = `${url}&userFilter=${selectedPlayers}`;
     }
-    onFilterChange(url)
-  }
+    onFilterChange(url);
+  };
 
-  return <FilterPanel>
-          <FilterUser users={users} onFilterChange={onHandleFilterChange}/>
-          <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange}/>
-          <Button onClick={onApply}>Apply</Button>
-        </FilterPanel>
-}
+  return (
+    <FilterPanel>
+      <FilterUser users={users} onFilterChange={onHandleFilterChange} />
+      <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange} />
+      <Button onClick={onApply}>Apply</Button>
+      <Button onClick={onClear}>Clear</Button>
+    </FilterPanel>
+  );
+};
 
 export const ResultsPanel = ({
   data,
@@ -260,10 +293,10 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const onFilterChange = async (url) => {
     setIsLoadingPagination(true);
-    const {data} = await getAxiosInstance().get(url);
+    const { data } = await getAxiosInstance().get(url);
     setIsLoadingPagination(false);
     setLocalData(data);
-  }
+  };
 
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
