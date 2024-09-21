@@ -17,6 +17,7 @@ import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { styled } from "stitches.config";
+import { Button } from "components/Button";
 
 type HomepageProps = {
   role: number;
@@ -132,20 +133,10 @@ const EmptyState = () => {
   );
 };
 
-const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
-
-const FilterUser = ({ onFilterChange }) => {
-  const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
-
+const FilterUser = ({ onFilterChange, users }) => {
+  const usersMemo = useMemo(() => users?.map((item) => ({ code: item.id, name: item.name })), [users]);
   const handleFilterChange = async (selectedPlayers) => {
-    const games = await getAxiosInstance().get(
-      `/api/game?p=1&pso=20&userFilter=${selectedPlayers}`,
-      {
-        selectedPlayers: selectedPlayers,
-      },
-    );
-    onFilterChange(games.data)
+    onFilterChange({ selectedPlayers })
   };
 
   
@@ -155,6 +146,53 @@ const FilterUser = ({ onFilterChange }) => {
   placeholder="Select Players..."
 />
 };
+const FilterTournament = ({ onFilterChange, tournaments }) => {
+  const tournamentsMemo = useMemo(() => tournaments?.map((item) => ({ code: item.code, name: item.text })), [tournaments]);
+
+  const handleFilterChange = async (selectedTournaments) => {
+    onFilterChange({ selectedTournaments })
+  };
+
+  
+  return <MultiSelect
+  onChange={handleFilterChange}
+  items={tournamentsMemo}
+  placeholder="Select Tournaments..."
+/>
+};
+
+const Filter = ({ onFilterChange }) => {
+  const { data: tournaments } = useFetchInitialData({ url: "/api/game/tournaments", cacheId: "tournaments-list" });
+  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const [ selectedTournaments, setSelectedTournaments] = useState([])
+  const [ selectedPlayers, setSelectedPlayers] = useState([])
+
+  const onHandleFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
+    if (selectedTournaments) {
+      setSelectedTournaments(selectedTournaments)
+    }
+    if (selectedPlayers) {
+      setSelectedPlayers(selectedPlayers)
+    }
+  }
+
+  const onApply = () => {
+    let url = '/api/game?p=1&pso=20'
+    if (selectedTournaments.length > 0) {
+      url = `${url}&toFilter=${selectedTournaments}`
+    }
+    if (selectedPlayers.length > 0) {
+      url = `${url}&userFilter=${selectedPlayers}`
+    }
+    onFilterChange(url)
+  }
+
+  return <FilterPanel>
+          <FilterUser users={users} onFilterChange={onHandleFilterChange}/>
+          <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange}/>
+          <Button onClick={onApply}>Apply</Button>
+        </FilterPanel>
+}
 
 export const ResultsPanel = ({
   data,
@@ -162,7 +200,6 @@ export const ResultsPanel = ({
   onClickDay,
   role,
   onPageChange,
-  onFilterChange,
   isLoading,
   excludePagination,
 }) => {
@@ -178,9 +215,6 @@ export const ResultsPanel = ({
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
       <StyledResultsPanel>
-        <FilterPanel>
-          <FilterUser onFilterChange={onFilterChange}/>
-        </FilterPanel>
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
@@ -211,7 +245,7 @@ const ResponsiveContainer = styled("div", {
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [paginatedData, setPaginatedData] = useState(null);
+  const [localData, setLocalData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
@@ -221,12 +255,14 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       id: `games-list-${page}`,
     });
     setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
+    setLocalData(paginatedData.data);
   };
 
-  const onFilterChange = (games) => {
-    console.log("setPaginatedData", games)
-    setPaginatedData(games);
+  const onFilterChange = async (url) => {
+    setIsLoadingPagination(true);
+    const {data} = await getAxiosInstance().get(url);
+    setIsLoadingPagination(false);
+    setLocalData(data);
   }
 
   const onClickDay = (clickedItem: "left" | "right") => {
@@ -240,7 +276,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  const games = !paginatedData ? data : paginatedData;
+  const games = !localData ? data : localData;
   const loading = isLoading || isLoadingPagination;
 
   return (
@@ -250,15 +286,18 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         "@sm": "column",
       }}
     >
-      <ResultsPanel
-        data={games}
-        isLoading={loading}
-        dateValue={dateValue}
-        onPageChange={onPageChange}
-        onFilterChange={onFilterChange}
-        onClickDay={onClickDay}
-        role={role}
-      />
+      <Flex css={{ flexDirection: "column", width: "100%" }}>
+        <Filter onFilterChange={onFilterChange} />
+        <ResultsPanel
+          data={games}
+          isLoading={loading}
+          dateValue={dateValue}
+          onPageChange={onPageChange}
+          onFilterChange={onFilterChange}
+          onClickDay={onClickDay}
+          role={role}
+        />
+      </Flex>
       <Box>
         <TopPlayerRating />
       </Box>
