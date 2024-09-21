@@ -1,15 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
-import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
-import { GAME_QUERY, leagueTypes } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
@@ -134,8 +132,28 @@ const EmptyState = () => {
   );
 };
 
-const FilterUser = () => {
-  return <MultiSelect />;
+const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
+
+const FilterUser = ({ onFilterChange }) => {
+  const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
+
+  const handleFilterChange = async (selectedPlayers) => {
+    const games = await getAxiosInstance().get(
+      `/api/game?p=1&pso=20&userFilter=${selectedPlayers}`,
+      {
+        selectedPlayers: selectedPlayers,
+      },
+    );
+    onFilterChange(games.data)
+  };
+
+  
+  return <MultiSelect
+  onChange={handleFilterChange}
+  items={usersMemo}
+  placeholder="Select Players..."
+/>
 };
 
 export const ResultsPanel = ({
@@ -144,6 +162,7 @@ export const ResultsPanel = ({
   onClickDay,
   role,
   onPageChange,
+  onFilterChange,
   isLoading,
   excludePagination,
 }) => {
@@ -159,10 +178,9 @@ export const ResultsPanel = ({
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
       <StyledResultsPanel>
-        {/* <FilterPanel>
-          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
-          <FilterUser />
-        </FilterPanel> */}
+        <FilterPanel>
+          <FilterUser onFilterChange={onFilterChange}/>
+        </FilterPanel>
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
@@ -206,6 +224,11 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setPaginatedData(paginatedData.data);
   };
 
+  const onFilterChange = (games) => {
+    console.log("setPaginatedData", games)
+    setPaginatedData(games);
+  }
+
   const onClickDay = (clickedItem: "left" | "right") => {
     let newDate = new Date();
     if (clickedItem === "left") {
@@ -232,6 +255,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         isLoading={loading}
         dateValue={dateValue}
         onPageChange={onPageChange}
+        onFilterChange={onFilterChange}
         onClickDay={onClickDay}
         role={role}
       />

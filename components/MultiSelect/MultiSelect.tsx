@@ -4,7 +4,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { MultiSelect } from "primereact/multiselect";
 import { globalMultiselectStyles } from "stitches.config";
 
-const PlayerMultiSelect = ({ items, onChange, placeholder }) => {
+const MultiSelectComponent = ({ items, onChange, placeholder }) => {
   const [selectedValues, setSelectedValues] = useState([]);
 
   if (!items) return null;
@@ -28,4 +28,4 @@ const PlayerMultiSelect = ({ items, onChange, placeholder }) => {
   );
 };
 
-export default PlayerMultiSelect;
+export default MultiSelectComponent;
