@@ -70,10 +70,10 @@ const SubmitForm = ({
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
-  const leagueTypes = data?.map(item => ({
+  const leagueTypes = data?.map((item) => ({
     value: item.code,
     text: item.text,
-  }))
+  }));
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
     if (!recreate) {

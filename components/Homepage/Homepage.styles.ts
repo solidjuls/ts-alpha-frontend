@@ -42,6 +42,12 @@ export const StyledResultsPanel = styled("div", {
 export const FilterPanel = styled("div", {
   display: "flex",
   flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+  maxWidth: "1000px",
+  backgroundColor: "white",
+  borderRadius: "8px",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
   padding: "8px",
   margin: "8px",
   borderBottom: borderStyle,

@@ -9,7 +9,7 @@ module.exports = {
     endTurn: "Torn final",
     endType: "Com ha acabat?",
     gameDate: "Data",
-    videoLink1: "Video Link 1",
+    videoLink1: "Video Link",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
     mail: "Mail",

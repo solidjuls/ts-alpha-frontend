@@ -5,6 +5,9 @@ import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 import Layout from "components/Layout";
 
+import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as needed
+import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
+import "primeicons/primeicons.css"; // PrimeIcons CSS
 import "styles/date.css";
 import "styles/stylesGlobal.css";
 import "@radix-ui/themes/styles.css";

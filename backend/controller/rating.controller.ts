@@ -1,14 +1,17 @@
 import { prisma } from "backend/utils/prisma";
-import { getTopNRatedPlayers } from "@prisma/client/sql";
 import { BiggerLowerValue, GameRecreate, GameWinner } from "types/game.types";
 import { getGameByGameId, submit } from "./game.controller";
+import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
 
 const DEFAULT_RATING = 5000;
 
-export const getAllPlayers = async (p, pageSizeOverride = null) => {
+export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = null) => {
   const pageSize = pageSizeOverride || 20;
   const page = Number(p);
   let skip = (page - 1) * pageSize;
+  if (playerFilter) {
+    return await prisma.$queryRawTyped(getTopNRatedPlayersWithFilter(playerFilter, pageSize, skip));
+  }
   return await prisma.$queryRawTyped(getTopNRatedPlayers(pageSize, skip));
 };
 

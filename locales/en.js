@@ -11,7 +11,7 @@ module.exports = {
     endTurn: "End Turn",
     endType: "How did it end?",
     gameDate: "Game Date",
-    videoLink1: "Video Link 1",
+    videoLink1: "Video Link",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
     mail: "Email",
