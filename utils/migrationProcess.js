@@ -25,15 +25,13 @@ async function main() {
       "../python/initial_data_seeding/games_json/first_20k_game_results_20240811.json",
     );
 
-      await axios.post("http://localhost:3000/api/game/submit-migration", {
-        method: "POST",
-        headers: {
-          "x-trpc-source": "client",
-          "Content-Type": "application/json",
-        }
-      })
-    
-
+    await axios.post("http://localhost:3000/api/game/submit-migration", {
+      method: "POST",
+      headers: {
+        "x-trpc-source": "client",
+        "Content-Type": "application/json",
+      },
+    });
   } catch (error) {
     console.error("Error occurred while calling tRPC endpoint:", error);
   }

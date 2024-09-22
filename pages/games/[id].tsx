@@ -116,7 +116,7 @@ const GameContent = ({ data }) => {
             <Span>{dateFormat(new Date(data.created_at))}</Span>
           </Flex>
         </Box>
-        <Button css={{ width: "150px"}}>
+        <Button css={{ width: "150px" }}>
           <UnstyledLink href={linkToRecreate} target="_blank">
             <b>Recreate game</b>
           </UnstyledLink>

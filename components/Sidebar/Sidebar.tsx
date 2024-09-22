@@ -258,7 +258,7 @@ const Navigation = () => {
         backgroundColor: "var(--gray-200)",
         flexDirection: "column",
         alignItems: "flex-start",
-        height: "50px"
+        height: "50px",
       }}
     >
       <VerticalSidebar />

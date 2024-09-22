@@ -133,41 +133,36 @@ const EmptyState = () => {
   );
 };
 
-const FilterUser = ({ onFilterChange, users }) => {
+const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }) => {
   const usersMemo = useMemo(
     () => users?.map((item) => ({ code: item.id, name: item.name })),
     [users],
   );
-  const handleFilterChange = async (selectedPlayers) => {
-    onFilterChange({ selectedPlayers });
-  };
 
   return (
     <Box css={{ margin: "4px" }}>
       <MultiSelect
-        onChange={handleFilterChange}
         items={usersMemo}
         placeholder="Select Players..."
+        selectedValues={selectedValues}
+        setSelectedValues={setSelectedValues}
       />
     </Box>
   );
 };
-const FilterTournament = ({ onFilterChange, tournaments }) => {
+const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) => {
   const tournamentsMemo = useMemo(
     () => tournaments?.map((item) => ({ code: item.code, name: item.text })),
     [tournaments],
   );
 
-  const handleFilterChange = async (selectedTournaments) => {
-    onFilterChange({ selectedTournaments });
-  };
-
   return (
     <Box css={{ margin: "4px" }}>
       <MultiSelect
-        onChange={handleFilterChange}
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
+        selectedValues={selectedValues}
+        setSelectedValues={setSelectedValues}
       />
     </Box>
   );
@@ -181,15 +176,6 @@ const Filter = ({ onFilterChange }) => {
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const [selectedTournaments, setSelectedTournaments] = useState([]);
   const [selectedPlayers, setSelectedPlayers] = useState([]);
-
-  const onHandleFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
-    if (selectedTournaments) {
-      setSelectedTournaments(selectedTournaments);
-    }
-    if (selectedPlayers) {
-      setSelectedPlayers(selectedPlayers);
-    }
-  };
 
   const onClear = () => {
     let url = "/api/game?p=1&pso=20";
@@ -206,24 +192,38 @@ const Filter = ({ onFilterChange }) => {
   // --blue-600: #1c80cf;
   // --blue-700: #1769aa;
   // --blue-800: #125386;
+
   const onApply = () => {
     let url = "/api/game?p=1&pso=20";
+    console.log(selectedTournaments, selectedPlayers);
     if (selectedTournaments.length > 0) {
-      url = `${url}&toFilter=${selectedTournaments}`;
+      url = `${url}&toFilter=${selectedTournaments.map((item) => item.code)}`;
     }
     if (selectedPlayers.length > 0) {
-      url = `${url}&userFilter=${selectedPlayers}`;
+      url = `${url}&userFilter=${selectedPlayers.map((item) => item.code)}`;
     }
     onFilterChange(url);
   };
 
   return (
     <FilterPanel>
-      <FilterUser users={users} onFilterChange={onHandleFilterChange} />
-      <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange} />
+      <FilterUser
+        users={users}
+        selectedValues={selectedPlayers}
+        setSelectedValues={setSelectedPlayers}
+      />
+      <FilterTournament
+        tournaments={tournaments}
+        selectedValues={selectedTournaments}
+        setSelectedValues={setSelectedTournaments}
+      />
       <Flex>
-        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onApply}>Apply</Button>
-        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>Clear</Button>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onApply}>
+          Apply
+        </Button>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
+          Clear
+        </Button>
       </Flex>
     </FilterPanel>
   );
@@ -295,6 +295,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const onFilterChange = async (url) => {
     setIsLoadingPagination(true);
+    console.log("url", url);
     const { data } = await getAxiosInstance().get(url);
     setIsLoadingPagination(false);
     setLocalData(data);

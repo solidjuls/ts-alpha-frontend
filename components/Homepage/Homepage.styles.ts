@@ -53,7 +53,7 @@ export const FilterPanel = styled("div", {
   borderBottom: borderStyle,
   "@sm": {
     flexDirection: "column",
-    alignItems: "flex-start"
+    alignItems: "flex-start",
   },
 });
 

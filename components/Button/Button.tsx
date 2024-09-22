@@ -16,7 +16,7 @@ const Button = styled("button", {
   border: "solid 1px var(--gray-300)",
   textAlign: "center",
   transition: " all 0.2s",
-  outline: "none"
+  outline: "none",
 });
 
 export { Button };
