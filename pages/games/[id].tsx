@@ -96,31 +96,32 @@ const GameContent = ({ data }) => {
           isUSSR
         />
       </Flex>
-
-      <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
-        <Flex css={{ flexDirection: "column", alignItems: "end" }}>
-          <Span>Tournament:</Span>
-          <Span>Identifier:</Span>
-          <Span>Won by:</Span>
-          <Span>End turn:</Span>
-          <Span>Via:</Span>
-          <Span>Date:</Span>
-        </Flex>
-        <Box css={{ width: "5px" }} />
-        <Flex css={{ flexDirection: "column", alignItems: "start" }}>
-          <Span>{data.gameType}</Span>
-          <Span>{data.game_code}</Span>
-          <Span>{getWinnerText(data.gameWinner)}</Span>
-          <Span>{getTurnText(data.endTurn)}</Span>
-          <Span>{data.endMode}</Span>
-          <Span>{dateFormat(new Date(data.created_at))}</Span>
-        </Flex>
-      </Box>
-      <Button>
-        <UnstyledLink href={linkToRecreate} target="_blank">
-          <b>Recreate game</b>
-        </UnstyledLink>
-      </Button>
+      <Flex css={{ flexDirection: "column", alignItems: "center" }}>
+        <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
+          <Flex css={{ flexDirection: "column", alignItems: "end" }}>
+            <Span>Tournament:</Span>
+            <Span>Identifier:</Span>
+            <Span>Won by:</Span>
+            <Span>End turn:</Span>
+            <Span>Via:</Span>
+            <Span>Date:</Span>
+          </Flex>
+          <Box css={{ width: "5px" }} />
+          <Flex css={{ flexDirection: "column", alignItems: "start" }}>
+            <Span>{data.gameType}</Span>
+            <Span>{data.game_code}</Span>
+            <Span>{getWinnerText(data.gameWinner)}</Span>
+            <Span>{getTurnText(data.endTurn)}</Span>
+            <Span>{data.endMode}</Span>
+            <Span>{dateFormat(new Date(data.created_at))}</Span>
+          </Flex>
+        </Box>
+        <Button css={{ width: "150px"}}>
+          <UnstyledLink href={linkToRecreate} target="_blank">
+            <b>Recreate game</b>
+          </UnstyledLink>
+        </Button>
+      </Flex>
     </>
   );
 };

@@ -10,7 +10,7 @@ const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
     <Box
       css={{
         backgroundColor: "white",
-        padding: "24px 0 24px 0",
+        padding: "24px 12px 24px 12px",
         width: "100%",
         maxWidth: "52rem",
         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
