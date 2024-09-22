@@ -13,23 +13,6 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
 
-const cssLabel = { marginRight: 15, width: "140px", maxWidth: "140px" };
-
-const TextComponent = ({ labelText, inputValue, onInputValueChange = () => {}, ...rest }) => (
-  <Box css={{ display: "flex", marginBottom: "16px" }}>
-    <Label htmlFor="video1" css={cssLabel}>
-      <FormattedMessage id={labelText} />
-    </Label>
-    <Input
-      type="text"
-      id="video1"
-      defaultValue={inputValue}
-      onChange={(event) => onInputValueChange(event.target.value)}
-      {...rest}
-    />
-  </Box>
-);
-
 const UserProfileContent = ({ data }) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
@@ -71,7 +54,7 @@ const UserProfile = ({ id }) => {
             border: "solid 1px lightgray",
             borderRadius: "8px",
             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-            width: "1000px",
+            width: "100%",
           }}
         >
           {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}

@@ -1,13 +1,8 @@
-import React, { ReactNode, useState } from "react";
+import React from "react";
 import { styled } from "stitches.config";
 import Image from "next/image";
-import Header from "components/Header";
-import { Sidebar, HorizontalNavigation } from "components/Sidebar";
 import { Box, Span } from "components/Atoms";
-import { NextApiRequest, NextApiResponse } from "next/types";
-import { getInfoFromCookies } from "utils/cookies";
 import { Navigation } from "components/Sidebar/Sidebar";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 const containerStyles = {
   display: "flex",
@@ -25,7 +20,7 @@ const Main = styled("main", {
   alignItems: "center",
   flexDirection: "column",
   display: "flex",
-  backgroundColor: "#eeeeee",
+  backgroundColor: "var(--surface-ground)",
 });
 
 const StyledFooter = styled("footer", {

@@ -47,7 +47,7 @@ const sidebarItemStyles = {
 
 const horizontalItemStyles = {
   borderTop: "solid 1px rgba(255,255,255,.15)",
-  backgroundColor: "#E2E8F0",
+  backgroundColor: "var(--gray-200)",
   cursor: "pointer",
   color: "black",
   padding: "8px 16px",
@@ -89,7 +89,7 @@ const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
 
 const HorizontalNavigationLayout = styled(Flex, {
   justifyContent: "space-between",
-  backgroundColor: "#E2E8F0",
+  backgroundColor: "var(--gray-200)",
   width: "100%",
   "@sm": {
     display: "none",
@@ -255,9 +255,10 @@ const Navigation = () => {
   return (
     <Flex
       css={{
-        backgroundColor: "#E2E8F0",
+        backgroundColor: "var(--gray-200)",
         flexDirection: "column",
         alignItems: "flex-start",
+        height: "50px",
       }}
     >
       <VerticalSidebar />

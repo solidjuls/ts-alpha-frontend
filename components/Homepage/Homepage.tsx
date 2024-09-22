@@ -1,15 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
-import { DayMonthInput } from "components/Input";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
-import { GAME_QUERY, leagueTypes } from "utils/constants";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
@@ -19,6 +17,7 @@ import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { styled } from "stitches.config";
+import { Button } from "components/Button";
 
 type HomepageProps = {
   role: number;
@@ -134,8 +133,100 @@ const EmptyState = () => {
   );
 };
 
-const FilterUser = () => {
-  return <MultiSelect />;
+const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }) => {
+  const usersMemo = useMemo(
+    () => users?.map((item) => ({ code: item.id, name: item.name })),
+    [users],
+  );
+
+  return (
+    <Box css={{ margin: "4px" }}>
+      <MultiSelect
+        items={usersMemo}
+        placeholder="Select Players..."
+        selectedValues={selectedValues}
+        setSelectedValues={setSelectedValues}
+      />
+    </Box>
+  );
+};
+const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) => {
+  const tournamentsMemo = useMemo(
+    () => tournaments?.map((item) => ({ code: item.code, name: item.text })),
+    [tournaments],
+  );
+
+  return (
+    <Box css={{ margin: "4px" }}>
+      <MultiSelect
+        items={tournamentsMemo}
+        placeholder="Select Tournaments..."
+        selectedValues={selectedValues}
+        setSelectedValues={setSelectedValues}
+      />
+    </Box>
+  );
+};
+
+const Filter = ({ onFilterChange }) => {
+  const { data: tournaments } = useFetchInitialData({
+    url: "/api/game/tournaments",
+    cacheId: "tournaments-list",
+  });
+  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const [selectedTournaments, setSelectedTournaments] = useState([]);
+  const [selectedPlayers, setSelectedPlayers] = useState([]);
+
+  const onClear = () => {
+    let url = "/api/game?p=1&pso=20";
+    setSelectedTournaments([]);
+    setSelectedPlayers([]);
+    onFilterChange(url);
+  };
+  // --blue-50: #f4fafe;
+  // --blue-100: #cae6fc;
+  // --blue-200: #a0d2fa;
+  // --blue-300: #75bef8;
+  // --blue-400: #4baaf5;
+  // --blue-500: #2196f3;
+  // --blue-600: #1c80cf;
+  // --blue-700: #1769aa;
+  // --blue-800: #125386;
+
+  const onApply = () => {
+    let url = "/api/game?p=1&pso=20";
+    console.log(selectedTournaments, selectedPlayers);
+    if (selectedTournaments.length > 0) {
+      url = `${url}&toFilter=${selectedTournaments.map((item) => item.code)}`;
+    }
+    if (selectedPlayers.length > 0) {
+      url = `${url}&userFilter=${selectedPlayers.map((item) => item.code)}`;
+    }
+    onFilterChange(url);
+  };
+
+  return (
+    <FilterPanel>
+      <FilterUser
+        users={users}
+        selectedValues={selectedPlayers}
+        setSelectedValues={setSelectedPlayers}
+      />
+      <FilterTournament
+        tournaments={tournaments}
+        selectedValues={selectedTournaments}
+        setSelectedValues={setSelectedTournaments}
+      />
+      <Flex>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onApply}>
+          Apply
+        </Button>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
+          Clear
+        </Button>
+      </Flex>
+    </FilterPanel>
+  );
 };
 
 export const ResultsPanel = ({
@@ -159,10 +250,6 @@ export const ResultsPanel = ({
   return (
     <Flex css={{ flexDirection: "column", width: "100%" }}>
       <StyledResultsPanel>
-        {/* <FilterPanel>
-          <DayMonthInput value={formatDateToString(dateValue)} onClick={onClickDay} />
-          <FilterUser />
-        </FilterPanel> */}
         {data?.map((game, index) => (
           <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
             <ResultRow key={index} role={role} game={game} />
@@ -193,7 +280,7 @@ const ResponsiveContainer = styled("div", {
 
 const Homepage: React.FC<HomepageProps> = ({ role }) => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [paginatedData, setPaginatedData] = useState(null);
+  const [localData, setLocalData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
 
@@ -203,7 +290,15 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       id: `games-list-${page}`,
     });
     setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
+    setLocalData(paginatedData.data);
+  };
+
+  const onFilterChange = async (url) => {
+    setIsLoadingPagination(true);
+    console.log("url", url);
+    const { data } = await getAxiosInstance().get(url);
+    setIsLoadingPagination(false);
+    setLocalData(data);
   };
 
   const onClickDay = (clickedItem: "left" | "right") => {
@@ -217,7 +312,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
     setDateValue(newDate);
   };
 
-  const games = !paginatedData ? data : paginatedData;
+  const games = !localData ? data : localData;
   const loading = isLoading || isLoadingPagination;
 
   return (
@@ -227,14 +322,18 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
         "@sm": "column",
       }}
     >
-      <ResultsPanel
-        data={games}
-        isLoading={loading}
-        dateValue={dateValue}
-        onPageChange={onPageChange}
-        onClickDay={onClickDay}
-        role={role}
-      />
+      <Flex css={{ flexDirection: "column", width: "100%" }}>
+        <Filter onFilterChange={onFilterChange} />
+        <ResultsPanel
+          data={games}
+          isLoading={loading}
+          dateValue={dateValue}
+          onPageChange={onPageChange}
+          onFilterChange={onFilterChange}
+          onClickDay={onClickDay}
+          role={role}
+        />
+      </Flex>
       <Box>
         <TopPlayerRating />
       </Box>

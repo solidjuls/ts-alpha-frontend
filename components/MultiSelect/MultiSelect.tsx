@@ -1,23 +1,23 @@
-import { useMemo, useState } from "react";
-import useFetchInitialData from "hooks/useFetchInitialData";
-
+import { useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import { globalMultiselectStyles } from "stitches.config";
 
-const PlayerMultiSelect = ({ items, onChange, placeholder }) => {
-  const [selectedValues, setSelectedValues] = useState([]);
-
+const MultiSelectComponent = ({
+  items,
+  onChange,
+  placeholder,
+  selectedValues,
+  setSelectedValues,
+}) => {
   if (!items) return null;
   globalMultiselectStyles();
+
   return (
     <MultiSelect
       className="w-full"
       value={selectedValues}
       showSelectAll={false}
-      onChange={(e) => {
-        onChange(e.value.map((item) => item.code));
-        setSelectedValues(e.value);
-      }}
+      onChange={(e) => setSelectedValues(e.value)}
       options={items}
       optionLabel="name"
       placeholder={placeholder}
@@ -28,4 +28,4 @@ const PlayerMultiSelect = ({ items, onChange, placeholder }) => {
   );
 };
 
-export default PlayerMultiSelect;
+export default MultiSelectComponent;
