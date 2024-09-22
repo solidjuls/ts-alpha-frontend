@@ -18,9 +18,14 @@ export default async function handler(req, res) {
     const toFilterArray = toFilter.split(",");
     filter["OR"] = [{ game_type: { in: toFilterArray } }];
   }
-  const gameNormalized = await getGameWithRatings(filter, p, parseInt(pageSize));
+  const { getGamesWithRating, totalRows } = await getGameWithRatings(filter, p, parseInt(pageSize));
 
-  const gameParsed = JSON.stringify(gameNormalized, (key, value) =>
+  const response = {
+    results: getGamesWithRating,
+    totalRows,
+  };
+
+  const gameParsed = JSON.stringify(response, (key, value) =>
     typeof value === "bigint" ? value.toString() : value,
   );
 

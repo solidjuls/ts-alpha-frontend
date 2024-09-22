@@ -15,7 +15,7 @@ export const getAxiosInstance = (): AxiosCacheInstance => {
     // Create the axios instance with caching only once
     api = setupCache(
       axios.create({
-        baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.example.com",
+        baseURL: process.env.VERCEL_URL,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*", // You can specify specific domains instead of "*"

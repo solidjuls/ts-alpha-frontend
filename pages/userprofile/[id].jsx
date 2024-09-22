@@ -40,37 +40,42 @@ const UserProfile = ({ id }) => {
   const { email } = useSession();
 
   return (
-    <Box>
+    <>
       <DetailContainer>
         <Box
           css={{
             display: "grid",
             gap: "0.25rem",
+            maxWidth: "48rem",
             gridTemplateColumns: "1fr 2fr",
             maxWidth: "48rem",
             backgroundColor: "white",
             padding: "24px 0 24px 24px",
             alignItems: "left",
             border: "solid 1px lightgray",
+            height: isLoading ? "250px" : "auto",
             borderRadius: "8px",
             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
             width: "100%",
+            maxWidth: "48rem",
           }}
         >
           {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
         </Box>
       </DetailContainer>
-      <Flex
-        css={{ width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
-      >
-        Recent Games
-        {gameDataResult.isLoading ? (
-          <Spinner size="3" />
-        ) : (
-          <ResultsPanel data={gameDataResult.data} excludePagination={true} />
-        )}
-      </Flex>
-    </Box>
+      <DetailContainer backButton={false}>
+        <Flex
+          css={{ width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
+        >
+          Recent Games
+          {gameDataResult.isLoading ? (
+            <Spinner size="3" />
+          ) : (
+            <ResultsPanel data={gameDataResult.data.results} excludePagination={true} />
+          )}
+        </Flex>
+      </DetailContainer>
+    </>
   );
 };
 

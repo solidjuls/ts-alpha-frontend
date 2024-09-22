@@ -151,7 +151,7 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
         const dateNow = new Date(Date.now());
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
-        console.log("oldGameDate", oldGameDate);
+
         // we select all games with date created_at >= oldId game
         const allGamesAffected = await prismaTransaction.game_results.findMany({
           select: {
@@ -181,17 +181,8 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
           },
         });
         console.log("deletedMany", deletedMany);
-        // const deletedManyGames = await prismaTransaction.game_results.deleteMany({
-        //   where: {
-        //     id: {
-        //       in: ids,
-        //     },
-        //   },
-        // });
-        // console.log("deletedManyGames", deletedManyGames);
-        // for (let index = 0; index < allGamesAffected.length; index++) {
+
         for (const game of allGamesAffected) {
-          // const game = allGamesAffected[index];
           if (game.id.toString() === input.oldId) {
             // const oldId = BigInt(input.oldId);
             console.log("game.id.toString() === input.oldId");
@@ -229,6 +220,94 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
                 id: game.id,
               },
             });
+          } else {
+            console.log("others");
+            const { usaRating, ussrRating } = await createNewRating({
+              usaPlayerId: BigInt(game.usa_player_id),
+              ussrPlayerId: BigInt(game.ussr_player_id),
+              gameWinner: game.game_winner as GameWinner,
+              createdAt: game.created_at,
+              updatedAt: dateNow,
+              gameId: game.id,
+              gameType: game.game_type,
+              prismaTransaction,
+            });
+            console.log("new rating created", usaRating, ussrRating);
+            const dd = await prismaTransaction.game_results.update({
+              data: {
+                usa_previous_rating: usaRating,
+                ussr_previous_rating: ussrRating,
+              },
+              where: {
+                id: game.id,
+              },
+            });
+            console.log("result updated", dd);
+          }
+        }
+      },
+      {
+        maxWait: 5000, // default: 2000
+        timeout: 20000, // default: 5000
+      },
+    );
+  } catch (error) {
+    console.error("transaction", error);
+  } finally {
+    console.error("disconnecting");
+    prisma.$disconnect();
+    console.error("disconnected");
+  }
+
+  return { success: true };
+};
+
+export const deleteGameRatings = async (input: GameRecreate) => {
+  try {
+    await prisma.$transaction(
+      async (prismaTransaction) => {
+        const dateNow = new Date(Date.now());
+        // we select the oldId game created_at
+        const oldGameDate = await getGameByGameId(input.oldId);
+        console.log("oldGameDate", oldGameDate);
+        // we select all games with date created_at >= oldId game
+        const allGamesAffected = await prismaTransaction.game_results.findMany({
+          select: {
+            id: true,
+            created_at: true,
+            usa_player_id: true,
+            ussr_player_id: true,
+            game_winner: true,
+            game_code: true,
+            game_type: true,
+          },
+          where: {
+            created_at: {
+              gte: new Date(oldGameDate?.created_at as Date),
+            },
+          },
+        });
+        console.log("allGamesAffected", allGamesAffected);
+        // we delete all rating info related to those games
+        const ids = allGamesAffected.map((game) => game.id);
+
+        const deletedMany = await prismaTransaction.ratings_history.deleteMany({
+          where: {
+            game_result_id: {
+              in: ids,
+            },
+          },
+        });
+        const gameDeleted = await prismaTransaction.game_results.delete({
+          where: {
+            id: Number(input.oldId),
+          },
+        });
+        console.log("deletedMany", deletedMany, gameDeleted);
+
+        for (const game of allGamesAffected) {
+          if (game.id.toString() === input.oldId) {
+            continue;
           } else {
             console.log("others");
             const { usaRating, ussrRating } = await createNewRating({
