@@ -14,6 +14,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
 import { UnstyledLink } from "components/Homepage/Homepage.styles";
+import getAxiosInstance from "utils/axios";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -76,6 +77,22 @@ const GameContent = ({ data }) => {
   } = data;
   const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
+  const deleteGame = async () => {
+    getAxiosInstance().post(``);
+    await getAxiosInstance().post(
+      "/api/game/recreate",
+      {
+        data: { oldId: id, op: "delete" },
+      },
+      {
+        cache: {
+          update: {
+            "game-list": "delete",
+          },
+        },
+      },
+    );
+  };
   return (
     <>
       <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
@@ -116,10 +133,15 @@ const GameContent = ({ data }) => {
             <Span>{dateFormat(new Date(data.created_at))}</Span>
           </Flex>
         </Box>
-        <Button css={{ width: "150px" }}>
+      </Flex>
+      <Flex>
+        <Button css={{ width: "150px", margin: "8px" }}>
           <UnstyledLink href={linkToRecreate} target="_blank">
-            <b>Recreate game</b>
+            Recreate game
           </UnstyledLink>
+        </Button>
+        <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
+          Delete this game
         </Button>
       </Flex>
     </>
@@ -135,13 +157,15 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` });
   if (!data) return null;
 
+  if (data.results && data.results.length === 0) {
+    return null;
+  }
   return (
     <DetailContainer>
       <Flex
         css={{
           width: "100%",
           maxWidth: "48rem",
-          height: "250px",
           flexDirection: "column",
           backgroundColor: "white",
           padding: "24px 0 0 0",
