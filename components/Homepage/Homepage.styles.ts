@@ -51,6 +51,10 @@ export const FilterPanel = styled("div", {
   padding: "8px",
   margin: "0 0 8px 0",
   borderBottom: borderStyle,
+  "@sm": {
+    flexDirection: "column",
+    alignItems: "flex-start"
+  },
 });
 
 export const UnstyledLink = styled(Link, {

@@ -143,7 +143,7 @@ const FilterUser = ({ onFilterChange, users }) => {
   };
 
   return (
-    <Box css={{ marginRight: "8px" }}>
+    <Box css={{ margin: "4px" }}>
       <MultiSelect
         onChange={handleFilterChange}
         items={usersMemo}
@@ -163,7 +163,7 @@ const FilterTournament = ({ onFilterChange, tournaments }) => {
   };
 
   return (
-    <Box css={{ marginRight: "8px" }}>
+    <Box css={{ margin: "4px" }}>
       <MultiSelect
         onChange={handleFilterChange}
         items={tournamentsMemo}
@@ -221,8 +221,10 @@ const Filter = ({ onFilterChange }) => {
     <FilterPanel>
       <FilterUser users={users} onFilterChange={onHandleFilterChange} />
       <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange} />
-      <Button onClick={onApply}>Apply</Button>
-      <Button onClick={onClear}>Clear</Button>
+      <Flex>
+        <Button onClick={onApply}>Apply</Button>
+        <Button onClick={onClear}>Clear</Button>
+      </Flex>
     </FilterPanel>
   );
 };

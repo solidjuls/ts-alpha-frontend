@@ -9,7 +9,7 @@ const Button = styled("button", {
   borderRadius: "8px",
   boxSizing: " border-box",
   textDecoration: "none",
-  margin: "8px",
+  margin: "4px",
   fontWeight: "300",
   color: "$textLight",
   backgroundColor: "$backgroundColorDark",
