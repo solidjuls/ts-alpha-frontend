@@ -16,8 +16,8 @@ const PaginationComponent = ({ totalPages, onPageChange }) => {
 
   return (
     <Box css={{ ...styles.paginationContainer }}>
-      <Button onClick={() => handlePageChange(1)}>
-        <b>First Page</b>
+      <Button css={{ width: "80px" }} onClick={() => handlePageChange(1)}>
+        First
       </Button>
       <Button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
         <ChevronLeftIcon />
@@ -27,8 +27,8 @@ const PaginationComponent = ({ totalPages, onPageChange }) => {
       <Button onClick={() => handlePageChange(currentPage + 1)}>
         <ChevronRightIcon />
       </Button>
-      <Button onClick={() => handlePageChange(totalPages)}>
-        <b>Last Page</b>
+      <Button css={{ width: "80px" }} onClick={() => handlePageChange(totalPages)}>
+        Last
       </Button>
     </Box>
   );

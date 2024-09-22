@@ -222,8 +222,8 @@ const Filter = ({ onFilterChange }) => {
       <FilterUser users={users} onFilterChange={onHandleFilterChange} />
       <FilterTournament tournaments={tournaments} onFilterChange={onHandleFilterChange} />
       <Flex>
-        <Button onClick={onApply}>Apply</Button>
-        <Button onClick={onClear}>Clear</Button>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onApply}>Apply</Button>
+        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>Clear</Button>
       </Flex>
     </FilterPanel>
   );
