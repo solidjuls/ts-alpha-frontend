@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 type DetailContainerProps = {
   children: ReactNode;
 };
-const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
+const DetailContainer: React.FC<DetailContainerProps> = ({ children, backButton = true }) => {
   return (
     <Box
       css={{
@@ -16,7 +16,7 @@ const DetailContainer: React.FC<DetailContainerProps> = ({ children }) => {
         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
       }}
     >
-      <Backbutton />
+      {backButton && <Backbutton />}
       {children}
     </Box>
   );

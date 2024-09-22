@@ -329,7 +329,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
           onClickDay={onClickDay}
           role={role}
         />
-        <Pagination totalPages={totalPages} onPageChange={onPageChange} />
+        {!isLoading && <Pagination totalPages={totalPages} onPageChange={onPageChange} />}
       </Flex>
       <Box>
         <TopPlayerRating />
