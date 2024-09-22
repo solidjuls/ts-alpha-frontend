@@ -67,7 +67,7 @@ const UserProfile = ({ id }) => {
         {gameDataResult.isLoading ? (
           <Spinner size="3" />
         ) : (
-          <ResultsPanel data={gameDataResult.data} excludePagination={true} />
+          <ResultsPanel data={gameDataResult.data.results} excludePagination={true} />
         )}
       </Flex>
     </Box>

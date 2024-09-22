@@ -234,7 +234,6 @@ export const ResultsPanel = ({
   dateValue,
   onClickDay,
   role,
-  onPageChange,
   isLoading,
   excludePagination,
 }) => {
@@ -248,16 +247,13 @@ export const ResultsPanel = ({
     );
   }
   return (
-    <Flex css={{ flexDirection: "column", width: "100%" }}>
-      <StyledResultsPanel>
-        {data?.map((game, index) => (
-          <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-            <ResultRow key={index} role={role} game={game} />
-          </UnstyledLink>
-        ))}
-      </StyledResultsPanel>
-      {!excludePagination && <Pagination totalPages={100} onPageChange={onPageChange} />}
-    </Flex>
+    <StyledResultsPanel>
+      {data?.map((game, index) => (
+        <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
+          <ResultRow key={index} role={role} game={game} />
+        </UnstyledLink>
+      ))}
+    </StyledResultsPanel>
   );
 };
 
@@ -286,6 +282,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const onPageChange = async (page: string) => {
     setIsLoadingPagination(true);
+    console.log("Homepage", page);
     const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
       id: `games-list-${page}`,
     });
@@ -314,7 +311,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
 
   const games = !localData ? data : localData;
   const loading = isLoading || isLoadingPagination;
-
+  const totalPages = data ? Math.ceil(data.totalRows / 20) : 997;
   return (
     <ResponsiveContainer
       direction={{
@@ -325,14 +322,14 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
       <Flex css={{ flexDirection: "column", width: "100%" }}>
         <Filter onFilterChange={onFilterChange} />
         <ResultsPanel
-          data={games}
+          data={games.results}
           isLoading={loading}
           dateValue={dateValue}
-          onPageChange={onPageChange}
           onFilterChange={onFilterChange}
           onClickDay={onClickDay}
           role={role}
         />
+        <Pagination totalPages={totalPages} onPageChange={onPageChange} />
       </Flex>
       <Box>
         <TopPlayerRating />

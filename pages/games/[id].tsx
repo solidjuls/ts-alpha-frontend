@@ -134,7 +134,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   // }
   const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` });
   if (!data) return null;
-  console.log("data", data);
+
   return (
     <DetailContainer>
       <Flex
@@ -152,7 +152,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
           boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         }}
       >
-        {isLoading ? <Spinner size="3" /> : <GameContent data={data[0]} />}
+        {isLoading ? <Spinner size="3" /> : <GameContent data={data.results[0]} />}
       </Flex>
     </DetailContainer>
   );
