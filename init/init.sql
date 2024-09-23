@@ -39,6 +39,7 @@ CREATE TABLE users (
   email_verified_at timestamp NULL DEFAULT NULL,
   password varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   remember_token varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  role_id int DEFAULT NULL,
   created_at timestamp NULL DEFAULT NULL,
   updated_at timestamp NULL DEFAULT NULL,
   country_id bigint unsigned DEFAULT NULL,
