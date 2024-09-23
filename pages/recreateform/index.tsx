@@ -4,6 +4,7 @@ import { getInfoFromCookies } from "utils/cookies";
 import { GameWinner, SubmitFormState } from "types/game.types";
 import SubmitForm from "../submitform/SubmitForm";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
+import { userRoles } from "utils/constants";
 
 type SubmitFormProps = {
   role: number;
@@ -202,7 +203,7 @@ export async function getServerSideProps({
 }) {
   const payload = getInfoFromCookies(req, res);
 
-  if (!payload) {
+  if (!payload || payload?.role !== userRoles.SUPERADMIN) {
     return {
       redirect: {
         permanent: false,

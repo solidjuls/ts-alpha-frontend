@@ -15,6 +15,8 @@ import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
 import { UnstyledLink } from "components/Homepage/Homepage.styles";
 import getAxiosInstance from "utils/axios";
+import { useSession } from "contexts/AuthProvider";
+import { userRoles } from "utils/constants";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -64,6 +66,8 @@ type GameProps = {
 };
 
 const GameContent = ({ data }) => {
+  const { role } = useSession();
+  console.log("role", role);
   const {
     id,
     gameDate,
@@ -113,7 +117,7 @@ const GameContent = ({ data }) => {
           isUSSR
         />
       </Flex>
-      <Flex css={{ flexDirection: "column", alignItems: "center" }}>
+      <Flex css={{ flexDirection: "column", alignItems: "center", marginBottom: "8px" }}>
         <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
           <Flex css={{ flexDirection: "column", alignItems: "end" }}>
             <Span>Tournament:</Span>
@@ -134,16 +138,18 @@ const GameContent = ({ data }) => {
           </Flex>
         </Box>
       </Flex>
-      <Flex>
-        <Button css={{ width: "150px", margin: "8px" }}>
-          <UnstyledLink href={linkToRecreate} target="_blank">
-            Recreate game
-          </UnstyledLink>
-        </Button>
-        <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
-          Delete this game
-        </Button>
-      </Flex>
+      {role === userRoles.SUPERADMIN && (
+        <Flex>
+          <Button css={{ width: "150px", margin: "8px" }}>
+            <UnstyledLink href={linkToRecreate} target="_blank">
+              Recreate game
+            </UnstyledLink>
+          </Button>
+          <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
+            Delete this game
+          </Button>
+        </Flex>
+      )}
     </>
   );
 };

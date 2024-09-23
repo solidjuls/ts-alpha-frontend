@@ -45,5 +45,7 @@ export default async function handler(req, res) {
     }),
   );
 
-  res.status(200).json({ name: user.name, email: user.email, id: user.id.toString() });
+  res
+    .status(200)
+    .json({ name: user.name, email: user.email, id: user.id.toString(), role: user.role });
 }

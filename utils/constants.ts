@@ -124,3 +124,9 @@ export const gameSides: Array<DropdownType> = [
     text: "USSR",
   },
 ];
+
+export const userRoles = {
+  SUPERADMIN: 3,
+  ADMIN: 2,
+  PLAYER: 1,
+};

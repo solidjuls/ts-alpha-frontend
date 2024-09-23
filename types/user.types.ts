@@ -10,4 +10,5 @@ export type AuthType = {
   name?: string | undefined;
   email?: string | undefined;
   pwd?: string | undefined;
+  role?: number | undefined;
 };
