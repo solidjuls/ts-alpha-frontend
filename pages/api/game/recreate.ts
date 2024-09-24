@@ -6,20 +6,19 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       try {
         let newGameWithId = {};
-        console.log("req.user.role_id", req.user);
 
         if (req.body.data.op === "delete") {
           newGameWithId = await deleteGameRatings(req.body.data);
         } else {
-          newGameWithId = await startRecreatingRatings(req.body.data, 2);
+          newGameWithId = await startRecreatingRatings(req.body.data, req.user.role);
         }
-        console.log("newGameWithId", newGameWithId);
+
         const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
           typeof value === "bigint" ? value.toString() : value,
         );
         res.status(200).json(newGameWithIdParsed);
-      } catch (e) {
-        console.log("e", e.message);
+      } catch (e){
+        console.log("e", e.message)
         res.status(500).json(e.message);
       }
     }
