@@ -20,13 +20,6 @@ const AuthContext = createContext<AuthContextProps>({
   name: undefined,
 });
 
-function getSessionStorageOrDefault(defaultValue?: AuthType) {
-  console.log("cookieCutter", cookieCutter);
-  const cookies = cookieCutter.get(KEY);
-  if (!cookies) return defaultValue;
-  return cookies;
-}
-
 type AuthProviderProps = {
   children: ReactNode;
 };
@@ -37,7 +30,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const setAuthentication = (authProps: AuthType) => {
-    // cookieCutter.set(KEY, JSON.stringify(authProps));
     setAuth(authProps);
   };
 
@@ -52,7 +44,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, 
       if (data && setAuthentication) {
         router.push("/");
         setAuthentication(data);
-        console.log("setAuthentication", data);
       }
     } catch (e) {
       console.log("login error", e.message);
@@ -76,6 +67,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, 
         id: auth.id,
         email: auth.email,
         name: auth.name,
+        role: auth.role,
         setAuthentication,
         errorMsg,
         login,

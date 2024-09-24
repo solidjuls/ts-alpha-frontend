@@ -31,13 +31,13 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
       last_login_at: new Date(),
     },
   });
-  console.log("updateUser on login", updateUser);
+  console.log("updateUser on login", user);
   return {
     id: user.id,
     email: user.email,
     name: user.first_name,
     // @ts-ignore
-    role: user.role,
+    role: user.role_id,
   };
 };
 

@@ -15,6 +15,7 @@ import {
   Arrow,
   Separator,
 } from "@radix-ui/react-dropdown-menu";
+import { userRoles } from "utils/constants";
 
 const slideUpAndFade = keyframes({
   "0%": { opacity: 0, transform: "translateY(2px)" },
@@ -100,7 +101,7 @@ export const UnstyledLink = styled(Link, {
   display: "inline" /* Reset to inline display */,
   cursor: "pointer" /* Set cursor to pointer */,
 });
-const Items = ({ styles }: any) => {
+const Items = ({ styles, role }: any) => {
   return (
     <>
       <UnstyledLink href="/" passHref>
@@ -119,11 +120,13 @@ const Items = ({ styles }: any) => {
           Submit Form
         </Text>
       </UnstyledLink>
-      <UnstyledLink href="/recreateform" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
-          Recreate Form
-        </Text>
-      </UnstyledLink>
+      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+        <UnstyledLink href="/recreateform" passHref>
+          <Text strong="bold" css={horizontalItemStyles}>
+            Recreate Form
+          </Text>
+        </UnstyledLink>
+      )}
     </>
   );
 };
@@ -142,7 +145,8 @@ const VerticalNavigation = () => {
 };
 
 const HorizontalNavigation = () => {
-  const { name } = useSession();
+  const { name, role } = useSession();
+
   return (
     <HorizontalNavigationLayout>
       <Box
@@ -151,7 +155,7 @@ const HorizontalNavigation = () => {
           flexDirection: "row",
         }}
       >
-        <Items styles={horizontalItemStyles} />
+        <Items styles={horizontalItemStyles} role={role} />
       </Box>
       {!name && (
         <UnstyledLink href="/login" passHref>

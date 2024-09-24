@@ -121,6 +121,10 @@ export const getGameByGameId = async (id: string) =>
       created_at: true,
       updated_at: true,
       reported_at: true,
+      usa_player_id: true,
+      ussr_player_id: true,
+      game_winner: true,
+      game_type: true,
     },
     where: {
       id: Number(id),

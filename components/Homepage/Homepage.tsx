@@ -15,13 +15,8 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
-import { DropdownWithLabel } from "components/EditFormComponents";
 import { styled } from "stitches.config";
 import { Button } from "components/Button";
-
-type HomepageProps = {
-  role: number;
-};
 
 const responsive = {
   "@sm": {
@@ -74,13 +69,7 @@ const PlayerInfoBox = ({
   );
 };
 
-const getGameType = (game: Game, role: number) => {
-  if (role === 2) return `${game.gameType} (${game.id})`;
-
-  return game.gameType;
-};
-
-const ResultRow = ({ game, role }: { game: Game; role: number }) => {
+const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
       <Flex
@@ -92,12 +81,10 @@ const ResultRow = ({ game, role }: { game: Game; role: number }) => {
         }}
       >
         <Text fontSize="small" css={{ alignSelf: "center", ...responsive }}>
-          {/* {getGameType(game, role)} */}
           {`Game #${game.id}`}
         </Text>
         <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4, ...responsive }}>
-          {/* {getGameType(game, role)} */}
-          {getGameType(game, role)}
+          {game.gameType}
         </Text>
         <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
       </Flex>
@@ -229,14 +216,7 @@ const Filter = ({ onFilterChange }) => {
   );
 };
 
-export const ResultsPanel = ({
-  data,
-  dateValue,
-  onClickDay,
-  role,
-  isLoading,
-  excludePagination,
-}) => {
+export const ResultsPanel = ({ data, dateValue, onClickDay, isLoading, excludePagination }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -250,7 +230,7 @@ export const ResultsPanel = ({
     <StyledResultsPanel>
       {data?.map((game, index) => (
         <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-          <ResultRow key={index} role={role} game={game} />
+          <ResultRow key={index} game={game} />
         </UnstyledLink>
       ))}
     </StyledResultsPanel>
@@ -274,7 +254,7 @@ const ResponsiveContainer = styled("div", {
   },
 });
 
-const Homepage: React.FC<HomepageProps> = ({ role }) => {
+const Homepage: React.FC<HomepageProps> = () => {
   const [dateValue, setDateValue] = useState<Date>(new Date());
   const [localData, setLocalData] = useState(null);
   const [isLoadingPagination, setIsLoadingPagination] = useState(false);
@@ -325,9 +305,7 @@ const Homepage: React.FC<HomepageProps> = ({ role }) => {
           data={games.results}
           isLoading={loading}
           dateValue={dateValue}
-          onFilterChange={onFilterChange}
           onClickDay={onClickDay}
-          role={role}
         />
         {!isLoading && <Pagination totalPages={totalPages} onPageChange={onPageChange} />}
       </Flex>
