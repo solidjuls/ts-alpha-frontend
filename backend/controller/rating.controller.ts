@@ -144,7 +144,7 @@ export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playe
     },
   });
 };
-export const startRecreatingRatings = async (input: GameRecreate) => {
+export const startRecreatingRatings = async (input: GameRecreate, role: number) => {
   try {
     await prisma.$transaction(
       async (prismaTransaction) => {
@@ -152,6 +152,38 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
 
+        console.log("oldGameDate", oldGameDate, input);
+
+        if (
+          oldGameDate.usa_player_id.toString() === input.usaPlayerId &&
+          oldGameDate.ussr_player_id.toString() === input.ussrPlayerId &&
+          oldGameDate.game_winner === input.gameWinner &&
+          oldGameDate.game_type === input.gameType
+        ) {
+          await prismaTransaction.game_results.update({
+            data: {
+              updated_at: dateNow,
+              game_code: input.gameCode,
+              end_turn: Number(input.endTurn),
+              end_mode: input.endMode,
+              video1: input.video1 || null,
+              reporter_id: BigInt(input.usaPlayerId),
+            },
+            where: {
+              id: Number(input.oldId),
+            },
+          });
+          console.log("updated instead of recreated");
+          return { success: true };
+        }
+
+        if (role !== 3) {
+          throw new Error(
+            "The player's names, the game winner and the tournament can only be updated by superadmins. Please, contact junta",
+          );
+        }
+
+        console.log("start recreating.....");
         // we select all games with date created_at >= oldId game
         const allGamesAffected = await prismaTransaction.game_results.findMany({
           select: {
@@ -169,7 +201,7 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
             },
           },
         });
-        console.log("allGamesAffected", allGamesAffected);
+
         // we delete all rating info related to those games
         const ids = allGamesAffected.map((game) => game.id);
 
@@ -180,7 +212,6 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
             },
           },
         });
-        console.log("deletedMany", deletedMany);
 
         for (const game of allGamesAffected) {
           if (game.id.toString() === input.oldId) {
@@ -252,7 +283,7 @@ export const startRecreatingRatings = async (input: GameRecreate) => {
       },
     );
   } catch (error) {
-    console.error("transaction", error);
+    throw error;
   } finally {
     console.error("disconnecting");
     prisma.$disconnect();

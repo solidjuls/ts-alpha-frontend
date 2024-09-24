@@ -45,11 +45,6 @@ type SubmitFormProps = {
   setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>;
 };
 
-const formatResultConfirmation = (result: string[]) =>
-  result.reduce((prev, current) => {
-    return `${prev} ${current} \n`;
-  }, "");
-
 const SubmitForm = ({
   validated,
   role,
@@ -260,8 +255,7 @@ const SubmitForm = ({
                   );
                   router.push("/");
                 } catch (e) {
-                  console.log("error", e);
-                  setErrorMsg("There was an error submitting the result");
+                  setErrorMsg(e.response.data || "There was an error submitting the result");
                 } finally {
                   setIsSubmitting(false);
                 }
