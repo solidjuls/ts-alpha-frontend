@@ -79,9 +79,10 @@ const StyledText = styled(Text, {
 });
 
 const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
-  padding: "8px 16px",
-
+  color: "black",
   "@sm": {
+    width: "25px",
+    height: "25px",
     display: "flex",
     justifyContent: "flex-start",
     cursor: "pointer",
@@ -106,7 +107,7 @@ const Items = ({ styles, role }: any) => {
     <>
       <UnstyledLink href="/" passHref>
         <Text strong="bold" css={styles}>
-          Home Page
+          Game Results
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/players" passHref>
@@ -202,7 +203,7 @@ const VerticalSidebar = () => {
   return (
     <VerticalSidebarLayout>
       <Root>
-        <Trigger>
+        <Trigger style={{ border: "none" }}>
           <StyledHamburgerMenuIcon />
         </Trigger>
         <Portal>
@@ -210,7 +211,7 @@ const VerticalSidebar = () => {
             <UnstyledLink href="/" passHref>
               <Item>
                 <Text strong="bold" css={horizontalItemStyles}>
-                  Home Page
+                  Game Results
                 </Text>
               </Item>
             </UnstyledLink>
@@ -262,6 +263,7 @@ const Navigation = () => {
         backgroundColor: "var(--gray-200)",
         flexDirection: "column",
         alignItems: "flex-start",
+        justifyContent: "center",
         height: "50px",
       }}
     >
