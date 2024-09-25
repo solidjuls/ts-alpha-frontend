@@ -17,8 +17,8 @@ export default async function handler(req, res) {
           typeof value === "bigint" ? value.toString() : value,
         );
         res.status(200).json(newGameWithIdParsed);
-      } catch (e){
-        console.log("e", e.message)
+      } catch (e) {
+        console.log("e", e.message);
         res.status(500).json(e.message);
       }
     }

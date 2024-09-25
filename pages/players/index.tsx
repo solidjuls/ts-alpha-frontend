@@ -11,6 +11,7 @@ import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
 import { FilterPanel } from "components/Homepage/Homepage.styles.ts";
 import MultiSelect from "components/MultiSelect";
+import { getInfoFromCookies } from "utils/cookies";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -77,9 +78,7 @@ const ResultsPanel = ({ data, onPageChange, isLoading }) => {
   return (
     <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
       <StyledResultsPanel>
-        {data?.map((player, index) => (
-          <PlayerRow key={index} index={index} player={player} />
-        ))}
+        {data?.map((player, index) => <PlayerRow key={index} index={index} player={player} />)}
       </StyledResultsPanel>
     </Flex>
   );
@@ -171,5 +170,16 @@ const Players = () => {
     </>
   );
 };
+
+export async function getServerSideProps({
+  req,
+  res,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+}) {
+  const payload = getInfoFromCookies(req, res);
+  return { props: { role: payload?.role || null } };
+}
 
 export default Players;
