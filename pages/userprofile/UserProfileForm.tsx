@@ -138,7 +138,6 @@ const UserProfileForm = ({ data }) => {
 
   const onInputValueChange = (key: keyof UserProfileState, value: string | Date) => {
     setForm((prevState) => {
-      console.log("key value", prevState, key, value);
       return {
         ...prevState,
         [key]: {

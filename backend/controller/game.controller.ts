@@ -212,7 +212,6 @@ const submitGame = async (data: GameAPI) => {
 export const submit = async (data) => {
   try {
     const newGameWithId = await submitGame(data);
-    console.log("newGameWithId", newGameWithId);
     const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
       typeof value === "bigint" ? value.toString() : value,
     );

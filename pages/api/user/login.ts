@@ -10,7 +10,6 @@ export default async function handler(req, res) {
     email: mail,
     pwd,
   });
-  console.log("mail", user);
 
   if (user === null) {
     res.status(401).json({

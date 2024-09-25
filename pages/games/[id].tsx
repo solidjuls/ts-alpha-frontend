@@ -67,7 +67,6 @@ type GameProps = {
 
 const GameContent = ({ data }) => {
   const { role } = useSession();
-  console.log("role", role);
   const {
     id,
     gameDate,
@@ -255,7 +254,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   // const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`);
   // const post = await res.json();
 
-  console.log("params1", params);
   // // Return 404 if post is not found
   // if (!post.id) {
   //   return {

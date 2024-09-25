@@ -257,7 +257,6 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               },
             });
           } else {
-            console.log("others");
             const { usaRating, ussrRating } = await createNewRating({
               usaPlayerId: BigInt(game.usa_player_id),
               ussrPlayerId: BigInt(game.ussr_player_id),

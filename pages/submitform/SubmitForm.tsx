@@ -86,7 +86,7 @@ const SubmitForm = ({
         payloadObject[key] = localForm[key].value;
       }
     });
-    console.log("payloadObject", payloadObject);
+
     return payloadObject;
   };
 
@@ -219,7 +219,7 @@ const SubmitForm = ({
                   );
                   router.push("/");
                 } catch (e) {
-                  console.log("error", e);
+                  console.log("error submitform", e);
                   setErrorMsg("There was an error submitting the result");
                 } finally {
                   setIsSubmitting(false);
@@ -260,27 +260,6 @@ const SubmitForm = ({
                   setIsSubmitting(false);
                 }
               }
-              // event.currentTarget.disabled = true;
-              // @ts-ignore
-              // const result = await gameConfirmRecreation.mutateAsync({
-              //   id: form.oldId.value,
-              // });
-              // console.log("result", result);
-              // if (
-              //   window.confirm(
-              //     `This games will be recreated. \n ${formatResultConfirmation(
-              //       result,
-              //     )}. Do you want to proceed?`,
-              //   )
-              // ) {
-              //   if (validated(form, setForm)) {
-              //     // @ts-ignore
-              //     await gameRecreationMutation.mutateAsync({
-              //       data: normalizeData(form),
-              //     });
-              //     // setButtonDisabled(true);
-              //   }
-              // }
             }}
           >
             Recreate Game
