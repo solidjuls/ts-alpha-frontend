@@ -33,6 +33,7 @@
     "crypto": "^1.0.1",
     "date-fns": "^2.26.0",
     "downshift": "^6.1.7",
+    "jose": "^5.9.3",
     "jsonwebtoken": "^8.5.1",
     "next": "^14.2.6",
     "next-auth": "^4.24.7",
