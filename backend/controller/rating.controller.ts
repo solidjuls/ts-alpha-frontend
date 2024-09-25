@@ -200,12 +200,17 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               gte: new Date(oldGameDate?.created_at as Date),
             },
           },
+          orderBy: [
+            {
+              created_at: "asc",
+            },
+          ],
         });
 
         // we delete all rating info related to those games
         const ids = allGamesAffected.map((game) => game.id);
-
-        const deletedMany = await prismaTransaction.ratings_history.deleteMany({
+        console.log("allGamesAffected", allGamesAffected);
+        await prismaTransaction.ratings_history.deleteMany({
           where: {
             game_result_id: {
               in: ids,
@@ -316,6 +321,9 @@ export const deleteGameRatings = async (input: GameRecreate) => {
             created_at: {
               gte: new Date(oldGameDate?.created_at as Date),
             },
+          },
+          orderBy: {
+            created_at: "asc",
           },
         });
         console.log("allGamesAffected", allGamesAffected);
