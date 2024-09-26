@@ -21,9 +21,9 @@ function parseJsonFile(filePath) {
 // Example usage of the tRPC client to call a procedure
 async function main() {
   try {
-    const parsedObject = parseJsonFile(
-      "../python/initial_data_seeding/games_json/first_20k_game_results_20240811.json",
-    );
+    // const parsedObject = parseJsonFile(
+    //   "../python/initial_data_seeding/games_json/games_20240925.json",
+    // );
 
     await axios.post("http://localhost:3000/api/game/submit-migration", {
       method: "POST",

@@ -16,8 +16,6 @@ export async function middleware(request: NextRequest) {
     new TextEncoder().encode(process.env.TOKEN_SECRET),
   );
 
-  console.log("allowedUsers", allowedUsers, payload.id);
-
   if (allowedUsers.includes(payload.id)) {
     return NextResponse.next();
   }
