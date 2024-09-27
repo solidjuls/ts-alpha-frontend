@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { FormattedMessage } from "react-intl";
 
@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { Box, Form } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
+import { Checkbox } from "components/Checkbox";
 
 const formStyles = {
   display: "flex",
@@ -33,12 +34,41 @@ const ErrorInfo = styled("span", {
   margin: "8px",
 });
 
+const saveCredentials = (mail: string, password: string) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("mail", mail);
+    localStorage.setItem("password", password);
+  }
+};
+
+const getCredentials = (): { mail: string | null; password: string | null } => {
+  if (typeof window !== "undefined") {
+    const mail = localStorage.getItem("mail");
+    const password = localStorage.getItem("password");
+    return { mail, password };
+  }
+  return { mail: null, password: null };
+};
+
 const LoginForm: React.FC = () => {
   const { login, errorMsg } = useSession();
   const [mail, setMail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
+  const [saveCred, setSaveCred] = useState<boolean>(true);
   const [validationErrorMsg, setValidationErrorMsg] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    loadSavedCredentials();
+  }, []);
+
+  const loadSavedCredentials = () => {
+    const credentials = getCredentials();
+    if (credentials.mail && credentials.password) {
+      setMail(credentials.mail);
+      setPwd(credentials.password);
+    }
+  };
 
   function validate() {
     if (!mail) {
@@ -52,6 +82,29 @@ const LoginForm: React.FC = () => {
     return true;
   }
 
+  const onClick = async (e) => {
+    e.preventDefault();
+    try {
+      if (login && validate()) {
+        setIsLoading(true);
+        await login(mail, pwd);
+        if (saveCred) {
+          saveCredentials(mail, pwd);
+        }
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onCheckedChange = (value) => {
+    if (saveCred && !value) {
+      localStorage.removeItem("mail");
+      localStorage.removeItem("password");
+    }
+    setSaveCred(value);
+  };
+
   return (
     <>
       <h1>Login</h1>
@@ -62,7 +115,8 @@ const LoginForm: React.FC = () => {
         type="text"
         id="mail"
         margin="login"
-        // defaultValue={mail}
+        defaultValue={mail}
+        value={mail}
         onChange={(event) => setMail(event.target.value)}
         css={{ width: "300px" }}
       />
@@ -72,25 +126,15 @@ const LoginForm: React.FC = () => {
       <PasswordInput
         id="pwd"
         margin="login"
+        autocomplete="on"
+        value={pwd}
         defaultValue={pwd}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPwd(event.target.value)}
         css={{ width: "300px" }}
       />
+      <Checkbox text="Remember Me" onCheckedChange={onCheckedChange} checked={saveCred} />
       {validationErrorMsg && <Text css={{ color: "red" }}>{validationErrorMsg}</Text>}
-      <Button
-        disabled={isLoading}
-        onClick={async (e) => {
-          e.preventDefault();
-          try {
-            if (login && validate()) {
-              setIsLoading(true);
-              await login(mail, pwd);
-            }
-          } finally {
-            setIsLoading(false);
-          }
-        }}
-      >
+      <Button disabled={isLoading} onClick={onClick}>
         {isLoading ? <Spinner size="3" /> : <b>Login</b>}
       </Button>
       <Link href="/reset-password" passHref>

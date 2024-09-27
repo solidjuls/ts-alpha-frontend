@@ -8,28 +8,16 @@ import { Box } from "components/Atoms";
 
 const StyledCheckbox = styled(Root, {
   all: "unset",
-  width: 25,
-  height: 25,
+  width: 20,
+  height: 20,
   borderRadius: 4,
   display: "flex",
-  alignItems: "center",
+  alignItems: "baseline",
   justifyContent: "center",
   border: "solid 1px black",
   margin: "8px",
   cursor: "pointer",
-  boxShadow: `0 2px 10px ${blackA.blackA7}`,
   "&:hover": { backgroundColor: violet.violet3 },
-  "&:focus": { boxShadow: `0 0 0 2px black` },
-  //   variants: {
-  //     checked: {
-  //       true: {
-  //         backgroundColor: "black",
-  //       },
-  //       false: {
-  //         backgroundColor: "white",
-  //       },
-  //     },
-  //   },
 });
 
 const StyledIndicator = styled(Indicator, {
@@ -47,7 +35,7 @@ const Checkbox = ({ checked, text, onCheckedChange, css }: CheckboxProps) => (
   <Box css={{ display: "flex", alignItems: "center", ...css }}>
     <StyledCheckbox checked={checked} onCheckedChange={onCheckedChange}>
       <StyledIndicator>
-        <CheckIcon />
+        <CheckIcon width={20} height={20} />
       </StyledIndicator>
     </StyledCheckbox>
     <Label>{text}</Label>
