@@ -25,7 +25,6 @@ const getRatingDifference = (
   console.log("winner", winner);
   console.log("(defeated - winner) * 0.05", (defeated - winner) * 0.05);
   console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
-  console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
   console.log("addValue", addValue, gameType);
 
   let basicCalculus = (defeated - winner) * 0.05;

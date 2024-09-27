@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         video1: undefined,
         usaPlayerId: parsedObject[i].usa_player_id.toString(),
         ussrPlayerId: parsedObject[i].ussr_player_id.toString(),
-        gameType: parsedObject[i].game_type,
+        gameType: parsedObject[i].game_type === "Friendly Game" ? "FG" : parsedObject[i].game_type,
         gameWinner: parsedObject[i].game_winner.toString(),
         endTurn: parsedObject[i].end_turn !== null ? parsedObject[i].end_turn : "",
         endMode: parsedObject[i].end_mode || "",
