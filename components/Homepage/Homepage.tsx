@@ -182,7 +182,7 @@ const Filter = ({ onFilterChange }) => {
 
   const onApply = () => {
     let url = "/api/game?p=1&pso=20";
-    console.log(selectedTournaments, selectedPlayers);
+
     if (selectedTournaments.length > 0) {
       url = `${url}&toFilter=${selectedTournaments.map((item) => item.code)}`;
     }
@@ -262,7 +262,7 @@ const Homepage: React.FC<HomepageProps> = () => {
 
   const onPageChange = async (page: string) => {
     setIsLoadingPagination(true);
-    console.log("Homepage", page);
+
     const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
       id: `games-list-${page}`,
     });
@@ -272,7 +272,7 @@ const Homepage: React.FC<HomepageProps> = () => {
 
   const onFilterChange = async (url) => {
     setIsLoadingPagination(true);
-    console.log("url", url);
+
     const { data } = await getAxiosInstance().get(url);
     setIsLoadingPagination(false);
     setLocalData(data);

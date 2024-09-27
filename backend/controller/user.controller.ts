@@ -23,7 +23,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     return false;
   }
 
-  const updateUser = await prisma.users.update({
+  await prisma.users.update({
     where: {
       email,
     },
@@ -31,7 +31,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
       last_login_at: new Date(),
     },
   });
-  console.log("updateUser on login", user);
+
   return {
     id: user.id,
     email: user.email,
@@ -112,7 +112,6 @@ export const update = async (input) => {
       timezone_id: input.timeZoneId,
     },
   });
-  console.log("update did happen", updateUser);
   return { success: true };
 };
 

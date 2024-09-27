@@ -57,7 +57,6 @@ const ResetPassword = () => {
               e.preventDefault();
               if (mail) {
                 // @ts-ignore
-                console.log("calling", mail);
                 getAxiosInstance()
                   .post(`/api/user/reset-password/`, {
                     mail,

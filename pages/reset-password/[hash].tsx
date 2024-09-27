@@ -50,7 +50,6 @@ const ResetPassword = () => {
       return false;
     }
     if (!hash) {
-      console.log("hash", hash);
       setErrorMsg("Unexpected error. Try to reset the password again");
       return false;
     }

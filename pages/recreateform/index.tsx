@@ -168,7 +168,6 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
 
   const onInputValueChange = (key: keyof SubmitFormState, value: string | Date) => {
     setForm((prevState) => {
-      console.log("key value", prevState, key, value);
       return {
         ...prevState,
         [key]: {

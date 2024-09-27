@@ -18,19 +18,11 @@ function App({ Component, pageProps, name, id, email, role }: AppProps) {
     <AuthProvider name={name} email={email} id={id} role={role}>
       <IntlContextProvider>
         {/* @ts-ignore */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          value={{
-            light: "light",
-          }}
-        >
-          <Theme>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Theme>
-        </ThemeProvider>
+        <Theme>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </Theme>
       </IntlContextProvider>
     </AuthProvider>
   );

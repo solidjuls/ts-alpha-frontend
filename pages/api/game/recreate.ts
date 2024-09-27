@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         );
         res.status(200).json(newGameWithIdParsed);
       } catch (e) {
-        console.log("e", e.message);
+        console.log("recreate api ", e.message);
         res.status(500).json(e.message);
       }
     }

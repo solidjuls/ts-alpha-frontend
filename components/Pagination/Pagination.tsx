@@ -8,7 +8,6 @@ const PaginationComponent = ({ totalPages, onPageChange }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (page) => {
-    console.log("handlePageChange", page, totalPages);
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
       onPageChange(page);
