@@ -21,7 +21,7 @@ function parseJsonFile(filePath) {
 }
 
 const parsedObject = parseJsonFile(
-  "../../../../../python/initial_data_seeding/games_json/games_20240925.json",
+  "../../../../../python/initial_data_seeding/games_json/games_20240927.json",
 );
 
 export default async function handler(req, res) {
