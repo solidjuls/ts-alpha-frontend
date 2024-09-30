@@ -15,37 +15,34 @@ export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = n
   return await prisma.$queryRawTyped(getTopNRatedPlayers(pageSize, skip));
 };
 
+const roundValue = (value) => {
+  if (value < 0) {
+    const roundedPositiveValue = Math.round(Math.abs(value));
+    return roundedPositiveValue * -1;
+  }
+
+  return Math.round(value);
+};
+
 const getRatingDifference = (
   defeated: number,
   winner: number,
   addValue: number = 100,
   gameType: string,
 ) => {
-  console.log("defeated", defeated);
-  console.log("winner", winner);
-  console.log("(defeated - winner) * 0.05", (defeated - winner) * 0.05);
-  console.log("Math.round((defeated - winner) * 0.05)", Math.round((defeated - winner) * 0.05));
-  console.log("addValue", addValue, gameType);
-
   let basicCalculus = (defeated - winner) * 0.05;
 
   if (gameType === "FG") basicCalculus = basicCalculus / 2;
 
-  const newValue = Math.round(basicCalculus) + addValue;
-
-  console.log("friendly", newValue);
-  console.log("non friendly", Math.round((defeated - winner) * 0.05) + 100);
+  const newValue = roundValue(basicCalculus) + addValue;
 
   if (addValue !== 0 && newValue <= 0) {
-    console.log("Difference minimum", 1);
     return 1;
   }
   if (newValue > 200) {
-    console.log("Difference maximum", 200);
     return 200;
   }
-  console.log("Difference normal", newValue);
-  console.log("--------------------");
+
   return newValue;
 };
 
