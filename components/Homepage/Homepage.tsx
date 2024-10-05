@@ -155,20 +155,41 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
   );
 };
 
+const initFilterState = (key) => {
+  if (typeof window !== "undefined") {
+    const value = localStorage.getItem(key)
+    if (!value) return []
+    return JSON.parse(value)
+  }
+  return []
+}
+
+const playersKey = "filterp"
+const tournamentKey = "filtert"
 const Filter = ({ onFilterChange }) => {
   const { data: tournaments } = useFetchInitialData({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const [selectedTournaments, setSelectedTournaments] = useState([]);
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const [selectedTournaments, setSelectedTournaments] = useState(() => initFilterState(tournamentKey));
+  const [selectedPlayers, setSelectedPlayers] = useState(() => initFilterState(playersKey));
+
+  useEffect(() => {
+    if (selectedTournaments.length > 0 || selectedPlayers.length > 0) {
+      onFilterChange(urlParse());
+    }
+  },[])
 
   const onClear = () => {
     let url = "/api/game?p=1&pso=20";
-    setSelectedTournaments([]);
-    setSelectedPlayers([]);
-    onFilterChange(url);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(tournamentKey, JSON.stringify([]))
+      localStorage.setItem(playersKey, JSON.stringify([]))
+      setSelectedTournaments([]);
+      setSelectedPlayers([]);
+      onFilterChange(url);
+    }
   };
   // --blue-50: #f4fafe;
   // --blue-100: #cae6fc;
@@ -180,16 +201,20 @@ const Filter = ({ onFilterChange }) => {
   // --blue-700: #1769aa;
   // --blue-800: #125386;
 
-  const onApply = () => {
+  const urlParse = () => {
     let url = "/api/game?p=1&pso=20";
-
     if (selectedTournaments.length > 0) {
+      localStorage.setItem(tournamentKey, JSON.stringify(selectedTournaments))
       url = `${url}&toFilter=${selectedTournaments.map((item) => item.code)}`;
     }
     if (selectedPlayers.length > 0) {
+      localStorage.setItem(playersKey, JSON.stringify(selectedPlayers))
       url = `${url}&userFilter=${selectedPlayers.map((item) => item.code)}`;
     }
-    onFilterChange(url);
+    return url
+  }
+  const onApply = () => {
+    onFilterChange(urlParse());
   };
 
   return (
