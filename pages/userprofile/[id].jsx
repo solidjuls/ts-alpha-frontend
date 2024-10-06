@@ -16,7 +16,7 @@ import { ResultsPanel } from "components/Homepage/Homepage";
 const UserProfileContent = ({ data }) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
-    <DisplayInfo label="Country" infoText={data?.countries?.country_name} />
+    <DisplayInfo label="Federation" infoText={data?.countries?.country_name} />
     <DisplayInfo label="Playdeck" infoText={data?.name} />
     <DisplayInfo label="Location" infoText={data?.cities?.name} />
     <DisplayInfo label="Preferred gaming platform" infoText={data?.preferredGamingPlatform} />
