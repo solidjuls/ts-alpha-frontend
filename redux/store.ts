@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import gameListReducer from "./gameListSlice";
+import playersListSlice from "./playersListSlice";
 
 export const store = configureStore({
   reducer: {
     gameList: gameListReducer,
+    playersList: playersListSlice,
   },
 });
 

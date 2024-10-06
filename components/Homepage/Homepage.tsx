@@ -264,17 +264,6 @@ const Homepage: React.FC<HomepageProps> = () => {
     dispatch(setPlayersFilter(selectedPlayers));
   };
 
-  // const onClickDay = (clickedItem: "left" | "right") => {
-  //   let newDate = new Date();
-  //   if (clickedItem === "left") {
-  //     newDate = dateAddDay(dateValue, -1);
-  //   } else if (clickedItem === "right") {
-  //     newDate = dateAddDay(dateValue, 1);
-  //   }
-
-  //   setDateValue(newDate);
-  // };
-
   return (
     <ResponsiveContainer
       direction={{

@@ -42,7 +42,7 @@ const TopPlayerRating = () => {
       </Text>
       {isLoading && <SkeletonPlayers />}
       <Box>
-        {data?.map((item, index) => (
+        {data.results?.map((item, index) => (
           <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
         ))}
       </Box>

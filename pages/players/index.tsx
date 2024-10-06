@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { styled } from "stitches.config";
 import { Flex } from "components/Atoms";
@@ -9,9 +9,12 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import getAxiosInstance from "utils/axios";
-import { FilterPanel } from "components/Homepage/Homepage.styles.ts";
+import { FilterPanel } from "components/Homepage/Homepage.styles";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "redux/store";
+import { fetchPlayersList, setCurrentPage, setPlayersFilter } from "../../redux/playersListSlice";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -110,40 +113,27 @@ const PlayerRow = ({ index, player }) => {
 const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
 
 const Players = () => {
-  const [paginatedData, setPaginatedData] = useState(null);
-  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
+  // const [paginatedData, setPaginatedData] = useState(null);
+  // const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  // const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, filters, currentPage, totalPages } = useSelector(
+    (state: RootState) => state.playersList,
+  );
+  const { playersSelected } = filters;
   const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
-  if (isLoading) return <Spinner size="3" />;
+  useEffect(() => {
+    dispatch(fetchPlayersList());
+  }, [filters, currentPage, dispatch]);
 
   const onPageChange = async (page) => {
-    setIsLoadingPagination(true);
-    const paginatedData = await getAxiosInstance().get(`/api/rating?p=${page}`, {
-      id: `player-list-${page}`,
-    });
-
-    setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
-  };
-
-  const calculateTotalPages = (data) => {
-    const resultsPerPage = 20;
-    const totalPlayers = data[0].isTruncated ? resultsPerPage : data[0].totalPlayers;
-    return Math.ceil(totalPlayers / resultsPerPage);
+    dispatch(setCurrentPage(page));
   };
 
   const handleFilterChange = async (selectedPlayers) => {
-    setIsLoadingPagination(true);
-    const paginatedData = await getAxiosInstance().get(
-      `/api/rating?p=1&pso=20&playerFilter=${selectedPlayers}`,
-      {
-        selectedPlayers: selectedPlayers,
-      },
-    );
-    setIsLoadingPagination(false);
-    setPaginatedData(paginatedData.data);
+    items;
   };
 
   return (
@@ -151,22 +141,20 @@ const Players = () => {
       <h1>Players list</h1>
       <FilterPanel>
         <MultiSelect
-          onChange={handleFilterChange}
+          setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
           items={usersMemo}
+          selectedValues={playersSelected}
           placeholder="Select Players..."
         />
       </FilterPanel>
       <ResultsStyleWrapper>
         <ResultsPanel
-          data={paginatedData || data}
+          data={items.results}
           onPageChange={onPageChange}
-          isLoading={isLoadingPagination}
+          isLoading={status === "loading"}
         />
       </ResultsStyleWrapper>
-      <Pagination
-        totalPages={calculateTotalPages(paginatedData || data)}
-        onPageChange={onPageChange}
-      />
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
     </>
   );
 };
