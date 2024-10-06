@@ -32,11 +32,6 @@ export const fetchPlayersList = createAsyncThunk(
     const state = getState() as RootState;
     const { playersSelected } = state.playersList.filters;
     const { currentPage } = state.playersList;
-    console.log(
-      "response playersSelected",
-      playersSelected,
-      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
-    );
 
     const response = await getAxiosInstance().get(
       `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,

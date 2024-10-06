@@ -32,11 +32,6 @@ export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { 
   const state = getState() as RootState;
   const { tournamentSelected, playersSelected } = state.gameList.filters;
   const { currentPage } = state.gameList;
-  console.log(
-    "response playersSelected",
-    playersSelected,
-    `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
-  );
 
   const response = await getAxiosInstance().get(
     `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,

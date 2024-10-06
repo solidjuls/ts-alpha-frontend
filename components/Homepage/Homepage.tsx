@@ -174,7 +174,6 @@ const Filter = ({ dispatch }) => {
 
   const onClear = () => {
     dispatch(setClearFilter());
-    console.log("onClear");
   };
   // --blue-50: #f4fafe;
   // --blue-100: #cae6fc;
