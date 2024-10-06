@@ -12,18 +12,22 @@ import "styles/date.css";
 import "styles/stylesGlobal.css";
 import "@radix-ui/themes/styles.css";
 import { getInfoFromCookies } from "utils/cookies";
+import { Provider } from "react-redux";
+import { store } from "../redux/store";
 
 function App({ Component, pageProps, name, id, email, role }: AppProps) {
   return (
     <AuthProvider name={name} email={email} id={id} role={role}>
-      <IntlContextProvider>
-        {/* @ts-ignore */}
-        <Theme>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </Theme>
-      </IntlContextProvider>
+      <Provider store={store}>
+        <IntlContextProvider>
+          {/* @ts-ignore */}
+          <Theme>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Theme>
+        </IntlContextProvider>
+      </Provider>
     </AuthProvider>
   );
 }

@@ -1,15 +1,11 @@
-import { useState } from "react";
 import { Button } from "components/Button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Label } from "components/Label";
 import { Box } from "components/Atoms";
 
-const PaginationComponent = ({ totalPages, onPageChange }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-
+const PaginationComponent = ({ currentPage, totalPages, onPageChange }) => {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
       onPageChange(page);
     }
   };
