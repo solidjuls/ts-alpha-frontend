@@ -52,7 +52,11 @@ export const getGameWithRatings = async (filter?: any, p: string, pageSize) => {
   const page = Number(p);
   const skip = (page - 1) * pageSize;
 
-  const totalRows = await prisma.game_results.count();
+  const totalRows = await prisma.game_results.count({
+    where: {
+      ...filter,
+    },
+  });
   const games = await prisma.game_results.findMany({
     include: {
       users_game_results_usa_player_idTousers: {

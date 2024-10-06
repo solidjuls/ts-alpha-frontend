@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
@@ -14,9 +14,17 @@ import MultiSelect from "components/MultiSelect";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
-import getAxiosInstance from "utils/axios";
 import { styled } from "stitches.config";
 import { Button } from "components/Button";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
+import {
+  fetchGameList,
+  setClearFilter,
+  setCurrentPage,
+  setPlayersFilter,
+  setTournamentFilter,
+} from "../../redux/gameListSlice";
 
 const responsive = {
   "@sm": {
@@ -155,20 +163,17 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
   );
 };
 
-const Filter = ({ onFilterChange }) => {
+const Filter = ({ dispatch }) => {
   const { data: tournaments } = useFetchInitialData({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const [selectedTournaments, setSelectedTournaments] = useState([]);
-  const [selectedPlayers, setSelectedPlayers] = useState([]);
+  const { filters } = useSelector((state: RootState) => state.gameList);
+  const { playersSelected, tournamentSelected } = filters;
 
   const onClear = () => {
-    let url = "/api/game?p=1&pso=20";
-    setSelectedTournaments([]);
-    setSelectedPlayers([]);
-    onFilterChange(url);
+    dispatch(setClearFilter());
   };
   // --blue-50: #f4fafe;
   // --blue-100: #cae6fc;
@@ -180,34 +185,19 @@ const Filter = ({ onFilterChange }) => {
   // --blue-700: #1769aa;
   // --blue-800: #125386;
 
-  const onApply = () => {
-    let url = "/api/game?p=1&pso=20";
-
-    if (selectedTournaments.length > 0) {
-      url = `${url}&toFilter=${selectedTournaments.map((item) => item.code)}`;
-    }
-    if (selectedPlayers.length > 0) {
-      url = `${url}&userFilter=${selectedPlayers.map((item) => item.code)}`;
-    }
-    onFilterChange(url);
-  };
-
   return (
     <FilterPanel>
       <FilterUser
         users={users}
-        selectedValues={selectedPlayers}
-        setSelectedValues={setSelectedPlayers}
+        selectedValues={playersSelected}
+        setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
       />
       <FilterTournament
         tournaments={tournaments}
-        selectedValues={selectedTournaments}
-        setSelectedValues={setSelectedTournaments}
+        selectedValues={tournamentSelected}
+        setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
       />
       <Flex>
-        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onApply}>
-          Apply
-        </Button>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
         </Button>
@@ -255,43 +245,24 @@ const ResponsiveContainer = styled("div", {
 });
 
 const Homepage: React.FC<HomepageProps> = () => {
-  const [dateValue, setDateValue] = useState<Date>(new Date());
-  const [localData, setLocalData] = useState(null);
-  const [isLoadingPagination, setIsLoadingPagination] = useState(false);
-  const { data, isLoading } = useFetchInitialData({ url: `/api/game`, cacheId: "game-list" });
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, filters, currentPage, totalPages } = useSelector(
+    (state: RootState) => state.gameList,
+  );
+
+  useEffect(() => {
+    dispatch(fetchGameList());
+  }, [filters, currentPage, dispatch]);
 
   const onPageChange = async (page: string) => {
-    setIsLoadingPagination(true);
-
-    const paginatedData = await getAxiosInstance().get(`/api/game?p=${page}`, {
-      id: `games-list-${page}`,
-    });
-    setIsLoadingPagination(false);
-    setLocalData(paginatedData.data);
+    dispatch(setCurrentPage(page));
   };
 
-  const onFilterChange = async (url) => {
-    setIsLoadingPagination(true);
-
-    const { data } = await getAxiosInstance().get(url);
-    setIsLoadingPagination(false);
-    setLocalData(data);
+  const onFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
+    dispatch(setTournamentFilter(selectedTournaments));
+    dispatch(setPlayersFilter(selectedPlayers));
   };
 
-  const onClickDay = (clickedItem: "left" | "right") => {
-    let newDate = new Date();
-    if (clickedItem === "left") {
-      newDate = dateAddDay(dateValue, -1);
-    } else if (clickedItem === "right") {
-      newDate = dateAddDay(dateValue, 1);
-    }
-
-    setDateValue(newDate);
-  };
-
-  const games = !localData ? data : localData;
-  const loading = isLoading || isLoadingPagination;
-  const totalPages = data ? Math.ceil(data.totalRows / 20) : 997;
   return (
     <ResponsiveContainer
       direction={{
@@ -300,14 +271,20 @@ const Homepage: React.FC<HomepageProps> = () => {
       }}
     >
       <Flex css={{ flexDirection: "column", width: "100%" }}>
-        <Filter onFilterChange={onFilterChange} />
+        <Filter onFilterChange={onFilterChange} dispatch={dispatch} />
         <ResultsPanel
-          data={games.results}
-          isLoading={loading}
-          dateValue={dateValue}
-          onClickDay={onClickDay}
+          data={items.results}
+          isLoading={status === "loading"}
+          // dateValue={dateValue}
+          // onClickDay={onClickDay}
         />
-        {!isLoading && <Pagination totalPages={totalPages} onPageChange={onPageChange} />}
+        {!(status === "loading") && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        )}
       </Flex>
       <Box>
         <TopPlayerRating />

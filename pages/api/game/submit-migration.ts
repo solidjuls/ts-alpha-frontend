@@ -21,7 +21,7 @@ function parseJsonFile(filePath) {
 }
 
 const parsedObject = parseJsonFile(
-  "../../../../../python/initial_data_seeding/games_json/games_20240925.json",
+  "../../../../../python/initial_data_seeding/games_json/games_20240927.json",
 );
 
 export default async function handler(req, res) {
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         video1: undefined,
         usaPlayerId: parsedObject[i].usa_player_id.toString(),
         ussrPlayerId: parsedObject[i].ussr_player_id.toString(),
-        gameType: parsedObject[i].game_type,
+        gameType: parsedObject[i].game_type === "Friendly Game" ? "FG" : parsedObject[i].game_type,
         gameWinner: parsedObject[i].game_winner.toString(),
         endTurn: parsedObject[i].end_turn !== null ? parsedObject[i].end_turn : "",
         endMode: parsedObject[i].end_mode || "",

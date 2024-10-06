@@ -11,10 +11,12 @@ export default async function handler(req, res) {
       countryCode: player.tld_code,
       lastActivity: player.last_login_at,
       rank: parseInt(player.ranking),
-      totalPlayers: parseInt(player.total_players),
       isTruncated: Boolean(player.is_truncated),
     };
   });
-
-  res.status(200).json(playersWithRating);
+  const totalRows = players.length > 0 ? players[0].total_players.toString() : "1301";
+  res.status(200).json({
+    results: playersWithRating,
+    totalRows,
+  });
 }
