@@ -20,7 +20,7 @@ const DateComponent = ({
     <DayPickerInput
       value={inputValue}
       format="YYYY/MM/DD"
-      placeholder="YYYY/MM/DD"
+      placeholder="Game date"
       formatDate={dateFormat}
       onDayChange={(value) => onInputValueChange(value)}
       dayPickerProps={{

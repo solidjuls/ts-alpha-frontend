@@ -30,10 +30,10 @@ const Input = styled("input", {
   height: 35,
   fontSize: 15,
   lineHeight: 1,
-  color: "$textDark",
-  boxShadow: `0 0 0 1px black`,
+  border: "1px solid #ced4da",
+  color: "black",
   "&:focus": {
-    boxShadow: `0 0 0 2px black`,
+    boxShadow: `0 0 0 2px #ced4da`,
   },
 });
 
