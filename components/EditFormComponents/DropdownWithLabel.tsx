@@ -25,7 +25,7 @@ const DropdownWithLabel = ({
 }: DropdownWithLabelProps) => (
   <WithLabel labelText={labelText}>
     <MultiSelect
-      items={items.map((item) => ({ code: item.value, name: item.text }))}
+      items={items}
       placeholder={placeholder}
       selectedValues={selectedItem}
       setSelectedValues={onSelect}

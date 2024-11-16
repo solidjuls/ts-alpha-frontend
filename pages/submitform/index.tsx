@@ -160,6 +160,21 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   };
 
   const onInputValueChange = (key: keyof SubmitFormState, value: string | Date) => {
+    console.log("maybe", value, key)
+    if(key ===  "opponentWas") {
+      setForm((prevState) => {
+        const code = value?.[0]?.code
+      return {
+        ...prevState,
+        [key]: {
+          value,
+          error: prevState[key].error ? value === "" : false,
+        },
+      };
+    })
+      return
+    }
+
     setForm((prevState) => {
       return {
         ...prevState,

@@ -1,93 +1,93 @@
 type DropdownType = {
-  text: string;
-  value: string;
+  code: string;
+  name: string;
 };
 
 export const GAME_QUERY = "game-getAll";
 
 export const turns: Array<DropdownType> = [
   {
-    text: "1",
-    value: "1",
+    code: "1",
+    name: "1",
   },
   {
-    text: "2",
-    value: "2",
+    code: "2",
+    name: "2",
   },
   {
-    text: "3",
-    value: "3",
+    code: "3",
+    name: "3",
   },
   {
-    text: "4",
-    value: "4",
+    code: "4",
+    name: "4",
   },
   {
-    text: "5",
-    value: "5",
+    code: "5",
+    name: "5",
   },
   {
-    text: "6",
-    value: "6",
+    code: "6",
+    name: "6",
   },
   {
-    text: "7",
-    value: "7",
+    code: "7",
+    name: "7",
   },
   {
-    text: "8",
-    value: "8",
+    code: "8",
+    name: "8",
   },
   {
-    text: "9",
-    value: "9",
+    code: "9",
+    name: "9",
   },
   {
-    text: "10",
-    value: "10",
+    code: "10",
+    name: "10",
   },
   {
-    text: "Final Scoring",
-    value: "11",
+    code: "Final Scoring",
+    name: "11",
   },
 ];
 
 export const endType: Array<DropdownType> = [
   {
-    value: "VP Track (+20)",
-    text: "VP Track (+20)",
+    code: "VP Track (+20)",
+    name: "VP Track (+20)",
   },
   {
-    value: "Final Scoring",
-    text: "Final Scoring",
+    code: "Final Scoring",
+    name: "Final Scoring",
   },
   {
-    value: "Wargames",
-    text: "Wargames",
+    code: "Wargames",
+    name: "Wargames",
   },
   {
-    value: "DEFCON",
-    text: "DEFCON",
+    code: "DEFCON",
+    name: "DEFCON",
   },
   {
-    value: "Forfeit",
-    text: "Forfeit",
+    code: "Forfeit",
+    name: "Forfeit",
   },
   {
-    value: "Timer Expired",
-    text: "Timer Expired",
+    code: "Timer Expired",
+    name: "Timer Expired",
   },
   {
-    value: "Europe Control",
-    text: "Europe Control",
+    code: "Europe Control",
+    name: "Europe Control",
   },
   {
-    value: "Scoring Card Held",
-    text: "Scoring Card Held",
+    code: "Scoring Card Held",
+    name: "Scoring Card Held",
   },
   {
-    value: "Cuban Missile Crisis",
-    text: "Cuban Missile Crisis",
+    code: "Cuban Missile Crisis",
+    name: "Cuban Missile Crisis",
   },
 ];
 
@@ -101,27 +101,27 @@ const getEndTurn = ({ winningOption }: { winningOption: string }) => {
 };
 export const gameWinningOptions: Array<DropdownType> = [
   {
-    value: "1",
-    text: "USA",
+    code: "1",
+    name: "USA",
   },
   {
-    value: "2",
-    text: "USSR",
+    code: "2",
+    name: "USSR",
   },
   {
-    value: "3",
-    text: "Tie",
+    code: "3",
+    name: "Tie",
   },
 ];
 
 export const gameSides: Array<DropdownType> = [
   {
-    value: "1",
-    text: "USA",
+    code: "1",
+    name: "USA",
   },
   {
-    value: "2",
-    text: "USSR",
+    code: "2",
+    name: "USSR",
   },
 ];
 

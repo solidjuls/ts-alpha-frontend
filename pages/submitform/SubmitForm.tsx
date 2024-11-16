@@ -68,31 +68,35 @@ const SubmitForm = ({
     cacheId: "tournament-list",
   });
   const leagueTypes = data?.map((item) => ({
-    value: item.code,
-    text: item.text,
+    code: item.code,
+    name: item.text,
   }));
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
     if (!recreate) {
-      if (localForm.playedAs.value === "1") {
+      if (localForm.playedAs.value[0].code === "1") {
         payloadObject["usaPlayerId"] = id;
-        payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
-      } else if (localForm.playedAs.value === "2") {
+        payloadObject["ussrPlayerId"] = localForm.opponentWas.value[0].code;
+      } else if (localForm.playedAs.value[0].code === "2") {
         payloadObject["ussrPlayerId"] = id;
-        payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+        payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
       }
     }
 
+    payloadObject["gameCode"] = localForm.gameCode.value;
+    payloadObject["video1"] = localForm.video1.value;
+    payloadObject["gameDate"] = localForm.gameDate.value;
+
     Object.keys(localForm).map((key: string) => {
-      if (key !== "playedAs" && key !== "opponentWas") {
-        payloadObject[key] = localForm[key].value;
+      if (key !== "playedAs" && key !== "opponentWas" && key !== "gameCode" && key !== "video1" && key !== "oldId" && key!== "gameDate") {
+        payloadObject[key] = localForm[key].value[0].code;
       }
     });
 
     return payloadObject;
   };
 console.log("state", form)
-//users?.map((item) => ({ code: item.id, name: item.name }))
+
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
@@ -120,21 +124,10 @@ console.log("state", form)
           items={leagueTypes}
           selectedItem={form.gameType.value}
           placeholder="Select tournament"
-          // selectedValueProperty="value"
-          // selectedInputProperty="text"
           error={form.gameType.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        {/* <Box css={{ width: dropdownWidth }}>
-          <MultiSelect
-            items={leagueTypes.map((item) => ({ code: item.value, name: item.text }))}
-            placeholder="Select tournament..."
-            selectedValues={form.gameType.value}
-            setSelectedValues={(value) => onInputValueChange("gameType", value)}
-            selectionLimit={1}
-          />
-        </Box> */}
         {!recreate ? (
           <DropdownWithLabel
             labelText="PlayedAs"
@@ -148,39 +141,29 @@ console.log("state", form)
             onSelect={(value) => onInputValueChange("playedAs", value)}
           />
         ) : (
-          <UserTypeahead
+          <DropdownWithLabel
             labelText="usaPlayer"
+            placeholder="USA player"
+            items={users?.map((item) => ({ code: item.id, name: item.name }))}
             selectedItem={form.usaPlayerId.value}
             selectedValueProperty="value"
             selectedInputProperty="text"
-            error={form.usaPlayerId.error}
-            placeholder="Type the player name..."
-            css={{ width: typeaheadWidth }}
-            onSelect={(value) => onInputValueChange("usaPlayerId", value?.value)}
+            error={form[opponentFormProp].error}
+            css={{ width: dropdownWidth }}
+            onSelect={(value: string) =>onInputValueChange("usaPlayerId", value)}
           />
         )}
         <DropdownWithLabel
           labelText={!recreate ? "opponentWas" : "ussrPlayer"}
-          placeholder="Your opponent was..."
-          items={gameWinningOptions}
-          selectedItem={form.gameWinner.value as string}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
-          error={form.gameWinner.error}
-          css={{ width: dropdownWidth }}
-          onSelect={(value: string) => onInputValueChange("gameWinner", value)}
-        />
-        {/* <UserTypeahead
-          labelText={!recreate ? "opponentWas" : "ussrPlayer"}
+          placeholder={!recreate ? "Your opponent was..." : "USSR player"}
+          items={users?.map((item) => ({ code: item.id, name: item.name }))}
           selectedItem={form[opponentFormProp].value}
           selectedValueProperty="value"
           selectedInputProperty="text"
           error={form[opponentFormProp].error}
-          css={{ width: typeaheadWidth }}
-          placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange(opponentFormProp, value?.value)}
-          onBlur={() => onInputValueChange(opponentFormProp, "")}
-        /> */}
+          css={{ width: dropdownWidth }}
+          onSelect={(value: string) => onInputValueChange(opponentFormProp, value)}
+        />
         <DropdownWithLabel
           labelText="gameWinner"
           placeholder="Game winner"

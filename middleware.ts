@@ -34,7 +34,6 @@ export const config = {
     "/",
     "/players",
     "/submitform",
-    "/reset-password",
     "/recreateform",
     "/userprofile/:id*",
     "/games/:id*",

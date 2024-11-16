@@ -141,6 +141,7 @@ const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }
         placeholder="Select Players..."
         selectedValues={selectedValues}
         setSelectedValues={setSelectedValues}
+        closeOnSelect={false}
       />
     </Box>
   );
@@ -158,6 +159,7 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
         placeholder="Select Tournaments..."
         selectedValues={selectedValues}
         setSelectedValues={setSelectedValues}
+        closeOnSelect={false}
       />
     </Box>
   );
@@ -191,11 +193,13 @@ const Filter = ({ dispatch }) => {
         users={users}
         selectedValues={playersSelected}
         setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
+        closeOnSelect={false}
       />
       <FilterTournament
         tournaments={tournaments}
         selectedValues={tournamentSelected}
         setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
+        closeOnSelect={false}
       />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>

@@ -10,5 +10,5 @@ export const getWinnerText = (gameWinner) => {
 };
 
 export const getTurnText = (turnNumber) => {
-  return turns.find((turn) => turn.value === String(turnNumber))?.text;
+  return turns.find((turn) => turn.code === String(turnNumber))?.name;
 };
