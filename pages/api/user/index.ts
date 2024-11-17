@@ -1,10 +1,14 @@
-import { get, getAll, update } from "backend/controller/user.controller";
+import { get, getAll, update, create } from "backend/controller/user.controller";
 
 export default async function handler(req, res) {
   const { id } = req.query;
 
   if (req.method === "POST") {
     const user = await update(req.body);
+    res.status(200).json();
+  } else if (req.method === "PUT") {
+    console.log("user create", req.body)
+    // const user = await create(req.body);
     res.status(200).json();
   } else if (req.method === "GET") {
     if (id) {

@@ -115,6 +115,21 @@ export const update = async (input) => {
   return { success: true };
 };
 
+export const create = async (input) => {
+  const createUser = await prisma.users.create({
+    data: {
+      first_name: input.firstName,
+      last_name: input.lastName,
+      name: input.name,
+      email: input.email,
+      phone_number: input.phone,
+      preferred_gaming_platform: input.preferredGamingPlatform,
+      preferred_game_duration: input.preferredGameDuration,
+    },
+  });
+  return { success: true };
+};
+
 const decryptHash = (hash: any) => {
   let buff = Buffer.from(hash, "base64");
   return buff.toString("ascii");
