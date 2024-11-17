@@ -4,6 +4,7 @@ import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
 import RecreateRating from "./RecreateRating";
+
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
@@ -56,6 +57,7 @@ const SubmitForm = ({
   setButtonDisabled,
   setForm,
 }: SubmitFormProps) => {
+  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { id } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,29 +68,41 @@ const SubmitForm = ({
     cacheId: "tournament-list",
   });
   const leagueTypes = data?.map((item) => ({
-    value: item.code,
-    text: item.text,
+    code: item.code,
+    name: item.text,
   }));
   const normalizeData = (localForm: any) => {
     let payloadObject: any = {};
     if (!recreate) {
-      if (localForm.playedAs.value === "1") {
+      if (localForm.playedAs.value[0].code === "1") {
         payloadObject["usaPlayerId"] = id;
-        payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
-      } else if (localForm.playedAs.value === "2") {
+        payloadObject["ussrPlayerId"] = localForm.opponentWas.value[0].code;
+      } else if (localForm.playedAs.value[0].code === "2") {
         payloadObject["ussrPlayerId"] = id;
-        payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+        payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
       }
     }
 
+    payloadObject["gameCode"] = localForm.gameCode.value;
+    payloadObject["video1"] = localForm.video1.value;
+    payloadObject["gameDate"] = localForm.gameDate.value;
+
     Object.keys(localForm).map((key: string) => {
-      if (key !== "playedAs" && key !== "opponentWas") {
-        payloadObject[key] = localForm[key].value;
+      if (
+        key !== "playedAs" &&
+        key !== "opponentWas" &&
+        key !== "gameCode" &&
+        key !== "video1" &&
+        key !== "oldId" &&
+        key !== "gameDate"
+      ) {
+        payloadObject[key] = localForm[key].value[0].code;
       }
     });
 
     return payloadObject;
   };
+  console.log("state", form);
 
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
@@ -96,15 +110,18 @@ const SubmitForm = ({
       {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
       <Box
         css={{
+          display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          gap: "15px",
         }}
       >
         <TextComponent
           labelText="checkID"
           inputValue={form.gameCode.value}
+          placeholder="Game id"
           onInputValueChange={(value) => onInputValueChange("gameCode", value)}
-          css={{ width: "50px" }}
+          css={{ width: "80px" }}
           error={form.gameCode.error}
           key="checkID"
         />
@@ -113,8 +130,7 @@ const SubmitForm = ({
           key="gameType"
           items={leagueTypes}
           selectedItem={form.gameType.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
+          placeholder="Select tournament"
           error={form.gameType.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
@@ -122,6 +138,7 @@ const SubmitForm = ({
         {!recreate ? (
           <DropdownWithLabel
             labelText="PlayedAs"
+            placeholder="I played as..."
             items={gameSides}
             selectedItem={form.playedAs.value}
             selectedValueProperty="value"
@@ -131,30 +148,32 @@ const SubmitForm = ({
             onSelect={(value) => onInputValueChange("playedAs", value)}
           />
         ) : (
-          <UserTypeahead
+          <DropdownWithLabel
             labelText="usaPlayer"
+            placeholder="USA player"
+            items={users?.map((item) => ({ code: item.id, name: item.name }))}
             selectedItem={form.usaPlayerId.value}
             selectedValueProperty="value"
             selectedInputProperty="text"
-            error={form.usaPlayerId.error}
-            placeholder="Type the player name..."
-            css={{ width: typeaheadWidth }}
-            onSelect={(value) => onInputValueChange("usaPlayerId", value?.value)}
+            error={form[opponentFormProp].error}
+            css={{ width: dropdownWidth }}
+            onSelect={(value: string) => onInputValueChange("usaPlayerId", value)}
           />
         )}
-        <UserTypeahead
+        <DropdownWithLabel
           labelText={!recreate ? "opponentWas" : "ussrPlayer"}
+          placeholder={!recreate ? "Your opponent was..." : "USSR player"}
+          items={users?.map((item) => ({ code: item.id, name: item.name }))}
           selectedItem={form[opponentFormProp].value}
           selectedValueProperty="value"
           selectedInputProperty="text"
           error={form[opponentFormProp].error}
-          css={{ width: typeaheadWidth }}
-          placeholder="Type the player name..."
-          onSelect={(value: any) => onInputValueChange(opponentFormProp, value?.value)}
-          onBlur={() => onInputValueChange(opponentFormProp, "")}
+          css={{ width: dropdownWidth }}
+          onSelect={(value: string) => onInputValueChange(opponentFormProp, value)}
         />
         <DropdownWithLabel
           labelText="gameWinner"
+          placeholder="Game winner"
           items={gameWinningOptions}
           selectedItem={form.gameWinner.value as string}
           selectedValueProperty="value"
@@ -165,6 +184,7 @@ const SubmitForm = ({
         />
         <DropdownWithLabel
           labelText="endTurn"
+          placeholder="End turn"
           items={turns}
           error={form.endTurn.error}
           selectedItem={form.endTurn.value}
@@ -173,23 +193,26 @@ const SubmitForm = ({
         />
         <DropdownWithLabel
           labelText="endType"
+          placeholder="Victory type"
           items={endType}
           error={form.endMode.error}
           css={{ width: dropdownWidth }}
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
+        <TextComponent
+          labelText="videoLink1"
+          inputValue={form.video1.value}
+          placeholder="Link to the video..."
+          error={form.video1.error}
+          css={{ width: "500px" }}
+          onInputValueChange={(value: string) => onInputValueChange("video1", value)}
+        />
         <DateComponent
           labelText="gameDate"
           inputValue={form.gameDate.value}
           // error={form.gameDate.error}
           onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
-        />
-        <TextComponent
-          labelText="videoLink1"
-          inputValue={form.video1.value}
-          error={form.video1.error}
-          onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         {!recreate && (
           <Button

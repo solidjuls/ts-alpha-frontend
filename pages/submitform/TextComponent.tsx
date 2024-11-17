@@ -13,6 +13,7 @@ const TextComponent = ({
   labelText,
   inputValue,
   onInputValueChange,
+  placeholder,
   error,
   css,
   ...rest
@@ -23,6 +24,7 @@ const TextComponent = ({
         type="text"
         id="video1"
         defaultValue={inputValue}
+        placeholder={placeholder}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           onInputValueChange(event.target.value)
         }

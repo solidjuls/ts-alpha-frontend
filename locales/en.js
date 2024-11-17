@@ -27,6 +27,7 @@ module.exports = {
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",
 
+    phone: "Phone",
     PlayedAs: "I played as:",
     firstName: "First Name",
     lastName: "Last Name",
@@ -34,5 +35,8 @@ module.exports = {
     preferredGamingPlatform: "Preferred Gaming Platform",
     preferredGameDuration: "Preferred Game Duration",
     timeZone: "Timezone",
+
+    city: "City",
+    country: "Country",
   },
 };

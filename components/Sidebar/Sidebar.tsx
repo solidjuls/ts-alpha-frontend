@@ -128,6 +128,13 @@ const Items = ({ styles, role }: any) => {
           </Text>
         </UnstyledLink>
       )}
+      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+        <UnstyledLink href="/usercreate" passHref>
+          <Text strong="bold" css={horizontalItemStyles}>
+            Register user
+          </Text>
+        </UnstyledLink>
+      )}
     </>
   );
 };
@@ -199,7 +206,7 @@ const VerticalSidebarLayout = styled(Flex, {
   },
 });
 const VerticalSidebar = () => {
-  const { name } = useSession();
+  const { name, role } = useSession();
   return (
     <VerticalSidebarLayout>
       <Root>
@@ -229,13 +236,24 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            <UnstyledLink href="/recreateform" passHref>
-              <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
-                  Recreate Form
-                </Text>
-              </Item>
-            </UnstyledLink>
+            {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+              <UnstyledLink href="/recreateform" passHref>
+                <Item>
+                  <Text strong="bold" css={horizontalItemStyles}>
+                    Recreate Form
+                  </Text>
+                </Item>
+              </UnstyledLink>
+            )}
+            {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+              <UnstyledLink href="/userprofile" passHref>
+                <Item>
+                  <Text strong="bold" css={horizontalItemStyles}>
+                    Register Form
+                  </Text>
+                </Item>
+              </UnstyledLink>
+            )}
             <UnstyledLink href="/userprofile" passHref>
               <Item>
                 <Text strong="bold" css={horizontalItemStyles}>

@@ -33,12 +33,15 @@ export const { styled, globalCss, css, getCssText, createTheme, keyframes } = cr
   },
 });
 
-export const globalMultiselectStyles = globalCss({
-  ".p-multiselect": {
-    width: "250px",
-    padding: "0",
-  },
-});
+// export const globalMultiselectStyles = (filter) => globalCss({
+//   ".p-multiselect": {
+//     width: "250px",
+//     padding: "0",
+//   },
+//   ".p-multiselect-header": {
+//     display: filter ? "flex" : "none"
+//   }
+// });
 
 export const darkTheme = createTheme({
   colors: {
