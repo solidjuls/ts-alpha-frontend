@@ -1,29 +1,33 @@
 import { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
-import WithLabel from "./WithLabel";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import WithLabel from "../submitform/WithLabel";
+import getAxiosInstance from "utils/axios";
 
 const useTypeaheadState = () => {
-  const [userSuggestions, setUserSuggestions] = useState([]);
+  const [citySuggestions, setCitySuggestions] = useState([]);
 
-  // const { data, error } = useFetchInitialData({ url: "/api/user" });
+  // const { data, error } = useFetchInitialData({ url: "/api/cities" });
   // if (!data) return null;
 
-  // const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
-  const onChange = (input) => {
-    setUserSuggestions(
-      userList?.filter((user) => {
-        if (user.text.toLowerCase().includes(input.toLowerCase())) {
-          return true;
-        }
-      }),
-    );
+  // const citiesList = data.map((city) => ({ value: city.id, text: city.name })) || [];
+  const onChange = async (input) => {
+    const { data } = await getAxiosInstance().get(`/api/cities?q=${input}`);
+    setCitySuggestions(data?.map((city) => ({ value: city.id, text: city.name })) || []);
   };
 
-  return { userSuggestions, onChange };
+  return { citySuggestions, onChange };
 };
-const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
-  const { userSuggestions, onChange } = useTypeaheadState();
+
+const CitiesTypeahead = ({
+  labelText,
+  selectedItem,
+  onSelect,
+  placeholder,
+  css,
+  error,
+  ...rest
+}) => {
+  const { citySuggestions, onChange } = useTypeaheadState();
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -38,9 +42,9 @@ const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, er
         {...rest}
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
-        {userSuggestions.length > 0 && (
+        {citySuggestions.length > 0 && (
           <Typeahead.List css={{ ...css, width: "270px" }}>
-            {userSuggestions.map(({ value, text }, index) => (
+            {citySuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>
               </Typeahead.Item>
@@ -52,4 +56,4 @@ const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, er
   );
 };
 
-export default UserTypeahead;
+export default CitiesTypeahead;

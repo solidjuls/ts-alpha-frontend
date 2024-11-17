@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { Spinner } from "@radix-ui/themes";
 import { Form } from "components/Atoms";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
-import { UserProfileState } from "types/game.types";
+import { UserCreateState } from "types/game.types";
 import { Button } from "components/Button";
 import getAxiosInstance from "utils/axios";
-import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
+import CitiesTypeahead from "./CitiesTypeahead";
+import { platforms, gameDurations } from "utils/constants";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -22,99 +24,49 @@ const formStyles = {
   },
 };
 
-const platforms = [
-  {
-    value: "PC - Steam (Playdek)",
-    text: "PC - Steam (Playdek)",
-  },
-  {
-    value: "In person (Physical Game)",
-    text: "In person (Physical Game)",
-  },
-  {
-    value: "Mobile - Android App (Playdek)",
-    text: "Mobile - Android App (Playdek)",
-  },
-  {
-    value: "Mobile - Ios App (Playdek)",
-    text: "Mobile - Ios App (Playdek)",
-  },
-  {
-    value: "Mac - Steam (Playdek)",
-    text: "Mac - Steam (Playdek)",
-  },
-  {
-    value: "PC - Saito",
-    text: "PC - Saito",
-  },
-  {
-    value: "PC - Wargamesroom",
-    text: "PC - Wargamesroom",
-  },
-  {
-    value: "Vassal",
-    text: "Vassal",
-  },
-];
-
-const gameDurations = [
-  {
-    value: "30 minutes",
-    text: "30 minutes",
-  },
-  {
-    value: "45 minutes",
-    text: "45 minutes",
-  },
-  {
-    value: "60 minutes",
-    text: "60 minutes",
-  },
-  {
-    value: "90 minutes",
-    text: "90 minutes",
-  },
-  {
-    value: "3 hours",
-    text: "3 hours",
-  },
-  {
-    value: "Asynch - 3 days",
-    text: "Asynch - 3 days",
-  },
-  {
-    value: "Asynch - 7 days",
-    text: "Asynch - 7 days",
-  },
-  {
-    value: "Asynch - 21 days",
-    text: "Asynch - 21 days",
-  },
-  {
-    value: "Asynch - 45 days",
-    text: "Asynch - 45 days",
-  },
-];
-
-const getInitialState = (data) => {
+const getInitialState = () => {
   return {
     name: {
-      value: data.name,
+      value: "",
       error: false,
     },
     preferredGamingPlatform: {
-      value: data.preferred_gaming_platform,
+      value: [],
       error: false,
     },
     preferredGameDuration: {
-      value: data.preferred_game_duration,
+      value: [],
+      error: false,
+    },
+    city: {
+      value: "",
+      error: false,
+    },
+    phone: {
+      value: "",
+      error: false,
+    },
+    country: {
+      value: [],
+      error: false,
+    },
+    first_name: {
+      value: "",
+      error: false,
+    },
+    last_name: {
+      value: "",
+      error: false,
+    },
+    email: {
+      value: "",
       error: false,
     },
   };
 };
 
-const UserProfileForm = ({ data }) => {
-  const [form, setForm] = useState<UserProfileState>(getInitialState(data));
+const UserCreateForm = ({ countries }) => {
+  const [form, setForm] = useState<UserCreateState>(() => getInitialState());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -122,7 +74,7 @@ const UserProfileForm = ({ data }) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (form[key as keyof UserProfileState].value === "") {
+      if (key !== "phone" && form[key as keyof UserCreateState].value === "") {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
@@ -136,7 +88,7 @@ const UserProfileForm = ({ data }) => {
     return submit;
   };
 
-  const onInputValueChange = (key: keyof UserProfileState, value: string | Date) => {
+  const onInputValueChange = (key: keyof UserCreateState, value: string | Date) => {
     setForm((prevState) => {
       return {
         ...prevState,
@@ -147,16 +99,46 @@ const UserProfileForm = ({ data }) => {
       };
     });
   };
-  const normalizeData = (form: any) => {
-    let payloadObject: any = {};
-    Object.keys(form).map((key: string) => {
-      payloadObject[key] = form[key].value;
-    });
+  const normalizeData = (localForm: UserCreateState) => {
+    let payloadObject: Partial<Record<keyof UserCreateState, string>> = {};
+
+    payloadObject["city"] = localForm.city.value;
+    payloadObject["first_name"] = localForm.first_name.value;
+    payloadObject["last_name"] = localForm.last_name.value;
+    payloadObject["name"] = localForm.name.value;
+    payloadObject["email"] = localForm.email.value;
+    payloadObject["phone"] = localForm.phone.value;
+
+    payloadObject["preferredGameDuration"] = localForm.preferredGameDuration.value[0].code;
+    payloadObject["preferredGamingPlatform"] = localForm.preferredGamingPlatform.value[0].code;
+    payloadObject["country"] = localForm.country.value[0].code;
+
     return payloadObject;
   };
-
+  console.log("form", form);
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+      <EditTextComponent
+        labelText="firstName"
+        inputValue={form?.first_name.value}
+        onInputValueChange={(value) => onInputValueChange("first_name", value)}
+        css={{ width: inputWidth }}
+        error={form?.first_name.error}
+      />
+      <EditTextComponent
+        labelText="lastName"
+        inputValue={form?.last_name.value}
+        onInputValueChange={(value) => onInputValueChange("last_name", value)}
+        css={{ width: inputWidth }}
+        error={form?.last_name.error}
+      />
+      <EditTextComponent
+        labelText="mail"
+        inputValue={form?.email.value}
+        onInputValueChange={(value) => onInputValueChange("email", value)}
+        css={{ width: inputWidth }}
+        error={form?.email.error}
+      />
       <EditTextComponent
         labelText="playdeckName"
         inputValue={form?.name.value}
@@ -164,12 +146,20 @@ const UserProfileForm = ({ data }) => {
         css={{ width: inputWidth }}
         error={form?.name.error}
       />
+      <EditTextComponent
+        labelText="phone"
+        inputValue={form?.phone.value}
+        onInputValueChange={(value) => onInputValueChange("phone", value)}
+        css={{ width: inputWidth }}
+        error={form?.phone.error}
+      />
       <DropdownWithLabel
         labelText="preferredGamingPlatform"
         items={platforms}
-        error={form?.preferredGamingPlatform.error}
+        error={form?.preferredGamingPlatform?.error}
         css={{ width: dropdownWidth }}
-        selectedItem={form.preferredGamingPlatform.value}
+        selectedItem={form.preferredGamingPlatform?.value}
+        placeholder="Preferred gaming platform"
         onSelect={(value: string) => onInputValueChange("preferredGamingPlatform", value)}
       />
       <DropdownWithLabel
@@ -178,7 +168,27 @@ const UserProfileForm = ({ data }) => {
         error={form?.preferredGameDuration.error}
         css={{ width: dropdownWidth }}
         selectedItem={form.preferredGameDuration.value}
+        placeholder="Preferred game duration"
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
+      />
+      <DropdownWithLabel
+        labelText="country"
+        items={countries}
+        error={form?.country.error}
+        css={{ width: dropdownWidth }}
+        selectedItem={form.country.value}
+        placeholder="Type the country name..."
+        onSelect={(value: string) => onInputValueChange("country", value)}
+      />
+      <CitiesTypeahead
+        labelText="city"
+        selectedItem={form.city.value}
+        selectedValueProperty="value"
+        selectedInputProperty="text"
+        error={form.city.error}
+        placeholder="Type the city name..."
+        css={{ width: dropdownWidth }}
+        onSelect={(value) => onInputValueChange("city", value?.value)}
       />
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}
       {errorMsg && <Text type="error">{errorMsg}</Text>}
@@ -190,12 +200,12 @@ const UserProfileForm = ({ data }) => {
             try {
               setIsSubmitting(true);
               // @ts-ignore
-              await getAxiosInstance().post("/api/user/", {
+              await getAxiosInstance().put("/api/user/", {
                 ...normalizeData(form),
               });
               setConfirmationMsg("Profile updated correctly");
-            } catch {
-              setErrorMsg("There was an error updating the profile");
+            } catch (e) {
+              setErrorMsg(e?.response?.data);
             } finally {
               setIsSubmitting(false);
             }
@@ -208,4 +218,4 @@ const UserProfileForm = ({ data }) => {
   );
 };
 
-export default UserProfileForm;
+export default UserCreateForm;

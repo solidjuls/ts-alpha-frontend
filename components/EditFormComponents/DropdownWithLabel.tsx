@@ -1,5 +1,5 @@
 import { DropdownItemType } from "components/DropdownMenu";
-import MultiSelect from"components/MultiSelect";
+import MultiSelect from "components/MultiSelect";
 import WithLabel from "./WithLabel";
 
 type DropdownWithLabelProps = {

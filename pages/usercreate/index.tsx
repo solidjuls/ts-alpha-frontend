@@ -3,15 +3,17 @@ import { EditTextComponent } from "components/EditFormComponents";
 import { useSession } from "contexts/AuthProvider";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
-import UserProfileForm from "./UserCreateForm";
+import UserCreateForm from "./UserCreateForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
 
   if (isLoading) return <Spinner size="3" />;
-console.log("countries", data)
-  return <div></div>;
+
+  return (
+    <UserCreateForm countries={data?.map((item) => ({ code: item.id, name: item.country_name }))} />
+  );
 };
 
 export async function getServerSideProps({

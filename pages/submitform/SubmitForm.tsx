@@ -88,14 +88,21 @@ const SubmitForm = ({
     payloadObject["gameDate"] = localForm.gameDate.value;
 
     Object.keys(localForm).map((key: string) => {
-      if (key !== "playedAs" && key !== "opponentWas" && key !== "gameCode" && key !== "video1" && key !== "oldId" && key!== "gameDate") {
+      if (
+        key !== "playedAs" &&
+        key !== "opponentWas" &&
+        key !== "gameCode" &&
+        key !== "video1" &&
+        key !== "oldId" &&
+        key !== "gameDate"
+      ) {
         payloadObject[key] = localForm[key].value[0].code;
       }
     });
 
     return payloadObject;
   };
-console.log("state", form)
+  console.log("state", form);
 
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
@@ -106,7 +113,7 @@ console.log("state", form)
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
-          gap: "15px"
+          gap: "15px",
         }}
       >
         <TextComponent
@@ -150,7 +157,7 @@ console.log("state", form)
             selectedInputProperty="text"
             error={form[opponentFormProp].error}
             css={{ width: dropdownWidth }}
-            onSelect={(value: string) =>onInputValueChange("usaPlayerId", value)}
+            onSelect={(value: string) => onInputValueChange("usaPlayerId", value)}
           />
         )}
         <DropdownWithLabel

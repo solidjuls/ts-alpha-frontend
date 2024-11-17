@@ -116,15 +116,24 @@ export const update = async (input) => {
 };
 
 export const create = async (input) => {
-  const createUser = await prisma.users.create({
+  const existingUser = await prisma.users.findUnique({
+    where: { email: input.email },
+  });
+
+  if (existingUser) {
+    return { error: `User with email ${input.email} already exists` };
+  }
+  await prisma.users.create({
     data: {
-      first_name: input.firstName,
-      last_name: input.lastName,
+      first_name: input.first_name,
+      last_name: input.last_name,
       name: input.name,
       email: input.email,
-      phone_number: input.phone,
+      // phone_number: input.phone,
       preferred_gaming_platform: input.preferredGamingPlatform,
       preferred_game_duration: input.preferredGameDuration,
+      city_id: input.city,
+      country_id: input.country,
     },
   });
   return { success: true };

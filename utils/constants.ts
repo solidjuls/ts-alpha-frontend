@@ -1,4 +1,4 @@
-type DropdownType = {
+export type DropdownType = {
   code: string;
   name: string;
 };
@@ -130,3 +130,77 @@ export const userRoles = {
   ADMIN: 2,
   PLAYER: 1,
 };
+
+export const platforms: Array<DropdownType> = [
+  {
+    code: "PC - Steam (Playdek)",
+    name: "PC - Steam (Playdek)",
+  },
+  {
+    code: "In person (Physical Game)",
+    name: "In person (Physical Game)",
+  },
+  {
+    code: "Mobile - Android App (Playdek)",
+    name: "Mobile - Android App (Playdek)",
+  },
+  {
+    code: "Mobile - Ios App (Playdek)",
+    name: "Mobile - Ios App (Playdek)",
+  },
+  {
+    code: "Mac - Steam (Playdek)",
+    name: "Mac - Steam (Playdek)",
+  },
+  {
+    code: "PC - Saito",
+    name: "PC - Saito",
+  },
+  {
+    code: "PC - Wargamesroom",
+    name: "PC - Wargamesroom",
+  },
+  {
+    code: "Vassal",
+    name: "Vassal",
+  },
+];
+
+export const gameDurations: Array<DropdownType> = [
+  {
+    code: "30 minutes",
+    name: "30 minutes",
+  },
+  {
+    code: "45 minutes",
+    name: "45 minutes",
+  },
+  {
+    code: "60 minutes",
+    name: "60 minutes",
+  },
+  {
+    code: "90 minutes",
+    name: "90 minutes",
+  },
+  {
+    code: "3 hours",
+    name: "3 hours",
+  },
+  {
+    code: "Asynch - 3 days",
+    name: "Asynch - 3 days",
+  },
+  {
+    code: "Asynch - 7 days",
+    name: "Asynch - 7 days",
+  },
+  {
+    code: "Asynch - 21 days",
+    name: "Asynch - 21 days",
+  },
+  {
+    value: "Asynch - 45 days",
+    name: "Asynch - 45 days",
+  },
+];

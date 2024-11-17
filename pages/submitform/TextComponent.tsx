@@ -32,7 +32,7 @@ const TextComponent = ({
         {...rest}
         border={error ? "error" : undefined}
       />
-      </WithLabel>
+    </WithLabel>
   );
 };
 

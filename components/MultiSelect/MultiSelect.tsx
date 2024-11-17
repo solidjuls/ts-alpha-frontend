@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import { styled } from "stitches.config";
 
 const StyledMultiSelect = styled(MultiSelect, {
-  width: '250px',
-  padding: '0',
+  width: "250px",
+  padding: "0",
   // '&.p-multiselect-header': {
   //   display: 'none'
   // }
@@ -21,34 +21,34 @@ const MultiSelectComponent = ({
   setSelectedValues,
   filter = true,
   closeOnSelect = true,
-  selectionLimit = null
+  selectionLimit = null,
 }) => {
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   if (!items) return null;
 
-  const selectedItemTemplate = (option) => option?.name
+  const selectedItemTemplate = (option) => option?.name;
 
   const handleChange = (e) => {
     setSelectedValues(e.value);
     setOverlayVisible(false);
-    console.log("give some rope")
-};
+    console.log("give some rope");
+  };
 
-const handleShow = () => setOverlayVisible(true);
+  const handleShow = () => setOverlayVisible(true);
 
-const handleHide = () => setOverlayVisible(false);
+  const handleHide = () => setOverlayVisible(false);
 
-const getOptionalProps = () => {
-  if (closeOnSelect) {
-    return {
-      onShow: handleShow,
-      onHide: handleHide
+  const getOptionalProps = () => {
+    if (closeOnSelect) {
+      return {
+        onShow: handleShow,
+        onHide: handleHide,
+      };
     }
-  }
 
-  return undefined
-}
+    return undefined;
+  };
 
   return (
     <StyledMultiSelect
