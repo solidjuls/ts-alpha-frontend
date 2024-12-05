@@ -7,6 +7,7 @@ import { TopPlayerRating } from "components/TopPlayerRating";
 import { dateAddDay } from "utils/dates";
 import { SkeletonHomepage } from "components/Skeletons";
 import { Game } from "types/game.types";
+import Image from "next/image";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";

@@ -276,7 +276,7 @@ const VerticalSidebar = () => {
 };
 const Navigation = () => {
   return (
-    <Flex
+    <><Flex
       css={{
         backgroundColor: "var(--gray-200)",
         flexDirection: "column",
@@ -288,6 +288,7 @@ const Navigation = () => {
       <VerticalSidebar />
       <HorizontalNavigation />
     </Flex>
+    <img src="/menu-image.jpeg" style={{ width: '100%', height:"50%" }}/></>
   );
 };
 
