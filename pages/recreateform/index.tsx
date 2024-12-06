@@ -64,6 +64,8 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
   const endTurn = searchParams.get("endTurn");
   const endMode = searchParams.get("endMode");
   const video1 = searchParams.get("video1");
+  const ussrPlayerId = searchParams.get("ussrPlayerId");
+  const usaPlayerId = searchParams.get("usaPlayerId");
 
   return {
     oldId: {
@@ -75,7 +77,7 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
       error: false,
     },
     gameWinner: {
-      value: gameWinner ? gameWinner : null,
+      value: [],// [{ code: gameWinner ? gameWinner : null, name: "" }],
       error: false,
     },
     gameCode: {
@@ -83,23 +85,23 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
       error: false,
     },
     gameType: {
-      value: gameType ? gameType : "",
+      value: [], //[{ code: gameType ? gameType : "" }],
       error: false,
     },
     ussrPlayerId: {
-      value: "",
+      value: [], //[{ code: ussrPlayerId, name: "" }],
       error: false,
     },
     usaPlayerId: {
-      value: "",
+      value: [], //[{ code: usaPlayerId, name: "" }],
       error: false,
     },
     endTurn: {
-      value: endTurn ? endTurn : "",
+      value: [], //[{ code: endTurn ? endTurn : "", name: endTurn ? endTurn : ""}],
       error: false,
     },
     endMode: {
-      value: endMode ? endMode : "",
+      value: [], //[{ code: endMode ? endMode : "", name: endMode ? endMode : "",}],
       error: false,
     },
     video1: {

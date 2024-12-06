@@ -78,7 +78,7 @@ const GameContent = ({ data }) => {
     usaPlayerId,
     ussrPlayerId,
   } = data;
-  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
+  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
   const deleteGame = async () => {
     getAxiosInstance().post(``);
@@ -132,7 +132,7 @@ const GameContent = ({ data }) => {
             <Span>{data.game_code}</Span>
             <Span>{getWinnerText(data.gameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>
-            <Span>{data.endMode}</Span>
+            <Span>{endMode}</Span>
             <Span>{dateFormat(new Date(data.created_at))}</Span>
           </Flex>
         </Box>
