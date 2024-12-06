@@ -44,26 +44,26 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
 export const getCountryIdByCode = async (code) => {
   const id = await prisma.countries.findFirst({
     where: {
-      tld_code: code
+      tld_code: code,
     },
     select: {
       id: true,
     },
   });
-  return id
-}
+  return id;
+};
 
 export const getCityIdByDescription = async (description) => {
   const cityId = await prisma.cities.findFirst({
     where: {
-      name: description
+      name: description,
     },
     select: {
       id: true,
     },
   });
-  return cityId
-}
+  return cityId;
+};
 
 export const getNonExistingEmails = async (emailArray) => {
   const existingUsers = await prisma.users.findMany({
@@ -79,9 +79,7 @@ export const getNonExistingEmails = async (emailArray) => {
 
   const existingEmails = existingUsers.map((user) => user.email);
 
-  const nonExistingEmails = emailArray.filter(
-    (email) => !existingEmails.includes(email)
-  );
+  const nonExistingEmails = emailArray.filter((email) => !existingEmails.includes(email));
 
   return nonExistingEmails;
 };
@@ -122,7 +120,7 @@ export const get = async (id) => {
       cities: {
         select: {
           name: true,
-          timeZoneId: true
+          timeZoneId: true,
         },
       },
       countries: {
@@ -139,11 +137,11 @@ export const get = async (id) => {
   const userNormalized = {
     ...user,
     cities: {
-      name: user.cities ? `${user.cities.name} - ${user.cities.timeZoneId}` : '-'
+      name: user.cities ? `${user.cities.name} - ${user.cities.timeZoneId}` : "-",
     },
-    rating: rating?.rating
-  }
-  
+    rating: rating?.rating,
+  };
+
   const userParsed = JSON.stringify({ ...userNormalized }, (key, value) =>
     typeof value === "bigint" ? value.toString() : value,
   );

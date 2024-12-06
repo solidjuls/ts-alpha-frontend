@@ -276,19 +276,21 @@ const VerticalSidebar = () => {
 };
 const Navigation = () => {
   return (
-    <><Flex
-      css={{
-        backgroundColor: "var(--gray-200)",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "center",
-        height: "50px",
-      }}
-    >
-      <VerticalSidebar />
-      <HorizontalNavigation />
-    </Flex>
-    <img src="/menu-image.jpeg" style={{ width: '100%', height:"50%" }}/></>
+    <>
+      <Flex
+        css={{
+          backgroundColor: "var(--gray-200)",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "center",
+          height: "50px",
+        }}
+      >
+        <VerticalSidebar />
+        <HorizontalNavigation />
+      </Flex>
+      <img src="/menu-image.jpeg" style={{ width: "100%", height: "50%" }} />
+    </>
   );
 };
 

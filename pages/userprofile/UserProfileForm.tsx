@@ -6,7 +6,7 @@ import { Button } from "components/Button";
 import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
-import { platforms, gameDurations } from 'utils/constants'
+import { platforms, gameDurations } from "utils/constants";
 const inputWidth = "200px";
 const dropdownWidth = "270px";
 
@@ -44,7 +44,7 @@ const UserProfileForm = ({ data }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-console.log("form", form)
+  console.log("form", form);
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {

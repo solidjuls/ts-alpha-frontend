@@ -74,7 +74,10 @@ const UserCreateForm = ({ countries }) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (!["phone","preferredGameDuration","preferredGamingPlatform","country"].includes(key) && form[key as keyof UserCreateState].value === "") {
+      if (
+        !["phone", "preferredGameDuration", "preferredGamingPlatform", "country"].includes(key) &&
+        form[key as keyof UserCreateState].value === ""
+      ) {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
@@ -84,7 +87,10 @@ const UserCreateForm = ({ countries }) => {
         }));
         submit = false;
       }
-      if(["preferredGameDuration","preferredGamingPlatform","country"].includes(key) && form[key as keyof UserCreateState].value.length === 0) {
+      if (
+        ["preferredGameDuration", "preferredGamingPlatform", "country"].includes(key) &&
+        form[key as keyof UserCreateState].value.length === 0
+      ) {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
@@ -197,13 +203,13 @@ const UserCreateForm = ({ countries }) => {
         selectedInputProperty="text"
         error={form.city.error}
         placeholder="Type the city name..."
-        css={{ width: '300px' }}
+        css={{ width: "300px" }}
         onBlur={() => {
-          onInputValueChange("city", '')
+          onInputValueChange("city", "");
         }}
         onSelect={(value) => {
-          console.log("sdf", value)
-          onInputValueChange("city", value?.value)
+          console.log("sdf", value);
+          onInputValueChange("city", value?.value);
         }}
       />
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}

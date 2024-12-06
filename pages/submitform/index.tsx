@@ -61,7 +61,7 @@ const initialState: SubmitFormState = {
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [form, setForm] = useState<SubmitFormState>(initialState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-console.log("formform", form)
+  console.log("formform", form);
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
@@ -78,8 +78,13 @@ console.log("formform", form)
           }));
           submit = false;
         }
-        
-        if(["endMode","endTurn","gameType","gameWinner","opponentWas","playedAs"].includes(key) && form[key as keyof SubmitFormState].value.length === 0) {
+
+        if (
+          ["endMode", "endTurn", "gameType", "gameWinner", "opponentWas", "playedAs"].includes(
+            key,
+          ) &&
+          form[key as keyof SubmitFormState].value.length === 0
+        ) {
           setForm((prevState: any) => ({
             ...prevState,
             [key]: {
@@ -91,10 +96,13 @@ console.log("formform", form)
         }
       }
     });
-    
-    if (!submit) return
 
-    if (form["endMode"].value[0].code === "Final Scoring" && form["endTurn"].value[0].code !== "11" ) {
+    if (!submit) return;
+
+    if (
+      form["endMode"].value[0].code === "Final Scoring" &&
+      form["endTurn"].value[0].code !== "11"
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -109,7 +117,10 @@ console.log("formform", form)
       submit = false;
     }
     // If turn == final scoring, then end mode must also equal final scoring
-    if ((form["endTurn"].value[0].code === "11" && form["endMode"].value[0].code !== "Final Scoring") ) {
+    if (
+      form["endTurn"].value[0].code === "11" &&
+      form["endMode"].value[0].code !== "Final Scoring"
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -124,7 +135,10 @@ console.log("formform", form)
       submit = false;
     }
     // Wargammes can only be used if turn 8, 9, 10
-    if (form["endMode"].value[0].code === "Wargames" && !["8", "9", "10"].includes(form["endTurn"].value[0].code)) {
+    if (
+      form["endMode"].value[0].code === "Wargames" &&
+      !["8", "9", "10"].includes(form["endTurn"].value[0].code)
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {

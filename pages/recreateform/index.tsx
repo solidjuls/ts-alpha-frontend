@@ -77,7 +77,7 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
       error: false,
     },
     gameWinner: {
-      value: [],// [{ code: gameWinner ? gameWinner : null, name: "" }],
+      value: [], // [{ code: gameWinner ? gameWinner : null, name: "" }],
       error: false,
     },
     gameCode: {
@@ -117,12 +117,15 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const validated = () => {
-    console.log("formform", form)
+    console.log("formform", form);
     let submit = true;
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
       } else {
-        if (["gameCode","oldId"].includes(key) && form[key as keyof SubmitFormState].value === "") {
+        if (
+          ["gameCode", "oldId"].includes(key) &&
+          form[key as keyof SubmitFormState].value === ""
+        ) {
           // form[key].error = true;
           setForm((prevState: any) => ({
             ...prevState,
@@ -133,8 +136,13 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
           }));
           submit = false;
         }
-        
-        if(["endMode","endTurn","gameType","gameWinner","opponentWas","playedAs"].includes(key) && form[key as keyof SubmitFormState].value.length === 0) {
+
+        if (
+          ["endMode", "endTurn", "gameType", "gameWinner", "opponentWas", "playedAs"].includes(
+            key,
+          ) &&
+          form[key as keyof SubmitFormState].value.length === 0
+        ) {
           setForm((prevState: any) => ({
             ...prevState,
             [key]: {
@@ -146,10 +154,13 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
         }
       }
     });
-    
-    if (!submit) return
 
-    if (form["endMode"].value[0].code === "Final Scoring" && form["endTurn"].value[0].code !== "11" ) {
+    if (!submit) return;
+
+    if (
+      form["endMode"].value[0].code === "Final Scoring" &&
+      form["endTurn"].value[0].code !== "11"
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -164,7 +175,10 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       submit = false;
     }
     // If turn == final scoring, then end mode must also equal final scoring
-    if ((form["endTurn"].value[0].code === "11" && form["endMode"].value[0].code !== "Final Scoring") ) {
+    if (
+      form["endTurn"].value[0].code === "11" &&
+      form["endMode"].value[0].code !== "Final Scoring"
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -179,7 +193,10 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       submit = false;
     }
     // Wargammes can only be used if turn 8, 9, 10
-    if (form["endMode"].value[0].code === "Wargames" && !["8", "9", "10"].includes(form["endTurn"].value[0].code)) {
+    if (
+      form["endMode"].value[0].code === "Wargames" &&
+      !["8", "9", "10"].includes(form["endTurn"].value[0].code)
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
