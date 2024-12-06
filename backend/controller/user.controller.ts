@@ -41,6 +41,51 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
+export const getCountryIdByCode = async (code) => {
+  const id = await prisma.countries.findFirst({
+    where: {
+      tld_code: code
+    },
+    select: {
+      id: true,
+    },
+  });
+  return id
+}
+
+export const getCityIdByDescription = async (description) => {
+  const cityId = await prisma.cities.findFirst({
+    where: {
+      name: description
+    },
+    select: {
+      id: true,
+    },
+  });
+  return cityId
+}
+
+export const getNonExistingEmails = async (emailArray) => {
+  const existingUsers = await prisma.users.findMany({
+    where: {
+      email: {
+        in: emailArray,
+      },
+    },
+    select: {
+      email: true,
+    },
+  });
+
+  const existingEmails = existingUsers.map((user) => user.email);
+
+  const nonExistingEmails = emailArray.filter(
+    (email) => !existingEmails.includes(email)
+  );
+
+  return nonExistingEmails;
+};
+
 export const getAll = async () => {
   const users = await prisma.users.findMany({
     select: {
