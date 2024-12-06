@@ -32,6 +32,7 @@
     "cookie-cutter": "^0.2.0",
     "cookies": "^0.8.0",
     "crypto": "^1.0.1",
+    "csv-parser": "^3.0.0",
     "date-fns": "^2.26.0",
     "downshift": "^6.1.7",
     "jose": "^5.9.3",
