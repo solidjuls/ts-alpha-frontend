@@ -62,17 +62,17 @@ function parseJsonFile(filePath) {
     return users
   };
 
-  const relateUserToTimezone = async (jsonArray) => {
+  const relateUserToCity = async (jsonArray) => {
     const insertStatements = [];
 
-  for (const item of jsonArray) {
-            const email = item['Email']
-            const timezone = item["Timezone"]
+  for (const item of jsonArray["Players"]) {
+            const firstName = item['FirstName']
+            const lastName = item["LastName"]
+            const nickName = item["Nickname"]
+            const cityId = item["CityId"]
 
-            if (email && timezone) {
-                const sqlStatement = `UPDATE users SET timezone_id = '${timezone}' WHERE email = '${email}';`;
-                insertStatements.push(sqlStatement);
-              }
+            const sqlStatement = `UPDATE users SET city_id = "${cityId}" WHERE first_name = "${firstName}" AND name = "${nickName}" AND last_name = "${lastName}";`;
+            insertStatements.push(sqlStatement);
             }
             const sqlContent = insertStatements.join('\n');
   
@@ -82,16 +82,16 @@ function parseJsonFile(filePath) {
 export default async function handler(req, res) {
     try {
         const parsedUsersArray = parseJsonFile(
-            ".../../../../../../../python/initial_data_seeding/players_json/Tasos Twilight Struggle Book - Players.json",
+            ".../../../../../../../python/initial_data_seeding/Players_202407291522.json",
           );
-          // console.log("parsedUsersArray", parsedUsersArray)
+
           // const emailsArray = extractEmails(parsedUsersArray)
           // console.log("emailsArray", emailsArray)
 
         // const missingUserEmails = await getNonExistingEmails(emailsArray)
         // const users = await extractUserInfo(parsedUsersArray,missingUserEmails )
-        const sqlContent = await relateUserToTimezone(parsedUsersArray)
-        fs.writeFileSync('update_timezones.sql', sqlContent, 'utf8');
+        const sqlContent = await relateUserToCity(parsedUsersArray)
+        fs.writeFileSync('update_cities.sql', sqlContent, 'utf8');
         // console.log("users!!!", users)
 
 

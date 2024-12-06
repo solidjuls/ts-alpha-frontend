@@ -23,6 +23,7 @@ const CitiesTypeahead = ({
   selectedItem,
   onSelect,
   placeholder,
+  onBlur,
   css,
   error,
   ...rest
@@ -38,12 +39,12 @@ const CitiesTypeahead = ({
         selectedInputProperty="text"
         onSelect={onSelect}
         selectedValue={selectedItem}
-        // onBlur={setValue}
+        onBlur={onBlur}
         {...rest}
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {citySuggestions.length > 0 && (
-          <Typeahead.List css={{ ...css, width: "270px" }}>
+          <Typeahead.List css={{ ...css, width: "500px" }}>
             {citySuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>

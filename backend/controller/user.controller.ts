@@ -122,6 +122,7 @@ export const get = async (id) => {
       cities: {
         select: {
           name: true,
+          timeZoneId: true
         },
       },
       countries: {
@@ -134,8 +135,16 @@ export const get = async (id) => {
       id: Number(id),
     },
   });
-  const { rating } = await getRatingByPlayer({ playerId: user?.id });
-  const userParsed = JSON.stringify({ ...user, rating }, (key, value) =>
+  const rating = await getRatingByPlayer({ playerId: user?.id });
+  const userNormalized = {
+    ...user,
+    cities: {
+      name: user.cities ? `${user.cities.name} - ${user.cities.timeZoneId}` : '-'
+    },
+    rating: rating?.rating
+  }
+  
+  const userParsed = JSON.stringify({ ...userNormalized }, (key, value) =>
     typeof value === "bigint" ? value.toString() : value,
   );
   return JSON.parse(userParsed);

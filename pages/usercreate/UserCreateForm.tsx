@@ -74,7 +74,17 @@ const UserCreateForm = ({ countries }) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (key !== "phone" && form[key as keyof UserCreateState].value === "") {
+      if (!["phone","preferredGameDuration","preferredGamingPlatform","country"].includes(key) && form[key as keyof UserCreateState].value === "") {
+        setForm((prevState: any) => ({
+          ...prevState,
+          [key]: {
+            ...prevState[key],
+            error: true,
+          },
+        }));
+        submit = false;
+      }
+      if(["preferredGameDuration","preferredGamingPlatform","country"].includes(key) && form[key as keyof UserCreateState].value.length === 0) {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
@@ -187,8 +197,14 @@ const UserCreateForm = ({ countries }) => {
         selectedInputProperty="text"
         error={form.city.error}
         placeholder="Type the city name..."
-        css={{ width: dropdownWidth }}
-        onSelect={(value) => onInputValueChange("city", value?.value)}
+        css={{ width: '300px' }}
+        onBlur={() => {
+          onInputValueChange("city", '')
+        }}
+        onSelect={(value) => {
+          console.log("sdf", value)
+          onInputValueChange("city", value?.value)
+        }}
       />
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}
       {errorMsg && <Text type="error">{errorMsg}</Text>}
