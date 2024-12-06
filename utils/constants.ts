@@ -47,8 +47,8 @@ export const turns: Array<DropdownType> = [
     name: "10",
   },
   {
-    code: "Final Scoring",
-    name: "11",
+    code: "11",
+    name: "Final Scoring",
   },
 ];
 
