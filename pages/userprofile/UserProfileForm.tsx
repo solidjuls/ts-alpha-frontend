@@ -6,7 +6,7 @@ import { Button } from "components/Button";
 import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
-
+import { platforms, gameDurations } from 'utils/constants'
 const inputWidth = "200px";
 const dropdownWidth = "270px";
 
@@ -22,80 +22,6 @@ const formStyles = {
   },
 };
 
-const platforms = [
-  {
-    value: "PC - Steam (Playdek)",
-    text: "PC - Steam (Playdek)",
-  },
-  {
-    value: "In person (Physical Game)",
-    text: "In person (Physical Game)",
-  },
-  {
-    value: "Mobile - Android App (Playdek)",
-    text: "Mobile - Android App (Playdek)",
-  },
-  {
-    value: "Mobile - Ios App (Playdek)",
-    text: "Mobile - Ios App (Playdek)",
-  },
-  {
-    value: "Mac - Steam (Playdek)",
-    text: "Mac - Steam (Playdek)",
-  },
-  {
-    value: "PC - Saito",
-    text: "PC - Saito",
-  },
-  {
-    value: "PC - Wargamesroom",
-    text: "PC - Wargamesroom",
-  },
-  {
-    value: "Vassal",
-    text: "Vassal",
-  },
-];
-
-const gameDurations = [
-  {
-    value: "30 minutes",
-    text: "30 minutes",
-  },
-  {
-    value: "45 minutes",
-    text: "45 minutes",
-  },
-  {
-    value: "60 minutes",
-    text: "60 minutes",
-  },
-  {
-    value: "90 minutes",
-    text: "90 minutes",
-  },
-  {
-    value: "3 hours",
-    text: "3 hours",
-  },
-  {
-    value: "Asynch - 3 days",
-    text: "Asynch - 3 days",
-  },
-  {
-    value: "Asynch - 7 days",
-    text: "Asynch - 7 days",
-  },
-  {
-    value: "Asynch - 21 days",
-    text: "Asynch - 21 days",
-  },
-  {
-    value: "Asynch - 45 days",
-    text: "Asynch - 45 days",
-  },
-];
-
 const getInitialState = (data) => {
   return {
     name: {
@@ -103,11 +29,11 @@ const getInitialState = (data) => {
       error: false,
     },
     preferredGamingPlatform: {
-      value: data.preferred_gaming_platform,
+      value: [{ code: data.preferred_gaming_platform, name: data.preferred_gaming_platform }],
       error: false,
     },
     preferredGameDuration: {
-      value: data.preferred_game_duration,
+      value: [{ code: data.preferred_game_duration, name: data.preferred_game_duration }],
       error: false,
     },
   };
@@ -118,7 +44,7 @@ const UserProfileForm = ({ data }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-
+console.log("form", form)
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
