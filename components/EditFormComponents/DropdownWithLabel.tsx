@@ -32,6 +32,7 @@ const DropdownWithLabel = ({
       // filter={false}
       selectionLimit={1}
     />
+    {error && <div style={{ color: "red" }}>{`${placeholder} is invalid`}</div>}
   </WithLabel>
 );
 

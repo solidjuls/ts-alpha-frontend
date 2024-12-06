@@ -6,6 +6,7 @@ export const get = async (input) => {
     select: {
       id: true,
       name: true,
+      timeZoneId: true,
     },
     where: {
       name: {
@@ -13,7 +14,11 @@ export const get = async (input) => {
       },
     },
   });
-  const citiesParsed = JSON.stringify([...cities], (key, value) =>
+  const citiesWithTZ = cities.map(({ id, name, timeZoneId }) => ({
+    id,
+    name: `${name} - ${timeZoneId}`,
+  }));
+  const citiesParsed = JSON.stringify([...citiesWithTZ], (key, value) =>
     typeof value === "bigint" ? value.toString() : value,
   );
 

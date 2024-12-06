@@ -64,6 +64,8 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
   const endTurn = searchParams.get("endTurn");
   const endMode = searchParams.get("endMode");
   const video1 = searchParams.get("video1");
+  const ussrPlayerId = searchParams.get("ussrPlayerId");
+  const usaPlayerId = searchParams.get("usaPlayerId");
 
   return {
     oldId: {
@@ -75,7 +77,7 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
       error: false,
     },
     gameWinner: {
-      value: gameWinner ? gameWinner : null,
+      value: [], // [{ code: gameWinner ? gameWinner : null, name: "" }],
       error: false,
     },
     gameCode: {
@@ -83,23 +85,23 @@ const initializeState = (searchParams: ReadonlyURLSearchParams) => {
       error: false,
     },
     gameType: {
-      value: gameType ? gameType : "",
+      value: [], //[{ code: gameType ? gameType : "" }],
       error: false,
     },
     ussrPlayerId: {
-      value: "",
+      value: [], //[{ code: ussrPlayerId, name: "" }],
       error: false,
     },
     usaPlayerId: {
-      value: "",
+      value: [], //[{ code: usaPlayerId, name: "" }],
       error: false,
     },
     endTurn: {
-      value: endTurn ? endTurn : "",
+      value: [], //[{ code: endTurn ? endTurn : "", name: endTurn ? endTurn : ""}],
       error: false,
     },
     endMode: {
-      value: endMode ? endMode : "",
+      value: [], //[{ code: endMode ? endMode : "", name: endMode ? endMode : "",}],
       error: false,
     },
     video1: {
@@ -113,16 +115,16 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<SubmitFormState>(() => initializeState(searchParams));
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [checked, setChecked] = useState(false);
 
   const validated = () => {
+    console.log("formform", form);
     let submit = true;
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
       } else {
         if (
-          (key !== "oldId" && form[key as keyof SubmitFormState].value === "") ||
-          (checked && form[key as keyof SubmitFormState].value === "")
+          ["gameCode", "oldId"].includes(key) &&
+          form[key as keyof SubmitFormState].value === ""
         ) {
           // form[key].error = true;
           setForm((prevState: any) => ({
@@ -134,10 +136,49 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
           }));
           submit = false;
         }
+
+        if (
+          ["endMode", "endTurn", "gameType", "gameWinner", "usaPlayerId", "ussrPlayerId"].includes(
+            key,
+          ) &&
+          form[key as keyof SubmitFormState].value.length === 0
+        ) {
+          setForm((prevState: any) => ({
+            ...prevState,
+            [key]: {
+              ...prevState[key],
+              error: true,
+            },
+          }));
+          submit = false;
+        }
       }
     });
+
+    if (!submit) return;
+
+    if (
+      form["endMode"].value[0].code === "Final Scoring" &&
+      form["endTurn"].value[0].code !== "11"
+    ) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["endTurn"]: {
+          ...prevState["endTurn"],
+          error: true,
+        },
+        ["endMode"]: {
+          ...prevState["endMode"],
+          error: true,
+        },
+      }));
+      submit = false;
+    }
     // If turn == final scoring, then end mode must also equal final scoring
-    if (form["endTurn"].value === "11" && form["endMode"].value !== "Final Scoring") {
+    if (
+      form["endTurn"].value[0].code === "11" &&
+      form["endMode"].value[0].code !== "Final Scoring"
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -152,7 +193,10 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       submit = false;
     }
     // Wargammes can only be used if turn 8, 9, 10
-    if (form["endMode"].value === "Wargames" && !["8", "9", "10"].includes(form["endTurn"].value)) {
+    if (
+      form["endMode"].value[0].code === "Wargames" &&
+      !["8", "9", "10"].includes(form["endTurn"].value[0].code)
+    ) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -183,7 +227,6 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     <SubmitForm
       validated={validated}
       role={role}
-      setChecked={setChecked}
       form={form}
       onInputValueChange={onInputValueChange}
       buttonDisabled={buttonDisabled}

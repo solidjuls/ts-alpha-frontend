@@ -81,8 +81,9 @@ const SubmitForm = ({
         payloadObject["ussrPlayerId"] = id;
         payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
       }
+    } else {
+      payloadObject["oldId"] = localForm.oldId.value;
     }
-
     payloadObject["gameCode"] = localForm.gameCode.value;
     payloadObject["video1"] = localForm.video1.value;
     payloadObject["gameDate"] = localForm.gameDate.value;
@@ -102,7 +103,6 @@ const SubmitForm = ({
 
     return payloadObject;
   };
-  console.log("state", form);
 
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (
