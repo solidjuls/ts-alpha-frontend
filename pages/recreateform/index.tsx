@@ -138,7 +138,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
         }
 
         if (
-          ["endMode", "endTurn", "gameType", "gameWinner", "opponentWas", "playedAs"].includes(
+          ["endMode", "endTurn", "gameType", "gameWinner", "usaPlayerId", "ussrPlayerId"].includes(
             key,
           ) &&
           form[key as keyof SubmitFormState].value.length === 0

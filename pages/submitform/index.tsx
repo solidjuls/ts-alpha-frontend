@@ -25,7 +25,7 @@ const initialState: SubmitFormState = {
     error: false,
   },
   gameWinner: {
-    value: null,
+    value: [],
     error: false,
   },
   gameCode: {
@@ -33,23 +33,23 @@ const initialState: SubmitFormState = {
     error: false,
   },
   gameType: {
-    value: "",
+    value: [],
     error: false,
   },
   opponentWas: {
-    value: "",
+    value: [],
     error: false,
   },
   playedAs: {
-    value: "",
+    value: [],
     error: false,
   },
   endTurn: {
-    value: "",
+    value: [],
     error: false,
   },
   endMode: {
-    value: "",
+    value: [],
     error: false,
   },
   video1: {
@@ -61,9 +61,10 @@ const initialState: SubmitFormState = {
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [form, setForm] = useState<SubmitFormState>(initialState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  console.log("formform", form);
+
   const validated = () => {
     let submit = true;
+    console.log("form", form)
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
       } else {
