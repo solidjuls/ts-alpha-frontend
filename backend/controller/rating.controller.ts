@@ -376,6 +376,7 @@ export const deleteGameRatings = async (input: GameRecreate) => {
     );
   } catch (error) {
     console.error("transaction", error);
+    return null
   } finally {
     console.error("disconnecting");
     prisma.$disconnect();
