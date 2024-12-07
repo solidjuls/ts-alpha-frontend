@@ -8,10 +8,11 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
+  const { data: countries, isLoading: countriesLoading } = useFetchInitialData({ url: `/api/countries` });
 
-  if (isLoading) return <Spinner size="3" />;
+  if (isLoading || countriesLoading) return <Spinner size="3" />;
 
-  return <UserProfileForm data={data} />;
+  return <UserProfileForm data={data} countries={countries?.map((item) => ({ code: item.id, name: item.country_name }))} />;
 };
 
 export async function getServerSideProps({
