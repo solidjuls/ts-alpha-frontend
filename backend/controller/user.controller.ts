@@ -113,18 +113,21 @@ export const get = async (id) => {
       last_name: true,
       name: true,
       email: true,
+      phone_number: true,
       last_login_at: true,
       preferred_gaming_platform: true,
       preferred_game_duration: true,
       timezone_id: true,
       cities: {
         select: {
+          id: true,
           name: true,
           timeZoneId: true,
         },
       },
       countries: {
         select: {
+          id: true,
           country_name: true,
         },
       },
@@ -137,6 +140,7 @@ export const get = async (id) => {
   const userNormalized = {
     ...user,
     cities: {
+      id: user.cities?.id,
       name: user.cities ? `${user.cities.name} - ${user.cities.timeZoneId}` : "-",
     },
     rating: rating?.rating,
@@ -157,11 +161,12 @@ export const update = async (input) => {
       first_name: input.firstName,
       last_name: input.lastName,
       name: input.name,
-      email: input.email,
+      phone_number: input.phone,
       last_login_at: new Date(),
       preferred_gaming_platform: input.preferredGamingPlatform,
       preferred_game_duration: input.preferredGameDuration,
-      timezone_id: input.timeZoneId,
+      city_id: input.city,
+      country_id: input.country
     },
   });
   return { success: true };

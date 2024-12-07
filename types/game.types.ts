@@ -5,6 +5,9 @@ export type UserProfileState = {
   name: SubmitFormValue<string>;
   preferredGamingPlatform: SubmitFormValue<string>;
   preferredGameDuration: SubmitFormValue<string>;
+  city: SubmitFormValue<string>;
+  country: SubmitFormValue<DropdownType[]>;
+  phone: SubmitFormValue<string>;
 };
 
 export type UserCreateState = {

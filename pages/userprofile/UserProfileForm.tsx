@@ -7,8 +7,9 @@ import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
-const inputWidth = "200px";
-const dropdownWidth = "270px";
+import CitiesTypeahead from "pages/usercreate/CitiesTypeahead";
+const inputWidth = "300px";
+const dropdownWidth = "300px";
 
 const formStyles = {
   alignItems: "center",
@@ -36,10 +37,22 @@ const getInitialState = (data) => {
       value: [{ code: data.preferred_game_duration, name: data.preferred_game_duration }],
       error: false,
     },
+    city: {
+      value: data.cities?.id,
+      error: false,
+    },
+    phone: {
+      value: data.phone_number,
+      error: false,
+    },
+    country: {
+      value: [{ code: data.countries?.id, name: data.countries?.country_name }],
+      error: false,
+    },
   };
 };
 
-const UserProfileForm = ({ data }) => {
+const UserProfileForm = ({ data, countries }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -48,7 +61,10 @@ const UserProfileForm = ({ data }) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (form[key as keyof UserProfileState].value === "") {
+      if (
+        !["phone", "preferredGameDuration", "preferredGamingPlatform", "country"].includes(key) &&
+        form[key as keyof UserProfileState].value === ""
+      ) {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
@@ -58,7 +74,20 @@ const UserProfileForm = ({ data }) => {
         }));
         submit = false;
       }
-    });
+      if (
+        ["preferredGameDuration", "preferredGamingPlatform", "country"].includes(key) &&
+        form[key as keyof UserProfileState].value.length === 0
+      ) {
+        setForm((prevState: any) => ({
+          ...prevState,
+          [key]: {
+            ...prevState[key],
+            error: true,
+          },
+        }));
+        submit = false;
+      }
+    })
     return submit;
   };
 
@@ -75,9 +104,15 @@ const UserProfileForm = ({ data }) => {
   };
   const normalizeData = (form: any) => {
     let payloadObject: any = {};
-    Object.keys(form).map((key: string) => {
-      payloadObject[key] = form[key].value;
-    });
+
+    payloadObject["city"] = form.city.value;
+    payloadObject["name"] = form.name.value;
+    payloadObject["phone"] = form.phone.value;
+    payloadObject["email"] = data.email;
+    payloadObject["preferredGameDuration"] = form.preferredGameDuration.value[0].code;
+    payloadObject["preferredGamingPlatform"] = form.preferredGamingPlatform.value[0].code;
+    payloadObject["country"] = form.country.value[0].code;
+
     return payloadObject;
   };
 
@@ -90,8 +125,16 @@ const UserProfileForm = ({ data }) => {
         css={{ width: inputWidth }}
         error={form?.name.error}
       />
+      <EditTextComponent
+        labelText="phone"
+        inputValue={form?.phone.value}
+        onInputValueChange={(value) => onInputValueChange("phone", value)}
+        css={{ width: inputWidth }}
+        error={form?.phone.error}
+      />
       <DropdownWithLabel
         labelText="preferredGamingPlatform"
+        placeholder="Preferred gaming platform"
         items={platforms}
         error={form?.preferredGamingPlatform.error}
         css={{ width: dropdownWidth }}
@@ -100,12 +143,39 @@ const UserProfileForm = ({ data }) => {
       />
       <DropdownWithLabel
         labelText="preferredGameDuration"
+        placeholder="Preferred game duration"
         items={gameDurations}
         error={form?.preferredGameDuration.error}
         css={{ width: dropdownWidth }}
         selectedItem={form.preferredGameDuration.value}
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
       />
+      <DropdownWithLabel
+        labelText="country"
+        items={countries}
+        error={form?.country.error}
+        css={{ width: dropdownWidth }}
+        selectedItem={form.country.value}
+        placeholder="Type the country name..."
+        onSelect={(value: string) => onInputValueChange("country", value)}
+      />
+      <CitiesTypeahead
+        labelText="city"
+        selectedItem={form.city.value}
+        selectedValueProperty="value"
+        selectedInputProperty="text"
+        error={form.city.error}
+        placeholder="Type the city name..."
+        css={{ width: "300px" }}
+        onBlur={() => {
+          onInputValueChange("city", "");
+        }}
+        onSelect={(value) => {
+          console.log("sdf", value);
+          onInputValueChange("city", value?.value);
+        }}
+      />
+
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}
       {errorMsg && <Text type="error">{errorMsg}</Text>}
       <Button

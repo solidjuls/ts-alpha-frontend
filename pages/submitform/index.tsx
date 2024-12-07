@@ -64,7 +64,6 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
 
   const validated = () => {
     let submit = true;
-    console.log("form", form)
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
       } else {
