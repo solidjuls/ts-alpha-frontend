@@ -9,6 +9,7 @@ interface GameListState {
   filters: {
     tournamentSelected: string[];
     playersSelected: string[];
+    invalidateCache: boolean;
   };
   currentPage: number;
   totalPages: number;
@@ -22,6 +23,7 @@ const initialState: GameListState = {
   filters: {
     tournamentSelected: [],
     playersSelected: [],
+    invalidateCache: false
   },
   currentPage: 1,
   totalPages: 1,
@@ -30,12 +32,11 @@ const initialState: GameListState = {
 // Async thunk for fetching the list
 export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { getState }) => {
   const state = getState() as RootState;
-  const { tournamentSelected, playersSelected } = state.gameList.filters;
+  const { tournamentSelected, playersSelected, invalidateCache } = state.gameList.filters;
   const { currentPage } = state.gameList;
 
-  if (playersSelected.length > 0 || tournamentSelected.length > 0 ) {
-    await clearAllCache("game-list")
-  }
+  await clearAllCache("game-list")
+
   const response = await getAxiosInstance().get(
     `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
     { id: `game-list` },
@@ -58,10 +59,12 @@ const listSlice = createSlice({
     },
     setTournamentFilter: (state, action) => {
       state.currentPage = 1;
+      state.filters.invalidateCache = state.filters.tournamentSelected !== action.payload
       state.filters.tournamentSelected = action.payload;
     },
     setPlayersFilter: (state, action) => {
       state.currentPage = 1;
+      state.filters.invalidateCache = state.filters.playersSelected !== action.payload
       state.filters.playersSelected = action.payload;
     },
     setCurrentPage: (state, action) => {

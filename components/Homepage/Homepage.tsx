@@ -149,7 +149,7 @@ const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }
 };
 const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) => {
   const tournamentsMemo = useMemo(
-    () => tournaments?.map((item) => ({ code: item.code, name: item.text })),
+    () => tournaments?.map((item) => ({ code: item.text, name: item.text })),
     [tournaments],
   );
 
