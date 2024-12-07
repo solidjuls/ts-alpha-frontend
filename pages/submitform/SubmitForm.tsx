@@ -68,7 +68,7 @@ const SubmitForm = ({
     cacheId: "tournament-list",
   });
   const leagueTypes = data?.map((item) => ({
-    code: item.code,
+    code: item.text,
     name: item.text,
   }));
   const normalizeData = (localForm: any) => {

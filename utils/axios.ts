@@ -34,4 +34,8 @@ export const getAxiosInstance = (): AxiosCacheInstance => {
   return api; // Return the singleton axios instance
 };
 
+export const clearAllCache = async (key) => {
+  await api?.storage?.remove(key)
+};
+
 export default getAxiosInstance;

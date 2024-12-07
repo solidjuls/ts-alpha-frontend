@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import getAxiosInstance from "utils/axios";
+import getAxiosInstance, { clearAllCache } from "utils/axios";
 
 interface GameListState {
   items: any[];
@@ -33,9 +33,12 @@ export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { 
   const { tournamentSelected, playersSelected } = state.gameList.filters;
   const { currentPage } = state.gameList;
 
+  if (playersSelected.length > 0 || tournamentSelected.length > 0 ) {
+    await clearAllCache("game-list")
+  }
   const response = await getAxiosInstance().get(
     `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
-    { id: "game-list" },
+    { id: `game-list` },
   );
 
   return {
