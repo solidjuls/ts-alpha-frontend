@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { GetServerSideProps } from "next";
 import type { Game } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
@@ -17,6 +18,7 @@ import { UnstyledLink } from "components/Homepage/Homepage.styles";
 import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import { userRoles } from "utils/constants";
+
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -78,11 +80,12 @@ const GameContent = ({ data }) => {
     usaPlayerId,
     ussrPlayerId,
   } = data;
+  const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false)
   const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
   const deleteGame = async () => {
     getAxiosInstance().post(``);
-    await getAxiosInstance().post(
+    const response = await getAxiosInstance().post(
       "/api/game/recreate",
       {
         data: { oldId: id, op: "delete" },
@@ -95,6 +98,10 @@ const GameContent = ({ data }) => {
         },
       },
     );
+
+    if (response.data) {
+      setDeleteSuccessMessage(true)
+    }
   };
   return (
     <>
@@ -138,6 +145,7 @@ const GameContent = ({ data }) => {
         </Box>
       </Flex>
       {role === userRoles.SUPERADMIN && (
+        <>
         <Flex>
           <Button css={{ width: "150px", margin: "8px" }}>
             <UnstyledLink href={linkToRecreate} target="_blank">
@@ -148,6 +156,8 @@ const GameContent = ({ data }) => {
             Delete this game
           </Button>
         </Flex>
+        {deleteSuccessMessage && <div>Game deleted successfully</div>}
+        </>
       )}
     </>
   );
