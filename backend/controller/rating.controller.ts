@@ -140,6 +140,7 @@ export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playe
     },
   });
 };
+
 export const startRecreatingRatings = async (input: GameRecreate, role: number) => {
   try {
     await prisma.$transaction(

@@ -166,7 +166,7 @@ export const update = async (input) => {
       preferred_gaming_platform: input.preferredGamingPlatform,
       preferred_game_duration: input.preferredGameDuration,
       city_id: input.city,
-      country_id: input.country
+      country_id: input.country,
     },
   });
   return { success: true };

@@ -122,10 +122,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
       } else {
-        if (
-          ["gameCode", "oldId"].includes(key) &&
-          form[key as keyof SubmitFormState].value === ""
-        ) {
+        if (["gameCode"].includes(key) && form[key as keyof SubmitFormState].value === "") {
           // form[key].error = true;
           setForm((prevState: any) => ({
             ...prevState,
