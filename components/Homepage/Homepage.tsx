@@ -193,7 +193,7 @@ const Filter = ({ dispatch }) => {
       <FilterUser
         users={users}
         selectedValues={playersSelected}
-        setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
+        setSelectedValues={(value) => {dispatch(setPlayersFilter(value))}}
         closeOnSelect={false}
       />
       <FilterTournament
@@ -263,10 +263,11 @@ const Homepage: React.FC<HomepageProps> = () => {
     dispatch(setCurrentPage(page));
   };
 
-  const onFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
-    dispatch(setTournamentFilter(selectedTournaments));
-    dispatch(setPlayersFilter(selectedPlayers));
-  };
+  // const onFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
+  //   console.log("selectedTournaments, selectedPlayers", selectedPlayers, selectedTournaments)
+  //   dispatch(setTournamentFilter(selectedTournaments));
+  //   dispatch(setPlayersFilter(selectedPlayers));
+  // };
 
   return (
     <ResponsiveContainer
@@ -276,7 +277,7 @@ const Homepage: React.FC<HomepageProps> = () => {
       }}
     >
       <Flex css={{ flexDirection: "column", width: "100%" }}>
-        <Filter onFilterChange={onFilterChange} dispatch={dispatch} />
+        <Filter dispatch={dispatch} />
         <ResultsPanel
           data={items.results}
           isLoading={status === "loading"}
