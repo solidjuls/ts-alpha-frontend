@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import UserCreateForm from "./UserCreateForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { userRoles } from "utils/constants";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
@@ -25,7 +26,7 @@ export async function getServerSideProps({
 }) {
   const payload = getInfoFromCookies(req, res);
 
-  if (!payload) {
+  if (!payload || payload?.role !== userRoles.SUPERADMIN) {
     return {
       redirect: {
         permanent: false,
@@ -33,7 +34,7 @@ export async function getServerSideProps({
       },
     };
   }
-  return { props: { id: payload.id || null } };
+  return { props: { role: payload.role || null } };
 }
 
 export default UserProfileContainer;
