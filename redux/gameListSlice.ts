@@ -34,7 +34,8 @@ export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { 
   const { currentPage } = state.gameList;
 
   const response = await getAxiosInstance().get(
-    `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`, { id: 'game-list' } 
+    `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
+    { id: "game-list" },
   );
 
   return {

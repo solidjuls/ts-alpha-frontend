@@ -87,7 +87,7 @@ const UserProfileForm = ({ data, countries }) => {
         }));
         submit = false;
       }
-    })
+    });
     return submit;
   };
 

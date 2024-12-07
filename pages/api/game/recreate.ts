@@ -1,4 +1,5 @@
 import { deleteGameRatings, startRecreatingRatings } from "backend/controller/rating.controller";
+import { submit } from "backend/controller/game.controller";
 import { authenticateJWT } from "pages/api/auth/middleware";
 
 export default async function handler(req, res) {
@@ -10,7 +11,11 @@ export default async function handler(req, res) {
         if (req.body.data.op === "delete") {
           newGameWithId = await deleteGameRatings(req.body.data);
         } else {
-          newGameWithId = await startRecreatingRatings(req.body.data, req.user.role);
+          if (!req.body.data.oldId) {
+            await submit(req.body.data);
+          } else {
+            newGameWithId = await startRecreatingRatings(req.body.data, req.user.role);
+          }
         }
 
         const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
