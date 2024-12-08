@@ -19,7 +19,7 @@ const UserProfileContent = ({ data }) => (
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name} />
     <DisplayInfo label="Playdeck" infoText={data?.name} />
     <DisplayInfo label="Location" infoText={data?.cities?.name} />
-    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferredGamingPlatform} />
+    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform} />
     <DisplayInfo label="Email" infoText={data?.email} />
 
     <DisplayInfo label="Rating" infoText={data?.rating} />
@@ -28,8 +28,7 @@ const UserProfileContent = ({ data }) => (
       label="Last activity date"
       infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
     />
-    <DisplayInfo label="Time Zone" infoText={data?.timeZoneId} />
-    <DisplayInfo label="Preferred game duration" infoText={data?.preferredGameDuration} />
+    <DisplayInfo label="Preferred game duration" infoText={data?.preferred_game_duration} />
   </>
 );
 const UserProfile = ({ id }) => {
