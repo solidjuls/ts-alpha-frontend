@@ -37,6 +37,6 @@ module.exports = {
     timeZone: "Timezone",
 
     city: "City",
-    country: "Country",
+    country: "Federation",
   },
 };

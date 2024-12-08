@@ -55,19 +55,24 @@ const ResetPassword = () => {
           <Button
             onClick={async (e) => {
               e.preventDefault();
-              if (mail) {
-                // @ts-ignore
-                const response = await getAxiosInstance()
-                  .post(`/api/user/reset-password/`, {
-                    mail,
-                  })
-
-                if (response.data.success) {
-                  setConfirmation(true)
-                } else {
-                  setErrorMsg("This email does not exist. Contact Junta")
+              try {
+                if (mail) {
+                  // @ts-ignore
+                  const response = await getAxiosInstance()
+                    .post(`/api/user/reset-password/`, {
+                      mail,
+                    })
+  
+                  if (response.data.success) {
+                    setConfirmation(true)
+                  } else {
+                    setErrorMsg("This email does not exist. Contact Junta")
+                  }
                 }
+              } catch(e) {
+                setErrorMsg("Unexpected error. Contact Junta")
               }
+              
             }}
           >
             Reset
