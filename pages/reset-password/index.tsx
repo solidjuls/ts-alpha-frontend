@@ -32,7 +32,7 @@ const Headline = styled("strong", {
 const ResetPassword = () => {
   const [mail, setMail] = useState<string>("");
   const [confirmation, setConfirmation] = useState(false);
-
+  const [errorMsg, setErrorMsg] = useState("");
   return (
     <Form css={formStyles}>
       <Head>
@@ -53,21 +53,26 @@ const ResetPassword = () => {
             />
           </Box>
           <Button
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
               if (mail) {
                 // @ts-ignore
-                getAxiosInstance()
+                const response = await getAxiosInstance()
                   .post(`/api/user/reset-password/`, {
                     mail,
                   })
-                  .then(() => setConfirmation(true));
+
+                if (response.data.success) {
+                  setConfirmation(true)
+                } else {
+                  setErrorMsg("This email does not exist. Contact Junta")
+                }
               }
-              // call reset endpoint
             }}
           >
             Reset
           </Button>
+          {errorMsg && <Text type="error">{errorMsg}</Text>}
         </>
       )}
     </Form>

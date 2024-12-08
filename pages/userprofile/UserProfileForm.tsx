@@ -57,7 +57,7 @@ const UserProfileForm = ({ data, countries }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  console.log("form", form);
+
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
@@ -170,10 +170,7 @@ const UserProfileForm = ({ data, countries }) => {
         onBlur={() => {
           onInputValueChange("city", "");
         }}
-        onSelect={(value) => {
-          console.log("sdf", value);
-          onInputValueChange("city", value?.value);
-        }}
+        onSelect={(value) => onInputValueChange("city", value?.value)}
       />
 
       {confirmationMsg && <Text css={{ color: "green" }}>{confirmationMsg}</Text>}

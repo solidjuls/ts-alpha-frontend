@@ -263,12 +263,6 @@ const Homepage: React.FC<HomepageProps> = () => {
     dispatch(setCurrentPage(page));
   };
 
-  // const onFilterChange = async ({ selectedTournaments, selectedPlayers }) => {
-  //   console.log("selectedTournaments, selectedPlayers", selectedPlayers, selectedTournaments)
-  //   dispatch(setTournamentFilter(selectedTournaments));
-  //   dispatch(setPlayersFilter(selectedPlayers));
-  // };
-
   return (
     <ResponsiveContainer
       direction={{

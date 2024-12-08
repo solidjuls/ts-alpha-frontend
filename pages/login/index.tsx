@@ -108,6 +108,7 @@ const LoginForm: React.FC = () => {
   return (
     <>
       <h1>Login</h1>
+      <Text><b>If this is your first time using the website, click in the <i>Forgot your password?</i> link to create a new password</b></Text>
       <Label htmlFor="mail">
         <FormattedMessage id="mail" />
       </Label>
