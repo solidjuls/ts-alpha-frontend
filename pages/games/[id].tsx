@@ -132,6 +132,7 @@ const GameContent = ({ data }) => {
             <Span>End turn:</Span>
             <Span>Via:</Span>
             <Span>Date:</Span>
+            <Span>Video:</Span>
           </Flex>
           <Box css={{ width: "5px" }} />
           <Flex css={{ flexDirection: "column", alignItems: "start" }}>
@@ -141,6 +142,9 @@ const GameContent = ({ data }) => {
             <Span>{getTurnText(data.endTurn)}</Span>
             <Span>{endMode}</Span>
             <Span>{dateFormat(new Date(data.created_at))}</Span>
+            <a target="_blank" href={data.videoURL} rel="noopener noreferrer">
+                Link to video
+            </a>
           </Flex>
         </Box>
       </Flex>

@@ -6,7 +6,6 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       try {
         const newGameWithId = await submit(req.body.data);
-        console.log("newGameWithId", newGameWithId);
         const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
           typeof value === "bigint" ? value.toString() : value,
         );

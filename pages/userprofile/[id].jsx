@@ -1,9 +1,5 @@
 import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
-import { FormattedMessage } from "react-intl";
-import { Input } from "components/Input";
-import { Label } from "components/Label";
-import { Button } from "components/Button";
 import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";
 import { Box, Flex } from "components/Atoms";
