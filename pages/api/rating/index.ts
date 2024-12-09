@@ -9,7 +9,6 @@ export default async function handler(req, res) {
       name: player.first_name + " " + player.last_name,
       rating: player.rating,
       countryCode: player.tld_code,
-      lastActivity: player.last_login_at,
       rank: parseInt(player.ranking),
       isTruncated: Boolean(player.is_truncated),
     };
