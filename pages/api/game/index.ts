@@ -16,7 +16,19 @@ export default async function handler(req, res) {
 
   if (toFilter) {
     const toFilterArray = toFilter.split(",");
-    filter["OR"] = [{ game_type: { in: toFilterArray } }];
+    // If filter already has an OR condition, wrap it in an AND
+    if (filter.OR) {
+      filter = {
+        AND: [
+          filter,
+          {
+            OR: [{ game_type: { in: toFilterArray } }],
+          },
+        ],
+      };
+    } else {
+      filter["OR"] = [{ game_type: { in: toFilterArray } }];
+    }
   }
   const { getGamesWithRating, totalRows } = await getGameWithRatings(filter, p, parseInt(pageSize));
 
