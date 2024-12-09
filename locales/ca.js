@@ -26,7 +26,7 @@ module.exports = {
     PlayedAs: "I played as:",
     firstName: "Nom",
     lastName: "Cognom",
-    playdeckName: "Nick a Playdeck",
+    playdeckName: "Nick a Playdek",
     preferredGamingPlatform: "Plataforma de joc",
     preferredGameDduration: "Duració per defecte",
     timeZone: "Timezone",

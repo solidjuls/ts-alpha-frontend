@@ -31,7 +31,7 @@ module.exports = {
     PlayedAs: "I played as:",
     firstName: "First Name",
     lastName: "Last Name",
-    playdeckName: "Playdeck Name",
+    playdeckName: "Playdek Name",
     preferredGamingPlatform: "Preferred Gaming Platform",
     preferredGameDuration: "Preferred Game Duration",
     timeZone: "Timezone",

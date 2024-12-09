@@ -13,7 +13,7 @@ const UserProfileContent = ({ data }) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name} />
-    <DisplayInfo label="Playdeck" infoText={data?.name} />
+    <DisplayInfo label="Playdek" infoText={data?.name} />
     <DisplayInfo label="Location" infoText={data?.cities?.name} />
     <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform} />
     <DisplayInfo label="Email" infoText={data?.email} />
@@ -76,15 +76,19 @@ const UserProfile = ({ id }) => {
 
 export default UserProfile;
 
-export async function getServerSideProps({ query }) {
-  // const payload = getInfoFromCookies(req, res);
-  // if (!payload) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-  return { props: { id: query.id } };
+export async function getServerSideProps({
+  req,
+  res
+}) {
+  const payload = getInfoFromCookies(req, res);
+
+  if (!payload) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+  return { props: { role: payload.role || null } };
 }
