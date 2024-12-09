@@ -16,6 +16,7 @@ export default async function handler(req, res) {
       code: "UNAUTHORIZED",
       message: "User doesn't exist. Contact Junta so we can add register you as a valid user",
     });
+    return
   }
 
   if (user === false) {
@@ -23,8 +24,9 @@ export default async function handler(req, res) {
       code: "UNAUTHORIZED",
       message: "The password is incorrect",
     });
+    return
   }
-
+  if (!user) return 
   const token = jwt.sign(
     { mail: user.email, name: user.name, role: user.role, id: user.id.toString() },
     process.env.TOKEN_SECRET,
