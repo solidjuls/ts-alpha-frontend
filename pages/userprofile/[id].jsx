@@ -76,11 +76,8 @@ const UserProfile = ({ id }) => {
 
 export default UserProfile;
 
-export async function getServerSideProps({
-  req,
-  res
-}) {
-  const payload = getInfoFromCookies(req, res);
+export async function getServerSideProps(context) {
+  const payload = getInfoFromCookies(context.req, context.res);
 
   if (!payload) {
     return {
@@ -90,5 +87,6 @@ export async function getServerSideProps({
       },
     };
   }
-  return { props: { role: payload.role || null } };
+  const { id } = context.params;
+  return { props: { role: payload.role || null, id  } };
 }
