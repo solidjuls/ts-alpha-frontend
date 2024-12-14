@@ -174,7 +174,7 @@ const submitGame = async (data: GameAPI) => {
     game_winner: data.gameWinner,
     end_turn: Number(data.endTurn),
     end_mode: data.endMode,
-    game_date: new Date(Date.parse(data.gameDate)),
+    game_date: dateNow,
     video1: data.video1 || null,
     reporter_id: BigInt(data.usaPlayerId),
   };

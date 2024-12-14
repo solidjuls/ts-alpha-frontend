@@ -25,7 +25,6 @@ export type UserCreateState = {
 export type SubmitFormState =
   | {
       oldId: SubmitFormValue<string>;
-      gameDate: SubmitFormValue<Date>;
       gameWinner: SubmitFormValue<GameWinner> | null;
       gameCode: SubmitFormValue<string>;
       gameType: SubmitFormValue<string>;
@@ -37,7 +36,6 @@ export type SubmitFormState =
     }
   | {
       oldId: SubmitFormValue<string>;
-      gameDate: SubmitFormValue<Date>;
       gameWinner: SubmitFormValue<GameWinner> | null;
       gameCode: SubmitFormValue<string>;
       gameType: SubmitFormValue<string>;

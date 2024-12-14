@@ -20,10 +20,6 @@ const initialState: SubmitFormState = {
     value: "",
     error: false,
   },
-  gameDate: {
-    value: new Date(),
-    error: false,
-  },
   gameWinner: {
     value: [],
     error: false,
