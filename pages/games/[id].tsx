@@ -103,6 +103,26 @@ const GameContent = ({ data }) => {
       setDeleteSuccessMessage(true)
     }
   };
+{/* RTSL 2024-B: N043 - Pau Sala (USSR) defeated Alistair Graham in Turn 9 (VP Track (+20)) */}
+// {ITSL 2025 - Season 14: D274 - Jamie Sinclair🇬🇧 (USA) tied with Luis Moreno🇪🇸 in Final Scoring (Final Scoring)}
+  const generateText = () => {
+    let winnerName = ''
+    let loserName = ''
+    if (data.gameWinner === '3') {
+
+      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} (USA) tied with ${data.ussrPlayer} in Final Scoring (Final Scoring)`
+    }
+
+    if (data.gameWinner === '1') {
+      winnerName = data.ussrPlayer
+      loserName = data.usaPlayer
+    } else if (data.gameWinner === '2'){
+      winnerName = data.ussrPlayer
+      loserName = data.usaPlayer
+    }
+    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in Turn ${data.endTurn} (${endMode})`
+  }
+
   return (
     <>
       <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
@@ -161,6 +181,7 @@ const GameContent = ({ data }) => {
           </Button>
         </Flex>
         {deleteSuccessMessage && <div>Game deleted successfully</div>}
+        <span> {generateText()}</span>
         </>
       )}
     </>
