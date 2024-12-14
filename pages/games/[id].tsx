@@ -18,7 +18,8 @@ import { UnstyledLink } from "components/Homepage/Homepage.styles";
 import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import { userRoles } from "utils/constants";
-
+import countryFlags from 'public/country_flags.json';
+import LabelCopy from "components/LabelCopy/LabelCopy";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -103,8 +104,7 @@ const GameContent = ({ data }) => {
       setDeleteSuccessMessage(true)
     }
   };
-{/* RTSL 2024-B: N043 - Pau Sala (USSR) defeated Alistair Graham in Turn 9 (VP Track (+20)) */}
-// {ITSL 2025 - Season 14: D274 - Jamie Sinclair🇬🇧 (USA) tied with Luis Moreno🇪🇸 in Final Scoring (Final Scoring)}
+
   const generateText = () => {
     let winnerName = ''
     let loserName = ''
@@ -114,11 +114,11 @@ const GameContent = ({ data }) => {
     }
 
     if (data.gameWinner === '1') {
-      winnerName = data.ussrPlayer
-      loserName = data.usaPlayer
+      winnerName = data.ussrPlayer + ' ' + countryFlags[data.usaCountryCode?.toLowerCase()]
+      loserName = data.usaPlayer + ' ' + countryFlags[data.ussrCountryCode?.toLowerCase()]
     } else if (data.gameWinner === '2'){
-      winnerName = data.ussrPlayer
-      loserName = data.usaPlayer
+      winnerName = data.ussrPlayer + ' ' + countryFlags[data.ussrCountryCode?.toLowerCase()]
+      loserName = data.usaPlayer + ' ' + countryFlags[data.usaCountryCode?.toLowerCase()]
     }
     return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in Turn ${data.endTurn} (${endMode})`
   }
@@ -181,7 +181,9 @@ const GameContent = ({ data }) => {
           </Button>
         </Flex>
         {deleteSuccessMessage && <div>Game deleted successfully</div>}
-        <span> {generateText()}</span>
+        <div style={{ padding: '12px', border: 'solid 1px black'}}>
+          <LabelCopy text={generateText()} />
+        </div>
         </>
       )}
     </>
