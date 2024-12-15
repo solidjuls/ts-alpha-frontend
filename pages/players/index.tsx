@@ -52,7 +52,7 @@ const StyledCardRow = styled("div", {
   display: "grid",
   gap: "1rem",
   margin: "4px",
-  gridTemplateColumns: "min-content 3fr 2fr min-content",
+  gridTemplateColumns: "min-content 3fr min-content",
   paddingInlineStart: "8px",
   paddingInlineEnd: "8px",
   paddingTop: "4px",
@@ -77,7 +77,7 @@ const CardColumn = ({ header, value, countryCode }) => {
   );
 };
 
-const ResultsPanel = ({ data, onPageChange, isLoading }) => {
+const ResultsPanel = ({ data }) => {
   return (
     <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
       <StyledResultsPanel>
@@ -87,23 +87,12 @@ const ResultsPanel = ({ data, onPageChange, isLoading }) => {
   );
 };
 
-const formatDateString = (dateStr) => {
-  if (dateStr) {
-    const utcDate = new Date(dateStr);
-    return utcDate.toLocaleString("fr-FR");
-  }
-};
-
 const PlayerRow = ({ index, player }) => {
   return (
     <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
       <StyledCardRow>
         <CardColumn header="Rank:" value={player.rank} />
         <CardColumn header="Player:" value={player.name} countryCode={player.countryCode} />
-        <CardColumn
-          header="Last activity date:"
-          value={formatDateString(player.lastActivity) || "-"}
-        />
         <CardColumn header="Rating:" value={player.rating} />
       </StyledCardRow>
     </UnstyledLink>
