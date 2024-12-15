@@ -3,7 +3,6 @@ import Head from "next/head";
 import { FormattedMessage } from "react-intl";
 
 import { styled } from "stitches.config";
-import { hash } from "bcryptjs";
 
 import { Button } from "components/Button";
 import Text from "components/Text";

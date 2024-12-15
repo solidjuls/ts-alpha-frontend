@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     });
     return
   }
-  if (!user) return 
+  if (!user) return
   const token = jwt.sign(
     { mail: user.email, name: user.name, role: user.role, id: user.id.toString() },
     process.env.TOKEN_SECRET,
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV !== "development",
       sameSite: "strict",
-      maxAge: 3600,
+      maxAge: 8640000,
       path: "/",
     }),
   );

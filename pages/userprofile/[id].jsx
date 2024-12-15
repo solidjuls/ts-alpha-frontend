@@ -1,4 +1,3 @@
-import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";

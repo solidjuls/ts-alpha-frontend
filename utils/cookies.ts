@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import cookie from "cookie";
 import jwt from "jsonwebtoken";
-// import type { NextApiRequest, NextApiResponse } from "next";
 
 type CookiesReturn = (
   req: NextApiRequest,

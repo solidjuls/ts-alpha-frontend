@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { hash } from "bcryptjs";
+// import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
