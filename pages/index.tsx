@@ -8,7 +8,10 @@ export default function Home({ role }: { role: number }) {
     <>
       <Head>
         <title>Twilight Struggle</title>
-        <meta name="description" content="The place where competitive twilight struggle happens. Online tournaments with Round Robin and Swiss format. All skill levels are welcome." />
+        <meta
+          name="description"
+          content="The place where competitive twilight struggle happens. Online tournaments with Round Robin and Swiss format. All skill levels are welcome."
+        />
         <link rel="icon" href="/ts-icon.webp" />
       </Head>
       <br />

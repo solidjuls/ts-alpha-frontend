@@ -115,7 +115,8 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     // If turn == final scoring, then end mode must also equal final scoring
     if (
       form["endTurn"].value[0].code === "11" &&
-      form["endMode"].value[0].code !== "Final Scoring"
+      form["endMode"].value[0].code !== "Final Scoring" &&
+      form["endMode"].value[0].code !== "Europe Control"
     ) {
       setForm((prevState: any) => ({
         ...prevState,

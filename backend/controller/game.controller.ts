@@ -143,7 +143,7 @@ export const getTournamentNames = async () => {
     },
     orderBy: {
       id: "asc",
-    }
+    },
   });
 };
 
