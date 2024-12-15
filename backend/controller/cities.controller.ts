@@ -1,6 +1,6 @@
 import { prisma } from "backend/utils/prisma";
 
-export const get = async (input) => {
+export const get = async (input: string) => {
   const cities = await prisma.cities.findMany({
     select: {
       id: true,
