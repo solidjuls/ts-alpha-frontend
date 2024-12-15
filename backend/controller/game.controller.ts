@@ -141,6 +141,9 @@ export const getTournamentNames = async () => {
       code: true,
       text: true,
     },
+    orderBy: {
+      id: "asc",
+    }
   });
 };
 
