@@ -1,1 +1,1 @@
-export * from './LabelCopy'
+export * from "./LabelCopy";

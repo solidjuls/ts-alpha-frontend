@@ -27,12 +27,11 @@ const parsedObject = parseJsonFile(
 export default async function handler(req, res) {
   try {
     const arrayOfGames = req.body.data;
-    const updateStatements = []
-    const nonUniqueGamesLinks = []
-    const games = []
+    const updateStatements = [];
+    const nonUniqueGamesLinks = [];
+    const games = [];
     // console.log("arrayOfGames", arrayOfGames)
     for (let i = 0; i < parsedObject.length; i++) {
-      
       // console.log("arrayOfGames[i].usa_player_id.toString()", arrayOfGames[i].usa_player_id.toString())
       // const data = {
       //   video1: parsedObject[i].video1,
@@ -43,24 +42,40 @@ export default async function handler(req, res) {
       // };
       // await submit(data);
       if (parsedObject[i].video1) {
-        if (!games.find(item => item.usaPlayerId === parsedObject[i].usa_player_id.toString() && item.ussrPlayerId ===  parsedObject[i].ussr_player_id.toString() && item.gameCode === parsedObject[i].game_code)) {
-          games.push({usaPlayerId: parsedObject[i].usa_player_id.toString(),  ussrPlayerId: parsedObject[i].ussr_player_id.toString(), gameCode: parsedObject[i].game_code, gameDate: parsedObject[i].game_date})
+        if (
+          !games.find(
+            (item) =>
+              item.usaPlayerId === parsedObject[i].usa_player_id.toString() &&
+              item.ussrPlayerId === parsedObject[i].ussr_player_id.toString() &&
+              item.gameCode === parsedObject[i].game_code,
+          )
+        ) {
+          games.push({
+            usaPlayerId: parsedObject[i].usa_player_id.toString(),
+            ussrPlayerId: parsedObject[i].ussr_player_id.toString(),
+            gameCode: parsedObject[i].game_code,
+            gameDate: parsedObject[i].game_date,
+          });
         } else {
-          nonUniqueGamesLinks.push({usaPlayerId: parsedObject[i].usa_player_id.toString(),  ussrPlayerId: parsedObject[i].ussr_player_id.toString(), gameCode: parsedObject[i].game_code, gameDate: parsedObject[i].game_date})
+          nonUniqueGamesLinks.push({
+            usaPlayerId: parsedObject[i].usa_player_id.toString(),
+            ussrPlayerId: parsedObject[i].ussr_player_id.toString(),
+            gameCode: parsedObject[i].game_code,
+            gameDate: parsedObject[i].game_date,
+          });
         }
-       
+
         // updateStatements.push(`UPDATE game_results SET video1 = '${parsedObject[i].video1}' WHERE game_code = '${parsedObject[i].game_code}' AND game_date='${parsedObject[i].game_date}' AND usa_player_id=${parsedObject[i].usa_player_id.toString()} AND ussr_player_id=${parsedObject[i].ussr_player_id.toString()};`)
       }
-
     }
-    console.log(nonUniqueGamesLinks)
-   //  const filePath = path.join(__dirname, 'video_links.sql');
+    console.log(nonUniqueGamesLinks);
+    //  const filePath = path.join(__dirname, 'video_links.sql');
     // const fileContent = updateStatements.join('\n');
     // console.log("filePath[i]", filePath)
     // fs.writeFile(filePath, fileContent, () => {})
     // console.log("filePathboom", filePath)
 
-// Join all SQL statements with a newline character
+    // Join all SQL statements with a newline character
     // console.log("newGameWithId", newGameWithId);
     // const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
     //     typeof value === "bigint" ? value.toString() : value,
@@ -68,7 +83,7 @@ export default async function handler(req, res) {
 
     res.status(200).json("ok");
   } catch (e) {
-    console.log("e", e)
+    console.log("e", e);
     res.status(500).json("Error submitting result");
   }
 }

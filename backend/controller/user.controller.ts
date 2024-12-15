@@ -20,7 +20,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   const checkPassword = await compare(pwd, user.password as string);
 
   if (!checkPassword) {
-    console.log("wrong password problem", pwd, user.password)
+    console.log("wrong password problem", pwd, user.password);
     return false;
   }
 

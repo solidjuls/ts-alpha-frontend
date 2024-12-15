@@ -87,5 +87,5 @@ export async function getServerSideProps(context) {
     };
   }
   const { id } = context.params;
-  return { props: { role: payload.role || null, id  } };
+  return { props: { role: payload.role || null, id } };
 }

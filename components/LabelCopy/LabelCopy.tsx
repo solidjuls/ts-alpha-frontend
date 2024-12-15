@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Wrapper } from './LabelCopy.styles';
-import { Button } from 'components/Button';
+import React, { useState } from "react";
+import { Wrapper } from "./LabelCopy.styles";
+import { Button } from "components/Button";
 
 interface LabelCopyProps {
   text: string;
@@ -16,18 +16,15 @@ const LabelCopy: React.FC<LabelCopyProps> = ({ text, css }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy text: ', error);
+      console.error("Failed to copy text: ", error);
     }
   };
 
   return (
     <Wrapper>
       <span className="label-text">{text}</span>
-      <Button
-        onClick={handleCopy}
-        aria-label="Copy to clipboard"
-      >
-        {copied ? 'Copied!' : 'Copy'}
+      <Button onClick={handleCopy} aria-label="Copy to clipboard">
+        {copied ? "Copied!" : "Copy"}
       </Button>
     </Wrapper>
   );
