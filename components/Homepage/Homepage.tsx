@@ -193,7 +193,9 @@ const Filter = ({ dispatch }) => {
       <FilterUser
         users={users}
         selectedValues={playersSelected}
-        setSelectedValues={(value) => {dispatch(setPlayersFilter(value))}}
+        setSelectedValues={(value) => {
+          dispatch(setPlayersFilter(value));
+        }}
         closeOnSelect={false}
       />
       <FilterTournament

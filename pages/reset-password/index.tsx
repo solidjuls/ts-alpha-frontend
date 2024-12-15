@@ -58,21 +58,19 @@ const ResetPassword = () => {
               try {
                 if (mail) {
                   // @ts-ignore
-                  const response = await getAxiosInstance()
-                    .post(`/api/user/reset-password/`, {
-                      mail,
-                    })
-  
+                  const response = await getAxiosInstance().post(`/api/user/reset-password/`, {
+                    mail,
+                  });
+
                   if (response.data.success) {
-                    setConfirmation(true)
+                    setConfirmation(true);
                   } else {
-                    setErrorMsg("This email does not exist. Contact Junta")
+                    setErrorMsg("This email does not exist. Contact Junta");
                   }
                 }
-              } catch(e) {
-                setErrorMsg("Unexpected error. Contact Junta")
+              } catch (e) {
+                setErrorMsg("Unexpected error. Contact Junta");
               }
-              
             }}
           >
             Reset

@@ -3,7 +3,6 @@ import Head from "next/head";
 import { FormattedMessage } from "react-intl";
 
 import { styled } from "stitches.config";
-import { hash } from "bcryptjs";
 
 import { Button } from "components/Button";
 import Text from "components/Text";
@@ -108,7 +107,12 @@ const LoginForm: React.FC = () => {
   return (
     <>
       <h1>Login</h1>
-      <Text><b>If this is your first time using the website, click in the <i>Forgot your password?</i> link to create a new password</b></Text>
+      <Text>
+        <b>
+          If this is your first time using the website, click in the <i>Forgot your password?</i>{" "}
+          link to create a new password
+        </b>
+      </Text>
       <Label htmlFor="mail">
         <FormattedMessage id="mail" />
       </Label>

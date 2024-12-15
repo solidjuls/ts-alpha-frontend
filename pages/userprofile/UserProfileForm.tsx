@@ -30,11 +30,15 @@ const getInitialState = (data) => {
       error: false,
     },
     preferredGamingPlatform: {
-      value: data.preferred_gaming_platform ? [{ code: data.preferred_gaming_platform, name: data.preferred_gaming_platform }] : [],
+      value: data.preferred_gaming_platform
+        ? [{ code: data.preferred_gaming_platform, name: data.preferred_gaming_platform }]
+        : [],
       error: false,
     },
     preferredGameDuration: {
-      value: data.preferred_game_duration ? [{ code: data.preferred_game_duration, name: data.preferred_game_duration }] : [],
+      value: data.preferred_game_duration
+        ? [{ code: data.preferred_game_duration, name: data.preferred_game_duration }]
+        : [],
       error: false,
     },
     city: {

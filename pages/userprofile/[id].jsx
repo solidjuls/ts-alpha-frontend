@@ -1,4 +1,3 @@
-import { hash } from "bcryptjs";
 import { useSession } from "contexts/AuthProvider";
 import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";
@@ -88,5 +87,5 @@ export async function getServerSideProps(context) {
     };
   }
   const { id } = context.params;
-  return { props: { role: payload.role || null, id  } };
+  return { props: { role: payload.role || null, id } };
 }

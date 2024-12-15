@@ -86,7 +86,6 @@ const SubmitForm = ({
     }
     payloadObject["gameCode"] = localForm.gameCode.value;
     payloadObject["video1"] = localForm.video1.value;
-    payloadObject["gameDate"] = localForm.gameDate.value;
 
     Object.keys(localForm).map((key: string) => {
       if (
@@ -94,8 +93,7 @@ const SubmitForm = ({
         key !== "opponentWas" &&
         key !== "gameCode" &&
         key !== "video1" &&
-        key !== "oldId" &&
-        key !== "gameDate"
+        key !== "oldId"
       ) {
         payloadObject[key] = localForm[key].value[0].code;
       }
@@ -207,12 +205,6 @@ const SubmitForm = ({
           error={form.video1.error}
           css={{ width: "500px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
-        />
-        <DateComponent
-          labelText="gameDate"
-          inputValue={form.gameDate.value}
-          // error={form.gameDate.error}
-          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
         />
         {!recreate && (
           <Button

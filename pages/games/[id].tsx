@@ -18,7 +18,8 @@ import { UnstyledLink } from "components/Homepage/Homepage.styles";
 import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import { userRoles } from "utils/constants";
-
+import countryFlags from "public/country_flags.json";
+import LabelCopy from "components/LabelCopy/LabelCopy";
 
 const StyledLink = styled(Link, {
   textDecoration: "none",
@@ -80,7 +81,7 @@ const GameContent = ({ data }) => {
     usaPlayerId,
     ussrPlayerId,
   } = data;
-  const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false)
+  const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false);
   const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&game_code=${game_code}&gameType=${gameType}&endTurn=${endTurn}&video1=${data.video1}`;
 
   const deleteGame = async () => {
@@ -100,9 +101,27 @@ const GameContent = ({ data }) => {
     );
 
     if (response.data) {
-      setDeleteSuccessMessage(true)
+      setDeleteSuccessMessage(true);
     }
   };
+
+  const generateText = () => {
+    let winnerName = "";
+    let loserName = "";
+    if (data.gameWinner === "3") {
+      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${countryFlags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${countryFlags[data.ussrCountryCode?.toLowerCase()]} in Final Scoring (Final Scoring)`;
+    }
+
+    if (data.gameWinner === "1") {
+      winnerName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
+      loserName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
+    } else if (data.gameWinner === "2") {
+      winnerName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
+      loserName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
+    }
+    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in Turn ${data.endTurn} (${endMode})`;
+  };
+
   return (
     <>
       <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
@@ -142,25 +161,30 @@ const GameContent = ({ data }) => {
             <Span>{getTurnText(data.endTurn)}</Span>
             <Span>{endMode}</Span>
             <Span>{dateFormat(new Date(data.created_at))}</Span>
-            {data.videoURL && <a target="_blank" href={data.videoURL} rel="noopener noreferrer">
+            {data.videoURL && (
+              <a target="_blank" href={data.videoURL} rel="noopener noreferrer">
                 Link to video
-            </a>}
+              </a>
+            )}
           </Flex>
         </Box>
       </Flex>
       {role === userRoles.SUPERADMIN && (
         <>
-        <Flex>
-          <Button css={{ width: "150px", margin: "8px" }}>
-            <UnstyledLink href={linkToRecreate} target="_blank">
-              Recreate game
-            </UnstyledLink>
-          </Button>
-          <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
-            Delete this game
-          </Button>
-        </Flex>
-        {deleteSuccessMessage && <div>Game deleted successfully</div>}
+          <Flex>
+            <Button css={{ width: "150px", margin: "8px" }}>
+              <UnstyledLink href={linkToRecreate} target="_blank">
+                Recreate game
+              </UnstyledLink>
+            </Button>
+            <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
+              Delete this game
+            </Button>
+          </Flex>
+          {deleteSuccessMessage && <div>Game deleted successfully</div>}
+          <div style={{ padding: "12px", border: "solid 1px black" }}>
+            <LabelCopy text={generateText()} />
+          </div>
         </>
       )}
     </>
