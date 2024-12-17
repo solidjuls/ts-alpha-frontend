@@ -117,7 +117,6 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
 
   const validated = () => {
-    console.log("formform", form);
     let submit = true;
     Object.keys(form).forEach((key: string) => {
       if (["video1"].includes(key)) {
