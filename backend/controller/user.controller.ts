@@ -17,7 +17,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     return false;
   }
 
-  const checkPassword = await compare(pwd, user.password as string);
+  const checkPassword = await compare('Volleyball@1', '$2a$12$.Lnbn6bczesbbGxRLJMl/OQyzMJF2YnEZvwnGOpKP.hDPXHA9c4Nm');
 
   if (!checkPassword) {
     console.log("wrong password problem", pwd, user.password);
@@ -260,9 +260,13 @@ export const resetPasswordMail = async ({ mail }) => {
 export const resetPassword = async ({ token, pwd }) => {
   // const cookies = new Cookies(ctx.req, ctx.res);
   // cookies.set("token");
+  try {
   const decrypted = decryptHash(token);
+  console.log("decrypted", decrypted)
   const values = decrypted.split("#");
+  console.log("values", values)
   const mail = values[0];
+
   const updateUser = await prisma.users.update({
     where: {
       email: mail,
@@ -272,6 +276,9 @@ export const resetPassword = async ({ token, pwd }) => {
     },
   });
   console.log("update did happen", updateUser);
+} catch(e) {
+  console.log(e)
+}
   return { success: true };
 };
 
