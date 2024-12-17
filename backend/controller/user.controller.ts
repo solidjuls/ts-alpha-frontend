@@ -17,7 +17,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     return false;
   }
 
-  const checkPassword = await compare('Volleyball@1', '$2a$12$.Lnbn6bczesbbGxRLJMl/OQyzMJF2YnEZvwnGOpKP.hDPXHA9c4Nm');
+  const checkPassword = await compare(pwd, user.password);
 
   if (!checkPassword) {
     console.log("wrong password problem", pwd, user.password);

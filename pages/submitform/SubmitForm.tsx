@@ -93,6 +93,7 @@ const SubmitForm = ({
         key !== "opponentWas" &&
         key !== "gameCode" &&
         key !== "video1" &&
+        key !== "gameDate" &&
         key !== "oldId"
       ) {
         payloadObject[key] = localForm[key].value[0].code;
@@ -198,6 +199,12 @@ const SubmitForm = ({
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
+        {recreate && <DateComponent
+          labelText="gameDate"
+          inputValue={form.gameDate.value}
+          // error={form.gameDate.error}
+          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
+        />}
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
@@ -270,7 +277,7 @@ const SubmitForm = ({
                   );
                   router.push("/");
                 } catch (e) {
-                  setErrorMsg(e.response.data || "There was an error submitting the result");
+                  setErrorMsg(e?.response?.data || "There was an error submitting the result");
                 } finally {
                   setIsSubmitting(false);
                 }

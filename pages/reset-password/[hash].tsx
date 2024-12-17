@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { hash } from "bcryptjs";
+import { hash } from "bcryptjs";
 import { useRouter } from "next/router";
 import { Label } from "components/Label";
 import { Button } from "components/Button";
@@ -43,7 +43,7 @@ const ResetPassword = () => {
   const { hash: hashKey } = router.query;
 
   const decrypted = decryptHash(hashKey);
-console.log("decrypted", decrypted)
+
   const validate = ({ hash }) => {
     if (pwd !== pwdConfirm) {
       setErrorMsg("Passwords don't match");
@@ -77,9 +77,7 @@ console.log("decrypted", decrypted)
         onClick={async () => {
           if (validate({ hash: decrypted })) {
             // some regex to validate mail is ok would be nice
-            console.log("validate", decrypted)
             const pwdHashed = await hash(pwd, 12);
-            console.log("pwdHashed", pwdHashed)
             if (!hashKey) return;
             // @ts-ignore
             await getAxiosInstance().post(`/api/user/reset-password`, {
