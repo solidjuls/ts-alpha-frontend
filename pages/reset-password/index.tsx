@@ -65,11 +65,11 @@ const ResetPassword = () => {
                   if (response.data.success) {
                     setConfirmation(true);
                   } else {
-                    setErrorMsg("This email does not exist. Contact Junta");
+                    setErrorMsg("This email does not exist. Contact Junta its.junta@gmail.com");
                   }
                 }
               } catch (e) {
-                setErrorMsg("Unexpected error. Contact Junta");
+                setErrorMsg("Unexpected error. Contact Junta its.junta@gmail.com");
               }
             }}
           >
