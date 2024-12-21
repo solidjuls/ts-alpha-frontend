@@ -119,7 +119,8 @@ const GameContent = ({ data }) => {
       winnerName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
       loserName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
     }
-    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in Turn ${data.endTurn} (${endMode})`;
+    const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`
+    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
   };
 
   return (
