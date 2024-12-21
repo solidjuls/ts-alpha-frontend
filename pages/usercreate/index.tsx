@@ -6,6 +6,7 @@ import { getInfoFromCookies } from "utils/cookies";
 import UserCreateForm from "./UserCreateForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { userRoles } from "utils/constants";
+import { ServerType } from "types/types";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
@@ -20,10 +21,7 @@ const UserProfileContainer = ({ id }) => {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload || payload?.role !== userRoles.SUPERADMIN) {

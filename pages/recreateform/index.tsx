@@ -5,6 +5,7 @@ import { GameWinner, SubmitFormState } from "types/game.types";
 import SubmitForm from "../submitform/SubmitForm";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import { userRoles } from "utils/constants";
+import { ServerType } from "types/types";
 
 type SubmitFormProps = {
   role: number;
@@ -236,10 +237,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload || payload?.role !== userRoles.SUPERADMIN) {

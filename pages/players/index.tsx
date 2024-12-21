@@ -15,6 +15,7 @@ import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
 import { fetchPlayersList, setCurrentPage, setPlayersFilter } from "../../redux/playersListSlice";
+import { ServerType } from "types/types";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -151,10 +152,7 @@ const Players = () => {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
   return { props: { role: payload?.role || null } };
 }

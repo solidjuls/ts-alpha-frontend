@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { ServerType } from "types/types";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
@@ -25,10 +26,7 @@ const UserProfileContainer = ({ id }) => {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload) {
