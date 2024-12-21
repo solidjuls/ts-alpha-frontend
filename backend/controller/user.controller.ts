@@ -294,7 +294,7 @@ const mailBody = ({ firstName, hashedUrl }) => {
                                         </p>
 
                                         <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left;margin:0 0 15px;padding:0" align="left">
-                                            You are receiving this because you (or someone else) requested the reset of your <a href="http://twilight-struggle.com" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://twilight-struggle.com&amp;source=gmail&amp;ust=1725443360407000&amp;usg=AOvVaw2AAo74hiOc71SWQPgzNyjA">twilight-struggle.com</a> account. Click the button below to reset your <span class="il">password</span>.
+                                            You are receiving this because you requested the reset of your <a href="http://twilight-struggle.com" target="_blank" data-saferedirecturl="https://www.google.com/url?q=http://twilight-struggle.com&amp;source=gmail&amp;ust=1725443360407000&amp;usg=AOvVaw2AAo74hiOc71SWQPgzNyjA">twilight-struggle.com</a> account. Click the button below to reset your <span class="il">password</span>.
                                         </p>
 
                                         <button style="box-sizing:border-box;display:flex;padding:8px 16px;background:linear-gradient(180deg,rgba(255,255,255,0.13) 0%,rgba(17,184,15,0.1) 100%),#ffffff;border:1px solid rgba(75,173,58,0.5);border-radius:4px" align="left" type="button">
@@ -303,22 +303,11 @@ const mailBody = ({ firstName, hashedUrl }) => {
 
                                         <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left" align="left">
                                             If you did not request a <span class="il">password</span> reset, you can safely ignore this.<br>
-                                            If you have questions, please reach out to us by replying to this email.<br>
                                         </p>
                                         <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left" align="left">
                                             Thanks,<br>
                                             ITS Junta
                                         </p>
-
-                                        <div style="box-sizing:border-box;clear:both;width:100%">
-                                            <hr style="height:0;overflow:visible;border-top-color:#e1e4e8;color:#4d4d4d;font-size:12px;line-height:18px;background-color:#d9d9d9;margin:24px 0 30px;border-style:solid none none;border-width:1px 0 0">
-                                            <div style="box-sizing:border-box;color:#4d4d4d;font-size:12px;line-height:18px">
-                                                <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-weight:normal;color:#4d4d4d;font-size:12px;line-height:18px;text-align:left;margin:0 0 15px;padding:0" align="center">
-                                                    Use this link if the button is not working<br>
-                                                    <a href="${hashedUrl}" style="color:#4d4d4d" rel=" noopener noreferrer" target="_blank" data-saferedirecturl="https://www.google.com/url?q=https://twilight-struggle.com/account/password/set?token%3Dn9Dpc6tKy2qAjqEd9VEmdmnyittwCZyJcbtl5H5LaGfXLJubkOKhqw5z7aKnFRLcFcc7UGti0DWAzsz1CGSdsQ&amp;source=gmail&amp;ust=1725443360407000&amp;usg=AOvVaw09gQmBXlbA7AyqMyP3d1nG">https://twilight-struggle.com/<wbr>account/<span class="il">password</span>/set?token=<wbr>n9Dpc6tKy2qAjqEd9VEmdmnyittwCZ<wbr>yJcbtl5H5LaGfXLJubkOKhqw5z7aKn<wbr>FRLcFcc7UGti0DWAzsz1CGSdsQ</a>
-                                                </p>
-                                            </div>
-                                        </div>
                                     </div>
 
                                 </td>
