@@ -42,7 +42,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
-export const getCountryIdByCode = async (code) => {
+export const getCountryIdByCode = async (code: string) => {
   const id = await prisma.countries.findFirst({
     where: {
       tld_code: code,
@@ -54,7 +54,7 @@ export const getCountryIdByCode = async (code) => {
   return id;
 };
 
-export const getCityIdByDescription = async (description) => {
+export const getCityIdByDescription = async (description: string) => {
   const cityId = await prisma.cities.findFirst({
     where: {
       name: description,
@@ -66,7 +66,7 @@ export const getCityIdByDescription = async (description) => {
   return cityId;
 };
 
-export const getNonExistingEmails = async (emailArray) => {
+export const getNonExistingEmails = async (emailArray: string[]) => {
   const existingUsers = await prisma.users.findMany({
     where: {
       email: {
