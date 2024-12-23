@@ -2,6 +2,7 @@ import Head from "next/head";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import Homepage from "components/Homepage";
+import { Server, ServerType } from "types/types";
 
 export default function Home({ role }: { role: number }) {
   return (
@@ -23,10 +24,7 @@ export default function Home({ role }: { role: number }) {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
   return { props: { role: payload?.role || null } };
 }

@@ -47,7 +47,7 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter?: any, p: string, pageSize) => {
+export const getGameWithRatings = async (filter: any, p: string, pageSize: number) => {
   pageSize = pageSize || 20;
   const page = Number(p);
   const skip = (page - 1) * pageSize;
@@ -149,8 +149,8 @@ export const getTournamentNames = async () => {
 
 const submitGame = async (data: GameAPI) => {
   const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
-    usaPlayerId: data.usaPlayerId,
-    ussrPlayerId: data.ussrPlayerId,
+    usaPlayerId: BigInt(data.usaPlayerId),
+    ussrPlayerId: BigInt(data.ussrPlayerId),
     gameWinner: data.gameWinner,
     gameType: data.gameType,
   });

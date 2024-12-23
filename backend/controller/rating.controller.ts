@@ -1,4 +1,4 @@
-import { prisma } from "backend/utils/prisma";
+import { prisma, PrismaTransactionType } from "backend/utils/prisma";
 import { BiggerLowerValue, GameRecreate, GameWinner } from "types/game.types";
 import { getGameByGameId, submit } from "./game.controller";
 import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
@@ -103,17 +103,18 @@ export const calculateRating = async ({
   gameType,
   prismaTransaction,
 }: {
-  usaPlayerId: any;
-  ussrPlayerId: any;
-  gameWinner: any;
-  gameType: any;
+  usaPlayerId: bigint;
+  ussrPlayerId: bigint;
+  gameWinner: GameWinner;
+  gameType: string;
+  prismaTransaction?: PrismaTransactionType
 }) => {
   const usaRating = await getRatingByPlayer({
-    playerId: BigInt(usaPlayerId),
+    playerId: usaPlayerId,
     prismaTransaction,
   });
   const ussrRating = await getRatingByPlayer({
-    playerId: BigInt(ussrPlayerId),
+    playerId: ussrPlayerId,
     prismaTransaction,
   });
   // const newValue = Math.round((defeated - winner) * 0.05) + addValue;
@@ -126,7 +127,7 @@ export const calculateRating = async ({
   );
 };
 
-export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playerId: bigint }) => {
+export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playerId: bigint; prismaTransaction?: PrismaTransactionType }) => {
   const client = !prismaTransaction ? prisma : prismaTransaction;
   return await client.ratings_history.findFirst({
     select: {
@@ -403,6 +404,7 @@ const createNewRating = async ({
   updatedAt: Date | null;
   gameId: bigint;
   gameType: string;
+  prismaTransaction: PrismaTransactionType
 }) => {
   //we recalculate all ratings based on the games retrieved,
   const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({

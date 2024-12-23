@@ -10,6 +10,7 @@ import {
   SubmitFormState,
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
+import { ServerType } from "types/types";
 
 type SubmitFormProps = {
   role: number;
@@ -191,10 +192,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
 export async function getServerSideProps({
   req,
   res,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-}) {
+}: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload) {
