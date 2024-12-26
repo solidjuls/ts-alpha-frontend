@@ -5,24 +5,20 @@ import { getInfoFromCookies } from "utils/cookies";
 import {
   GameAPI,
   GameWinner,
-  GameRecreate,
   SubmitFormValue,
   SubmitFormState,
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
+import { useSession } from "contexts/AuthProvider";
 
 type SubmitFormProps = {
   role: number;
 };
 
 const initialState: SubmitFormState = {
-  oldId: {
-    value: "",
-    error: false,
-  },
   gameWinner: {
-    value: [],
+    value: "1",
     error: false,
   },
   gameCode: {
@@ -30,23 +26,23 @@ const initialState: SubmitFormState = {
     error: false,
   },
   gameType: {
-    value: [],
+    value: "",
     error: false,
   },
   opponentWas: {
-    value: [],
+    value: "",
     error: false,
   },
   playedAs: {
-    value: [],
+    value: "",
     error: false,
   },
   endTurn: {
-    value: [],
+    value: "",
     error: false,
   },
   endMode: {
-    value: [],
+    value: "",
     error: false,
   },
   video1: {
@@ -55,9 +51,51 @@ const initialState: SubmitFormState = {
   },
 };
 
+export type SubmitFormNormalizeType = (localForm: any) => GameAPI
+
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [form, setForm] = useState<SubmitFormState>(initialState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const { id } = useSession();
+
+  const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
+    let payloadObject: GameAPI = {};
+    // if (!recreate) {
+    //   if (localForm.playedAs.value[0].code === "1") {
+    //     payloadObject["usaPlayerId"] = id;
+    //     payloadObject["ussrPlayerId"] = localForm.opponentWas.value[0].code;
+    //   } else if (localForm.playedAs.value[0].code === "2") {
+    //     payloadObject["ussrPlayerId"] = id;
+    //     payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
+    //   }
+    // } else {
+    //   payloadObject["oldId"] = localForm.oldId.value;
+    // }
+    if (localForm.playedAs.value === "1") {
+      payloadObject["usaPlayerId"] = id;
+      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+    } else if (localForm.playedAs.value === "2") {
+      payloadObject["ussrPlayerId"] = id;
+      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+    }
+    payloadObject["gameCode"] = localForm.gameCode.value;
+    payloadObject["video1"] = localForm.video1.value;
+
+    Object.keys(localForm).map((key: string) => {
+      if (
+        key !== "playedAs" &&
+        key !== "opponentWas" &&
+        key !== "gameCode" &&
+        key !== "video1" &&
+        key !== "gameDate" &&
+        key !== "oldId"
+      ) {
+        payloadObject[key] = localForm[key].value[0].code;
+      }
+    });
+
+    return payloadObject;
+  };
 
   const validated = () => {
     let submit = true;
@@ -179,6 +217,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   return (
     <SubmitForm
       validated={validated}
+      normalizeData={normalizeData}
       role={role}
       form={form}
       onInputValueChange={onInputValueChange}

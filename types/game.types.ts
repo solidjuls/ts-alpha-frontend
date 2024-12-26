@@ -22,9 +22,7 @@ export type UserCreateState = {
   phone: SubmitFormValue<string>;
 };
 
-export type SubmitFormState =
-  | {
-      oldId: SubmitFormValue<string>;
+export type SubmitFormState = {
       gameWinner: SubmitFormValue<GameWinner> | null;
       gameCode: SubmitFormValue<string>;
       gameType: SubmitFormValue<string>;
@@ -34,17 +32,17 @@ export type SubmitFormState =
       endMode: SubmitFormValue<string>;
       video1: SubmitFormValue<string>;
     }
-  | {
-      oldId: SubmitFormValue<string>;
-      gameWinner: SubmitFormValue<GameWinner> | null;
-      gameCode: SubmitFormValue<string>;
-      gameType: SubmitFormValue<string>;
-      endTurn: SubmitFormValue<string>;
-      endMode: SubmitFormValue<string>;
-      video1: SubmitFormValue<string>;
-      usaPlayerId?: SubmitFormValue<string>;
-      ussrPlayerId?: SubmitFormValue<string>;
-    };
+  // | {
+  //     oldId: SubmitFormValue<string>;
+  //     gameWinner: SubmitFormValue<GameWinner> | null;
+  //     gameCode: SubmitFormValue<string>;
+  //     gameType: SubmitFormValue<string>;
+  //     endTurn: SubmitFormValue<string>;
+  //     endMode: SubmitFormValue<string>;
+  //     video1: SubmitFormValue<string>;
+  //     usaPlayerId?: SubmitFormValue<string>;
+  //     ussrPlayerId?: SubmitFormValue<string>;
+  //   };
 
 export type SubmitFormValue<T> = {
   value: T;

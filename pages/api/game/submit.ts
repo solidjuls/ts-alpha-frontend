@@ -1,7 +1,8 @@
 import { submit } from "backend/controller/game.controller";
 import { authenticateJWT } from "pages/api/auth/middleware";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   authenticateJWT(req, res, async () => {
     if (req.method === "POST") {
       try {

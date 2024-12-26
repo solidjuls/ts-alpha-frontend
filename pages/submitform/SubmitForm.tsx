@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
+import { GameAPI } from "types/game.types";
 import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import DateComponent from "./DateComponent";
@@ -15,6 +16,7 @@ import getAxiosInstance from "utils/axios";
 import { Spinner } from "@radix-ui/themes";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { SubmitFormNormalizeType } from ".";
 
 const dropdownWidth = "270px";
 const typeaheadWidth = "250px";
@@ -40,6 +42,7 @@ type SubmitFormProps = {
   checked: boolean;
   setChecked: React.Dispatch<React.SetStateAction<boolean>>;
   form: SubmitFormState;
+  normalizeData: SubmitFormNormalizeType
   onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
   buttonDisabled: boolean;
   setButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,6 +58,7 @@ const SubmitForm = ({
   onInputValueChange,
   buttonDisabled,
   setButtonDisabled,
+  normalizeData,
   setForm,
 }: SubmitFormProps) => {
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
@@ -71,37 +75,7 @@ const SubmitForm = ({
     code: item.text,
     name: item.text,
   }));
-  const normalizeData = (localForm: any) => {
-    let payloadObject: any = {};
-    if (!recreate) {
-      if (localForm.playedAs.value[0].code === "1") {
-        payloadObject["usaPlayerId"] = id;
-        payloadObject["ussrPlayerId"] = localForm.opponentWas.value[0].code;
-      } else if (localForm.playedAs.value[0].code === "2") {
-        payloadObject["ussrPlayerId"] = id;
-        payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
-      }
-    } else {
-      payloadObject["oldId"] = localForm.oldId.value;
-    }
-    payloadObject["gameCode"] = localForm.gameCode.value;
-    payloadObject["video1"] = localForm.video1.value;
 
-    Object.keys(localForm).map((key: string) => {
-      if (
-        key !== "playedAs" &&
-        key !== "opponentWas" &&
-        key !== "gameCode" &&
-        key !== "video1" &&
-        key !== "gameDate" &&
-        key !== "oldId"
-      ) {
-        payloadObject[key] = localForm[key].value[0].code;
-      }
-    });
-
-    return payloadObject;
-  };
 
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   return (

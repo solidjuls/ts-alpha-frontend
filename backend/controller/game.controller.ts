@@ -223,7 +223,7 @@ const submitGame = async (data: GameAPI) => {
   });
 };
 
-export const submit = async (data) => {
+export const submit = async (data: GameAPI) => {
   try {
     const newGameWithId = await submitGame(data);
     const newGameWithIdParsed = JSON.stringify(newGameWithId, (key, value) =>
