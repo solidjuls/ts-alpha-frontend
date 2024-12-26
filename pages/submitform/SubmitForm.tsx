@@ -31,6 +31,7 @@ type SubmitFormProps = {
   isSubmitting: boolean;
   onSubmit: () => void;
   form: SubmitFormState;
+  normalizeData: SubmitFormNormalizeType
   onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
   leagueTypes: DropdownItemType[];
   users: DropdownItemType[];

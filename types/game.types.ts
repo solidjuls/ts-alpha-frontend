@@ -27,18 +27,6 @@ export type UserCreateState = {
   phone: SubmitFormValue<string>;
 };
 
-// | {
-//     oldId: SubmitFormValue<string>;
-//     gameWinner: SubmitFormValue<GameWinner> | null;
-//     gameCode: SubmitFormValue<string>;
-//     gameType: SubmitFormValue<string>;
-//     endTurn: SubmitFormValue<string>;
-//     endMode: SubmitFormValue<string>;
-//     video1: SubmitFormValue<string>;
-//     usaPlayerId?: SubmitFormValue<string>;
-//     ussrPlayerId?: SubmitFormValue<string>;
-//   };
-
 export type Game = {
   id: bigint;
   created_at: Date | null;

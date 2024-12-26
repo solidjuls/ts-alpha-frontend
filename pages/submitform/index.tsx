@@ -3,10 +3,7 @@ import { getInfoFromCookies } from "utils/cookies";
 import { GameAPI, GameWinner } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
-import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { useRouter } from "next/router";
 
 type SubmitFormProps = {
   role: number;
