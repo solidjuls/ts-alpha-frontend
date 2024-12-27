@@ -4,6 +4,7 @@ import { GameAPI, GameWinner } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
 import { useSession } from "contexts/AuthProvider";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 type SubmitFormProps = {
   role: number;
@@ -73,6 +74,12 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     url: "/api/user",
     cacheId: "user-list",
   });
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
+    url: `/api/game/tournaments`,
+    cacheId: "tournament-list",
+  });
+
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
