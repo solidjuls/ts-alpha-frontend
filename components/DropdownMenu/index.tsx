@@ -76,11 +76,6 @@ const SelectedItemDiv = styled("div", {
   color: "$textDark",
 });
 
-export type DropdownItemType = {
-  value: string;
-  text: string;
-};
-
 const DropdownMenu = ({
   items,
   selectedItem,

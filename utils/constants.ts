@@ -1,93 +1,90 @@
-export type DropdownType = {
-  code: string;
-  name: string;
-};
+import { DropdownItemType } from "types/types";
 
 export const GAME_QUERY = "game-getAll";
 
-export const turns: Array<DropdownType> = [
+export const turns: Array<DropdownItemType> = [
   {
-    code: "1",
-    name: "1",
+    value: "1",
+    text: "1",
   },
   {
-    code: "2",
-    name: "2",
+    value: "2",
+    text: "2",
   },
   {
-    code: "3",
-    name: "3",
+    value: "3",
+    text: "3",
   },
   {
-    code: "4",
-    name: "4",
+    value: "4",
+    text: "4",
   },
   {
-    code: "5",
-    name: "5",
+    value: "5",
+    text: "5",
   },
   {
-    code: "6",
-    name: "6",
+    value: "6",
+    text: "6",
   },
   {
-    code: "7",
-    name: "7",
+    value: "7",
+    text: "7",
   },
   {
-    code: "8",
-    name: "8",
+    value: "8",
+    text: "8",
   },
   {
-    code: "9",
-    name: "9",
+    value: "9",
+    text: "9",
   },
   {
-    code: "10",
-    name: "10",
+    value: "10",
+    text: "10",
   },
   {
-    code: "11",
-    name: "Final Scoring",
+    value: "11",
+    text: "Final Scoring",
   },
 ];
 
 export const endType: Array<DropdownType> = [
   {
-    code: "VP Track (+20)",
-    name: "VP Track (+20)",
+    value: "VP Track (+20)",
+    text: "VP Track (+20)",
   },
   {
-    code: "Final Scoring",
-    name: "Final Scoring",
+    value: "Final Scoring",
+    text: "Final Scoring",
   },
   {
-    code: "Wargames",
-    name: "Wargames",
+    value: "Wargames",
+    text: "Wargames",
   },
   {
-    code: "DEFCON",
-    name: "DEFCON",
+    value: "DEFCON",
+    text: "DEFCON",
   },
   {
-    code: "Forfeit",
-    name: "Forfeit",
+    value: "Forfeit",
+    text: "Forfeit",
   },
   {
-    code: "Timer Expired",
-    name: "Timer Expired",
+    value: "Timer Expired",
+    text: "Timer Expired",
   },
   {
-    code: "Europe Control",
-    name: "Europe Control",
+    value: "Europe Control",
+    text: "Europe Control",
   },
   {
-    code: "Scoring Card Held",
-    name: "Scoring Card Held",
+    value: "Scoring Card Held",
+    text: "Scoring Card Held",
   },
   {
-    code: "Cuban Missile Crisis",
-    name: "Cuban Missile Crisis",
+    value: "Cuban Missile Crisis",
+    text: "Cuban Missile Crisis",
   },
 ];
 
@@ -101,27 +98,27 @@ const getEndTurn = ({ winningOption }: { winningOption: string }) => {
 };
 export const gameWinningOptions: Array<DropdownType> = [
   {
-    code: "1",
-    name: "USA",
+    value: "1",
+    text: "USA",
   },
   {
-    code: "2",
-    name: "USSR",
+    value: "2",
+    text: "USSR",
   },
   {
-    code: "3",
-    name: "Tie",
+    value: "3",
+    text: "Tie",
   },
 ];
 
 export const gameSides: Array<DropdownType> = [
   {
-    code: "1",
-    name: "USA",
+    value: "1",
+    text: "USA",
   },
   {
-    code: "2",
-    name: "USSR",
+    value: "2",
+    text: "USSR",
   },
 ];
 
@@ -133,74 +130,74 @@ export const userRoles = {
 
 export const platforms: Array<DropdownType> = [
   {
-    code: "PC - Steam (Playdek)",
-    name: "PC - Steam (Playdek)",
+    value: "PC - Steam (Playdek)",
+    text: "PC - Steam (Playdek)",
   },
   {
-    code: "In person (Physical Game)",
-    name: "In person (Physical Game)",
+    value: "In person (Physical Game)",
+    text: "In person (Physical Game)",
   },
   {
-    code: "Mobile - Android App (Playdek)",
-    name: "Mobile - Android App (Playdek)",
+    value: "Mobile - Android App (Playdek)",
+    text: "Mobile - Android App (Playdek)",
   },
   {
-    code: "Mobile - Ios App (Playdek)",
-    name: "Mobile - Ios App (Playdek)",
+    value: "Mobile - Ios App (Playdek)",
+    text: "Mobile - Ios App (Playdek)",
   },
   {
-    code: "Mac - Steam (Playdek)",
-    name: "Mac - Steam (Playdek)",
+    value: "Mac - Steam (Playdek)",
+    text: "Mac - Steam (Playdek)",
   },
   {
-    code: "PC - Saito",
-    name: "PC - Saito",
+    value: "PC - Saito",
+    text: "PC - Saito",
   },
   {
-    code: "PC - Wargamesroom",
-    name: "PC - Wargamesroom",
+    value: "PC - Wargamesroom",
+    text: "PC - Wargamesroom",
   },
   {
-    code: "Vassal",
-    name: "Vassal",
+    value: "Vassal",
+    text: "Vassal",
   },
 ];
 
 export const gameDurations: Array<DropdownType> = [
   {
-    code: "30 minutes",
-    name: "30 minutes",
+    value: "30 minutes",
+    text: "30 minutes",
   },
   {
-    code: "45 minutes",
-    name: "45 minutes",
+    value: "45 minutes",
+    text: "45 minutes",
   },
   {
-    code: "60 minutes",
-    name: "60 minutes",
+    value: "60 minutes",
+    text: "60 minutes",
   },
   {
-    code: "90 minutes",
-    name: "90 minutes",
+    value: "90 minutes",
+    text: "90 minutes",
   },
   {
-    code: "3 hours",
-    name: "3 hours",
+    value: "3 hours",
+    text: "3 hours",
   },
   {
-    code: "Asynch - 3 days",
-    name: "Asynch - 3 days",
+    value: "Asynch - 3 days",
+    text: "Asynch - 3 days",
   },
   {
-    code: "Asynch - 7 days",
-    name: "Asynch - 7 days",
+    value: "Asynch - 7 days",
+    text: "Asynch - 7 days",
   },
   {
-    code: "Asynch - 21 days",
-    name: "Asynch - 21 days",
+    value: "Asynch - 21 days",
+    text: "Asynch - 21 days",
   },
   {
     value: "Asynch - 45 days",
-    name: "Asynch - 45 days",
+    text: "Asynch - 45 days",
   },
 ];

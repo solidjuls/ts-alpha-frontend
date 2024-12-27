@@ -55,29 +55,28 @@ const SubmitForm = ({
   recreate,
   setChecked,
   form,
+  users,
+  leagueTypes,
   onInputValueChange,
   buttonDisabled,
   setButtonDisabled,
   normalizeData,
   setForm,
 }: SubmitFormProps) => {
-  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  
   const { id } = useSession();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const { data } = useFetchInitialData({
-    url: `/api/game/tournaments`,
-    cacheId: "tournament-list",
-  });
-  const leagueTypes = data?.map((item) => ({
-    code: item.text,
-    name: item.text,
-  }));
-
 
   const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
+  // console.log("leagueTypes", leagueTypes)
+  // console.log("gameSides", gameSides)
+  // console.log("users", users)
+  // console.log("gameWinningOptions", gameWinningOptions)
+  // console.log("endType", endType)
+console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
@@ -108,8 +107,7 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        {!recreate ? (
-          <DropdownWithLabel
+        <DropdownWithLabel
             labelText="PlayedAs"
             placeholder="I played as..."
             items={gameSides}
@@ -120,6 +118,25 @@ const SubmitForm = ({
             css={{ width: dropdownWidth }}
             onSelect={(value) => onInputValueChange("playedAs", value)}
           />
+        <UserTypeahead
+          labelText="User"
+          selectedItem={form.opponentWas.value}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          error={form.opponentWas.error}
+          users={users}
+          placeholder="Type the opponent name..."
+          css={{ width: "300px" }}
+          onBlur={() => {
+            onInputValueChange("opponentWas", "");
+          }}
+          onSelect={(value) => {
+            console.log("sdf", value);
+            onInputValueChange("opponentWas", value?.value);
+          }}
+        />
+        {/* {!recreate ? (
+          
         ) : (
           <DropdownWithLabel
             labelText="usaPlayer"
@@ -132,18 +149,7 @@ const SubmitForm = ({
             css={{ width: dropdownWidth }}
             onSelect={(value: string) => onInputValueChange("usaPlayerId", value)}
           />
-        )}
-        <DropdownWithLabel
-          labelText={!recreate ? "opponentWas" : "ussrPlayer"}
-          placeholder={!recreate ? "Your opponent was..." : "USSR player"}
-          items={users?.map((item) => ({ code: item.id, name: item.name }))}
-          selectedItem={form[opponentFormProp].value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
-          error={form[opponentFormProp].error}
-          css={{ width: dropdownWidth }}
-          onSelect={(value: string) => onInputValueChange(opponentFormProp, value)}
-        />
+        )} */}
         <DropdownWithLabel
           labelText="gameWinner"
           placeholder="Game winner"

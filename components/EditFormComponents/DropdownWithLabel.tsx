@@ -1,6 +1,7 @@
-import { DropdownItemType } from "components/DropdownMenu";
+import DropdownMenu from "components/DropdownMenu";
 import MultiSelect from "components/MultiSelect";
 import WithLabel from "./WithLabel";
+import { DropdownItemType } from "types/types";
 
 type DropdownWithLabelProps = {
   labelText: string;
@@ -24,11 +25,11 @@ const DropdownWithLabel = ({
   ...rest
 }: DropdownWithLabelProps) => (
   <WithLabel labelText={labelText}>
-    <MultiSelect
+    <DropdownMenu
       items={items}
       placeholder={placeholder}
-      selectedValues={selectedItem}
-      setSelectedValues={onSelect}
+      selectedItem={selectedItem}
+      onSelect={onSelect}
       // filter={false}
       selectionLimit={1}
     />

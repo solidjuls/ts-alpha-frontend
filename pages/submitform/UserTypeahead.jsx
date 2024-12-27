@@ -22,8 +22,16 @@ const useTypeaheadState = () => {
 
   return { userSuggestions, onChange };
 };
-const UserTypeahead = ({ labelText, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
-  const { userSuggestions, onChange } = useTypeaheadState();
+const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
+  const [input, setInput] = useState("");
+  const onChange = (input) => {
+    setInput(input)
+  }
+  const userSuggestions = users?.filter((user) => {
+    if (user.text.toLowerCase().includes(input.toLowerCase())) {
+      return true;
+    }
+  })
   return (
     <WithLabel labelText={labelText}>
       <Typeahead

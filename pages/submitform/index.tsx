@@ -11,6 +11,7 @@ import {
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
 import { useSession } from "contexts/AuthProvider";
+import useFetchInitialData from "hooks/useFetchInitialData";
 
 type SubmitFormProps = {
   role: number;
@@ -57,6 +58,12 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [form, setForm] = useState<SubmitFormState>(initialState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const { id } = useSession();
+
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
+    url: `/api/game/tournaments`,
+    cacheId: "tournament-list",
+  });
 
   const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
     let payloadObject: GameAPI = {};
@@ -214,11 +221,24 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     });
   };
 
+  if (loadingTournaments || loadingUsers) return null
+
+  const usersParsed = users?.map((item) => ({
+    value: item.id,
+    text: item.name,
+  }));
+
+  const leagueTypes = tournaments?.map((item) => ({
+    value: item.text,
+    text: item.text,
+  }));
+
   return (
     <SubmitForm
       validated={validated}
       normalizeData={normalizeData}
-      role={role}
+      users={usersParsed}
+      leagueTypes={leagueTypes}
       form={form}
       onInputValueChange={onInputValueChange}
       buttonDisabled={buttonDisabled}
