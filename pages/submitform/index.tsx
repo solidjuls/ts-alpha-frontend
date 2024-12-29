@@ -5,6 +5,7 @@ import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { useRouter } from "next/router";
 
 type SubmitFormProps = {
   role: number;
@@ -67,6 +68,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const { id } = useSession();
   const router = useRouter();
   const [form, setForm] = useState<SubmitFormState>(initialState);
+<<<<<<< HEAD
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -78,6 +80,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
+=======
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+>>>>>>> b48e606 (UX reworked)
 
   const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
@@ -283,6 +290,10 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   return (
     <SubmitForm
       onSubmit={onSubmit}
+<<<<<<< HEAD
+=======
+      normalizeData={normalizeData}
+>>>>>>> b48e606 (UX reworked)
       users={usersParsed}
       leagueTypes={leagueTypes}
       form={form}
