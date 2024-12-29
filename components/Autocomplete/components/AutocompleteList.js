@@ -12,15 +12,13 @@ export const i18ns = {
 };
 
 const ListContainer = styled("div", {
-  borderRadius: 1,
-  marginTop: 1,
-  marginBottom: 1,
+  borderRadius: 4,
 
   borderRadius: "4px",
   backgroundColor: "white",
   outline: 0,
   zIndex: 200,
-  boxShadow: "0 0 0 2px black",
+  border: "1px solid black",
   maxHeight: "300px",
   overflowY: "auto",
   width: "100%",

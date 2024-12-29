@@ -1,27 +1,7 @@
 import { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
-import useFetchInitialData from "hooks/useFetchInitialData";
 
-const useTypeaheadState = () => {
-  const [userSuggestions, setUserSuggestions] = useState([]);
-
-  // const { data, error } = useFetchInitialData({ url: "/api/user" });
-  // if (!data) return null;
-
-  // const userList = data.map((user) => ({ value: user.id, text: user.name })) || [];
-  const onChange = (input) => {
-    setUserSuggestions(
-      userList?.filter((user) => {
-        if (user.text.toLowerCase().includes(input.toLowerCase())) {
-          return true;
-        }
-      }),
-    );
-  };
-
-  return { userSuggestions, onChange };
-};
 const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
   const [input, setInput] = useState("");
   const onChange = (input) => {
@@ -47,7 +27,7 @@ const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, 
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {userSuggestions.length > 0 && (
-          <Typeahead.List css={{ ...css, width: "270px" }}>
+          <Typeahead.List css={{ ...css }}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>

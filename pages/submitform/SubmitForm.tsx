@@ -18,8 +18,7 @@ import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { SubmitFormNormalizeType } from ".";
 
-const dropdownWidth = "270px";
-const typeaheadWidth = "250px";
+const dropdownWidth = "370px";
 
 const formStyles = {
   alignItems: "center",
@@ -50,7 +49,7 @@ type SubmitFormProps = {
 };
 
 const SubmitForm = ({
-  validated,
+  onSubmit,
   role,
   recreate,
   setChecked,
@@ -58,19 +57,14 @@ const SubmitForm = ({
   users,
   leagueTypes,
   onInputValueChange,
+  errorMsg,
   buttonDisabled,
   setButtonDisabled,
   normalizeData,
+  isSubmitting
   setForm,
 }: SubmitFormProps) => {
-  
-  const { id } = useSession();
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [confirmationMsg, setConfirmationMsg] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
+  // const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   // console.log("leagueTypes", leagueTypes)
   // console.log("gameSides", gameSides)
   // console.log("users", users)
@@ -79,7 +73,7 @@ const SubmitForm = ({
 console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />}
+      {/* {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />} */}
       <Box
         css={{
           display: "flex",
@@ -126,7 +120,7 @@ console.log("form", form)
           error={form.opponentWas.error}
           users={users}
           placeholder="Type the opponent name..."
-          css={{ width: "300px" }}
+          css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
@@ -179,12 +173,12 @@ console.log("form", form)
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
-        {recreate && <DateComponent
+        {/* {recreate && <DateComponent
           labelText="gameDate"
           inputValue={form.gameDate.value}
           // error={form.gameDate.error}
           onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
-        />}
+        />} */}
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
@@ -193,47 +187,15 @@ console.log("form", form)
           css={{ width: "500px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
-        {!recreate && (
-          <Button
+        <Button
             disabled={isSubmitting}
             css={{ width: "200px", fontSize: "18px" }}
-            onClick={async () => {
-              if (!id) {
-                setErrorMsg("Error submitting your result. Refresh the page and try again");
-                return;
-              }
-              if (validated(form, setForm)) {
-                try {
-                  setIsSubmitting(true);
-                  // @ts-ignore
-                  await getAxiosInstance().post(
-                    "/api/game/submit",
-                    {
-                      data: normalizeData(form),
-                    },
-                    {
-                      cache: {
-                        update: {
-                          "game-list": "delete",
-                        },
-                      },
-                    },
-                  );
-                  router.push("/");
-                } catch (e) {
-                  console.log("error submitform", e);
-                  setErrorMsg("There was an error submitting the result");
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }
-            }}
+            onClick={onSubmit}
           >
             {isSubmitting ? <Spinner size="3" /> : "Submit"}
           </Button>
-        )}
         {errorMsg && <Text type="error">{errorMsg}</Text>}
-        {recreate && (
+        {/* {recreate && (
           <Button
             // disabled={buttonDisabled}
             css={{ width: "200px", fontSize: "18px" }}
@@ -266,7 +228,7 @@ console.log("form", form)
           >
             Recreate Game
           </Button>
-        )}
+        )} */}
       </Box>
     </Form>
   );

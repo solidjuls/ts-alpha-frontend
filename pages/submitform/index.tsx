@@ -12,6 +12,7 @@ import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { useRouter } from "next/router";
 
 type SubmitFormProps = {
   role: number;
@@ -55,9 +56,12 @@ const initialState: SubmitFormState = {
 export type SubmitFormNormalizeType = (localForm: any) => GameAPI
 
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
+  const { id } = useSession();
+  const router = useRouter();
   const [form, setForm] = useState<SubmitFormState>(initialState);
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const { id } = useSession();
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
@@ -221,6 +225,37 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     });
   };
 
+  const onSubmit = async () => {
+    if (!id) {
+      setErrorMsg("Error submitting your result. Refresh the page and try again");
+      return;
+    }
+    if (validated()) {
+      try {
+        setIsSubmitting(true);
+        // @ts-ignore
+        await getAxiosInstance().post(
+          "/api/game/submit",
+          {
+            data: normalizeData(form),
+          },
+          {
+            cache: {
+              update: {
+                "game-list": "delete",
+              },
+            },
+          },
+        );
+        router.push("/");
+      } catch (e) {
+        console.log("error submitform", e);
+        setErrorMsg("There was an error submitting the result");
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  }
   if (loadingTournaments || loadingUsers) return null
 
   const usersParsed = users?.map((item) => ({
@@ -235,11 +270,12 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
 
   return (
     <SubmitForm
-      validated={validated}
+      onSubmit={onSubmit}
       normalizeData={normalizeData}
       users={usersParsed}
       leagueTypes={leagueTypes}
       form={form}
+      isSubmitting={isSubmitting}
       onInputValueChange={onInputValueChange}
       buttonDisabled={buttonDisabled}
       setButtonDisabled={setButtonDisabled}
