@@ -23,7 +23,7 @@ export type UserCreateState = {
 };
 
 export type SubmitFormState = {
-      gameWinner: SubmitFormValue<GameWinner> | null;
+      gameWinner: SubmitFormValue<GameWinner>;
       gameCode: SubmitFormValue<string>;
       gameType: SubmitFormValue<string>;
       opponentWas: SubmitFormValue<string>;
@@ -76,7 +76,6 @@ export type Game = {
 };
 
 export const zGameAPI = z.object({
-  gameDate: z.string(),
   gameWinner: z.enum(["1", "2", "3"]),
   gameCode: z.string(),
   gameType: z.string(),

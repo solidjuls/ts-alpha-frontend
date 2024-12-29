@@ -1,6 +1,4 @@
-import { useDebounce } from "use-debounce";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
+import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import {
   GameAPI,
@@ -10,6 +8,7 @@ import {
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
+import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
@@ -70,7 +69,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   });
 
   const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
-    let payloadObject: GameAPI = {};
+    
     // if (!recreate) {
     //   if (localForm.playedAs.value[0].code === "1") {
     //     payloadObject["usaPlayerId"] = id;
@@ -82,28 +81,26 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     // } else {
     //   payloadObject["oldId"] = localForm.oldId.value;
     // }
+    let usaPlayerId = ''
+    let ussrPlayerId = ''
     if (localForm.playedAs.value === "1") {
-      payloadObject["usaPlayerId"] = id;
-      payloadObject["ussrPlayerId"] = localForm.opponentWas.value;
+      usaPlayerId = id as string;
+      ussrPlayerId = localForm.opponentWas.value;
     } else if (localForm.playedAs.value === "2") {
-      payloadObject["ussrPlayerId"] = id;
-      payloadObject["usaPlayerId"] = localForm.opponentWas.value;
+      ussrPlayerId = id  as string;
+      usaPlayerId = localForm.opponentWas.value;
     }
-    payloadObject["gameCode"] = localForm.gameCode.value;
-    payloadObject["video1"] = localForm.video1.value;
 
-    Object.keys(localForm).map((key: string) => {
-      if (
-        key !== "playedAs" &&
-        key !== "opponentWas" &&
-        key !== "gameCode" &&
-        key !== "video1" &&
-        key !== "gameDate" &&
-        key !== "oldId"
-      ) {
-        payloadObject[key] = localForm[key].value[0].code;
-      }
-    });
+    let payloadObject: GameAPI = {
+      gameType: localForm.gameType.value,
+      usaPlayerId: usaPlayerId,
+      ussrPlayerId: ussrPlayerId,
+      gameWinner: localForm.gameWinner.value,
+      gameCode: localForm.gameCode.value,
+      endMode: localForm.endMode.value,
+      endTurn: localForm.endTurn.value,
+      video1: localForm.video1.value,
+    };
 
     return payloadObject;
   };
@@ -111,43 +108,23 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (["video1"].includes(key)) {
-      } else {
-        if (key === "gameCode" && form[key as keyof SubmitFormState].value === "") {
-          // form[key].error = true;
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          submit = false;
-        }
-
-        if (
-          ["endMode", "endTurn", "gameType", "gameWinner", "opponentWas", "playedAs"].includes(
-            key,
-          ) &&
-          form[key as keyof SubmitFormState].value.length === 0
-        ) {
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          submit = false;
-        }
+      if (key !== "video1" && form[key as keyof SubmitFormState].value === "") {
+        setForm((prevState: any) => ({
+          ...prevState,
+          [key]: {
+            ...prevState[key],
+            error: true,
+          },
+        }));
+        submit = false;
       }
-    });
+    })
 
-    if (!submit) return;
+    if (!submit) return submit;
 
     if (
-      form["endMode"].value[0].code === "Final Scoring" &&
-      form["endTurn"].value[0].code !== "11"
+      form.endMode.value === "Final Scoring" &&
+      form.endTurn.value !== "11"
     ) {
       setForm((prevState: any) => ({
         ...prevState,
@@ -162,11 +139,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       }));
       submit = false;
     }
-    // If turn == final scoring, then end mode must also equal final scoring
+
     if (
-      form["endTurn"].value[0].code === "11" &&
-      form["endMode"].value[0].code !== "Final Scoring" &&
-      form["endMode"].value[0].code !== "Europe Control"
+      form.endTurn.value === "11" &&
+      form.endMode.value !== "Final Scoring" &&
+      form.endMode.value !== "Europe Control"
     ) {
       setForm((prevState: any) => ({
         ...prevState,
@@ -181,10 +158,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       }));
       submit = false;
     }
+
     // Wargammes can only be used if turn 8, 9, 10
     if (
-      form["endMode"].value[0].code === "Wargames" &&
-      !["8", "9", "10"].includes(form["endTurn"].value[0].code)
+      form.endMode.value === "Wargames" &&
+      !["8", "9", "10"].includes(form.endTurn.value)
     ) {
       setForm((prevState: any) => ({
         ...prevState,

@@ -12,7 +12,7 @@ import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
-import getAxiosInstance from "utils/axios";
+
 import { Spinner } from "@radix-ui/themes";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
@@ -61,8 +61,8 @@ const SubmitForm = ({
   buttonDisabled,
   setButtonDisabled,
   normalizeData,
-  isSubmitting
-  setForm,
+  isSubmitting,
+  setForm
 }: SubmitFormProps) => {
   // const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
   // console.log("leagueTypes", leagueTypes)
