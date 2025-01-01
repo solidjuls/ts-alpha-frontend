@@ -1,6 +1,11 @@
 import { DropdownType } from "utils/constants";
 import { z } from "zod";
 
+export type SubmitFormValue<T> = {
+  value: T;
+  error: boolean;
+};
+
 export type UserProfileState = {
   name: SubmitFormValue<string>;
   preferredGamingPlatform: SubmitFormValue<string>;
@@ -22,16 +27,7 @@ export type UserCreateState = {
   phone: SubmitFormValue<string>;
 };
 
-export type SubmitFormState = {
-      gameWinner: SubmitFormValue<GameWinner>;
-      gameCode: SubmitFormValue<string>;
-      gameType: SubmitFormValue<string>;
-      opponentWas: SubmitFormValue<string>;
-      playedAs: SubmitFormValue<string>;
-      endTurn: SubmitFormValue<string>;
-      endMode: SubmitFormValue<string>;
-      video1: SubmitFormValue<string>;
-    }
+
   // | {
   //     oldId: SubmitFormValue<string>;
   //     gameWinner: SubmitFormValue<GameWinner> | null;
@@ -44,10 +40,7 @@ export type SubmitFormState = {
   //     ussrPlayerId?: SubmitFormValue<string>;
   //   };
 
-export type SubmitFormValue<T> = {
-  value: T;
-  error: boolean;
-};
+
 
 export type Game = {
   id: bigint;
@@ -88,6 +81,7 @@ export const zGameAPI = z.object({
 
 export const zGameRecreateAPI = zGameAPI.extend({
   oldId: z.string(),
+  gameDate: z.string()
 });
 
 export type GameRating = {

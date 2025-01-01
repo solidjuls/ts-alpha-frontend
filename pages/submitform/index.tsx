@@ -3,8 +3,6 @@ import { getInfoFromCookies } from "utils/cookies";
 import {
   GameAPI,
   GameWinner,
-  SubmitFormValue,
-  SubmitFormState,
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
@@ -16,6 +14,22 @@ import { useRouter } from "next/router";
 type SubmitFormProps = {
   role: number;
 };
+
+export type SubmitFormValue<T> = {
+  value: T;
+  error: boolean;
+};
+
+export type SubmitFormState = {
+  gameWinner: SubmitFormValue<GameWinner>;
+  gameCode: SubmitFormValue<string>;
+  gameType: SubmitFormValue<string>;
+  opponentWas: SubmitFormValue<string>;
+  playedAs: SubmitFormValue<string>;
+  endTurn: SubmitFormValue<string>;
+  endMode: SubmitFormValue<string>;
+  video1: SubmitFormValue<string>;
+}
 
 const initialState: SubmitFormState = {
   gameWinner: {
@@ -52,7 +66,7 @@ const initialState: SubmitFormState = {
   },
 };
 
-export type SubmitFormNormalizeType = (localForm: any) => GameAPI
+export type SubmitFormNormalizeType = (localForm: SubmitFormState) => GameAPI
 
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const { id } = useSession();

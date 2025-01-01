@@ -2,21 +2,20 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { GameAPI } from "types/game.types";
 import Text from "components/Text";
-import TextComponent from "./TextComponent";
-import DateComponent from "./DateComponent";
-import RecreateRating from "../recreateform/RecreateRating";
+import TextComponent from "../submitform/TextComponent";
+import DateComponent from "../submitform/DateComponent";
 
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
-import UserTypeahead from "./UserTypeahead";
+import UserTypeahead from "../submitform/UserTypeahead";
 import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { SubmitFormNormalizeType } from ".";
+import { SubmitFormNormalizeType } from "../submitform";
 
 const dropdownWidth = "370px";
 
@@ -48,7 +47,7 @@ type SubmitFormProps = {
   setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>;
 };
 
-const SubmitForm = ({
+const RecreateRating = ({
   onSubmit,
   role,
   recreate,
@@ -64,16 +63,9 @@ const SubmitForm = ({
   isSubmitting,
   setForm
 }: SubmitFormProps) => {
-  // const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
-  // console.log("leagueTypes", leagueTypes)
-  // console.log("gameSides", gameSides)
-  // console.log("users", users)
-  // console.log("gameWinningOptions", gameWinningOptions)
-  // console.log("endType", endType)
 console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {/* {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />} */}
       <Box
         css={{
           display: "flex",
@@ -83,9 +75,17 @@ console.log("form", form)
         }}
       >
         <TextComponent
+          labelText="oldId"
+          placeholder="Old game id"
+          inputValue={form.oldId.value}
+          onInputValueChange={(value) => onInputValueChange("oldId", value)}
+          css={{ width: "80px" }}
+          error={form.oldId.error}
+        />
+        <TextComponent
           labelText="checkID"
           inputValue={form.gameCode.value}
-          placeholder="Game id"
+          placeholder="Game code"
           onInputValueChange={(value) => onInputValueChange("gameCode", value)}
           css={{ width: "80px" }}
           error={form.gameCode.error}
@@ -101,46 +101,38 @@ console.log("form", form)
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <DropdownWithLabel
-            labelText="PlayedAs"
-            placeholder="I played as..."
-            items={gameSides}
-            selectedItem={form.playedAs.value}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={form.playedAs.error}
-            css={{ width: dropdownWidth }}
-            onSelect={(value) => onInputValueChange("playedAs", value)}
-          />
         <UserTypeahead
           labelText="User"
-          selectedItem={form.opponentWas.value}
+          selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.opponentWas.error}
+          error={form.usaPlayerId.error}
           users={users}
           placeholder="Type the opponent name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
-            onInputValueChange("opponentWas", "");
+            onInputValueChange("usaPlayerId", "");
           }}
-          onSelect={(value) => onInputValueChange("opponentWas", value?.value)}
+          onSelect={(value) => {
+            onInputValueChange("usaPlayerId", value?.value);
+          }}
         />
-        {/* {!recreate ? (
-          
-        ) : (
-          <DropdownWithLabel
-            labelText="usaPlayer"
-            placeholder="USA player"
-            items={users?.map((item) => ({ code: item.id, name: item.name }))}
-            selectedItem={form.usaPlayerId.value}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={form[opponentFormProp].error}
-            css={{ width: dropdownWidth }}
-            onSelect={(value: string) => onInputValueChange("usaPlayerId", value)}
-          />
-        )} */}
+        <UserTypeahead
+          labelText="User"
+          selectedItem={form.ussrPlayerId.value}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          error={form.ussrPlayerId.error}
+          users={users}
+          placeholder="Type the opponent name..."
+          css={{ width: dropdownWidth }}
+          onBlur={() => {
+            onInputValueChange("ussrPlayerId", "");
+          }}
+          onSelect={(value) => {
+            onInputValueChange("ussrPlayerId", value?.value);
+          }}
+        />
         <DropdownWithLabel
           labelText="gameWinner"
           placeholder="Game winner"
@@ -170,12 +162,12 @@ console.log("form", form)
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
-        {/* {recreate && <DateComponent
+        <DateComponent
           labelText="gameDate"
           inputValue={form.gameDate.value}
-          // error={form.gameDate.error}
+          error={form.gameDate.error}
           onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
-        />} */}
+        />
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
@@ -184,51 +176,17 @@ console.log("form", form)
           css={{ width: "500px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
-        <Button
-            disabled={isSubmitting}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={onSubmit}
-          >
-            {isSubmitting ? <Spinner size="3" /> : "Submit"}
-          </Button>
         {errorMsg && <Text type="error">{errorMsg}</Text>}
-        {/* {recreate && (
-          <Button
-            // disabled={buttonDisabled}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={async (event) => {
-              if (validated(form, setForm)) {
-                try {
-                  setIsSubmitting(true);
-                  // @ts-ignore
-                  await getAxiosInstance().post(
-                    "/api/game/recreate",
-                    {
-                      data: normalizeData(form),
-                    },
-                    {
-                      cache: {
-                        update: {
-                          "game-list": "delete",
-                        },
-                      },
-                    },
-                  );
-                  router.push("/");
-                } catch (e) {
-                  setErrorMsg(e?.response?.data || "There was an error submitting the result");
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }
-            }}
-          >
-            Recreate Game
-          </Button>
-        )} */}
+        <Button
+          disabled={isSubmitting}
+          css={{ width: "200px", fontSize: "18px" }}
+          onClick={onSubmit}
+        >
+          Recreate Game
+        </Button>
       </Box>
     </Form>
   );
 };
 
-export default SubmitForm;
+export default RecreateRating;
