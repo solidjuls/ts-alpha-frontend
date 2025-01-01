@@ -113,7 +113,7 @@ console.log("form", form)
             onSelect={(value) => onInputValueChange("playedAs", value)}
           />
         <UserTypeahead
-          labelText="User"
+          labelText="opponentWas"
           selectedItem={form.opponentWas.value}
           selectedValueProperty="value"
           selectedInputProperty="text"

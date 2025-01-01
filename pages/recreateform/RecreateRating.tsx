@@ -102,13 +102,13 @@ console.log("form", form)
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
         <UserTypeahead
-          labelText="User"
+          labelText="usaPlayer"
           selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
           error={form.usaPlayerId.error}
           users={users}
-          placeholder="Type the opponent name..."
+          placeholder="Type USA player name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("usaPlayerId", "");
@@ -118,13 +118,13 @@ console.log("form", form)
           }}
         />
         <UserTypeahead
-          labelText="User"
+          labelText="ussrPlayer"
           selectedItem={form.ussrPlayerId.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
           error={form.ussrPlayerId.error}
           users={users}
-          placeholder="Type the opponent name..."
+          placeholder="Type USSR player name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("ussrPlayerId", "");
@@ -182,7 +182,7 @@ console.log("form", form)
           css={{ width: "200px", fontSize: "18px" }}
           onClick={onSubmit}
         >
-          Recreate Game
+          {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
         </Button>
       </Box>
     </Form>

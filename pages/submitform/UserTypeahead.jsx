@@ -12,6 +12,7 @@ const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, 
       return true;
     }
   })
+  const selectedItemParsed = userSuggestions?.find(user => user.value === selectedItem)
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -21,7 +22,7 @@ const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, 
         // selectedValueProperty="value"
         selectedInputProperty="text"
         onSelect={onSelect}
-        selectedValue={selectedItem}
+        selectedValue={selectedItemParsed}
         // onBlur={setValue}
         {...rest}
       >

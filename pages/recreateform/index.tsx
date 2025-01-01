@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import getAxiosInstance from "utils/axios";
 import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import { GameRecreate, GameWinner } from "types/game.types";
@@ -7,6 +7,7 @@ import { userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 import RecreateRating from "pages/recreateform/RecreateRating";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { useRouter } from "next/router";
 
 type SubmitFormProps = {
   role: number;
@@ -93,8 +94,9 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<RecreateFormState>(() => initializeState(searchParams));
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [errorMsg, setErrorMsg] = useState('')
   const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
     url: `/api/game/tournaments`,
@@ -104,7 +106,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
    const normalizeData: RecreateFormNormalizeType = (localForm: RecreateFormState) => {
       let payloadObject: GameRecreate = {
         oldId: localForm.oldId.value,
-        gameDate: localForm.gameDate.value.toDateString(),
+        gameDate: localForm.gameDate.value.toISOString(),
         gameType: localForm.gameType.value,
         usaPlayerId: localForm.usaPlayerId.value,
         ussrPlayerId: localForm.ussrPlayerId.value,
@@ -206,22 +208,21 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     if (validated()) {
       try {
         setIsSubmitting(true);
-        console.log("start recreating!")
         // @ts-ignore
-        // await getAxiosInstance().post(
-        //   "/api/game/recreate",
-        //   {
-        //     data: normalizeData(form),
-        //   },
-        //   {
-        //     cache: {
-        //       update: {
-        //         "game-list": "delete",
-        //       },
-        //     },
-        //   },
-        // );
-        // router.push("/");
+        await getAxiosInstance().post(
+          "/api/game/recreate",
+          {
+            data: normalizeData(form),
+          },
+          {
+            cache: {
+              update: {
+                "game-list": "delete",
+              },
+            },
+          },
+        );
+        router.push("/");
       } catch (e) {
         setErrorMsg(e?.response?.data || "There was an error submitting the result");
       } finally {
@@ -251,6 +252,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       onInputValueChange={onInputValueChange}
       buttonDisabled={buttonDisabled}
       setButtonDisabled={setButtonDisabled}
+      isSubmitting={isSubmitting}
       setForm={setForm}
       recreate={true}
     />

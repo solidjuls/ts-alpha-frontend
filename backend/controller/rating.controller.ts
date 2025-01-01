@@ -31,8 +31,8 @@ const getRatingDifference = (
   gameType: string,
 ) => {
   let basicCalculus = (defeated - winner) * 0.05;
-
-  if (gameType === "FG") basicCalculus = basicCalculus / 2;
+console.log("getRatingDifference", defeated, winner, addValue, gameType)
+  if (gameType === "Friendly Game") basicCalculus = basicCalculus / 2;
 
   const newValue = roundValue(basicCalculus) + addValue;
 
@@ -64,7 +64,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       ussrRating,
       usaRating,
-      gameType === "FG" ? 50 : 100,
+      gameType === "Friendly Game" ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating + ratingDifference;
@@ -73,7 +73,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       usaRating,
       ussrRating,
-      gameType === "FG" ? 50 : 100,
+      gameType === "Friendly Game" ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating - ratingDifference;
@@ -208,6 +208,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         // we delete all rating info related to those games
         const ids = allGamesAffected.map((game) => game.id);
         console.log("allGamesAffected", allGamesAffected);
+        console.log("new Date(input.gameDate)", new Date(input.gameDate))
         await prismaTransaction.ratings_history.deleteMany({
           where: {
             game_result_id: {
@@ -227,7 +228,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               createdAt: game.created_at,
               updatedAt: dateNow,
               gameId: game.id,
-              gameType: game.game_type,
+              gameType: input.gameType,
               prismaTransaction,
             });
             const newGame = {
@@ -241,7 +242,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               game_winner: input.gameWinner,
               end_turn: Number(input.endTurn),
               end_mode: input.endMode,
-              game_date: new Date(Date.parse(input.gameDate)),
+              game_date: new Date(input.gameDate),
               video1: input.video1 || null,
               reporter_id: BigInt(input.usaPlayerId),
             };
