@@ -117,7 +117,7 @@ const UserProfileForm = ({ data, countries, cities }) => {
 
     return payloadObject;
   };
-
+console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent
