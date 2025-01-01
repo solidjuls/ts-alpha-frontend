@@ -14,7 +14,7 @@ const UserProfileContainer = ({ id }) => {
   if (isLoading) return <Spinner size="3" />;
 
   return (
-    <UserCreateForm countries={data?.map((item) => ({ code: item.id, name: item.country_name }))} />
+    <UserCreateForm countries={data?.map((item) => ({ value: item.id, text: item.country_name }))} />
   );
 };
 

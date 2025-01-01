@@ -17,10 +17,10 @@ export type UserProfileState = {
 
 export type UserCreateState = {
   name: SubmitFormValue<string>;
-  preferredGamingPlatform: SubmitFormValue<DropdownType[]>;
-  preferredGameDuration: SubmitFormValue<DropdownType[]>;
+  preferredGamingPlatform: SubmitFormValue<DropdownType>;
+  preferredGameDuration: SubmitFormValue<DropdownType>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType[]>;
+  country: SubmitFormValue<DropdownType>;
   first_name: SubmitFormValue<string>;
   last_name: SubmitFormValue<string>;
   email: SubmitFormValue<string>;

@@ -8,6 +8,7 @@ import getAxiosInstance from "utils/axios";
 import Text from "components/Text";
 import CitiesTypeahead from "./CitiesTypeahead";
 import { platforms, gameDurations } from "utils/constants";
+import { DropdownItemType } from "types/types";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -31,11 +32,11 @@ const getInitialState = () => {
       error: false,
     },
     preferredGamingPlatform: {
-      value: [],
+      value: "",
       error: false,
     },
     preferredGameDuration: {
-      value: [],
+      value: "",
       error: false,
     },
     city: {
@@ -47,7 +48,7 @@ const getInitialState = () => {
       error: false,
     },
     country: {
-      value: [],
+      value: "",
       error: false,
     },
     first_name: {
@@ -65,7 +66,11 @@ const getInitialState = () => {
   };
 };
 
-const UserCreateForm = ({ countries }) => {
+type UserCreateFormProps = {
+  countries: DropdownItemType[]
+}
+
+const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries }) => {
   const [form, setForm] = useState<UserCreateState>(() => getInitialState());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");

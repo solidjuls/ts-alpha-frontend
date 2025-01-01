@@ -8,6 +8,8 @@ import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
 import CitiesTypeahead from "pages/usercreate/CitiesTypeahead";
+import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+
 const inputWidth = "300px";
 const dropdownWidth = "300px";
 
@@ -31,14 +33,14 @@ const getInitialState = (data) => {
     },
     preferredGamingPlatform: {
       value: data.preferred_gaming_platform
-        ? [{ code: data.preferred_gaming_platform, name: data.preferred_gaming_platform }]
-        : [],
+        ? data.preferred_gaming_platform
+        : "",
       error: false,
     },
     preferredGameDuration: {
       value: data.preferred_game_duration
-        ? [{ code: data.preferred_game_duration, name: data.preferred_game_duration }]
-        : [],
+        ? data.preferred_game_duration
+        : "",
       error: false,
     },
     city: {
@@ -50,13 +52,13 @@ const getInitialState = (data) => {
       error: false,
     },
     country: {
-      value: [{ code: data.countries?.id, name: data.countries?.country_name }],
+      value: data.countries?.id,
       error: false,
     },
   };
 };
 
-const UserProfileForm = ({ data, countries }) => {
+const UserProfileForm = ({ data, countries, cities }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -113,13 +115,13 @@ const UserProfileForm = ({ data, countries }) => {
     payloadObject["name"] = form.name.value;
     payloadObject["phone"] = form.phone.value;
     payloadObject["email"] = data.email;
-    payloadObject["preferredGameDuration"] = form.preferredGameDuration.value[0].code;
-    payloadObject["preferredGamingPlatform"] = form.preferredGamingPlatform.value[0].code;
-    payloadObject["country"] = form.country.value[0].code;
+    payloadObject["preferredGameDuration"] = form.preferredGameDuration.value;
+    payloadObject["preferredGamingPlatform"] = form.preferredGamingPlatform.value;
+    payloadObject["country"] = form.country.value;
 
     return payloadObject;
   };
-
+console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent
@@ -154,17 +156,21 @@ const UserProfileForm = ({ data, countries }) => {
         selectedItem={form.preferredGameDuration.value}
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
       />
-      <DropdownWithLabel
+      <CountriesTypeahead
         labelText="country"
+        placeholder="Type the country name..."
+        css={{ width: "300px" }}
+        onBlur={() => {
+          onInputValueChange("country", "");
+        }}
+        onSelect={(value) => onInputValueChange("country", value?.value)}
         items={countries}
         error={form?.country.error}
-        css={{ width: dropdownWidth }}
         selectedItem={form.country.value}
-        placeholder="Type the country name..."
-        onSelect={(value: string) => onInputValueChange("country", value)}
       />
       <CitiesTypeahead
         labelText="city"
+        items={cities}
         selectedItem={form.city.value}
         selectedValueProperty="value"
         selectedInputProperty="text"

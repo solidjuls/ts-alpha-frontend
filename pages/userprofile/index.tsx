@@ -12,13 +12,17 @@ const UserProfileContainer = ({ id }) => {
   const { data: countries, isLoading: countriesLoading } = useFetchInitialData({
     url: `/api/countries`,
   });
+  const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
+    url: `/api/cities` 
+  });
 
-  if (isLoading || countriesLoading) return <Spinner size="3" />;
+  if (isLoading || countriesLoading || citiesLoading) return <Spinner size="3" />;
 
   return (
     <UserProfileForm
       data={data}
-      countries={countries?.map((item) => ({ code: item.id, name: item.country_name }))}
+      countries={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
+      cities={cities?.map((city) => ({ value: city.id, text: city.name }))}
     />
   );
 };

@@ -12,7 +12,7 @@ const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, 
       return true;
     }
   })
-  const selectedItemParsed = userSuggestions?.find(user => user.value === selectedItem)
+  const selectedItemParsed = userSuggestions?.find(user => user.value === selectedItem)|| {}
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -27,7 +27,7 @@ const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, 
         {...rest}
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
-        {userSuggestions.length > 0 && (
+        {userSuggestions?.length > 0 && (
           <Typeahead.List css={{ ...css }}>
             {userSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
