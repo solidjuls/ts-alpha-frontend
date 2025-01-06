@@ -10,11 +10,14 @@ import { ServerType } from "types/types";
 
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
+  const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
+    url: `/api/cities` 
+  });
 
-  if (isLoading) return <Spinner size="3" />;
+  if (isLoading || citiesLoading) return <Spinner size="3" />;
 
   return (
-    <UserCreateForm countries={data?.map((item) => ({ value: item.id, text: item.country_name }))} />
+    <UserCreateForm cities={cities?.map((city) => ({ value: city.id, text: city.name }))}countries={data?.map((item) => ({ value: item.id, text: item.country_name }))} />
   );
 };
 

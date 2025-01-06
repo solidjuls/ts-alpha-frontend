@@ -9,6 +9,7 @@ import Text from "components/Text";
 import CitiesTypeahead from "./CitiesTypeahead";
 import { platforms, gameDurations } from "utils/constants";
 import { DropdownItemType } from "types/types";
+import CountriesTypeahead from "./CountriesTypeahead";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -70,7 +71,7 @@ type UserCreateFormProps = {
   countries: DropdownItemType[]
 }
 
-const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries }) => {
+const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) => {
   const [form, setForm] = useState<UserCreateState>(() => getInitialState());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -192,17 +193,21 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries }) => {
         placeholder="Preferred game duration"
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
       />
-      <DropdownWithLabel
+      <CountriesTypeahead
         labelText="country"
+        placeholder="Type the country name..."
+        css={{ width: "300px" }}
+        onBlur={() => {
+          onInputValueChange("country", "");
+        }}
+        onSelect={(value) => onInputValueChange("country", value?.value)}
         items={countries}
         error={form?.country.error}
-        css={{ width: dropdownWidth }}
         selectedItem={form.country.value}
-        placeholder="Type the country name..."
-        onSelect={(value: string) => onInputValueChange("country", value)}
       />
       <CitiesTypeahead
         labelText="city"
+        items={cities}
         selectedItem={form.city.value}
         selectedValueProperty="value"
         selectedInputProperty="text"
@@ -213,7 +218,6 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries }) => {
           onInputValueChange("city", "");
         }}
         onSelect={(value) => {
-          console.log("sdf", value);
           onInputValueChange("city", value?.value);
         }}
       />
