@@ -302,6 +302,10 @@ const mailBody = ({ firstName, hashedUrl }) => {
                                         </button>
 
                                         <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left" align="left">
+                                        If the button does not work, copy this link in your browser:
+                                        </p>
+                                        ${hashedUrl}
+                                        <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left" align="left">
                                             If you did not request a <span class="il">password</span> reset, you can safely ignore this.<br>
                                         </p>
                                         <p style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';font-size:14px;font-weight:normal;line-height:1.5;color:#222222;text-align:left" align="left">
