@@ -142,7 +142,13 @@ const SubmitForm = ({
           selectedInputProperty="text"
           error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
-          onSelect={(value: string) => onInputValueChange("gameWinner", value)}
+          onSelect={(value: string) => {
+            onInputValueChange("gameWinner", value)
+            if (value === "3") {
+              onInputValueChange("endTurn", "11")
+              onInputValueChange("endMode", "Final Scoring")
+            }
+          }}
         />
         <DropdownWithLabel
           labelText="endTurn"
