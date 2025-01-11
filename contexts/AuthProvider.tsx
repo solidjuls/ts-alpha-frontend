@@ -46,7 +46,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, 
         setAuthentication(data);
       }
     } catch (e) {
-      console.log("login error", e);
       setErrorMsg(e?.response?.data?.message);
     }
   };

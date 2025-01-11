@@ -131,13 +131,13 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
     payloadObject["email"] = localForm.email.value;
     payloadObject["phone"] = localForm.phone.value;
 
-    payloadObject["preferredGameDuration"] = localForm.preferredGameDuration.value[0].code;
-    payloadObject["preferredGamingPlatform"] = localForm.preferredGamingPlatform.value[0].code;
-    payloadObject["country"] = localForm.country.value[0].code;
+    payloadObject["preferredGameDuration"] = localForm.preferredGameDuration.value;
+    payloadObject["preferredGamingPlatform"] = localForm.preferredGamingPlatform.value;
+    payloadObject["country"] = localForm.country.value;
 
     return payloadObject;
   };
-  console.log("form", form);
+
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent

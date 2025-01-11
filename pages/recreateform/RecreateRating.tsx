@@ -63,7 +63,6 @@ const RecreateRating = ({
   isSubmitting,
   setForm
 }: SubmitFormProps) => {
-console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <Box

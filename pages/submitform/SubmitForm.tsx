@@ -64,16 +64,8 @@ const SubmitForm = ({
   isSubmitting,
   setForm
 }: SubmitFormProps) => {
-  // const opponentFormProp = !recreate ? "opponentWas" : "ussrPlayerId";
-  // console.log("leagueTypes", leagueTypes)
-  // console.log("gameSides", gameSides)
-  // console.log("users", users)
-  // console.log("gameWinningOptions", gameWinningOptions)
-  // console.log("endType", endType)
-console.log("form", form)
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      {/* {recreate && <RecreateRating oldId={form.oldId} onInputValueChange={onInputValueChange} />} */}
       <Box
         css={{
           display: "flex",
