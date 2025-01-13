@@ -83,18 +83,6 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   });
 
   const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
-    
-    // if (!recreate) {
-    //   if (localForm.playedAs.value[0].code === "1") {
-    //     payloadObject["usaPlayerId"] = id;
-    //     payloadObject["ussrPlayerId"] = localForm.opponentWas.value[0].code;
-    //   } else if (localForm.playedAs.value[0].code === "2") {
-    //     payloadObject["ussrPlayerId"] = id;
-    //     payloadObject["usaPlayerId"] = localForm.opponentWas.value[0].code;
-    //   }
-    // } else {
-    //   payloadObject["oldId"] = localForm.oldId.value;
-    // }
     let usaPlayerId = ''
     let ussrPlayerId = ''
     if (localForm.playedAs.value === "1") {
@@ -119,6 +107,16 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     return payloadObject;
   };
 
+  function isValidURL(url) {
+    const pattern = new RegExp('^(https?:\\/\\/)' + // protocol (http or https)
+      '((([a-zA-Z0-9\\-\\_]+\\.)+[a-zA-Z]{2,})|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-zA-Z0-9%_.~+]*)*' + // port and path
+      '(\\?[;&a-zA-Z0-9%_.~+=-]*)?' + // query string
+      '(\\#[-a-zA-Z0-9_]*)?$','i'); // fragment locator
+    return pattern.test(url);
+  }
+  
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
@@ -135,6 +133,16 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     })
 
     if (!submit) return submit;
+
+    if (!isValidURL(form.video1.value)) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["video1"]: {
+          ...prevState["video1"],
+          error: true,
+        }}))
+      return false
+    }
 
     if (
       form.endMode.value === "Final Scoring" &&

@@ -118,21 +118,6 @@ const SubmitForm = ({
           }}
           onSelect={(value) => onInputValueChange("opponentWas", value?.value)}
         />
-        {/* {!recreate ? (
-          
-        ) : (
-          <DropdownWithLabel
-            labelText="usaPlayer"
-            placeholder="USA player"
-            items={users?.map((item) => ({ code: item.id, name: item.name }))}
-            selectedItem={form.usaPlayerId.value}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={form[opponentFormProp].error}
-            css={{ width: dropdownWidth }}
-            onSelect={(value: string) => onInputValueChange("usaPlayerId", value)}
-          />
-        )} */}
         <DropdownWithLabel
           labelText="gameWinner"
           placeholder="Game winner"
@@ -168,12 +153,6 @@ const SubmitForm = ({
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
-        {/* {recreate && <DateComponent
-          labelText="gameDate"
-          inputValue={form.gameDate.value}
-          // error={form.gameDate.error}
-          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
-        />} */}
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
@@ -190,40 +169,6 @@ const SubmitForm = ({
             {isSubmitting ? <Spinner size="3" /> : "Submit"}
           </Button>
         {errorMsg && <Text type="error">{errorMsg}</Text>}
-        {/* {recreate && (
-          <Button
-            // disabled={buttonDisabled}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={async (event) => {
-              if (validated(form, setForm)) {
-                try {
-                  setIsSubmitting(true);
-                  // @ts-ignore
-                  await getAxiosInstance().post(
-                    "/api/game/recreate",
-                    {
-                      data: normalizeData(form),
-                    },
-                    {
-                      cache: {
-                        update: {
-                          "game-list": "delete",
-                        },
-                      },
-                    },
-                  );
-                  router.push("/");
-                } catch (e) {
-                  setErrorMsg(e?.response?.data || "There was an error submitting the result");
-                } finally {
-                  setIsSubmitting(false);
-                }
-              }
-            }}
-          >
-            Recreate Game
-          </Button>
-        )} */}
       </Box>
     </Form>
   );
