@@ -134,13 +134,24 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
 
     if (!submit) return submit;
 
-    if (!isValidURL(form.video1.value)) {
+    if (form.video1.value && !isValidURL(form.video1.value)) {
       setForm((prevState: any) => ({
         ...prevState,
         ["video1"]: {
           ...prevState["video1"],
           error: true,
         }}))
+      return false
+    }
+
+    if (form.opponentWas.value === id) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["opponentWas"]: {
+          ...prevState["opponentWas"],
+          error: true,
+        },
+      }));
       return false
     }
 
