@@ -42,8 +42,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
-export const getCountryIdByCode = async (code: string) => {
-  const id = await prisma.countries.findFirst({
+export const getCountryIdByCode = async (code: string) => await prisma.countries.findFirst({
     where: {
       tld_code: code,
     },
@@ -51,8 +50,6 @@ export const getCountryIdByCode = async (code: string) => {
       id: true,
     },
   });
-  return id;
-};
 
 export const getCityIdByDescription = async (description: string) => {
   const cityId = await prisma.cities.findFirst({

@@ -57,7 +57,7 @@ const CountriesTypeahead = ({
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
         {countriesSuggestions?.length > 0 && (
-          <Typeahead.List css={{ ...css, width: "500px" }}>
+          <Typeahead.List css={{ width: "320px" }}>
             {countriesSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>

@@ -14,8 +14,9 @@ import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
-import { fetchPlayersList, setCurrentPage, setPlayersFilter } from "../../redux/playersListSlice";
+import { fetchPlayersList, setCurrentPage, setPlayersFilter, setCountriesFilter } from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
+import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -106,12 +107,12 @@ const Players = () => {
   // const [paginatedData, setPaginatedData] = useState(null);
   // const [isLoadingPagination, setIsLoadingPagination] = useState(false);
   const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  // const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  const { data: countries, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList,
   );
-  const { playersSelected } = filters;
+  const { playersSelected, countriesSelected } = filters;
   const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
   useEffect(() => {
@@ -120,10 +121,6 @@ const Players = () => {
 
   const onPageChange = async (page) => {
     dispatch(setCurrentPage(page));
-  };
-
-  const handleFilterChange = async (selectedPlayers) => {
-    items;
   };
 
   return (
@@ -135,6 +132,13 @@ const Players = () => {
           items={usersMemo}
           selectedValues={playersSelected}
           placeholder="Select Players..."
+        />
+        <CountriesTypeahead
+          placeholder="Type the federation name..."
+          css={{ width: "300px", height: '40px' }}
+          onSelect={(value) => dispatch(setCountriesFilter(value.value))}
+          items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
+          selectedItem={countriesSelected?.value}
         />
       </FilterPanel>
       <ResultsStyleWrapper>

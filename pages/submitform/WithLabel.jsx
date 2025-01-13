@@ -9,6 +9,7 @@ const cssFlexTextComponent = {
 const cssLabel = { marginBottom: 8, marginRight: 15, width: "160px" };
 
 const WithLabel = ({ labelText, children }) => {
+  if (!labelText) return children
   return (
     <Box css={cssFlexTextComponent}>
       <Label htmlFor="dropdown" css={cssLabel}>

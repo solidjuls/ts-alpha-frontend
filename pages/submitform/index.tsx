@@ -81,12 +81,6 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     cacheId: "tournament-list",
   });
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments`,
-    cacheId: "tournament-list",
-  });
-
   const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
     let usaPlayerId = "";
     let ussrPlayerId = "";
