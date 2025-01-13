@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { useRouter } from "next/router";
-import { GameAPI } from "types/game.types";
+import React from "react";
+import { GameWinner, SubmitFormValue } from "types/game.types";
 import Text from "components/Text";
 import TextComponent from "../submitform/TextComponent";
 import DateComponent from "../submitform/DateComponent";
@@ -9,13 +8,11 @@ import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "../submitform/UserTypeahead";
-import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
-import { useSession } from "contexts/AuthProvider";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { SubmitFormNormalizeType } from "../submitform";
+import { SubmitFormState } from "../submitform";
+import { DropdownItemType } from "types/types";
 
 const dropdownWidth = "370px";
 
@@ -31,38 +28,38 @@ const formStyles = {
   },
 };
 
-type SubmitFormProps = {
-  validated: (
-    form: SubmitFormState,
-    setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>,
-  ) => boolean;
-  role: number;
-  checked: boolean;
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
-  form: SubmitFormState;
-  normalizeData: SubmitFormNormalizeType
-  onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
-  buttonDisabled: boolean;
-  setButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-  setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>;
+type RecreateFormState = {
+  oldId: SubmitFormValue<string>
+  gameDate: SubmitFormValue<Date>
+  ussrPlayerId: SubmitFormValue<string>
+  usaPlayerId: SubmitFormValue<string>
+    gameWinner: SubmitFormValue<GameWinner>;
+    gameCode: SubmitFormValue<string>;
+    gameType: SubmitFormValue<string>;
+    endTurn: SubmitFormValue<string>;
+    endMode: SubmitFormValue<string>;
+    video1: SubmitFormValue<string>;
+}
+
+type RecreateFormProps = {
+  errorMsg: string
+  isSubmitting: boolean;
+  onSubmit: () => void
+  form: RecreateFormState;
+  onInputValueChange: (key: keyof RecreateFormState, value: string | Date) => void;
+  leagueTypes:  DropdownItemType[]
+  users:  DropdownItemType[]
 };
 
 const RecreateRating = ({
   onSubmit,
-  role,
-  recreate,
-  setChecked,
   form,
   users,
   leagueTypes,
   onInputValueChange,
   errorMsg,
-  buttonDisabled,
-  setButtonDisabled,
-  normalizeData,
   isSubmitting,
-  setForm
-}: SubmitFormProps) => {
+}: RecreateFormProps) => {
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <Box
@@ -112,7 +109,7 @@ const RecreateRating = ({
           onBlur={() => {
             onInputValueChange("usaPlayerId", "");
           }}
-          onSelect={(value) => {
+          onSelect={(value: DropdownItemType) => {
             onInputValueChange("usaPlayerId", value?.value);
           }}
         />
@@ -128,7 +125,7 @@ const RecreateRating = ({
           onBlur={() => {
             onInputValueChange("ussrPlayerId", "");
           }}
-          onSelect={(value) => {
+          onSelect={(value: DropdownItemType) => {
             onInputValueChange("ussrPlayerId", value?.value);
           }}
         />
@@ -164,7 +161,6 @@ const RecreateRating = ({
         <DateComponent
           labelText="gameDate"
           inputValue={form.gameDate.value}
-          error={form.gameDate.error}
           onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
         />
         <TextComponent

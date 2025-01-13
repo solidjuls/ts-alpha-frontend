@@ -72,7 +72,6 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const { id } = useSession();
   const router = useRouter();
   const [form, setForm] = useState<SubmitFormState>(initialState);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -107,7 +106,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     return payloadObject;
   };
 
-  function isValidURL(url) {
+  function isValidURL(url: string) {
     const pattern = new RegExp('^(https?:\\/\\/)' + // protocol (http or https)
       '((([a-zA-Z0-9\\-\\_]+\\.)+[a-zA-Z]{2,})|' + // domain name
       '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
@@ -282,15 +281,12 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   return (
     <SubmitForm
       onSubmit={onSubmit}
-      normalizeData={normalizeData}
       users={usersParsed}
       leagueTypes={leagueTypes}
       form={form}
       isSubmitting={isSubmitting}
       onInputValueChange={onInputValueChange}
-      buttonDisabled={buttonDisabled}
-      setButtonDisabled={setButtonDisabled}
-      setForm={setForm}
+      errorMsg={errorMsg}
     />
   );
 };

@@ -1,22 +1,16 @@
-import React, { useState } from "react";
-import { useRouter } from "next/router";
-import { GameAPI } from "types/game.types";
+import React from "react";
 import Text from "components/Text";
 import TextComponent from "./TextComponent";
-import DateComponent from "./DateComponent";
-import RecreateRating from "../recreateform/RecreateRating";
 
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
 import UserTypeahead from "./UserTypeahead";
-import type { SubmitFormState } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
-import { useSession } from "contexts/AuthProvider";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { SubmitFormNormalizeType } from ".";
+import { DropdownItemType } from "types/types";
+import { SubmitFormState } from ".";
 
 const dropdownWidth = "370px";
 
@@ -33,36 +27,23 @@ const formStyles = {
 };
 
 type SubmitFormProps = {
-  validated: (
-    form: SubmitFormState,
-    setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>,
-  ) => boolean;
-  role: number;
-  checked: boolean;
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMsg: string
+  isSubmitting: boolean;
+  onSubmit: () => void
   form: SubmitFormState;
-  normalizeData: SubmitFormNormalizeType
   onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
-  buttonDisabled: boolean;
-  setButtonDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-  setForm: React.Dispatch<React.SetStateAction<SubmitFormState>>;
+  leagueTypes:  DropdownItemType[]
+  users:  DropdownItemType[]
 };
 
 const SubmitForm = ({
   onSubmit,
-  role,
-  recreate,
-  setChecked,
   form,
   users,
   leagueTypes,
   onInputValueChange,
   errorMsg,
-  buttonDisabled,
-  setButtonDisabled,
-  normalizeData,
   isSubmitting,
-  setForm
 }: SubmitFormProps) => {
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
@@ -116,7 +97,7 @@ const SubmitForm = ({
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
-          onSelect={(value) => onInputValueChange("opponentWas", value?.value)}
+          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value)}
         />
         <DropdownWithLabel
           labelText="gameWinner"

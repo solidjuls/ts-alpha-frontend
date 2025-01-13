@@ -90,8 +90,9 @@ const DropdownMenu = ({
   items: DropdownItemType[];
   selectedItem: string;
   onSelect: (value: string) => void;
-  error: boolean;
-  css: Stitches.CSS;
+  placeholder: string
+  error?: boolean;
+  css?: Stitches.CSS;
 }) => {
   let selectedItemMapped = items.find(
     (item) => item.value?.toLowerCase() === selectedItem?.toLowerCase(),

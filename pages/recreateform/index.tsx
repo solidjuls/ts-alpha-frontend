@@ -243,7 +243,6 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
 
   return (
     <RecreateRating
-      validated={validated}
       role={role}
       form={form}
       onSubmit={onSubmit}

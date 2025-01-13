@@ -14,7 +14,6 @@ const DateComponent = ({
   labelText,
   inputValue,
   onInputValueChange = () => {},
-  ...rest
 }: DateComponentProps) => (
   <WithLabel labelText={labelText}>
     <DayPickerInput

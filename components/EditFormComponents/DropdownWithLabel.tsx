@@ -7,6 +7,7 @@ type DropdownWithLabelProps = {
   labelText: string;
   selectedItem: string;
   onSelect: (value: string) => void;
+  placeholder: string;
   items: DropdownItemType[];
   selectedValueProperty?: string;
   selectedInputProperty?: string;
@@ -31,7 +32,6 @@ const DropdownWithLabel = ({
       selectedItem={selectedItem}
       onSelect={onSelect}
       // filter={false}
-      selectionLimit={1}
     />
     {error && <div style={{ color: "red" }}>{`${placeholder} is invalid`}</div>}
   </WithLabel>

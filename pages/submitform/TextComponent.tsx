@@ -5,6 +5,7 @@ import { Input } from "components/Input";
 type TextComponentProps = {
   labelText: string;
   inputValue: string;
+  placeholder: string;
   onInputValueChange: (value: string) => void;
   error: boolean;
   css?: any;

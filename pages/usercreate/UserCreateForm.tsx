@@ -195,7 +195,7 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
       />
       <CountriesTypeahead
         labelText="country"
-        placeholder="Type the country name..."
+        placeholder="Type the federation name..."
         css={{ width: "300px" }}
         onBlur={() => {
           onInputValueChange("country", "");
