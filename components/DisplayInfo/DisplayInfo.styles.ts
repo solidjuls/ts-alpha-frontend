@@ -12,5 +12,4 @@ export const StyledLabelInfo = styled(LabelPrimitive.Root, {
   fontSize: 14,
   fontWeight: 500,
   color: "$textDark",
-  userSelect: "none",
 });

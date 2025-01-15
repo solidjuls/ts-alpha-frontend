@@ -1,16 +1,18 @@
 import React from "react";
+import { GameWinner, SubmitFormValue } from "types/game.types";
 import Text from "components/Text";
-import TextComponent from "./TextComponent";
+import TextComponent from "../submitform/TextComponent";
+import DateComponent from "../submitform/DateComponent";
 
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
-import UserTypeahead from "./UserTypeahead";
+import UserTypeahead from "../submitform/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
+import { SubmitFormState } from "../submitform";
 import { DropdownItemType } from "types/types";
-import { SubmitFormState } from ".";
 
 const dropdownWidth = "370px";
 
@@ -26,17 +28,30 @@ const formStyles = {
   },
 };
 
-type SubmitFormProps = {
+type RecreateFormState = {
+  oldId: SubmitFormValue<string>
+  gameDate: SubmitFormValue<Date>
+  ussrPlayerId: SubmitFormValue<string>
+  usaPlayerId: SubmitFormValue<string>
+    gameWinner: SubmitFormValue<GameWinner>;
+    gameCode: SubmitFormValue<string>;
+    gameType: SubmitFormValue<string>;
+    endTurn: SubmitFormValue<string>;
+    endMode: SubmitFormValue<string>;
+    video1: SubmitFormValue<string>;
+}
+
+type RecreateFormProps = {
   errorMsg: string
   isSubmitting: boolean;
   onSubmit: () => void
-  form: SubmitFormState;
-  onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
+  form: RecreateFormState;
+  onInputValueChange: (key: keyof RecreateFormState, value: string | Date) => void;
   leagueTypes:  DropdownItemType[]
   users:  DropdownItemType[]
 };
 
-const SubmitForm = ({
+const RecreateRating = ({
   onSubmit,
   form,
   users,
@@ -44,7 +59,7 @@ const SubmitForm = ({
   onInputValueChange,
   errorMsg,
   isSubmitting,
-}: SubmitFormProps) => {
+}: RecreateFormProps) => {
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <Box
@@ -56,9 +71,17 @@ const SubmitForm = ({
         }}
       >
         <TextComponent
+          labelText="oldId"
+          placeholder="Old game id"
+          inputValue={form.oldId.value}
+          onInputValueChange={(value) => onInputValueChange("oldId", value)}
+          css={{ width: "80px" }}
+          error={form.oldId.error}
+        />
+        <TextComponent
           labelText="checkID"
           inputValue={form.gameCode.value}
-          placeholder="Game id"
+          placeholder="Game code"
           onInputValueChange={(value) => onInputValueChange("gameCode", value)}
           css={{ width: "80px" }}
           error={form.gameCode.error}
@@ -74,30 +97,37 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
-        <DropdownWithLabel
-            labelText="PlayedAs"
-            placeholder="I played as..."
-            items={gameSides}
-            selectedItem={form.playedAs.value}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={form.playedAs.error}
-            css={{ width: dropdownWidth }}
-            onSelect={(value) => onInputValueChange("playedAs", value)}
-          />
         <UserTypeahead
-          labelText="opponentWas"
-          selectedItem={form.opponentWas.value}
+          labelText="usaPlayer"
+          selectedItem={form.usaPlayerId.value}
           selectedValueProperty="value"
           selectedInputProperty="text"
-          error={form.opponentWas.error}
+          error={form.usaPlayerId.error}
           users={users}
-          placeholder="Type the opponent name..."
+          placeholder="Type USA player name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
-            onInputValueChange("opponentWas", "");
+            onInputValueChange("usaPlayerId", "");
           }}
-          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value)}
+          onSelect={(value: DropdownItemType) => {
+            onInputValueChange("usaPlayerId", value?.value);
+          }}
+        />
+        <UserTypeahead
+          labelText="ussrPlayer"
+          selectedItem={form.ussrPlayerId.value}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          error={form.ussrPlayerId.error}
+          users={users}
+          placeholder="Type USSR player name..."
+          css={{ width: dropdownWidth }}
+          onBlur={() => {
+            onInputValueChange("ussrPlayerId", "");
+          }}
+          onSelect={(value: DropdownItemType) => {
+            onInputValueChange("ussrPlayerId", value?.value);
+          }}
         />
         <DropdownWithLabel
           labelText="gameWinner"
@@ -108,13 +138,7 @@ const SubmitForm = ({
           selectedInputProperty="text"
           error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
-          onSelect={(value: string) => {
-            onInputValueChange("gameWinner", value)
-            if (value === "3") {
-              onInputValueChange("endTurn", "11")
-              onInputValueChange("endMode", "Final Scoring")
-            }
-          }}
+          onSelect={(value: string) => onInputValueChange("gameWinner", value)}
         />
         <DropdownWithLabel
           labelText="endTurn"
@@ -134,6 +158,11 @@ const SubmitForm = ({
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
+        <DateComponent
+          labelText="gameDate"
+          inputValue={form.gameDate.value}
+          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
+        />
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
@@ -142,17 +171,17 @@ const SubmitForm = ({
           css={{ width: "500px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
-        <Button
-            disabled={isSubmitting}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={onSubmit}
-          >
-            {isSubmitting ? <Spinner size="3" /> : "Submit"}
-          </Button>
         {errorMsg && <Text type="error">{errorMsg}</Text>}
+        <Button
+          disabled={isSubmitting}
+          css={{ width: "200px", fontSize: "18px" }}
+          onClick={onSubmit}
+        >
+          {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
+        </Button>
       </Box>
     </Form>
   );
 };
 
-export default SubmitForm;
+export default RecreateRating;

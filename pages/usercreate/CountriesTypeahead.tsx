@@ -18,7 +18,7 @@ const useTypeaheadState = () => {
   return { citySuggestions, onChange };
 };
 
-const CitiesTypeahead = ({
+const CountriesTypeahead = ({
   labelText,
   selectedItem,
   items,
@@ -29,20 +29,18 @@ const CitiesTypeahead = ({
   error,
   ...rest
 }) => {
-  // const { citySuggestions, onChange } = useTypeaheadState();
-
   const [input, setInput] = useState("");
-  const onChange = (input) => {
-    setInput(input)
+  const onChange = (localInput) => {
+    setInput(localInput)
   }
-  const citySuggestions = items?.filter((city) => {
-    if (city.text.toLowerCase().includes(input.toLowerCase())) {
+  const countriesSuggestions = items?.filter((country) => {
+    if (country.text.toLowerCase().includes(input.toLowerCase())) {
       return true;
     }
   })
 
-  const selectedItemParsed = citySuggestions?.find(city => city.value === selectedItem)|| {}
-
+  const selectedItemParsed = countriesSuggestions?.find(country => country.value === selectedItem) || {}
+console.log(countriesSuggestions, input)
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
@@ -57,9 +55,9 @@ const CitiesTypeahead = ({
         {...rest}
       >
         <Typeahead.Input css={css} error={error} placeholder={placeholder} />
-        {citySuggestions?.length > 0 && (
+        {countriesSuggestions?.length > 0 && (
           <Typeahead.List css={{ ...css, width: "500px" }}>
-            {citySuggestions.map(({ value, text }, index) => (
+            {countriesSuggestions.map(({ value, text }, index) => (
               <Typeahead.Item key={value} value={{ value, text }} index={index} id={value}>
                 <div>{text}</div>
               </Typeahead.Item>
@@ -71,4 +69,4 @@ const CitiesTypeahead = ({
   );
 };
 
-export default CitiesTypeahead;
+export default CountriesTypeahead;

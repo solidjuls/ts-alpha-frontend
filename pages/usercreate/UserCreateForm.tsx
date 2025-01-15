@@ -8,6 +8,8 @@ import getAxiosInstance from "utils/axios";
 import Text from "components/Text";
 import CitiesTypeahead from "./CitiesTypeahead";
 import { platforms, gameDurations } from "utils/constants";
+import { DropdownItemType } from "types/types";
+import CountriesTypeahead from "./CountriesTypeahead";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";
@@ -31,11 +33,11 @@ const getInitialState = () => {
       error: false,
     },
     preferredGamingPlatform: {
-      value: [],
+      value: "",
       error: false,
     },
     preferredGameDuration: {
-      value: [],
+      value: "",
       error: false,
     },
     city: {
@@ -47,7 +49,7 @@ const getInitialState = () => {
       error: false,
     },
     country: {
-      value: [],
+      value: "",
       error: false,
     },
     first_name: {
@@ -65,7 +67,11 @@ const getInitialState = () => {
   };
 };
 
-const UserCreateForm = ({ countries }) => {
+type UserCreateFormProps = {
+  countries: DropdownItemType[]
+}
+
+const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) => {
   const [form, setForm] = useState<UserCreateState>(() => getInitialState());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -125,13 +131,13 @@ const UserCreateForm = ({ countries }) => {
     payloadObject["email"] = localForm.email.value;
     payloadObject["phone"] = localForm.phone.value;
 
-    payloadObject["preferredGameDuration"] = localForm.preferredGameDuration.value[0].code;
-    payloadObject["preferredGamingPlatform"] = localForm.preferredGamingPlatform.value[0].code;
-    payloadObject["country"] = localForm.country.value[0].code;
+    payloadObject["preferredGameDuration"] = localForm.preferredGameDuration.value;
+    payloadObject["preferredGamingPlatform"] = localForm.preferredGamingPlatform.value;
+    payloadObject["country"] = localForm.country.value;
 
     return payloadObject;
   };
-  console.log("form", form);
+
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent
@@ -187,17 +193,21 @@ const UserCreateForm = ({ countries }) => {
         placeholder="Preferred game duration"
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
       />
-      <DropdownWithLabel
+      <CountriesTypeahead
         labelText="country"
+        placeholder="Type the federation name..."
+        css={{ width: "300px" }}
+        onBlur={() => {
+          onInputValueChange("country", "");
+        }}
+        onSelect={(value) => onInputValueChange("country", value?.value)}
         items={countries}
         error={form?.country.error}
-        css={{ width: dropdownWidth }}
         selectedItem={form.country.value}
-        placeholder="Type the country name..."
-        onSelect={(value: string) => onInputValueChange("country", value)}
       />
       <CitiesTypeahead
         labelText="city"
+        items={cities}
         selectedItem={form.city.value}
         selectedValueProperty="value"
         selectedInputProperty="text"
@@ -208,7 +218,6 @@ const UserCreateForm = ({ countries }) => {
           onInputValueChange("city", "");
         }}
         onSelect={(value) => {
-          console.log("sdf", value);
           onInputValueChange("city", value?.value);
         }}
       />

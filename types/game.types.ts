@@ -1,6 +1,11 @@
 import { DropdownType } from "utils/constants";
 import { z } from "zod";
 
+export type SubmitFormValue<T> = {
+  value: T;
+  error: boolean;
+};
+
 export type UserProfileState = {
   name: SubmitFormValue<string>;
   preferredGamingPlatform: SubmitFormValue<string>;
@@ -12,44 +17,30 @@ export type UserProfileState = {
 
 export type UserCreateState = {
   name: SubmitFormValue<string>;
-  preferredGamingPlatform: SubmitFormValue<DropdownType[]>;
-  preferredGameDuration: SubmitFormValue<DropdownType[]>;
+  preferredGamingPlatform: SubmitFormValue<DropdownType>;
+  preferredGameDuration: SubmitFormValue<DropdownType>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType[]>;
+  country: SubmitFormValue<DropdownType>;
   first_name: SubmitFormValue<string>;
   last_name: SubmitFormValue<string>;
   email: SubmitFormValue<string>;
   phone: SubmitFormValue<string>;
 };
 
-export type SubmitFormState =
-  | {
-      oldId: SubmitFormValue<string>;
-      gameWinner: SubmitFormValue<GameWinner> | null;
-      gameCode: SubmitFormValue<string>;
-      gameType: SubmitFormValue<string>;
-      opponentWas: SubmitFormValue<string>;
-      playedAs: SubmitFormValue<string>;
-      endTurn: SubmitFormValue<string>;
-      endMode: SubmitFormValue<string>;
-      video1: SubmitFormValue<string>;
-    }
-  | {
-      oldId: SubmitFormValue<string>;
-      gameWinner: SubmitFormValue<GameWinner> | null;
-      gameCode: SubmitFormValue<string>;
-      gameType: SubmitFormValue<string>;
-      endTurn: SubmitFormValue<string>;
-      endMode: SubmitFormValue<string>;
-      video1: SubmitFormValue<string>;
-      usaPlayerId?: SubmitFormValue<string>;
-      ussrPlayerId?: SubmitFormValue<string>;
-    };
 
-export type SubmitFormValue<T> = {
-  value: T;
-  error: boolean;
-};
+  // | {
+  //     oldId: SubmitFormValue<string>;
+  //     gameWinner: SubmitFormValue<GameWinner> | null;
+  //     gameCode: SubmitFormValue<string>;
+  //     gameType: SubmitFormValue<string>;
+  //     endTurn: SubmitFormValue<string>;
+  //     endMode: SubmitFormValue<string>;
+  //     video1: SubmitFormValue<string>;
+  //     usaPlayerId?: SubmitFormValue<string>;
+  //     ussrPlayerId?: SubmitFormValue<string>;
+  //   };
+
+
 
 export type Game = {
   id: bigint;
@@ -78,7 +69,6 @@ export type Game = {
 };
 
 export const zGameAPI = z.object({
-  gameDate: z.string(),
   gameWinner: z.enum(["1", "2", "3"]),
   gameCode: z.string(),
   gameType: z.string(),
@@ -91,6 +81,7 @@ export const zGameAPI = z.object({
 
 export const zGameRecreateAPI = zGameAPI.extend({
   oldId: z.string(),
+  gameDate: z.string()
 });
 
 export type GameRating = {

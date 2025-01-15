@@ -3,7 +3,7 @@ import { Input } from "components/Input";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
-const AutocompleteInput = ({ icon, resetIcon, label, placeholder, error, ...rest }) => {
+const AutocompleteInput = ({ icon, resetIcon = "ShapeCrossCircle", label, placeholder, error, ...rest }) => {
   const { getInputProps, openMenu } = useAutocompleteState();
   return (
     <div display="block" position="relative">
@@ -25,7 +25,6 @@ const AutocompleteInput = ({ icon, resetIcon, label, placeholder, error, ...rest
 
 AutocompleteInput.defaultProps = {
   icon: "",
-  resetIcon: "ShapeCrossCircle",
 };
 
 AutocompleteInput.propTypes = {

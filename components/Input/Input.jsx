@@ -33,7 +33,7 @@ const Input = styled("input", {
   border: "1px solid #ced4da",
   color: "black",
   "&:focus": {
-    boxShadow: `0 0 0 2px #ced4da`,
+    // boxShadow: `0 0 0 2px #ced4da`,
   },
 });
 

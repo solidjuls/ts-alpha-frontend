@@ -1,28 +1,39 @@
-import { useDebounce } from "use-debounce";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { useState, useEffect, SetStateAction, Dispatch, useMemo } from "react";
+import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import {
   GameAPI,
   GameWinner,
-  GameRecreate,
-  SubmitFormValue,
-  SubmitFormState,
 } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
+import getAxiosInstance from "utils/axios";
+import { useSession } from "contexts/AuthProvider";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import { useRouter } from "next/router";
 
 type SubmitFormProps = {
   role: number;
 };
 
+export type SubmitFormValue<T> = {
+  value: T;
+  error: boolean;
+};
+
+export type SubmitFormState = {
+  gameWinner: SubmitFormValue<GameWinner>;
+  gameCode: SubmitFormValue<string>;
+  gameType: SubmitFormValue<string>;
+  opponentWas: SubmitFormValue<string>;
+  playedAs: SubmitFormValue<string>;
+  endTurn: SubmitFormValue<string>;
+  endMode: SubmitFormValue<string>;
+  video1: SubmitFormValue<string>;
+}
+
 const initialState: SubmitFormState = {
-  oldId: {
-    value: "",
-    error: false,
-  },
   gameWinner: {
-    value: [],
+    value: "1",
     error: false,
   },
   gameCode: {
@@ -30,23 +41,23 @@ const initialState: SubmitFormState = {
     error: false,
   },
   gameType: {
-    value: [],
+    value: "",
     error: false,
   },
   opponentWas: {
-    value: [],
+    value: "",
     error: false,
   },
   playedAs: {
-    value: [],
+    value: "",
     error: false,
   },
   endTurn: {
-    value: [],
+    value: "",
     error: false,
   },
   endMode: {
-    value: [],
+    value: "",
     error: false,
   },
   video1: {
@@ -55,50 +66,97 @@ const initialState: SubmitFormState = {
   },
 };
 
-const SubmitFormContainer = ({ role }: SubmitFormProps) => {
-  const [form, setForm] = useState<SubmitFormState>(initialState);
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+export type SubmitFormNormalizeType = (localForm: SubmitFormState) => GameAPI
 
+const SubmitFormContainer = ({ role }: SubmitFormProps) => {
+  const { id } = useSession();
+  const router = useRouter();
+  const [form, setForm] = useState<SubmitFormState>(initialState);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
+    url: `/api/game/tournaments`,
+    cacheId: "tournament-list",
+  });
+
+  const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
+    let usaPlayerId = ''
+    let ussrPlayerId = ''
+    if (localForm.playedAs.value === "1") {
+      usaPlayerId = id as string;
+      ussrPlayerId = localForm.opponentWas.value;
+    } else if (localForm.playedAs.value === "2") {
+      ussrPlayerId = id  as string;
+      usaPlayerId = localForm.opponentWas.value;
+    }
+
+    let payloadObject: GameAPI = {
+      gameType: localForm.gameType.value,
+      usaPlayerId: usaPlayerId,
+      ussrPlayerId: ussrPlayerId,
+      gameWinner: localForm.gameWinner.value,
+      gameCode: localForm.gameCode.value,
+      endMode: localForm.endMode.value,
+      endTurn: localForm.endTurn.value,
+      video1: localForm.video1.value,
+    };
+
+    return payloadObject;
+  };
+
+  function isValidURL(url: string) {
+    const pattern = new RegExp('^(https?:\\/\\/)' + // protocol (http or https)
+      '((([a-zA-Z0-9\\-\\_]+\\.)+[a-zA-Z]{2,})|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-zA-Z0-9%_.~+]*)*' + // port and path
+      '(\\?[;&a-zA-Z0-9%_.~+=-]*)?' + // query string
+      '(\\#[-a-zA-Z0-9_]*)?$','i'); // fragment locator
+    return pattern.test(url);
+  }
+  
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (["video1"].includes(key)) {
-      } else {
-        if (key === "gameCode" && form[key as keyof SubmitFormState].value === "") {
-          // form[key].error = true;
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          submit = false;
-        }
-
-        if (
-          ["endMode", "endTurn", "gameType", "gameWinner", "opponentWas", "playedAs"].includes(
-            key,
-          ) &&
-          form[key as keyof SubmitFormState].value.length === 0
-        ) {
-          setForm((prevState: any) => ({
-            ...prevState,
-            [key]: {
-              ...prevState[key],
-              error: true,
-            },
-          }));
-          submit = false;
-        }
+      if (key !== "video1" && form[key as keyof SubmitFormState].value === "") {
+        setForm((prevState: any) => ({
+          ...prevState,
+          [key]: {
+            ...prevState[key],
+            error: true,
+          },
+        }));
+        submit = false;
       }
-    });
+    })
 
-    if (!submit) return;
+    if (!submit) return submit;
+
+    if (form.video1.value && !isValidURL(form.video1.value)) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["video1"]: {
+          ...prevState["video1"],
+          error: true,
+        }}))
+      return false
+    }
+
+    if (form.opponentWas.value === id) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["opponentWas"]: {
+          ...prevState["opponentWas"],
+          error: true,
+        },
+      }));
+      return false
+    }
 
     if (
-      form["endMode"].value[0].code === "Final Scoring" &&
-      form["endTurn"].value[0].code !== "11"
+      form.endMode.value === "Final Scoring" &&
+      form.endTurn.value !== "11"
     ) {
       setForm((prevState: any) => ({
         ...prevState,
@@ -113,11 +171,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       }));
       submit = false;
     }
-    // If turn == final scoring, then end mode must also equal final scoring
+
     if (
-      form["endTurn"].value[0].code === "11" &&
-      form["endMode"].value[0].code !== "Final Scoring" &&
-      form["endMode"].value[0].code !== "Europe Control"
+      form.endTurn.value === "11" &&
+      form.endMode.value !== "Final Scoring" &&
+      form.endMode.value !== "Europe Control"
     ) {
       setForm((prevState: any) => ({
         ...prevState,
@@ -132,10 +190,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       }));
       submit = false;
     }
+
     // Wargammes can only be used if turn 8, 9, 10
     if (
-      form["endMode"].value[0].code === "Wargames" &&
-      !["8", "9", "10"].includes(form["endTurn"].value[0].code)
+      form.endMode.value === "Wargames" &&
+      !["8", "9", "10"].includes(form.endTurn.value)
     ) {
       setForm((prevState: any) => ({
         ...prevState,
@@ -176,15 +235,58 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     });
   };
 
+  const onSubmit = async () => {
+    if (!id) {
+      setErrorMsg("Error submitting your result. Refresh the page and try again");
+      return;
+    }
+    if (validated()) {
+      try {
+        setIsSubmitting(true);
+        // @ts-ignore
+        await getAxiosInstance().post(
+          "/api/game/submit",
+          {
+            data: normalizeData(form),
+          },
+          {
+            cache: {
+              update: {
+                "game-list": "delete",
+              },
+            },
+          },
+        );
+        router.push("/");
+      } catch (e) {
+        console.log("error submitform", e);
+        setErrorMsg("There was an error submitting the result");
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  }
+  if (loadingTournaments || loadingUsers) return null
+
+  const usersParsed = users?.map((item) => ({
+    value: item.id,
+    text: item.name,
+  }));
+
+  const leagueTypes = tournaments?.map((item) => ({
+    value: item.text,
+    text: item.text,
+  }));
+
   return (
     <SubmitForm
-      validated={validated}
-      role={role}
+      onSubmit={onSubmit}
+      users={usersParsed}
+      leagueTypes={leagueTypes}
       form={form}
+      isSubmitting={isSubmitting}
       onInputValueChange={onInputValueChange}
-      buttonDisabled={buttonDisabled}
-      setButtonDisabled={setButtonDisabled}
-      setForm={setForm}
+      errorMsg={errorMsg}
     />
   );
 };

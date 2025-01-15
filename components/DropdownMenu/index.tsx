@@ -4,6 +4,7 @@ import { styled } from "stitches.config";
 import { Box, Span } from "components/Atoms";
 import { blackA } from "@radix-ui/colors";
 import type * as Stitches from "@stitches/react";
+import { DropdownItemType } from "types/types";
 
 const styledItemStyles = {
   fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
@@ -30,9 +31,10 @@ const StyledItem = styled(Item, { ...styledItemStyles });
 
 const StyledTrigger = styled(Trigger, {
   padding: "0px",
-  border: "none",
+  border: "1px solid #ced4da",
   outline: "none",
-  boxShadow: `0 0 0 1px black`,
+  width: '390px',
+  // boxShadow: `0 0 0 1px #ced4da"`,
   borderRadius: 4,
   backgroundColor: "white",
   variants: {
@@ -41,22 +43,24 @@ const StyledTrigger = styled(Trigger, {
         border: "solid 1px red",
         boxShadow: "none",
         "&:focus": {
-          boxShadow: `0 0 0 2px red`,
+          boxShadow: `0 0 0 1px red`,
         },
       },
     },
   },
   "&:focus": {
     //outline: "none",
-    boxShadow: `0 0 0 2px black`,
+    border: "none",
+    boxShadow: `0 0 0 1px #2196f3`,
   },
 });
 
 const StyledContent = styled(Content, {
   borderRadius: 4,
   backgroundColor: "white",
-  boxShadow: "0 0 15px $colors$shadow",
-  border: "solid 1px black",
+  width: '390px',
+  // boxShadow: "0 0 15px $colors$shadow",
+  border: "1px solid #ced4da",
   zIndex: "99",
 });
 
@@ -76,11 +80,6 @@ const SelectedItemDiv = styled("div", {
   color: "$textDark",
 });
 
-export type DropdownItemType = {
-  value: string;
-  text: string;
-};
-
 const DropdownMenu = ({
   items,
   selectedItem,
@@ -91,8 +90,9 @@ const DropdownMenu = ({
   items: DropdownItemType[];
   selectedItem: string;
   onSelect: (value: string) => void;
-  error: boolean;
-  css: Stitches.CSS;
+  placeholder: string
+  error?: boolean;
+  css?: Stitches.CSS;
 }) => {
   let selectedItemMapped = items.find(
     (item) => item.value?.toLowerCase() === selectedItem?.toLowerCase(),
@@ -100,7 +100,7 @@ const DropdownMenu = ({
 
   return (
     <Root>
-      <StyledTrigger css={css} border={error ? "error" : undefined}>
+      <StyledTrigger border={error ? "error" : undefined}>
         <Box
           css={{
             position: "relative",
@@ -120,7 +120,7 @@ const DropdownMenu = ({
         </Box>
       </StyledTrigger>
 
-      <StyledContent css={css}>
+      <StyledContent>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}
