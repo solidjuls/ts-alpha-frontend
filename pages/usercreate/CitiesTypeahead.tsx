@@ -33,15 +33,15 @@ const CitiesTypeahead = ({
 
   const [input, setInput] = useState("");
   const onChange = (input) => {
-    setInput(input)
-  }
+    setInput(input);
+  };
   const citySuggestions = items?.filter((city) => {
     if (city.text.toLowerCase().includes(input.toLowerCase())) {
       return true;
     }
-  })
+  });
 
-  const selectedItemParsed = citySuggestions?.find(city => city.value === selectedItem)|| {}
+  const selectedItemParsed = citySuggestions?.find((city) => city.value === selectedItem) || {};
 
   return (
     <WithLabel labelText={labelText}>

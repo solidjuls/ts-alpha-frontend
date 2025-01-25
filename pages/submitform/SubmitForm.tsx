@@ -27,13 +27,13 @@ const formStyles = {
 };
 
 type SubmitFormProps = {
-  errorMsg: string
+  errorMsg: string;
   isSubmitting: boolean;
-  onSubmit: () => void
+  onSubmit: () => void;
   form: SubmitFormState;
   onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
-  leagueTypes:  DropdownItemType[]
-  users:  DropdownItemType[]
+  leagueTypes: DropdownItemType[];
+  users: DropdownItemType[];
 };
 
 const SubmitForm = ({
@@ -75,16 +75,16 @@ const SubmitForm = ({
           onSelect={(value) => onInputValueChange("gameType", value)}
         />
         <DropdownWithLabel
-            labelText="PlayedAs"
-            placeholder="I played as..."
-            items={gameSides}
-            selectedItem={form.playedAs.value}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={form.playedAs.error}
-            css={{ width: dropdownWidth }}
-            onSelect={(value) => onInputValueChange("playedAs", value)}
-          />
+          labelText="PlayedAs"
+          placeholder="I played as..."
+          items={gameSides}
+          selectedItem={form.playedAs.value}
+          selectedValueProperty="value"
+          selectedInputProperty="text"
+          error={form.playedAs.error}
+          css={{ width: dropdownWidth }}
+          onSelect={(value) => onInputValueChange("playedAs", value)}
+        />
         <UserTypeahead
           labelText="opponentWas"
           selectedItem={form.opponentWas.value}
@@ -109,10 +109,10 @@ const SubmitForm = ({
           error={form.gameWinner.error}
           css={{ width: dropdownWidth }}
           onSelect={(value: string) => {
-            onInputValueChange("gameWinner", value)
+            onInputValueChange("gameWinner", value);
             if (value === "3") {
-              onInputValueChange("endTurn", "11")
-              onInputValueChange("endMode", "Final Scoring")
+              onInputValueChange("endTurn", "11");
+              onInputValueChange("endMode", "Final Scoring");
             }
           }}
         />
@@ -143,12 +143,12 @@ const SubmitForm = ({
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         <Button
-            disabled={isSubmitting}
-            css={{ width: "200px", fontSize: "18px" }}
-            onClick={onSubmit}
-          >
-            {isSubmitting ? <Spinner size="3" /> : "Submit"}
-          </Button>
+          disabled={isSubmitting}
+          css={{ width: "200px", fontSize: "18px" }}
+          onClick={onSubmit}
+        >
+          {isSubmitting ? <Spinner size="3" /> : "Submit"}
+        </Button>
         {errorMsg && <Text type="error">{errorMsg}</Text>}
       </Box>
     </Form>

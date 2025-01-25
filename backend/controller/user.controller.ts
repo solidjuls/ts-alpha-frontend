@@ -261,24 +261,24 @@ export const resetPassword = async ({ token, pwd }) => {
   // const cookies = new Cookies(ctx.req, ctx.res);
   // cookies.set("token");
   try {
-  const decrypted = decryptHash(token);
-  console.log("decrypted", decrypted)
-  const values = decrypted.split("#");
-  console.log("values", values)
-  const mail = values[0];
+    const decrypted = decryptHash(token);
+    console.log("decrypted", decrypted);
+    const values = decrypted.split("#");
+    console.log("values", values);
+    const mail = values[0];
 
-  const updateUser = await prisma.users.update({
-    where: {
-      email: mail,
-    },
-    data: {
-      password: pwd,
-    },
-  });
-  console.log("update did happen", updateUser);
-} catch(e) {
-  console.log(e)
-}
+    const updateUser = await prisma.users.update({
+      where: {
+        email: mail,
+      },
+      data: {
+        password: pwd,
+      },
+    });
+    console.log("update did happen", updateUser);
+  } catch (e) {
+    console.log(e);
+  }
   return { success: true };
 };
 

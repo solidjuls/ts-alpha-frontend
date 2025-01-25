@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
-import {
-  GameAPI,
-  GameWinner,
-} from "types/game.types";
+import { GameAPI, GameWinner } from "types/game.types";
 import SubmitForm from "./SubmitForm";
 import { ServerType } from "types/types";
 import getAxiosInstance from "utils/axios";
@@ -29,7 +26,7 @@ export type SubmitFormState = {
   endTurn: SubmitFormValue<string>;
   endMode: SubmitFormValue<string>;
   video1: SubmitFormValue<string>;
-}
+};
 
 const initialState: SubmitFormState = {
   gameWinner: {
@@ -66,7 +63,7 @@ const initialState: SubmitFormState = {
   },
 };
 
-export type SubmitFormNormalizeType = (localForm: SubmitFormState) => GameAPI
+export type SubmitFormNormalizeType = (localForm: SubmitFormState) => GameAPI;
 
 const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const { id } = useSession();
@@ -75,20 +72,23 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData({
+    url: "/api/user",
+    cacheId: "user-list",
+  });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
 
   const normalizeData: SubmitFormNormalizeType = (localForm: SubmitFormState) => {
-    let usaPlayerId = ''
-    let ussrPlayerId = ''
+    let usaPlayerId = "";
+    let ussrPlayerId = "";
     if (localForm.playedAs.value === "1") {
       usaPlayerId = id as string;
       ussrPlayerId = localForm.opponentWas.value;
     } else if (localForm.playedAs.value === "2") {
-      ussrPlayerId = id  as string;
+      ussrPlayerId = id as string;
       usaPlayerId = localForm.opponentWas.value;
     }
 
@@ -107,15 +107,18 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   };
 
   function isValidURL(url: string) {
-    const pattern = new RegExp('^(https?:\\/\\/)' + // protocol (http or https)
-      '((([a-zA-Z0-9\\-\\_]+\\.)+[a-zA-Z]{2,})|' + // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-      '(\\:\\d+)?(\\/[-a-zA-Z0-9%_.~+]*)*' + // port and path
-      '(\\?[;&a-zA-Z0-9%_.~+=-]*)?' + // query string
-      '(\\#[-a-zA-Z0-9_]*)?$','i'); // fragment locator
+    const pattern = new RegExp(
+      "^(https?:\\/\\/)" + // protocol (http or https)
+        "((([a-zA-Z0-9\\-\\_]+\\.)+[a-zA-Z]{2,})|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-zA-Z0-9%_.~+]*)*" + // port and path
+        "(\\?[;&a-zA-Z0-9%_.~+=-]*)?" + // query string
+        "(\\#[-a-zA-Z0-9_]*)?$",
+      "i",
+    ); // fragment locator
     return pattern.test(url);
   }
-  
+
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
@@ -129,7 +132,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         }));
         submit = false;
       }
-    })
+    });
 
     if (!submit) return submit;
 
@@ -139,8 +142,9 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         ["video1"]: {
           ...prevState["video1"],
           error: true,
-        }}))
-      return false
+        },
+      }));
+      return false;
     }
 
     if (form.opponentWas.value === id) {
@@ -151,13 +155,10 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
           error: true,
         },
       }));
-      return false
+      return false;
     }
 
-    if (
-      form.endMode.value === "Final Scoring" &&
-      form.endTurn.value !== "11"
-    ) {
+    if (form.endMode.value === "Final Scoring" && form.endTurn.value !== "11") {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -192,10 +193,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     }
 
     // Wargammes can only be used if turn 8, 9, 10
-    if (
-      form.endMode.value === "Wargames" &&
-      !["8", "9", "10"].includes(form.endTurn.value)
-    ) {
+    if (form.endMode.value === "Wargames" && !["8", "9", "10"].includes(form.endTurn.value)) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -265,8 +263,8 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         setIsSubmitting(false);
       }
     }
-  }
-  if (loadingTournaments || loadingUsers) return null
+  };
+  if (loadingTournaments || loadingUsers) return null;
 
   const usersParsed = users?.map((item) => ({
     value: item.id,
@@ -291,10 +289,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   );
 };
 
-export async function getServerSideProps({
-  req,
-  res,
-}: ServerType) {
+export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload) {

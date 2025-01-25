@@ -33,7 +33,7 @@ const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "1px solid #ced4da",
   outline: "none",
-  width: '390px',
+  width: "390px",
   // boxShadow: `0 0 0 1px #ced4da"`,
   borderRadius: 4,
   backgroundColor: "white",
@@ -58,7 +58,7 @@ const StyledTrigger = styled(Trigger, {
 const StyledContent = styled(Content, {
   borderRadius: 4,
   backgroundColor: "white",
-  width: '390px',
+  width: "390px",
   // boxShadow: "0 0 15px $colors$shadow",
   border: "1px solid #ced4da",
   zIndex: "99",
@@ -90,7 +90,7 @@ const DropdownMenu = ({
   items: DropdownItemType[];
   selectedItem: string;
   onSelect: (value: string) => void;
-  placeholder: string
+  placeholder: string;
   error?: boolean;
   css?: Stitches.CSS;
 }) => {

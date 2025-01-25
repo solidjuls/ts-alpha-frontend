@@ -31,16 +31,17 @@ const CountriesTypeahead = ({
 }) => {
   const [input, setInput] = useState("");
   const onChange = (localInput) => {
-    setInput(localInput)
-  }
+    setInput(localInput);
+  };
   const countriesSuggestions = items?.filter((country) => {
     if (country.text.toLowerCase().includes(input.toLowerCase())) {
       return true;
     }
-  })
+  });
 
-  const selectedItemParsed = countriesSuggestions?.find(country => country.value === selectedItem) || {}
-console.log(countriesSuggestions, input)
+  const selectedItemParsed =
+    countriesSuggestions?.find((country) => country.value === selectedItem) || {};
+  console.log(countriesSuggestions, input);
   return (
     <WithLabel labelText={labelText}>
       <Typeahead

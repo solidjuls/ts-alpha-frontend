@@ -68,8 +68,8 @@ const getInitialState = () => {
 };
 
 type UserCreateFormProps = {
-  countries: DropdownItemType[]
-}
+  countries: DropdownItemType[];
+};
 
 const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) => {
   const [form, setForm] = useState<UserCreateState>(() => getInitialState());

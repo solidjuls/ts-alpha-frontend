@@ -14,7 +14,8 @@ export default async function handler(req, res) {
   if (user === null) {
     res.status(401).json({
       code: "UNAUTHORIZED",
-      message: "User doesn't exist. Contact Junta so we can register you as a valid user by sending an email to ITS Junta its.junta@gmail.com",
+      message:
+        "User doesn't exist. Contact Junta so we can register you as a valid user by sending an email to ITS Junta its.junta@gmail.com",
     });
     return;
   }

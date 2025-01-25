@@ -142,7 +142,7 @@ const Items = ({ styles, role }: any) => {
       )}
       <UnstyledLink href="/about" passHref>
         <Text strong="bold" css={styles}>
-          About Page
+          About Us
         </Text>
       </UnstyledLink>
     </>
@@ -270,6 +270,11 @@ const VerticalSidebar = () => {
                   <FormattedMessage id="profileText" />
                 </Text>
               </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/about" passHref>
+              <Text strong="bold">
+                About Us
+              </Text>
             </UnstyledLink>
             <UnstyledLink href="/login" passHref>
               <Item>
