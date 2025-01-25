@@ -121,6 +121,11 @@ const Items = ({ styles, role }: any) => {
           Submit Form
         </Text>
       </UnstyledLink>
+      <UnstyledLink href="/userprofile" passHref>
+          <Text strong="bold" css={horizontalItemStyles}>
+            <FormattedMessage id="profileText" />
+          </Text>
+      </UnstyledLink>
       {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
         <UnstyledLink href="/recreateform" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
@@ -135,6 +140,11 @@ const Items = ({ styles, role }: any) => {
           </Text>
         </UnstyledLink>
       )}
+      <UnstyledLink href="/about" passHref>
+        <Text strong="bold" css={styles}>
+          About Page
+        </Text>
+      </UnstyledLink>
     </>
   );
 };
