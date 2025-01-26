@@ -29,26 +29,26 @@ const formStyles = {
 };
 
 type RecreateFormState = {
-  oldId: SubmitFormValue<string>
-  gameDate: SubmitFormValue<Date>
-  ussrPlayerId: SubmitFormValue<string>
-  usaPlayerId: SubmitFormValue<string>
-    gameWinner: SubmitFormValue<GameWinner>;
-    gameCode: SubmitFormValue<string>;
-    gameType: SubmitFormValue<string>;
-    endTurn: SubmitFormValue<string>;
-    endMode: SubmitFormValue<string>;
-    video1: SubmitFormValue<string>;
-}
+  oldId: SubmitFormValue<string>;
+  gameDate: SubmitFormValue<Date>;
+  ussrPlayerId: SubmitFormValue<string>;
+  usaPlayerId: SubmitFormValue<string>;
+  gameWinner: SubmitFormValue<GameWinner>;
+  gameCode: SubmitFormValue<string>;
+  gameType: SubmitFormValue<string>;
+  endTurn: SubmitFormValue<string>;
+  endMode: SubmitFormValue<string>;
+  video1: SubmitFormValue<string>;
+};
 
 type RecreateFormProps = {
-  errorMsg: string
+  errorMsg: string;
   isSubmitting: boolean;
-  onSubmit: () => void
+  onSubmit: () => void;
   form: RecreateFormState;
   onInputValueChange: (key: keyof RecreateFormState, value: string | Date) => void;
-  leagueTypes:  DropdownItemType[]
-  users:  DropdownItemType[]
+  leagueTypes: DropdownItemType[];
+  users: DropdownItemType[];
 };
 
 const RecreateRating = ({

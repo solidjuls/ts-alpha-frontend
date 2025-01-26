@@ -27,20 +27,17 @@ export type UserCreateState = {
   phone: SubmitFormValue<string>;
 };
 
-
-  // | {
-  //     oldId: SubmitFormValue<string>;
-  //     gameWinner: SubmitFormValue<GameWinner> | null;
-  //     gameCode: SubmitFormValue<string>;
-  //     gameType: SubmitFormValue<string>;
-  //     endTurn: SubmitFormValue<string>;
-  //     endMode: SubmitFormValue<string>;
-  //     video1: SubmitFormValue<string>;
-  //     usaPlayerId?: SubmitFormValue<string>;
-  //     ussrPlayerId?: SubmitFormValue<string>;
-  //   };
-
-
+// | {
+//     oldId: SubmitFormValue<string>;
+//     gameWinner: SubmitFormValue<GameWinner> | null;
+//     gameCode: SubmitFormValue<string>;
+//     gameType: SubmitFormValue<string>;
+//     endTurn: SubmitFormValue<string>;
+//     endMode: SubmitFormValue<string>;
+//     video1: SubmitFormValue<string>;
+//     usaPlayerId?: SubmitFormValue<string>;
+//     ussrPlayerId?: SubmitFormValue<string>;
+//   };
 
 export type Game = {
   id: bigint;
@@ -81,7 +78,7 @@ export const zGameAPI = z.object({
 
 export const zGameRecreateAPI = zGameAPI.extend({
   oldId: z.string(),
-  gameDate: z.string()
+  gameDate: z.string(),
 });
 
 export type GameRating = {
@@ -99,4 +96,3 @@ export type GameWinner = "1" | "2" | "3";
 export type GameAPI = z.infer<typeof zGameAPI>;
 
 export type GameRecreate = z.infer<typeof zGameRecreateAPI>;
-

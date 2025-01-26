@@ -19,7 +19,6 @@ const Typeahead = ({
   id,
   resetOnSelect,
 }) => {
-
   const [value, setValue] = useState(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedTerm] = useDebounce(searchTerm, debounceTime);
@@ -51,7 +50,7 @@ const Typeahead = ({
       }
     } else if (changes.hasOwnProperty("inputValue")) {
       if (changes?.inputValue?.length === 0) {
-        console.log('changes?.inputValue', changes?.inputValue)
+        console.log("changes?.inputValue", changes?.inputValue);
         onBlur && onBlur();
         setValue({});
         setSearchTerm("");
@@ -69,7 +68,7 @@ const Typeahead = ({
   };
 
   const handleStateChange = (changes, actions) => {
-    console.log("changes, actions", changes?.inputValue, changes?.type, actions)
+    console.log("changes, actions", changes?.inputValue, changes?.type, actions);
     if (changes.type === Downshift.stateChangeTypes.keyDownEscape) {
       resetState();
     } else {

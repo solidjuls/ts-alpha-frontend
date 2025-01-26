@@ -145,10 +145,6 @@ const UserAvatar = ({ name }: { name: string }) => {
           <StyledTriangleDownIcon />
         </StyledTrigger>
         <StyledContent align="end">
-          <Link href="/userprofile" passHref>
-            <StyledItem>{intl.formatMessage({ id: "profileText" })}</StyledItem>
-          </Link>
-          <StyledSeparator />
           <StyledItem
             onClick={async () => {
               if (logout) {

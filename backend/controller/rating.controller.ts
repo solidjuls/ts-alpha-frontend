@@ -31,7 +31,7 @@ const getRatingDifference = (
   gameType: string,
 ) => {
   let basicCalculus = (defeated - winner) * 0.05;
-console.log("getRatingDifference", defeated, winner, addValue, gameType)
+  console.log("getRatingDifference", defeated, winner, addValue, gameType);
   if (gameType === "Friendly Game") basicCalculus = basicCalculus / 2;
 
   const newValue = roundValue(basicCalculus) + addValue;
@@ -107,7 +107,7 @@ export const calculateRating = async ({
   ussrPlayerId: bigint;
   gameWinner: GameWinner;
   gameType: string;
-  prismaTransaction?: PrismaTransactionType
+  prismaTransaction?: PrismaTransactionType;
 }) => {
   const usaRating = await getRatingByPlayer({
     playerId: usaPlayerId,
@@ -127,7 +127,13 @@ export const calculateRating = async ({
   );
 };
 
-export const getRatingByPlayer = async ({ playerId, prismaTransaction }: { playerId: bigint; prismaTransaction?: PrismaTransactionType }) => {
+export const getRatingByPlayer = async ({
+  playerId,
+  prismaTransaction,
+}: {
+  playerId: bigint;
+  prismaTransaction?: PrismaTransactionType;
+}) => {
   const client = !prismaTransaction ? prisma : prismaTransaction;
   return await client.ratings_history.findFirst({
     select: {
@@ -208,7 +214,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         // we delete all rating info related to those games
         const ids = allGamesAffected.map((game) => game.id);
         console.log("allGamesAffected", allGamesAffected);
-        console.log("new Date(input.gameDate)", new Date(input.gameDate))
+        console.log("new Date(input.gameDate)", new Date(input.gameDate));
         await prismaTransaction.ratings_history.deleteMany({
           where: {
             game_result_id: {
@@ -405,7 +411,7 @@ const createNewRating = async ({
   updatedAt: Date | null;
   gameId: bigint;
   gameType: string;
-  prismaTransaction: PrismaTransactionType
+  prismaTransaction: PrismaTransactionType;
 }) => {
   //we recalculate all ratings based on the games retrieved,
   const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({

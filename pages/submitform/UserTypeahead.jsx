@@ -2,17 +2,26 @@ import { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
 
-const UserTypeahead = ({ labelText, users, selectedItem, onSelect, placeholder, css, error, ...rest }) => {
+const UserTypeahead = ({
+  labelText,
+  users,
+  selectedItem,
+  onSelect,
+  placeholder,
+  css,
+  error,
+  ...rest
+}) => {
   const [input, setInput] = useState("");
   const onChange = (input) => {
-    setInput(input)
-  }
+    setInput(input);
+  };
   const userSuggestions = users?.filter((user) => {
     if (user.text.toLowerCase().includes(input.toLowerCase())) {
       return true;
     }
-  })
-  const selectedItemParsed = userSuggestions?.find(user => user.value === selectedItem)|| {}
+  });
+  const selectedItemParsed = userSuggestions?.find((user) => user.value === selectedItem) || {};
   return (
     <WithLabel labelText={labelText}>
       <Typeahead

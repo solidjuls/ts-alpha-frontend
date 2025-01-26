@@ -21,10 +21,7 @@ export default function Home({ role }: { role: number }) {
   );
 }
 
-export async function getServerSideProps({
-  req,
-  res,
-}: ServerType) {
+export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
   return { props: { role: payload?.role || null } };
 }

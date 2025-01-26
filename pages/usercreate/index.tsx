@@ -11,20 +11,20 @@ import { ServerType } from "types/types";
 const UserProfileContainer = ({ id }) => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
-    url: `/api/cities` 
+    url: `/api/cities`,
   });
 
   if (isLoading || citiesLoading) return <Spinner size="3" />;
 
   return (
-    <UserCreateForm cities={cities?.map((city) => ({ value: city.id, text: city.name }))}countries={data?.map((item) => ({ value: item.id, text: item.country_name }))} />
+    <UserCreateForm
+      cities={cities?.map((city) => ({ value: city.id, text: city.name }))}
+      countries={data?.map((item) => ({ value: item.id, text: item.country_name }))}
+    />
   );
 };
 
-export async function getServerSideProps({
-  req,
-  res,
-}: ServerType) {
+export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload || payload?.role !== userRoles.SUPERADMIN) {

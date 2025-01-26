@@ -19,32 +19,32 @@ export type SubmitFormValue<T> = {
 };
 
 export type RecreateFormState = {
-  oldId: SubmitFormValue<string>
-  gameDate: SubmitFormValue<Date>
-  gameWinner: SubmitFormValue<GameWinner>
-  gameCode: SubmitFormValue<string>
-  gameType: SubmitFormValue<string>
-  ussrPlayerId: SubmitFormValue<string>
-  usaPlayerId: SubmitFormValue<string>
-  endTurn: SubmitFormValue<string>
-  endMode: SubmitFormValue<string>
-  video1: SubmitFormValue<string>
-}
+  oldId: SubmitFormValue<string>;
+  gameDate: SubmitFormValue<Date>;
+  gameWinner: SubmitFormValue<GameWinner>;
+  gameCode: SubmitFormValue<string>;
+  gameType: SubmitFormValue<string>;
+  ussrPlayerId: SubmitFormValue<string>;
+  usaPlayerId: SubmitFormValue<string>;
+  endTurn: SubmitFormValue<string>;
+  endMode: SubmitFormValue<string>;
+  video1: SubmitFormValue<string>;
+};
 
-export type RecreateFormNormalizeType = (localForm: RecreateFormState) => GameRecreate
+export type RecreateFormNormalizeType = (localForm: RecreateFormState) => GameRecreate;
 
-type InitializeStateType = (searchParams: ReadonlyURLSearchParams) => RecreateFormState
+type InitializeStateType = (searchParams: ReadonlyURLSearchParams) => RecreateFormState;
 const initializeState: InitializeStateType = (searchParams: ReadonlyURLSearchParams) => {
   const oldId = searchParams.get("id") || "";
   const gameDate = searchParams.get("gameDate");
   const gameWinner = searchParams.get("gameWinner") as GameWinner;
   const game_code = searchParams.get("game_code") || "";
-  const gameType = searchParams.get("gameType")|| "";
-  const endTurn = searchParams.get("endTurn")|| "";
-  const endMode = searchParams.get("endMode")|| "";
-  const video1 = searchParams.get("video1")|| "";
-  const ussrPlayerId = searchParams.get("ussrPlayerId")|| "";
-  const usaPlayerId = searchParams.get("usaPlayerId")|| "";
+  const gameType = searchParams.get("gameType") || "";
+  const endTurn = searchParams.get("endTurn") || "";
+  const endMode = searchParams.get("endMode") || "";
+  const video1 = searchParams.get("video1") || "";
+  const ussrPlayerId = searchParams.get("ussrPlayerId") || "";
+  const usaPlayerId = searchParams.get("usaPlayerId") || "";
 
   return {
     oldId: {
@@ -96,29 +96,32 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('')
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const [errorMsg, setErrorMsg] = useState("");
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData({
+    url: "/api/user",
+    cacheId: "user-list",
+  });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
-  
-   const normalizeData: RecreateFormNormalizeType = (localForm: RecreateFormState) => {
-      let payloadObject: GameRecreate = {
-        oldId: localForm.oldId.value,
-        gameDate: localForm.gameDate.value.toISOString(),
-        gameType: localForm.gameType.value,
-        usaPlayerId: localForm.usaPlayerId.value,
-        ussrPlayerId: localForm.ussrPlayerId.value,
-        gameWinner: localForm.gameWinner.value,
-        gameCode: localForm.gameCode.value,
-        endMode: localForm.endMode.value,
-        endTurn: localForm.endTurn.value,
-        video1: localForm.video1.value,
-      };
-  
-      return payloadObject;
+
+  const normalizeData: RecreateFormNormalizeType = (localForm: RecreateFormState) => {
+    let payloadObject: GameRecreate = {
+      oldId: localForm.oldId.value,
+      gameDate: localForm.gameDate.value.toISOString(),
+      gameType: localForm.gameType.value,
+      usaPlayerId: localForm.usaPlayerId.value,
+      ussrPlayerId: localForm.ussrPlayerId.value,
+      gameWinner: localForm.gameWinner.value,
+      gameCode: localForm.gameCode.value,
+      endMode: localForm.endMode.value,
+      endTurn: localForm.endTurn.value,
+      video1: localForm.video1.value,
     };
+
+    return payloadObject;
+  };
 
   const validated = () => {
     let submit = true;
@@ -133,14 +136,11 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
         }));
         submit = false;
       }
-    })
+    });
 
     if (!submit) return submit;
 
-    if (
-      form.endMode.value === "Final Scoring" &&
-      form.endTurn.value !== "11"
-    ) {
+    if (form.endMode.value === "Final Scoring" && form.endTurn.value !== "11") {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -175,10 +175,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     }
 
     // Wargammes can only be used if turn 8, 9, 10
-    if (
-      form.endMode.value === "Wargames" &&
-      !["8", "9", "10"].includes(form.endTurn.value)
-    ) {
+    if (form.endMode.value === "Wargames" && !["8", "9", "10"].includes(form.endTurn.value)) {
       setForm((prevState: any) => ({
         ...prevState,
         ["endTurn"]: {
@@ -229,7 +226,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
         setIsSubmitting(false);
       }
     }
-  }
+  };
 
   const usersParsed = users?.map((item) => ({
     value: item.id,
@@ -258,10 +255,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   );
 };
 
-export async function getServerSideProps({
-  req,
-  res,
-}: ServerType) {
+export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload || payload?.role !== userRoles.SUPERADMIN) {

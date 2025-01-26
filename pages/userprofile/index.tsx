@@ -13,7 +13,7 @@ const UserProfileContainer = ({ id }) => {
     url: `/api/countries`,
   });
   const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
-    url: `/api/cities` 
+    url: `/api/cities`,
   });
 
   if (isLoading || countriesLoading || citiesLoading) return <Spinner size="3" />;
@@ -27,10 +27,7 @@ const UserProfileContainer = ({ id }) => {
   );
 };
 
-export async function getServerSideProps({
-  req,
-  res,
-}: ServerType) {
+export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
   if (!payload) {
