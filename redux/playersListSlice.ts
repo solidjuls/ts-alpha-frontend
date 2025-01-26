@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import getAxiosInstance from "utils/axios";
+import { MultiSelectItemType } from "types/types";
 
 interface PLayersListState {
   items: any[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filters: {
-    playersSelected: string[];
+    playersSelected: MultiSelectItemType[];
     countriesSelected: string[];
     playdeckInput: string;
   };

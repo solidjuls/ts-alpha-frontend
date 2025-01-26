@@ -11,7 +11,6 @@ import UserTypeahead from "../submitform/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
-import { SubmitFormState } from "../submitform";
 import { DropdownItemType } from "types/types";
 
 const dropdownWidth = "370px";

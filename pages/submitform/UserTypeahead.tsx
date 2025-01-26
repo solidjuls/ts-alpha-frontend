@@ -7,7 +7,7 @@ type UserTypeaheadProps = {
   labelText: string;
   users: DropdownItemType[];
   selectedItem: string;
-  onSelect: (item: DropdownItemType | null | undefined) => void;
+  onSelect: (item: DropdownItemType) => void;
   placeholder: string;
   css: any;
   error: boolean;

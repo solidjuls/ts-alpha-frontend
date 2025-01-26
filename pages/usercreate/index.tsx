@@ -8,7 +8,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 
-const UserProfileContainer = ({ id }) => {
+const UserCreateContainer = () => {
   const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
     url: `/api/cities`,
@@ -38,4 +38,4 @@ export async function getServerSideProps({ req, res }: ServerType) {
   return { props: { role: payload.role || null } };
 }
 
-export default UserProfileContainer;
+export default UserCreateContainer;

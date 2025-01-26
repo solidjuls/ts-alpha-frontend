@@ -1,4 +1,4 @@
-import { DropdownType } from "utils/constants";
+import { DropdownItemType } from "types/types";
 import { z } from "zod";
 
 export type SubmitFormValue<T> = {
@@ -11,16 +11,16 @@ export type UserProfileState = {
   preferredGamingPlatform: SubmitFormValue<string>;
   preferredGameDuration: SubmitFormValue<string>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType[]>;
+  country: SubmitFormValue<DropdownItemType[]>;
   phone: SubmitFormValue<string>;
 };
 
 export type UserCreateState = {
   name: SubmitFormValue<string>;
-  preferredGamingPlatform: SubmitFormValue<DropdownType>;
-  preferredGameDuration: SubmitFormValue<DropdownType>;
+  preferredGamingPlatform: SubmitFormValue<DropdownItemType>;
+  preferredGameDuration: SubmitFormValue<DropdownItemType>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType>;
+  country: SubmitFormValue<DropdownItemType>;
   first_name: SubmitFormValue<string>;
   last_name: SubmitFormValue<string>;
   email: SubmitFormValue<string>;
