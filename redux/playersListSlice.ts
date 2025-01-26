@@ -9,6 +9,7 @@ interface PLayersListState {
   filters: {
     playersSelected: string[];
     countriesSelected: string[];
+    playdeckInput: string;
   };
   currentPage: number;
   totalPages: number;
@@ -22,6 +23,7 @@ const initialState: PLayersListState = {
   filters: {
     playersSelected: [],
     countriesSelected: [],
+    playdeckInput: "",
   },
   currentPage: 1,
   totalPages: 1,
@@ -34,10 +36,11 @@ export const fetchPlayersList = createAsyncThunk(
     const state = getState() as RootState;
     const { playersSelected } = state.playersList.filters;
     const { countriesSelected } = state.playersList.filters;
+    const { playdeckInput } = state.playersList.filters;
     const { currentPage } = state.playersList;
 
     const response = await getAxiosInstance().get(
-      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&countrySelected=${countriesSelected}&pso=20`,
+      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&countrySelected=${countriesSelected}&playdeck=${playdeckInput}&pso=20`,
     );
 
     return {
@@ -63,7 +66,10 @@ const listSlice = createSlice({
     setCountriesFilter: (state, action) => {
       state.currentPage = 1;
       state.filters.countriesSelected = action.payload;
-      console.log("setCountriesFilter", action.payload)
+    },
+    setPlaydeckFilter: (state, action) => {
+      state.currentPage = 1;
+      state.filters.playdeckInput = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -86,6 +92,6 @@ const listSlice = createSlice({
   },
 });
 
-export const { setPlayersFilter, setCountriesFilter, setClearFilter, setCurrentPage } = listSlice.actions;
+export const { setPlayersFilter, setCountriesFilter, setPlaydeckFilter, setClearFilter, setCurrentPage } = listSlice.actions;
 
 export default listSlice.reducer;

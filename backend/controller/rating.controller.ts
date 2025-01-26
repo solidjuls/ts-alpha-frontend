@@ -1,6 +1,6 @@
 import { prisma, PrismaTransactionType } from "backend/utils/prisma";
 import { BiggerLowerValue, GameRecreate, GameWinner } from "types/game.types";
-import { getGameByGameId, submit } from "./game.controller";
+import { getGameByGameId } from "./game.controller";
 import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
 
 const DEFAULT_RATING = 5000;

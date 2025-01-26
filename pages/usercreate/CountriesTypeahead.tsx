@@ -39,9 +39,8 @@ const CountriesTypeahead = ({
     }
   });
 
-  const selectedItemParsed =
-    countriesSuggestions?.find((country) => country.value === selectedItem) || {};
-  console.log(countriesSuggestions, input);
+  const selectedItemParsed = countriesSuggestions?.find(country => country.value === selectedItem) || {}
+
   return (
     <WithLabel labelText={labelText}>
       <Typeahead

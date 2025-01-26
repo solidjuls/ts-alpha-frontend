@@ -14,9 +14,10 @@ import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
-import { fetchPlayersList, setCurrentPage, setPlayersFilter, setCountriesFilter } from "../../redux/playersListSlice";
+import { fetchPlayersList, setCurrentPage, setPlayersFilter, setCountriesFilter, setPlaydeckFilter } from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import { Input } from "components/Input";
 
 export const UnstyledLink = styled(Link, {
   all: "unset" /* Unset all styles */,
@@ -104,15 +105,14 @@ const PlayerRow = ({ index, player }) => {
 const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
 
 const Players = () => {
-  // const [paginatedData, setPaginatedData] = useState(null);
-  // const [isLoadingPagination, setIsLoadingPagination] = useState(false);
+  const [playdeckValue, setPlaydeckValue] = useState('');
   const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: countries, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList,
   );
-  const { playersSelected, countriesSelected } = filters;
+  const { playersSelected, countriesSelected, playdeckInput } = filters;
   const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
   useEffect(() => {
@@ -139,6 +139,18 @@ const Players = () => {
           onSelect={(value) => dispatch(setCountriesFilter(value.value))}
           items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
           selectedItem={countriesSelected?.value}
+        />
+        <Input
+          type="text"
+          filter="filter"
+          value={playdeckValue}
+          placeholder='Type the playdeck name'
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>setPlaydeckValue((prevState) => event.target.value)}
+          onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+            if (event.key === "Enter") {
+              dispatch(setPlaydeckFilter(playdeckValue))
+            }}}
+          border={error ? "error" : undefined}
         />
       </FilterPanel>
       <ResultsStyleWrapper>

@@ -42,12 +42,12 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
-export const getCountryIdByCode = async (code: string) => await prisma.countries.findFirst({
+export const getCountryCodeById = async (id: string) => await prisma.countries.findFirst({
     where: {
-      tld_code: code,
+      id: Number(id),
     },
     select: {
-      id: true,
+      tld_code: true,
     },
   });
 
