@@ -22,9 +22,9 @@ const Input = styled("input", {
     },
     filter: {
       filter: {
-        height: '40px'
-      }
-    }
+        height: "40px",
+      },
+    },
   },
   all: "unset",
   display: "inline-flex",

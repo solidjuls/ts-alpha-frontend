@@ -31,7 +31,7 @@ type SubmitFormProps = {
   isSubmitting: boolean;
   onSubmit: () => void;
   form: SubmitFormState;
-  normalizeData: SubmitFormNormalizeType
+  normalizeData: SubmitFormNormalizeType;
   onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
   leagueTypes: DropdownItemType[];
   users: DropdownItemType[];
@@ -89,8 +89,6 @@ const SubmitForm = ({
         <UserTypeahead
           labelText="opponentWas"
           selectedItem={form.opponentWas.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
           error={form.opponentWas.error}
           users={users}
           placeholder="Type the opponent name..."

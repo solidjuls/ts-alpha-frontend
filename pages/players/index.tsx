@@ -14,7 +14,13 @@ import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
-import { fetchPlayersList, setCurrentPage, setPlayersFilter, setCountriesFilter, setPlaydeckFilter } from "../../redux/playersListSlice";
+import {
+  fetchPlayersList,
+  setCurrentPage,
+  setPlayersFilter,
+  setCountriesFilter,
+  setPlaydeckFilter,
+} from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
@@ -105,7 +111,7 @@ const PlayerRow = ({ index, player }) => {
 const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
 
 const Players = () => {
-  const [playdeckValue, setPlaydeckValue] = useState('');
+  const [playdeckValue, setPlaydeckValue] = useState("");
   const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { data: countries, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
@@ -128,14 +134,14 @@ const Players = () => {
       <h1>Players list</h1>
       <FilterPanel>
         <MultiSelect
-          setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
+          setSelectedValues={(value: string) => dispatch(setPlayersFilter(value))}
           items={usersMemo}
           selectedValues={playersSelected}
           placeholder="Select Players..."
         />
         <CountriesTypeahead
           placeholder="Type the federation name..."
-          css={{ width: "300px", height: '40px' }}
+          css={{ width: "300px", height: "40px" }}
           onSelect={(value) => dispatch(setCountriesFilter(value.value))}
           items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
           selectedItem={countriesSelected?.value}
@@ -144,12 +150,15 @@ const Players = () => {
           type="text"
           filter="filter"
           value={playdeckValue}
-          placeholder='Type the playdeck name'
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>setPlaydeckValue((prevState) => event.target.value)}
+          placeholder="Type the playdeck name"
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setPlaydeckValue((prevState) => event.target.value)
+          }
           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === "Enter") {
-              dispatch(setPlaydeckFilter(playdeckValue))
-            }}}
+              dispatch(setPlaydeckFilter(playdeckValue));
+            }
+          }}
           border={error ? "error" : undefined}
         />
       </FilterPanel>

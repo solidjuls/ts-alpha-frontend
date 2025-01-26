@@ -92,6 +92,12 @@ const listSlice = createSlice({
   },
 });
 
-export const { setPlayersFilter, setCountriesFilter, setPlaydeckFilter, setClearFilter, setCurrentPage } = listSlice.actions;
+export const {
+  setPlayersFilter,
+  setCountriesFilter,
+  setPlaydeckFilter,
+  setClearFilter,
+  setCurrentPage,
+} = listSlice.actions;
 
 export default listSlice.reducer;

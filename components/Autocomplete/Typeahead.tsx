@@ -1,25 +1,41 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import React, { ReactNode, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
-import Downshift from "downshift";
+import Downshift, { ControllerStateAndHelpers, StateChangeOptions } from "downshift";
 import { AutocompleteInput, AutocompleteList, AutocompleteListItem } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
 import { Box } from "components/Atoms";
+import { DropdownItemType } from "types/types";
 
-const Typeahead = ({
+type TypeaheadProps = {
+  debounceTime: number;
+  onChange: (value: string) => void;
+  minChars: number;
+  onSelect: (obj: DropdownItemType | null | undefined) => void;
+  selectedValue: DropdownItemType | null | undefined;
+  children: ReactNode;
+  onBlur?: () => void;
+  error?: boolean;
+  id?: string;
+  resetOnSelect?: boolean;
+};
+
+const Typeahead: React.FC<TypeaheadProps> & {
+  Input: typeof AutocompleteInput;
+  List: typeof AutocompleteList;
+  Item: typeof AutocompleteListItem;
+} = ({
   debounceTime,
   onChange,
   minChars,
   onSelect,
   selectedValue,
-  selectedInputProperty,
   children,
   onBlur,
   error,
   id,
   resetOnSelect,
 }) => {
-  const [value, setValue] = useState(selectedValue);
+  const [value, setValue] = useState<DropdownItemType | null | undefined>(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedTerm] = useDebounce(searchTerm, debounceTime);
 
@@ -28,20 +44,21 @@ const Typeahead = ({
       onChange(debouncedTerm);
     }
   }, [debouncedTerm]);
+
   useEffect(() => {
-    if (
-      selectedValue?.[selectedInputProperty] &&
-      selectedValue?.[selectedInputProperty] !== value?.[selectedInputProperty]
-    ) {
+    if (selectedValue?.text && selectedValue?.text !== value?.text) {
       setValue(selectedValue);
     }
-  }, [selectedValue, selectedInputProperty, value]);
+  }, [selectedValue, value]);
 
   /**
    * State machine for the downshift component, here the state of the component can be managed in any way. Details explained here: https://github.com/downshift-js/downshift#onstatechange
    * @param {object} changes - Possible values: {highlightedIndex: number, inputValue: string, isOpen: boolean, selectedItem: any, type: statechangetypes}. https://github.com/downshift-js/downshift#statechangetypes
    */
-  const manageState = (changes, actions) => {
+  const manageState = (
+    changes: StateChangeOptions<DropdownItemType>,
+    actions: ControllerStateAndHelpers<DropdownItemType>,
+  ) => {
     if (changes.hasOwnProperty("selectedItem")) {
       if (changes.selectedItem) {
         !resetOnSelect && setValue(changes.selectedItem);
@@ -50,9 +67,8 @@ const Typeahead = ({
       }
     } else if (changes.hasOwnProperty("inputValue")) {
       if (changes?.inputValue?.length === 0) {
-        console.log("changes?.inputValue", changes?.inputValue);
         onBlur && onBlur();
-        setValue({});
+        setValue(null);
         setSearchTerm("");
       }
       if (changes.inputValue && changes.inputValue.length >= minChars) {
@@ -63,12 +79,14 @@ const Typeahead = ({
 
   const resetState = () => {
     onBlur && onBlur();
-    onSelect({});
+    onSelect(null);
     onChange("");
   };
 
-  const handleStateChange = (changes, actions) => {
-    console.log("changes, actions", changes?.inputValue, changes?.type, actions);
+  const handleStateChange = (
+    changes: StateChangeOptions<DropdownItemType>,
+    actions: ControllerStateAndHelpers<DropdownItemType>,
+  ) => {
     if (changes.type === Downshift.stateChangeTypes.keyDownEscape) {
       resetState();
     } else {
@@ -79,7 +97,7 @@ const Typeahead = ({
   return (
     <Downshift
       selectedItem={value}
-      itemToString={(item) => item?.[selectedInputProperty] || ""}
+      itemToString={(item) => item?.text || ""}
       onStateChange={handleStateChange}
     >
       {({
@@ -92,7 +110,7 @@ const Typeahead = ({
         highlightedIndex,
       }) => (
         <Box
-          {...getRootProps({})}
+          {...getRootProps(undefined, undefined)}
           css={{
             display: "block",
           }}
@@ -115,29 +133,6 @@ const Typeahead = ({
       )}
     </Downshift>
   );
-};
-
-Typeahead.propTypes = {
-  /** Unique id attribute */
-  id: PropTypes.string,
-  /** Number of characters that trigger the execution of the callback */
-  minChars: PropTypes.number,
-  /** Number of milliseconds from the input value change to the callback being triggered */
-  debounceTime: PropTypes.number,
-  /** Handler triggered when the user remove the value of the input element */
-  onBlur: PropTypes.func,
-  /** Handler triggered when the user selects a new value */
-  onSelect: PropTypes.func,
-  /** Property displayed into the input component when an item has been selected from the list*/
-  selectedInputProperty: PropTypes.string,
-  /** Components that will be rendered  */
-  children: PropTypes.node,
-  /** Selected value */
-  selectedValue: PropTypes.object,
-  /** Function executed when the input value changes. Receives the current input value as param */
-  onChange: PropTypes.func,
-  /** Resets the selected value when has been selected */
-  resetOnSelect: PropTypes.bool,
 };
 
 Typeahead.Input = AutocompleteInput;
