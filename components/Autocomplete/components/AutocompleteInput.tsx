@@ -25,8 +25,8 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
           onFocus: openMenu,
         })}
         datatest-id="inputText"
-        resetIcon={resetIcon}
-        icon=""
+        // resetIcon={resetIcon}
+        // icon=""
         {...rest}
         border={error ? "error" : undefined}
       />

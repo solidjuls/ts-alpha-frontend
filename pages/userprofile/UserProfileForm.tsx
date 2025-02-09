@@ -9,9 +9,12 @@ import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
 import CitiesTypeahead from "pages/usercreate/CitiesTypeahead";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import { DropdownItemType } from "types/types";
 
 type UserProfileFormProps = {
-  data: UserProfileState countries, citie
+  data: UserProfileState;
+  countries: DropdownItemType[]
+  cities: DropdownItemType[]
 }
 
 const inputWidth = "300px";

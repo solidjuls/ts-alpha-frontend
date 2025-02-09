@@ -28,7 +28,7 @@ const ListContainer = styled("div", {
   left: 0,
 });
 
-const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, css, ...rest }) => {
+const AutocompleteList = ({ children, noResultsCustomText, css, ...rest }) => {
   const { isOpen, getMenuProps } = useAutocompleteState();
 
   if (!isOpen) return null;
@@ -45,16 +45,6 @@ const AutocompleteList = ({ children, noResultsCustomText, noResultsTextLocale, 
       </ListContainer>
     </Box>
   );
-};
-
-AutocompleteList.defaultProps = {
-  noResultsTextLocale: "en",
-};
-
-AutocompleteList.propTypes = {
-  children: PropTypes.node,
-  noResultsCustomText: PropTypes.string,
-  noResultsTextLocale: PropTypes.oneOf(["en", "de"]),
 };
 
 export { AutocompleteList };
