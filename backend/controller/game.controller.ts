@@ -1,6 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
 import { calculateRating } from "./rating.controller";
+import { Prisma } from "@prisma/client";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -47,9 +48,9 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter: any, p: string, pageSize: number) => {
+export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, page: number, pageSize: number) => {
   pageSize = pageSize || 20;
-  const page = Number(p);
+
   const skip = (page - 1) * pageSize;
 
   const totalRows = await prisma.game_results.count({

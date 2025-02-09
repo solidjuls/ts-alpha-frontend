@@ -9,6 +9,7 @@ interface GameListState {
   filters: {
     tournamentSelected: string[];
     playersSelected: string[];
+    videoSelected: boolean;
     invalidateCache: boolean;
   };
   currentPage: number;
@@ -23,6 +24,7 @@ const initialState: GameListState = {
   filters: {
     tournamentSelected: [],
     playersSelected: [],
+    videoSelected: false,
     invalidateCache: false,
   },
   currentPage: 1,
@@ -32,13 +34,13 @@ const initialState: GameListState = {
 // Async thunk for fetching the list
 export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { getState }) => {
   const state = getState() as RootState;
-  const { tournamentSelected, playersSelected, invalidateCache } = state.gameList.filters;
+  const { tournamentSelected, playersSelected, videoSelected, invalidateCache } = state.gameList.filters;
   const { currentPage } = state.gameList;
 
   await clearAllCache("game-list");
 
   const response = await getAxiosInstance().get(
-    `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
+    `/api/game?toFilter=${tournamentSelected.map((item) => item.code)}&userFilter=${playersSelected.map((item) => item.code)}&video=${videoSelected}&p=${currentPage}&pso=20`,
     { id: `game-list` },
   );
 
@@ -67,6 +69,11 @@ const listSlice = createSlice({
       state.filters.invalidateCache = state.filters.playersSelected !== action.payload;
       state.filters.playersSelected = action.payload;
     },
+    setVideoFilter: (state, action) => {
+      state.currentPage = 1;
+      state.filters.invalidateCache = state.filters.videoSelected !== action.payload;
+      state.filters.videoSelected = action.payload;
+    },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
@@ -88,7 +95,7 @@ const listSlice = createSlice({
   },
 });
 
-export const { setTournamentFilter, setPlayersFilter, setClearFilter, setCurrentPage } =
+export const { setTournamentFilter, setPlayersFilter, setVideoFilter, setClearFilter, setCurrentPage } =
   listSlice.actions;
 
 export default listSlice.reducer;

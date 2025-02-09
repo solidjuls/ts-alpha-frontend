@@ -25,7 +25,9 @@ import {
   setCurrentPage,
   setPlayersFilter,
   setTournamentFilter,
+  setVideoFilter
 } from "../../redux/gameListSlice";
+import { Checkbox } from "components/Checkbox";
 
 const responsive = {
   "@sm": {
@@ -173,7 +175,7 @@ const Filter = ({ dispatch }) => {
   });
   const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { filters } = useSelector((state: RootState) => state.gameList);
-  const { playersSelected, tournamentSelected } = filters;
+  const { playersSelected, tournamentSelected, videoSelected } = filters;
 
   const onClear = () => {
     dispatch(setClearFilter());
@@ -204,6 +206,7 @@ const Filter = ({ dispatch }) => {
         setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
         closeOnSelect={false}
       />
+      <Checkbox text="With videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
