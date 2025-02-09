@@ -15,7 +15,7 @@ export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = n
   return await prisma.$queryRawTyped(getTopNRatedPlayers(pageSize, skip));
 };
 
-const roundValue = (value) => {
+const roundValue = (value: number) => {
   if (value < 0) {
     const roundedPositiveValue = Math.round(Math.abs(value));
     return roundedPositiveValue * -1;

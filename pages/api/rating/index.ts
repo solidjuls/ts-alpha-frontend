@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     playersWithRating = players
       .filter(
-        (player) => player.tld_code === tldCode?.tld_code || (playdeck && player.name === playdeck),
+        (player) => player.tld_code === tldCode?.tld_code || (playdeck && player.name?.toLowerCase() === playdeck.toLowerCase()),
       )
       .map((player) => {
         return {
@@ -24,6 +24,7 @@ export default async function handler(req, res) {
           rank: parseInt(player.ranking),
         };
       });
+
   } else {
     players = await getAllPlayers(p, pso, playerFilter);
     playersWithRating = players.map((player) => {
