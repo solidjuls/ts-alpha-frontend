@@ -3,7 +3,6 @@ import { submit } from "backend/controller/game.controller";
 import { authenticateJWT } from "pages/api/auth/middleware";
 
 export default async function handler(req, res) {
-  authenticateJWT(req, res, async () => {
     if (req.method === "POST") {
       try {
         let newGameWithId = {};
@@ -27,5 +26,4 @@ export default async function handler(req, res) {
         res.status(500).json(e.message);
       }
     }
-  });
 }

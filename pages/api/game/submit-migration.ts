@@ -1,5 +1,4 @@
 import { submit } from "backend/controller/game.controller";
-import { authenticateJWT } from "pages/api/auth/middleware";
 const fs = require("fs");
 const axios = require("axios");
 const path = require("path");
