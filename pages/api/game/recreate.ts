@@ -13,7 +13,7 @@ export default async function handler(req, res) {
           if (!req.body.data.oldId) {
             await submit(req.body.data);
           } else {
-            newGameWithId = await startRecreatingRatings(req.body.data, req.user.role);
+            newGameWithId = await startRecreatingRatings(req.body.data, 3);
           }
         }
 
