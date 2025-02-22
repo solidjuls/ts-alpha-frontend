@@ -7,7 +7,7 @@ type CountriesTypeaheadProps = {
   labelText: string;
   selectedItem: string;
   items: DropdownItemType[];
-  onSelect: any;
+  onSelect: (value: DropdownItemType) => void;
   placeholder: string;
   onBlur: any;
   css: any;

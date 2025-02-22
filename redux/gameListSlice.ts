@@ -58,6 +58,7 @@ const listSlice = createSlice({
       state.currentPage = 1;
       state.filters.tournamentSelected = [];
       state.filters.playersSelected = [];
+      state.filters.videoSelected = false;
     },
     setTournamentFilter: (state, action) => {
       state.currentPage = 1;

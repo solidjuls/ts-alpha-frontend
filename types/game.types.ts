@@ -20,7 +20,7 @@ export type UserCreateState = {
   preferredGamingPlatform: SubmitFormValue<DropdownItemType>;
   preferredGameDuration: SubmitFormValue<DropdownItemType>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownItemType>;
+  country: SubmitFormValue<string>;
   first_name: SubmitFormValue<string>;
   last_name: SubmitFormValue<string>;
   email: SubmitFormValue<string>;

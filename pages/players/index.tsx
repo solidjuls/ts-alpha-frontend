@@ -26,8 +26,8 @@ import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
 
 export const UnstyledLink = styled(Link, {
-  all: "unset" /* Unset all styles */,
-  cursor: "pointer" /* Set cursor to pointer */,
+  all: "unset",
+  cursor: "pointer",
 });
 
 const borderStyle = "solid 1px $greyLight";
@@ -142,7 +142,10 @@ const Players = () => {
         <CountriesTypeahead
           placeholder="Type the federation name..."
           css={{ width: "300px", height: "40px" }}
-          onSelect={(value) => dispatch(setCountriesFilter(value.value))}
+          onSelect={(value) => value && dispatch(setCountriesFilter(value.value))}
+          onBlur={() => {
+            dispatch(setCountriesFilter(""))
+          }}
           items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
           selectedItem={countriesSelected?.value}
         />

@@ -206,7 +206,7 @@ const Filter = ({ dispatch }) => {
         setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
         closeOnSelect={false}
       />
-      <Checkbox text="With videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
+      <Checkbox text="Games with videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
