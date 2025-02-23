@@ -24,6 +24,7 @@ import {
 import { ServerType } from "types/types";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
+import { UserType } from "types/user.types";
 
 export const UnstyledLink = styled(Link, {
   all: "unset",
@@ -112,7 +113,7 @@ const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: i
 
 const Players = () => {
   const [playdeckValue, setPlaydeckValue] = useState("");
-  const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, error } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
   const { data: countries, isLoading } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
