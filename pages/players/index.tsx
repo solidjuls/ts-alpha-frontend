@@ -131,6 +131,7 @@ const Players = () => {
   };
 
   if (isLoadingUsers || isLoadingCountries) return null
+  const paginationVisibility = !(playersSelected?.length !== 0  || countriesSelected?.length !== 0 || playdeckInput)
   return (
     <>
       <h1>Players list</h1>
@@ -157,7 +158,7 @@ const Players = () => {
           value={playdeckValue}
           placeholder="Type the playdeck name"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setPlaydeckValue((prevState) => event.target.value)
+            setPlaydeckValue(() => event.target.value)
           }
           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === "Enter") {
@@ -174,7 +175,7 @@ const Players = () => {
           isLoading={status === "loading"}
         />
       </ResultsStyleWrapper>
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+     {paginationVisibility && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />}
     </>
   );
 };
