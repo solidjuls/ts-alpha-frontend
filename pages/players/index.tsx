@@ -113,8 +113,8 @@ const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: i
 
 const Players = () => {
   const [playdeckValue, setPlaydeckValue] = useState("");
-  const { data: users, error } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
-  const { data: countries, isLoading } = useFetchInitialData({ url: `/api/countries` });
+  const { data: users, isLoading: isLoadingUsers, error } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
+  const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList,
@@ -130,6 +130,7 @@ const Players = () => {
     dispatch(setCurrentPage(page));
   };
 
+  if (isLoadingUsers || isLoadingCountries) return null
   return (
     <>
       <h1>Players list</h1>

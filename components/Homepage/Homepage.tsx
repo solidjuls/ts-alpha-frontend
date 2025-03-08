@@ -169,11 +169,11 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
 };
 
 const Filter = ({ dispatch }) => {
-  const { data: tournaments } = useFetchInitialData({
+  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
-  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { filters } = useSelector((state: RootState) => state.gameList);
   const { playersSelected, tournamentSelected, videoSelected } = filters;
 
@@ -190,6 +190,7 @@ const Filter = ({ dispatch }) => {
   // --blue-700: #1769aa;
   // --blue-800: #125386;
 
+  if (isLoadingTournament || isLoadingUsers) return null
   return (
     <FilterPanel>
       <FilterUser
