@@ -43,6 +43,7 @@ export const FilterPanel = styled("div", {
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
+  gap: 5,
   width: "100%",
   maxWidth: "1000px",
   backgroundColor: "white",

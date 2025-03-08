@@ -1,4 +1,4 @@
-import { DropdownType } from "utils/constants";
+import { DropdownItemType } from "types/types";
 import { z } from "zod";
 
 export type SubmitFormValue<T> = {
@@ -11,33 +11,21 @@ export type UserProfileState = {
   preferredGamingPlatform: SubmitFormValue<string>;
   preferredGameDuration: SubmitFormValue<string>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType[]>;
+  country: SubmitFormValue<DropdownItemType[]>;
   phone: SubmitFormValue<string>;
 };
 
 export type UserCreateState = {
   name: SubmitFormValue<string>;
-  preferredGamingPlatform: SubmitFormValue<DropdownType>;
-  preferredGameDuration: SubmitFormValue<DropdownType>;
+  preferredGamingPlatform: SubmitFormValue<DropdownItemType>;
+  preferredGameDuration: SubmitFormValue<DropdownItemType>;
   city: SubmitFormValue<string>;
-  country: SubmitFormValue<DropdownType>;
+  country: SubmitFormValue<string>;
   first_name: SubmitFormValue<string>;
   last_name: SubmitFormValue<string>;
   email: SubmitFormValue<string>;
   phone: SubmitFormValue<string>;
 };
-
-// | {
-//     oldId: SubmitFormValue<string>;
-//     gameWinner: SubmitFormValue<GameWinner> | null;
-//     gameCode: SubmitFormValue<string>;
-//     gameType: SubmitFormValue<string>;
-//     endTurn: SubmitFormValue<string>;
-//     endMode: SubmitFormValue<string>;
-//     video1: SubmitFormValue<string>;
-//     usaPlayerId?: SubmitFormValue<string>;
-//     ussrPlayerId?: SubmitFormValue<string>;
-//   };
 
 export type Game = {
   id: bigint;

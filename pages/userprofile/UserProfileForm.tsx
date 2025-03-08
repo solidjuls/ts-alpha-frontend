@@ -9,6 +9,13 @@ import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
 import CitiesTypeahead from "pages/usercreate/CitiesTypeahead";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import { DropdownItemType } from "types/types";
+
+type UserProfileFormProps = {
+  data: UserProfileState;
+  countries: DropdownItemType[]
+  cities: DropdownItemType[]
+}
 
 const inputWidth = "300px";
 const dropdownWidth = "300px";
@@ -54,7 +61,7 @@ const getInitialState = (data) => {
   };
 };
 
-const UserProfileForm = ({ data, countries, cities }) => {
+const UserProfileForm:React.FC<UserProfileFormProps> = ({ data, countries, cities }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");

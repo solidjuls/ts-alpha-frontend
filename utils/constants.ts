@@ -49,7 +49,7 @@ export const turns: Array<DropdownItemType> = [
   },
 ];
 
-export const endType: Array<DropdownType> = [
+export const endType: Array<DropdownItemType> = [
   {
     value: "VP Track (+20)",
     text: "VP Track (+20)",
@@ -96,7 +96,7 @@ const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn
 const getEndTurn = ({ winningOption }: { winningOption: string }) => {
   // if TIE then 8, 9, 10
 };
-export const gameWinningOptions: Array<DropdownType> = [
+export const gameWinningOptions: Array<DropdownItemType> = [
   {
     value: "1",
     text: "USA",
@@ -111,7 +111,7 @@ export const gameWinningOptions: Array<DropdownType> = [
   },
 ];
 
-export const gameSides: Array<DropdownType> = [
+export const gameSides: Array<DropdownItemType> = [
   {
     value: "1",
     text: "USA",
@@ -128,7 +128,7 @@ export const userRoles = {
   PLAYER: 1,
 };
 
-export const platforms: Array<DropdownType> = [
+export const platforms: Array<DropdownItemType> = [
   {
     value: "PC - Steam (Playdek)",
     text: "PC - Steam (Playdek)",
@@ -163,7 +163,7 @@ export const platforms: Array<DropdownType> = [
   },
 ];
 
-export const gameDurations: Array<DropdownType> = [
+export const gameDurations: Array<DropdownItemType> = [
   {
     value: "30 minutes",
     text: "30 minutes",

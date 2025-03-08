@@ -14,12 +14,21 @@ import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
-import { fetchPlayersList, setCurrentPage, setPlayersFilter } from "../../redux/playersListSlice";
+import {
+  fetchPlayersList,
+  setCurrentPage,
+  setPlayersFilter,
+  setCountriesFilter,
+  setPlaydeckFilter,
+} from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
+import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import { Input } from "components/Input";
+import { UserType } from "types/user.types";
 
 export const UnstyledLink = styled(Link, {
-  all: "unset" /* Unset all styles */,
-  cursor: "pointer" /* Set cursor to pointer */,
+  all: "unset",
+  cursor: "pointer",
 });
 
 const borderStyle = "solid 1px $greyLight";
@@ -103,15 +112,14 @@ const PlayerRow = ({ index, player }) => {
 const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
 
 const Players = () => {
-  // const [paginatedData, setPaginatedData] = useState(null);
-  // const [isLoadingPagination, setIsLoadingPagination] = useState(false);
-  const { data: users, error } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
-  // const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1" });
+  const [playdeckValue, setPlaydeckValue] = useState("");
+  const { data: users, isLoading: isLoadingUsers, error } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
+  const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({ url: `/api/countries` });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList,
   );
-  const { playersSelected } = filters;
+  const { playersSelected, countriesSelected, playdeckInput } = filters;
   const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
   useEffect(() => {
@@ -122,19 +130,42 @@ const Players = () => {
     dispatch(setCurrentPage(page));
   };
 
-  const handleFilterChange = async (selectedPlayers) => {
-    items;
-  };
-
+  if (isLoadingUsers || isLoadingCountries) return null
+  const paginationVisibility = !(playersSelected?.length !== 0  || countriesSelected?.length !== 0 || playdeckInput)
   return (
     <>
       <h1>Players list</h1>
       <FilterPanel>
         <MultiSelect
-          setSelectedValues={(value) => dispatch(setPlayersFilter(value))}
+          setSelectedValues={(value: string) => dispatch(setPlayersFilter(value))}
           items={usersMemo}
           selectedValues={playersSelected}
           placeholder="Select Players..."
+        />
+        <CountriesTypeahead
+          placeholder="Type the federation name..."
+          css={{ width: "300px", height: "40px" }}
+          onSelect={(value) => value && dispatch(setCountriesFilter(value.value))}
+          onBlur={() => {
+            dispatch(setCountriesFilter(""))
+          }}
+          items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
+          selectedItem={countriesSelected?.value}
+        />
+        <Input
+          type="text"
+          filter="filter"
+          value={playdeckValue}
+          placeholder="Type the playdeck name"
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setPlaydeckValue(() => event.target.value)
+          }
+          onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+            if (event.key === "Enter") {
+              dispatch(setPlaydeckFilter(playdeckValue));
+            }
+          }}
+          border={error ? "error" : undefined}
         />
       </FilterPanel>
       <ResultsStyleWrapper>
@@ -144,7 +175,7 @@ const Players = () => {
           isLoading={status === "loading"}
         />
       </ResultsStyleWrapper>
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+     {paginationVisibility && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />}
     </>
   );
 };

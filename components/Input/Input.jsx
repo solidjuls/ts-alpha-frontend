@@ -20,6 +20,11 @@ const Input = styled("input", {
         boxShadow: "none",
       },
     },
+    filter: {
+      filter: {
+        height: "40px",
+      },
+    },
   },
   all: "unset",
   display: "inline-flex",

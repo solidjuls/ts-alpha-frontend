@@ -9,3 +9,8 @@ export type DropdownItemType = {
   value: string;
   text: string;
 };
+
+export type MultiSelectItemType = {
+  code: string;
+  name: string;
+};

@@ -1,14 +1,28 @@
 import { getGameWithRatings } from "backend/controller/game.controller";
+import { Prisma } from "@prisma/client";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req, res) {
-  const { id, p = 1, pageSize = null, userFilter = null, toFilter = null } = req.query;
-  let filter = {};
+interface QueryParams {
+  id?: string;
+  p?: number;
+  pageSize?: number | null;
+  userFilter?: string | null;
+  toFilter?: string | null;
+  video?: string;
+}
+
+const createPrismaFilter = (params: QueryParams) => {
+  const { id, userFilter, toFilter, video } = params;
+
+  const filter: Prisma.game_resultsWhereInput = {};
+
   if (id) {
-    filter["id"] = id;
+    filter.id = Number(id);
   }
+
   if (userFilter) {
-    const userFilterArray = userFilter.split(",");
-    filter["OR"] = [
+    const userFilterArray = userFilter.split(",").map(Number);
+    filter.OR = [
       { usa_player_id: { in: userFilterArray } },
       { ussr_player_id: { in: userFilterArray } },
     ];
@@ -16,21 +30,22 @@ export default async function handler(req, res) {
 
   if (toFilter) {
     const toFilterArray = toFilter.split(",");
-    // If filter already has an OR condition, wrap it in an AND
-    if (filter.OR) {
-      filter = {
-        AND: [
-          filter,
-          {
-            OR: [{ game_type: { in: toFilterArray } }],
-          },
-        ],
-      };
-    } else {
-      filter["OR"] = [{ game_type: { in: toFilterArray } }];
-    }
+    filter.game_type = { in: toFilterArray};
   }
-  const { getGamesWithRating, totalRows } = await getGameWithRatings(filter, p, parseInt(pageSize));
+
+  if (video==='true') {
+    filter.video1 = { not: null };
+  }
+console.log({...filter})
+  return filter;
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { p = 1, pageSize = 20 } = req.query;
+ 
+  let filter = createPrismaFilter(req.query)
+
+  const { getGamesWithRating, totalRows } = await getGameWithRatings(filter, Number(p), Number(pageSize));
 
   const response = {
     results: getGamesWithRating,

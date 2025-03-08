@@ -3,10 +3,14 @@ import { Input } from "components/Input";
 import PropTypes from "prop-types";
 import { useAutocompleteState } from "../AutocompleteContext";
 
-const AutocompleteInput = ({
-  icon,
-  resetIcon = "ShapeCrossCircle",
+type AutocompleteInputProps = {
+  label: string;
+  placeholder: string;
+  error: boolean;
+};
+const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   label,
+  resetIcon = "ShapeCrossCircle",
   placeholder,
   error,
   ...rest
@@ -21,25 +25,13 @@ const AutocompleteInput = ({
           onFocus: openMenu,
         })}
         datatest-id="inputText"
-        icon={icon}
-        resetIcon={resetIcon}
+        // resetIcon={resetIcon}
+        // icon=""
         {...rest}
         border={error ? "error" : undefined}
       />
     </div>
   );
-};
-
-AutocompleteInput.defaultProps = {
-  icon: "",
-};
-
-AutocompleteInput.propTypes = {
-  /** icon name from winery Icons */
-  icon: PropTypes.string,
-  resetIcon: PropTypes.string,
-  label: PropTypes.string,
-  placeholder: PropTypes.string,
 };
 
 export { AutocompleteInput };

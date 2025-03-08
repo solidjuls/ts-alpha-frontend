@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
 import WithLabel from "./WithLabel";
+import { DropdownItemType } from "types/types";
 
-const UserTypeahead = ({
+type UserTypeaheadProps = {
+  labelText: string;
+  users: DropdownItemType[];
+  selectedItem: string;
+  onSelect: (item: DropdownItemType) => void;
+  placeholder: string;
+  css: any;
+  error: boolean;
+};
+
+const UserTypeahead: React.FC<UserTypeaheadProps> = ({
   labelText,
   users,
   selectedItem,
@@ -13,7 +24,7 @@ const UserTypeahead = ({
   ...rest
 }) => {
   const [input, setInput] = useState("");
-  const onChange = (input) => {
+  const onChange = (input: string) => {
     setInput(input);
   };
   const userSuggestions = users?.filter((user) => {
@@ -21,15 +32,13 @@ const UserTypeahead = ({
       return true;
     }
   });
-  const selectedItemParsed = userSuggestions?.find((user) => user.value === selectedItem) || {};
+  const selectedItemParsed = userSuggestions?.find((user) => user.value === selectedItem) || null;
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
         debounceTime={300}
         onChange={onChange}
         minChars={1}
-        // selectedValueProperty="value"
-        selectedInputProperty="text"
         onSelect={onSelect}
         selectedValue={selectedItemParsed}
         // onBlur={setValue}

@@ -25,7 +25,9 @@ import {
   setCurrentPage,
   setPlayersFilter,
   setTournamentFilter,
+  setVideoFilter
 } from "../../redux/gameListSlice";
+import { Checkbox } from "components/Checkbox";
 
 const responsive = {
   "@sm": {
@@ -167,13 +169,13 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
 };
 
 const Filter = ({ dispatch }) => {
-  const { data: tournaments } = useFetchInitialData({
+  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
-  const { data: users } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
   const { filters } = useSelector((state: RootState) => state.gameList);
-  const { playersSelected, tournamentSelected } = filters;
+  const { playersSelected, tournamentSelected, videoSelected } = filters;
 
   const onClear = () => {
     dispatch(setClearFilter());
@@ -188,6 +190,7 @@ const Filter = ({ dispatch }) => {
   // --blue-700: #1769aa;
   // --blue-800: #125386;
 
+  if (isLoadingTournament || isLoadingUsers) return null
   return (
     <FilterPanel>
       <FilterUser
@@ -204,6 +207,7 @@ const Filter = ({ dispatch }) => {
         setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
         closeOnSelect={false}
       />
+      <Checkbox text="Games with videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear

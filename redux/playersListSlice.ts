@@ -1,13 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import getAxiosInstance from "utils/axios";
+import { MultiSelectItemType } from "types/types";
 
 interface PLayersListState {
   items: any[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filters: {
-    playersSelected: string[];
+    playersSelected: MultiSelectItemType[];
+    countriesSelected: string[];
+    playdeckInput: string;
   };
   currentPage: number;
   totalPages: number;
@@ -20,6 +23,8 @@ const initialState: PLayersListState = {
   error: null,
   filters: {
     playersSelected: [],
+    countriesSelected: [],
+    playdeckInput: "",
   },
   currentPage: 1,
   totalPages: 1,
@@ -31,10 +36,12 @@ export const fetchPlayersList = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState() as RootState;
     const { playersSelected } = state.playersList.filters;
+    const { countriesSelected } = state.playersList.filters;
+    const { playdeckInput } = state.playersList.filters;
     const { currentPage } = state.playersList;
 
     const response = await getAxiosInstance().get(
-      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&pso=20`,
+      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&countrySelected=${countriesSelected}&playdeck=${playdeckInput}&pso=20`,
     );
 
     return {
@@ -51,10 +58,19 @@ const listSlice = createSlice({
     setClearFilter: (state) => {
       state.currentPage = 1;
       state.filters.playersSelected = [];
+      state.filters.countriesSelected = [];
     },
     setPlayersFilter: (state, action) => {
       state.currentPage = 1;
       state.filters.playersSelected = action.payload;
+    },
+    setCountriesFilter: (state, action) => {
+      state.currentPage = 1;
+      state.filters.countriesSelected = action.payload;
+    },
+    setPlaydeckFilter: (state, action) => {
+      state.currentPage = 1;
+      state.filters.playdeckInput = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -77,6 +93,12 @@ const listSlice = createSlice({
   },
 });
 
-export const { setPlayersFilter, setClearFilter, setCurrentPage } = listSlice.actions;
+export const {
+  setPlayersFilter,
+  setCountriesFilter,
+  setPlaydeckFilter,
+  setClearFilter,
+  setCurrentPage,
+} = listSlice.actions;
 
 export default listSlice.reducer;

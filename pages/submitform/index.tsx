@@ -123,7 +123,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
       if (key !== "video1" && form[key as keyof SubmitFormState].value === "") {
-        setForm((prevState: any) => ({
+        setForm((prevState: SubmitFormState) => ({
           ...prevState,
           [key]: {
             ...prevState[key],
@@ -207,10 +207,9 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     return submit;
   };
 
-  const onInputValueChange = (key: keyof SubmitFormState, value: string | Date) => {
+  const onInputValueChange = (key: keyof SubmitFormState, value: string) => {
     if (key === "opponentWas") {
       setForm((prevState) => {
-        const code = value?.[0]?.code;
         return {
           ...prevState,
           [key]: {

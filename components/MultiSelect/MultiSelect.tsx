@@ -1,29 +1,39 @@
 import { useState } from "react";
-import { MultiSelect } from "primereact/multiselect";
+import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
 import { styled } from "stitches.config";
+import { MultiSelectItemType } from "types/types";
 
 const StyledMultiSelect = styled(MultiSelect, {
   width: "250px",
   padding: "0",
 });
 
-const MultiSelectComponent = ({
+type MultiSelectComponentProps = {
+  items: MultiSelectItemType[];
+  placeholder: string;
+  selectedValues: string[];
+  setSelectedValues: (value: string) => void;
+  filter?: boolean;
+  closeOnSelect?: boolean;
+  selectionLimit?: number;
+};
+
+const MultiSelectComponent: React.FC<MultiSelectComponentProps> = ({
   items,
-  onChange,
   placeholder,
   selectedValues,
   setSelectedValues,
   filter = true,
   closeOnSelect = true,
-  selectionLimit = null,
+  selectionLimit,
 }) => {
   const [overlayVisible, setOverlayVisible] = useState(false);
 
   if (!items) return null;
 
-  const selectedItemTemplate = (option) => option?.name;
+  const selectedItemTemplate = (option: MultiSelectItemType) => option?.name;
 
-  const handleChange = (e) => {
+  const handleChange = (e: MultiSelectChangeEvent) => {
     setSelectedValues(e.value);
     setOverlayVisible(false);
   };

@@ -228,6 +228,8 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     }
   };
 
+  if (loadingTournaments || loadingUsers) return null;
+  
   const usersParsed = users?.map((item) => ({
     value: item.id,
     text: item.name,

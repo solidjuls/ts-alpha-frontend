@@ -10,7 +10,7 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
-import { SubmitFormState } from ".";
+import { SubmitFormNormalizeType, SubmitFormState } from ".";
 
 const dropdownWidth = "370px";
 
@@ -31,7 +31,8 @@ type SubmitFormProps = {
   isSubmitting: boolean;
   onSubmit: () => void;
   form: SubmitFormState;
-  onInputValueChange: (key: keyof SubmitFormState, value: string | Date) => void;
+  normalizeData: SubmitFormNormalizeType;
+  onInputValueChange: (key: keyof SubmitFormState, value: string) => void;
   leagueTypes: DropdownItemType[];
   users: DropdownItemType[];
 };
@@ -88,8 +89,6 @@ const SubmitForm = ({
         <UserTypeahead
           labelText="opponentWas"
           selectedItem={form.opponentWas.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
           error={form.opponentWas.error}
           users={users}
           placeholder="Type the opponent name..."
