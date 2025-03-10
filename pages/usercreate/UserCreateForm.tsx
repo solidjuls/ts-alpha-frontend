@@ -33,11 +33,11 @@ const getInitialState = () => {
       error: false,
     },
     preferredGamingPlatform: {
-      value: "",
+      value: undefined,
       error: false,
     },
     preferredGameDuration: {
-      value: "",
+      value: undefined,
       error: false,
     },
     city: {
@@ -68,7 +68,8 @@ const getInitialState = () => {
 };
 
 type UserCreateFormProps = {
-  countries: DropdownItemType[];
+  countries?: DropdownItemType[];
+  cities?: DropdownItemType[];
 };
 
 const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) => {
@@ -121,6 +122,7 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
       };
     });
   };
+  
   const normalizeData = (localForm: UserCreateState) => {
     let payloadObject: Partial<Record<keyof UserCreateState, string>> = {};
 

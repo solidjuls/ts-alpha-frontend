@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
-import { GameAPI, GameWinner } from "types/game.types";
+import { GameAPI, GameWinner, TournamentsType } from "types/game.types";
 import SubmitForm from "./SubmitForm";
-import { ServerType } from "types/types";
+import { DropdownItemType, ServerType } from "types/types";
 import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
+import { UserType } from "types/user.types";
 
 type SubmitFormProps = {
   role: number;
@@ -18,7 +19,7 @@ export type SubmitFormValue<T> = {
 };
 
 export type SubmitFormState = {
-  gameWinner: SubmitFormValue<GameWinner>;
+  gameWinner: SubmitFormValue<GameWinner | "">;
   gameCode: SubmitFormValue<string>;
   gameType: SubmitFormValue<string>;
   opponentWas: SubmitFormValue<string>;
@@ -30,7 +31,7 @@ export type SubmitFormState = {
 
 const initialState: SubmitFormState = {
   gameWinner: {
-    value: "1",
+    value: "",
     error: false,
   },
   gameCode: {
@@ -72,11 +73,11 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData({
+  const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
     url: "/api/user",
     cacheId: "user-list",
   });
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
@@ -96,7 +97,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       gameType: localForm.gameType.value,
       usaPlayerId: usaPlayerId,
       ussrPlayerId: ussrPlayerId,
-      gameWinner: localForm.gameWinner.value,
+      gameWinner: localForm.gameWinner.value as GameWinner,
       gameCode: localForm.gameCode.value,
       endMode: localForm.endMode.value,
       endTurn: localForm.endTurn.value,
@@ -126,7 +127,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         setForm((prevState: SubmitFormState) => ({
           ...prevState,
           [key]: {
-            ...prevState[key],
+            ...prevState[key as keyof SubmitFormState],
             error: true,
           },
         }));
@@ -265,15 +266,15 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   };
   if (loadingTournaments || loadingUsers) return null;
 
-  const usersParsed = users?.map((item) => ({
+  const usersParsed: DropdownItemType[] = users?.map((item) => ({
     value: item.id,
     text: item.name,
-  }));
+  })) || [];
 
-  const leagueTypes = tournaments?.map((item) => ({
+  const leagueTypes: DropdownItemType[] = tournaments?.map((item) => ({
     value: item.text,
     text: item.text,
-  }));
+  })) || [];
 
   return (
     <SubmitForm

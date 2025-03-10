@@ -1,16 +1,13 @@
 import { Spinner } from "@radix-ui/themes";
-import { EditTextComponent } from "components/EditFormComponents";
-import { useSession } from "contexts/AuthProvider";
-import { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import UserCreateForm from "./UserCreateForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { userRoles } from "utils/constants";
-import { ServerType } from "types/types";
+import { City, Country, ServerType } from "types/types";
 
 const UserCreateContainer = () => {
-  const { data, isLoading } = useFetchInitialData({ url: `/api/countries` });
-  const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
+  const { data, isLoading } = useFetchInitialData<Country[]>({ url: `/api/countries` });
+  const { data: cities, isLoading: citiesLoading } = useFetchInitialData<City[]>({
     url: `/api/cities`,
   });
 

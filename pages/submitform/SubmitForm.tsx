@@ -31,7 +31,6 @@ type SubmitFormProps = {
   isSubmitting: boolean;
   onSubmit: () => void;
   form: SubmitFormState;
-  normalizeData: SubmitFormNormalizeType;
   onInputValueChange: (key: keyof SubmitFormState, value: string) => void;
   leagueTypes: DropdownItemType[];
   users: DropdownItemType[];
@@ -96,7 +95,7 @@ const SubmitForm = ({
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
-          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value)}
+          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value || "")}
         />
         <DropdownWithLabel
           labelText="gameWinner"
