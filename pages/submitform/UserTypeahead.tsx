@@ -8,6 +8,7 @@ type UserTypeaheadProps = {
   users: DropdownItemType[];
   selectedItem: string;
   onSelect: (item: DropdownItemType) => void;
+  onBlur: () => void
   placeholder: string;
   css: any;
   error: boolean;

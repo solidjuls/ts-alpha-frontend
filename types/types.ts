@@ -6,8 +6,8 @@ export type ServerType = {
 };
 
 export type DropdownItemType = {
-  value: string;
-  text: string;
+  value?: string;
+  text?: string;
 };
 
 export type MultiSelectItemType = {
