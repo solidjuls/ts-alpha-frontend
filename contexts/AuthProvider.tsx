@@ -11,7 +11,7 @@ type AuthContextProps = Pick<AuthType, "name" | "email" | "id"> & {
   setAuthentication?: (authProps: AuthType) => void;
   login?: LoginFnType;
   logout?: LogoutFnType;
-  errorMsg?: string;
+  errorMsg: string | null;
 };
 
 const KEY = "ts-user";
@@ -24,7 +24,7 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-const AuthProvider: React.FC<AuthProviderProps> = ({ children, name, email, id, role }) => {
+const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({ children, name, email, id, role }) => {
   const router = useRouter();
   const [auth, setAuth] = useState<AuthType>({ name, email, id, role });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);

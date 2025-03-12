@@ -45,7 +45,7 @@ export type Game = {
   gameWinner: GameWinner;
   endTurn: number | null;
   endMode: string | null;
-  game_date: Date;
+  gameDate: Date;
   video1: string | null;
   videoURL: string;
   reporter_id: bigint | null;
@@ -56,6 +56,10 @@ export type Game = {
   ratingsUSA: GameRating;
   ratingsUSSR: GameRating;
 };
+
+export type GameAPIResponseType = {
+  results: Game[]
+}
 
 export const zGameAPI = z.object({
   gameWinner: z.enum(["1", "2", "3"]),

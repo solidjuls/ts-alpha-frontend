@@ -4,10 +4,7 @@ import { FlagIcon } from "components/FlagIcon";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
-import { dateAddDay } from "utils/dates";
-import { SkeletonHomepage } from "components/Skeletons";
-import { Game } from "types/game.types";
-import Image from "next/image";
+import { Game, TournamentsType } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
@@ -28,6 +25,13 @@ import {
   setVideoFilter
 } from "../../redux/gameListSlice";
 import { Checkbox } from "components/Checkbox";
+import { UserType } from "types/user.types";
+import { MultiSelectItemType } from "types/types";
+
+type ResultsPanelProps = {
+  data: Game[]
+  isLoading: boolean
+}
 
 const responsive = {
   "@sm": {
@@ -131,9 +135,19 @@ const EmptyState = () => {
   );
 };
 
-const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }) => {
+type FilterUserProps = {
+  users: UserType[]
+  selectedValues: MultiSelectItemType[]
+}
+
+type FilterTournamentProps = {
+  tournaments: TournamentsType[]
+  selectedValues: MultiSelectItemType[]
+}
+
+const FilterUser: React.FC<FilterUserProps> = ({ onFilterChange, users, selectedValues, setSelectedValues }) => {
   const usersMemo = useMemo(
-    () => users?.map((item) => ({ code: item.id, name: item.name })),
+    () => users.map((item) => ({ code: item.id as string, name: item.name as string })),
     [users],
   );
 
@@ -149,9 +163,9 @@ const FilterUser = ({ onFilterChange, users, selectedValues, setSelectedValues }
     </Box>
   );
 };
-const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) => {
+const FilterTournament: React.FC<FilterTournamentProps> = ({ tournaments, selectedValues, setSelectedValues }) => {
   const tournamentsMemo = useMemo(
-    () => tournaments?.map((item) => ({ code: item.text, name: item.text })),
+    () => tournaments.map((item) => ({ code: item.text, name: item.text })),
     [tournaments],
   );
 
@@ -168,12 +182,13 @@ const FilterTournament = ({ tournaments, selectedValues, setSelectedValues }) =>
   );
 };
 
-const Filter = ({ dispatch }) => {
-  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData({
+const Filter = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData<TournamentsType[]>({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
-  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
   const { filters } = useSelector((state: RootState) => state.gameList);
   const { playersSelected, tournamentSelected, videoSelected } = filters;
 
@@ -193,20 +208,20 @@ const Filter = ({ dispatch }) => {
   if (isLoadingTournament || isLoadingUsers) return null
   return (
     <FilterPanel>
-      <FilterUser
+      {users && <FilterUser
         users={users}
         selectedValues={playersSelected}
         setSelectedValues={(value) => {
           dispatch(setPlayersFilter(value));
         }}
         closeOnSelect={false}
-      />
-      <FilterTournament
+      />}
+      {tournaments && <FilterTournament
         tournaments={tournaments}
         selectedValues={tournamentSelected}
         setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
         closeOnSelect={false}
-      />
+      />}
       <Checkbox text="Games with videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
@@ -217,7 +232,7 @@ const Filter = ({ dispatch }) => {
   );
 };
 
-export const ResultsPanel = ({ data, dateValue, onClickDay, isLoading, excludePagination }) => {
+export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -255,7 +270,7 @@ const ResponsiveContainer = styled("div", {
   },
 });
 
-const Homepage: React.FC<HomepageProps> = () => {
+const Homepage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.gameList,
@@ -277,7 +292,7 @@ const Homepage: React.FC<HomepageProps> = () => {
       }}
     >
       <Flex css={{ flexDirection: "column", width: "100%" }}>
-        <Filter dispatch={dispatch} />
+        <Filter />
         <ResultsPanel
           data={items.results}
           isLoading={status === "loading"}

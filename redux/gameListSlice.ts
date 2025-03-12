@@ -1,14 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
 import getAxiosInstance, { clearAllCache } from "utils/axios";
+import { Game } from "types/game.types";
+import { MultiSelectItemType } from "types/types";
 
 interface GameListState {
-  items: any[];
+  items: {
+    results: Game[];
+  },
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filters: {
-    tournamentSelected: string[];
-    playersSelected: string[];
+    tournamentSelected: MultiSelectItemType[];
+    playersSelected: MultiSelectItemType[];
     videoSelected: boolean;
     invalidateCache: boolean;
   };
