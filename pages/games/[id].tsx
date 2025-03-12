@@ -108,8 +108,10 @@ const GameContent = ({ data }) => {
   const generateText = () => {
     let winnerName = "";
     let loserName = "";
+    
+    const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`;
     if (data.gameWinner === "3") {
-      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${countryFlags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${countryFlags[data.ussrCountryCode?.toLowerCase()]} in Final Scoring (Final Scoring)`;
+      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${countryFlags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${countryFlags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
     }
 
     if (data.gameWinner === "1") {
@@ -119,7 +121,7 @@ const GameContent = ({ data }) => {
       winnerName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
       loserName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
     }
-    const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`;
+    
     return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
   };
 
