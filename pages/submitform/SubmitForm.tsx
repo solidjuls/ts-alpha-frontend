@@ -108,10 +108,6 @@ const SubmitForm = ({
           css={{ width: dropdownWidth }}
           onSelect={(value: string) => {
             onInputValueChange("gameWinner", value);
-            if (value === "3") {
-              onInputValueChange("endTurn", "11");
-              onInputValueChange("endMode", "Final Scoring");
-            }
           }}
         />
         <DropdownWithLabel
