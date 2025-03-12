@@ -10,6 +10,7 @@ export const getWinnerText = (gameWinner: GameWinner) => {
   return "TIE";
 };
 
-export const getTurnText = (turnNumber: number) => {
+export const getTurnText = (turnNumber: number | null) => {
+  if (!turnNumber) return "-"
   return turns.find((turn) => turn.value === String(turnNumber))?.text;
 };

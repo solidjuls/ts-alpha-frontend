@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { GetServerSideProps } from "next";
-import type { Game } from "types/game.types";
+import type { Game, GameAPIResponseType } from "types/game.types";
 import { Box, Span, Flex } from "components/Atoms";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
@@ -64,11 +64,19 @@ type PlayerNameProps = {
   isUSSR?: boolean;
 };
 
+interface CountryFlags {
+  [countryCode: string]: string;
+}
+
 type GameProps = {
   gameId: string;
 };
 
-const GameContent = ({ data }) => {
+type GameContentProps = {
+  data: Game
+}
+
+const GameContent: React.FC<GameContentProps> = ({ data }) => {
   const { role } = useSession();
   const {
     id,
@@ -108,18 +116,19 @@ const GameContent = ({ data }) => {
   const generateText = () => {
     let winnerName = "";
     let loserName = "";
-    
+
+    const flags: CountryFlags = countryFlags
     const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`;
     if (data.gameWinner === "3") {
-      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${countryFlags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${countryFlags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
+      return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${flags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${flags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
     }
 
     if (data.gameWinner === "1") {
-      winnerName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
-      loserName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
+      winnerName = data.usaPlayer + " " + flags[data.usaCountryCode?.toLowerCase()];
+      loserName = data.ussrPlayer + " " + flags[data.ussrCountryCode?.toLowerCase()];
     } else if (data.gameWinner === "2") {
-      winnerName = data.ussrPlayer + " " + countryFlags[data.ussrCountryCode?.toLowerCase()];
-      loserName = data.usaPlayer + " " + countryFlags[data.usaCountryCode?.toLowerCase()];
+      winnerName = data.ussrPlayer + " " + flags[data.ussrCountryCode?.toLowerCase()];
+      loserName = data.usaPlayer + " " + flags[data.usaCountryCode?.toLowerCase()];
     }
     
     return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
@@ -163,7 +172,7 @@ const GameContent = ({ data }) => {
             <Span>{getWinnerText(data.gameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>
             <Span>{endMode}</Span>
-            <Span>{dateFormat(new Date(data.created_at))}</Span>
+            <Span>{data.created_at ? dateFormat(new Date(data.created_at)) : null}</Span>
             {data.videoURL && (
               <a target="_blank" href={data.videoURL} rel="noopener noreferrer">
                 Link to video
@@ -196,11 +205,8 @@ const GameContent = ({ data }) => {
 
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
-  // If the page is not yet generated, this will be displayed initially until the page is generated
-  // if (router.isFallback) {
-  //   return <div>Loading...</div>;
-  // }
-  const { data, isLoading } = useFetchInitialData({ url: `/api/game?id=${gameId}` });
+
+  const { data, isLoading } = useFetchInitialData<GameAPIResponseType>({ url: `/api/game?id=${gameId}` });
   if (!data) return null;
 
   if (data.results && data.results.length === 0) {
@@ -229,13 +235,14 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   );
 };
 
-const ChevronContainer = ({ rating, previousRating }) =>
+const ChevronContainer = ({ rating, previousRating }: {rating: number; previousRating: number; }) =>
   rating > previousRating ? (
     <StyledChevronUpIcon color="green" />
   ) : (
     <StyledChevronDownIcon color="red" />
   );
-const Rating = ({ rating, previousRating, isUSSR }) => {
+
+const Rating = ({ rating, previousRating, isUSSR }: {rating: number; previousRating: number; isUSSR?: Boolean}) => {
   return !isUSSR ? (
     <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
       <Text fontSize="small">{previousRating}</Text>
@@ -254,6 +261,7 @@ const Rating = ({ rating, previousRating, isUSSR }) => {
     </Flex>
   );
 };
+
 const PlayerName: React.FC<PlayerNameProps> = ({
   playerName,
   userId,
