@@ -194,11 +194,11 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
             </Button>
           </Flex>
           {deleteSuccessMessage && <div>Game deleted successfully</div>}
-          <div style={{ padding: "12px", border: "solid 1px black" }}>
-            <LabelCopy text={generateText()} />
-          </div>
         </>
       )}
+      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && <div style={{ padding: "12px", border: "solid 1px black" }}>
+        <LabelCopy text={generateText()} />
+      </div>}
     </>
   );
 };

@@ -126,14 +126,14 @@ const Items = ({ styles, role }: any) => {
             <FormattedMessage id="profileText" />
           </Text>
       </UnstyledLink>
-      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+      {(role === userRoles.SUPERADMIN) && (
         <UnstyledLink href="/recreateform" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Recreate Form
           </Text>
         </UnstyledLink>
       )}
-      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+      {(role === userRoles.SUPERADMIN) && (
         <UnstyledLink href="/usercreate" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Register user
@@ -246,7 +246,7 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+            {(role === userRoles.SUPERADMIN) && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
                   <Text strong="bold" css={horizontalItemStyles}>
@@ -255,7 +255,7 @@ const VerticalSidebar = () => {
                 </Item>
               </UnstyledLink>
             )}
-            {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+            {(role === userRoles.SUPERADMIN) && (
               <UnstyledLink href="/userprofile" passHref>
                 <Item>
                   <Text strong="bold" css={horizontalItemStyles}>
