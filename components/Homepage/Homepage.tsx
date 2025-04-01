@@ -30,7 +30,7 @@ import { MultiSelectItemType } from "types/types";
 
 type ResultsPanelProps = {
   data: Game[]
-  isLoading: boolean
+  isLoading?: boolean
 }
 
 const responsive = {

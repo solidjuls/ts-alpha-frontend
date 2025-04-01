@@ -13,9 +13,9 @@ import { DropdownItemType } from "types/types";
 
 type UserProfileFormProps = {
   data: UserProfileState;
-  countries: DropdownItemType[]
-  cities: DropdownItemType[]
-}
+  countries?: DropdownItemType[];
+  cities?: DropdownItemType[];
+};
 
 const inputWidth = "300px";
 const dropdownWidth = "300px";
@@ -32,7 +32,7 @@ const formStyles = {
   },
 };
 
-const getInitialState = (data) => {
+const getInitialState = ({data}) => {
   return {
     name: {
       value: data.name,
@@ -61,7 +61,7 @@ const getInitialState = (data) => {
   };
 };
 
-const UserProfileForm:React.FC<UserProfileFormProps> = ({ data, countries, cities }) => {
+const UserProfileForm: React.FC<UserProfileFormProps> = ({ data, countries, cities }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");

@@ -4,7 +4,7 @@ import { z } from "zod";
 export type TournamentsType = {
   code: string;
   text: string;
-}
+};
 export type SubmitFormValue<T> = {
   value: T;
   error: boolean;
@@ -17,6 +17,28 @@ export type UserProfileState = {
   city: SubmitFormValue<string>;
   country: SubmitFormValue<DropdownItemType[]>;
   phone: SubmitFormValue<string>;
+};
+
+export type User = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  name: string;
+  email: string;
+  phone_number: string;
+  last_login_at: Date;
+  preferred_gaming_platform: string;
+  preferred_game_duration: string;
+  timezone_id: string;
+  cities: {
+    id: string;
+    name: string;
+  };
+  countries: {
+    id: string;
+    country_name: string;
+  };
+  rating: number;
 };
 
 export type UserCreateState = {
@@ -58,8 +80,8 @@ export type Game = {
 };
 
 export type GameAPIResponseType = {
-  results: Game[]
-}
+  results: Game[];
+};
 
 export const zGameAPI = z.object({
   gameWinner: z.enum(["1", "2", "3"]),

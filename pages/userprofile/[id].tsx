@@ -1,4 +1,3 @@
-import { useSession } from "contexts/AuthProvider";
 import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";
 import { Box, Flex } from "components/Atoms";
@@ -7,8 +6,11 @@ import { Spinner } from "@radix-ui/themes";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
+import { Game, User } from "types/game.types";
+import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next/types";
+import { ParsedUrlQuery } from "querystring";
 
-const UserProfileContent = ({ data }) => (
+const UserProfileContent: React.FC<User> = (data) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name} />
@@ -17,7 +19,7 @@ const UserProfileContent = ({ data }) => (
     <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform} />
     <DisplayInfo label="Email" infoText={data?.email} />
 
-    <DisplayInfo label="Rating" infoText={data?.rating} />
+    <DisplayInfo label="Rating" infoText={data?.rating?.toString()} />
     <DisplayInfo label="Regional federation" infoText="-" />
     <DisplayInfo
       label="Last activity date"
@@ -26,12 +28,20 @@ const UserProfileContent = ({ data }) => (
     <DisplayInfo label="Preferred game duration" infoText={data?.preferred_game_duration} />
   </>
 );
-const UserProfile = ({ id }) => {
-  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
 
-  const gameDataResult = useFetchInitialData({ url: `/api/game?userFilter=${id}&pageSize=10` });
+interface UserProfileProps {
+  id: string;
+}
 
-  const { email } = useSession();
+type GameResponseType = {
+  results: Game[];
+  totalRows: number;
+};
+const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
+  const { data, isLoading } = useFetchInitialData<User>({ url: `/api/user?id=${id}` });
+  const { data: games, isLoading: loadingGames } = useFetchInitialData<GameResponseType>({
+    url: `/api/game?userFilter=${id}&pageSize=10`,
+  });
 
   return (
     <>
@@ -42,7 +52,6 @@ const UserProfile = ({ id }) => {
             gap: "0.25rem",
             maxWidth: "48rem",
             gridTemplateColumns: "1fr 2fr",
-            maxWidth: "48rem",
             backgroundColor: "white",
             padding: "24px 0 24px 24px",
             alignItems: "left",
@@ -51,10 +60,9 @@ const UserProfile = ({ id }) => {
             borderRadius: "8px",
             boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
             width: "100%",
-            maxWidth: "48rem",
           }}
         >
-          {isLoading ? <Spinner size="3" /> : <UserProfileContent data={data} />}
+          {isLoading || !data ? <Spinner size="3" /> : <UserProfileContent {...data} />}
         </Box>
       </DetailContainer>
       <DetailContainer backButton={false}>
@@ -62,11 +70,7 @@ const UserProfile = ({ id }) => {
           css={{ width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
         >
           Recent Games
-          {gameDataResult.isLoading ? (
-            <Spinner size="3" />
-          ) : (
-            <ResultsPanel data={gameDataResult.data.results} excludePagination={true} />
-          )}
+          {loadingGames || !games ? <Spinner size="3" /> : <ResultsPanel data={games.results} />}
         </Flex>
       </DetailContainer>
     </>
@@ -75,8 +79,16 @@ const UserProfile = ({ id }) => {
 
 export default UserProfile;
 
-export async function getServerSideProps(context) {
-  const payload = getInfoFromCookies(context.req, context.res);
+export async function getServerSideProps({
+  req,
+  res,
+  params,
+}: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+  params: ParsedUrlQuery;
+}) {
+  const payload = getInfoFromCookies(req, res);
 
   if (!payload) {
     return {
@@ -86,6 +98,6 @@ export async function getServerSideProps(context) {
       },
     };
   }
-  const { id } = context.params;
+  const { id } = params;
   return { props: { role: payload.role || null, id } };
 }

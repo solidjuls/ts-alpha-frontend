@@ -287,8 +287,8 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         }
       },
       {
-        maxWait: 5000, // default: 2000
-        timeout: 20000, // default: 5000
+        maxWait: 500000, // default: 2000
+        timeout: 2000000, // default: 5000
       },
     );
   } catch (error) {
