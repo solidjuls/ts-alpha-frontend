@@ -10,7 +10,7 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
-import { SubmitFormNormalizeType, SubmitFormState } from ".";
+import { SubmitFormState } from ".";
 
 const dropdownWidth = "370px";
 
@@ -133,7 +133,7 @@ const SubmitForm = ({
           inputValue={form.video1.value}
           placeholder="Link to the video..."
           error={form.video1.error}
-          css={{ width: "500px" }}
+          css={{ width: "300px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         <Button

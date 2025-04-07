@@ -59,6 +59,8 @@ const StyledContent = styled(Content, {
   borderRadius: 4,
   backgroundColor: "white",
   width: "390px",
+  height: "300px",
+  overflow: "scroll",
   // boxShadow: "0 0 15px $colors$shadow",
   border: "1px solid #ced4da",
   zIndex: "99",
