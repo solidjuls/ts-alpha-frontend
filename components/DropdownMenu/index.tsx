@@ -59,6 +59,7 @@ const StyledContent = styled(Content, {
   borderRadius: 4,
   backgroundColor: "white",
   width: "390px",
+  overflow: "scroll",
   // boxShadow: "0 0 15px $colors$shadow",
   border: "1px solid #ced4da",
   zIndex: "99",
@@ -85,12 +86,14 @@ const DropdownMenu = ({
   selectedItem,
   onSelect,
   error,
+  height = undefined,
   css,
 }: {
   items: DropdownItemType[];
   selectedItem: string;
   onSelect: (value: string) => void;
   placeholder: string;
+  height?: string;
   error?: boolean;
   css?: Stitches.CSS;
 }) => {
@@ -120,7 +123,7 @@ const DropdownMenu = ({
         </Box>
       </StyledTrigger>
 
-      <StyledContent>
+      <StyledContent css={{ height: height }}>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}
