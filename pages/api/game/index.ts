@@ -36,7 +36,7 @@ const createPrismaFilter = (params: QueryParams) => {
   if (video==='true') {
     filter.video1 = { not: null };
   }
-console.log({...filter})
+
   return filter;
 };
 

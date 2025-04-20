@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
 import { calculateRating } from "./rating.controller";
-import { Prisma } from "@prisma/client";
+import { Prisma, game_results } from "@prisma/client";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -35,7 +35,8 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
           game.users_game_results_ussr_player_idTousers.first_name +
           " " +
           game.users_game_results_ussr_player_idTousers.last_name,
-        gameType: game.game_type,
+        gameType: game.tournaments.tournament_name,
+        tournamentId: game.tournaments.id,
         game_code: game.game_code,
         gameDate: game.game_date,
         videoURL: game.video1,
@@ -59,7 +60,31 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
     },
   });
   const games = await prisma.game_results.findMany({
-    include: {
+    select: {
+      id: true,
+      usa_player_id: true,
+      ussr_player_id: true,
+      created_at: true,
+      end_mode: true,
+      end_turn: true,
+      game_code: true,
+      game_date: true,
+      video1: true,
+      game_winner: true,
+      usa_previous_rating: true,
+      ussr_previous_rating: true,
+      ratings_history: {
+        select: {
+          rating: true,
+          player_id: true,
+        },
+      },
+      tournaments: {
+        select: {
+          tournament_name: true,
+          id: true
+        }
+      },
       users_game_results_usa_player_idTousers: {
         select: {
           first_name: true,
@@ -69,7 +94,7 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
               tld_code: true,
             },
           },
-        },
+        }
       },
       users_game_results_ussr_player_idTousers: {
         select: {
@@ -80,14 +105,8 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
               tld_code: true,
             },
           },
-        },
-      },
-      ratings_history: {
-        select: {
-          rating: true,
-          player_id: true,
-        },
-      },
+        }
+      }
     },
     where: {
       ...filter,
@@ -117,6 +136,7 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
     };
   });
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
+  console.log("getGamesWithRating", getGamesWithRating)
   return { getGamesWithRating, totalRows };
 };
 
