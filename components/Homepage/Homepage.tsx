@@ -165,7 +165,7 @@ const FilterUser: React.FC<FilterUserProps> = ({ onFilterChange, users, selected
 };
 const FilterTournament: React.FC<FilterTournamentProps> = ({ tournaments, selectedValues, setSelectedValues }) => {
   const tournamentsMemo = useMemo(
-    () => tournaments.map((item) => ({ code: item.text, name: item.text })),
+    () => tournaments.map((item) => ({ code: item.id.toString(), name: item.tournament_name })),
     [tournaments],
   );
 

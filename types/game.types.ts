@@ -2,8 +2,8 @@ import { DropdownItemType } from "types/types";
 import { z } from "zod";
 
 export type TournamentsType = {
-  code: string;
-  text: string;
+  id: number;
+  tournament_name: string;
 };
 export type SubmitFormValue<T> = {
   value: T;

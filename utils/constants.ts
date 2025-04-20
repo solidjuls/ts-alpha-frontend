@@ -88,6 +88,14 @@ export const endType: Array<DropdownItemType> = [
   },
 ];
 
+export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus]
+export const tournamentStatus = {
+  closed: 2,
+  finished: 3,
+  ongoing: 4,
+  open: 1
+} as const;
+
 const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn: string }) => {
   // if TIE then Wargammes, Final Scoring
   // if endTurn <= 7 then VP Track, DEFCON, Forfeit, Timer Expired, Europe COntrol, Scoring Card Held, Cuban Missile...

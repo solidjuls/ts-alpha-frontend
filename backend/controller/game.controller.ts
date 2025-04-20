@@ -1,7 +1,8 @@
 import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
 import { calculateRating } from "./rating.controller";
-import { Prisma, game_results } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { TournamentStatusType } from 'utils/constants'
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -156,12 +157,18 @@ export const getGameByGameId = async (id: string) =>
     },
   });
 
-export const getTournamentNames = async () => {
-  return await prisma.constants.findMany({
+export const getTournamentNames = async (status: TournamentStatusType) => {
+  const filter = status ? {
+    where: {
+      status_id: Number(status)
+    }} : undefined
+
+  return await prisma.tournaments.findMany({
     select: {
-      code: true,
-      text: true,
+      id: true,
+      tournament_name: true,
     },
+    ...filter,
     orderBy: {
       id: "asc",
     },
