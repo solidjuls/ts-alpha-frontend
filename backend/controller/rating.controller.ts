@@ -156,13 +156,17 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
 
+        if (!oldGameDate) {
+          throw new Error("Old game id is wrong")
+        }
+
         console.log("oldGameDate", oldGameDate, input);
 
         if (
           oldGameDate.usa_player_id.toString() === input.usaPlayerId &&
           oldGameDate.ussr_player_id.toString() === input.ussrPlayerId &&
           oldGameDate.game_winner === input.gameWinner &&
-          oldGameDate.game_type === input.gameType
+          oldGameDate.game_type === Number(input.gameType)
         ) {
           await prismaTransaction.game_results.update({
             data: {
@@ -243,7 +247,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               ussr_player_id: BigInt(input.ussrPlayerId),
               usa_previous_rating: usaRating,
               ussr_previous_rating: ussrRating,
-              game_type: input.gameType,
+              game_type: Number(input.gameType),
               game_code: input.gameCode,
               game_winner: input.gameWinner,
               end_turn: Number(input.endTurn),
@@ -269,7 +273,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               createdAt: game.created_at,
               updatedAt: dateNow,
               gameId: game.id,
-              gameType: game.game_type,
+              gameType: game.game_type?.toString() as string,
               prismaTransaction,
             });
             console.log("new rating created", usaRating, ussrRating);
@@ -360,7 +364,7 @@ export const deleteGameRatings = async (input: GameRecreate) => {
               createdAt: game.created_at,
               updatedAt: dateNow,
               gameId: game.id,
-              gameType: game.game_type,
+              gameType: game.game_type?.toString() as string,
               prismaTransaction,
             });
             console.log("new rating created", usaRating, ussrRating);

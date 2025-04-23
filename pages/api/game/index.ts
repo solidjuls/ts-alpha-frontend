@@ -29,7 +29,7 @@ const createPrismaFilter = (params: QueryParams) => {
   }
 
   if (toFilter) {
-    const toFilterArray = toFilter.split(",");
+    const toFilterArray = toFilter.split(",").map(item => Number(item));
     filter.game_type = { in: toFilterArray};
   }
 

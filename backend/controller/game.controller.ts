@@ -191,7 +191,7 @@ const submitGame = async (data: GameAPI) => {
     ussr_player_id: BigInt(data.ussrPlayerId),
     usa_previous_rating: usaRating,
     ussr_previous_rating: ussrRating,
-    game_type: data.gameType,
+    game_type: Number(data.gameType),
     game_code: data.gameCode,
     reported_at: dateNow,
     game_winner: data.gameWinner,
