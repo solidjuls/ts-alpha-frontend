@@ -61,7 +61,7 @@ const getInitialState = (data) => {
   };
 };
 
-const UserProfileForm:React.FC<UserProfileFormProps> = ({ data, countries, cities }) => {
+const UserProfileForm: React.FC<UserProfileFormProps> = ({ data, countries, cities }) => {
   const [form, setForm] = useState<UserProfileState>(getInitialState(data));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -158,18 +158,6 @@ const UserProfileForm:React.FC<UserProfileFormProps> = ({ data, countries, citie
         css={{ width: dropdownWidth }}
         selectedItem={form.preferredGameDuration.value}
         onSelect={(value: string) => onInputValueChange("preferredGameDuration", value)}
-      />
-      <CountriesTypeahead
-        labelText="country"
-        placeholder="Type the federation name..."
-        css={{ width: "300px" }}
-        onBlur={() => {
-          onInputValueChange("country", "");
-        }}
-        onSelect={(value) => onInputValueChange("country", value?.value)}
-        items={countries}
-        error={form?.country.error}
-        selectedItem={form.country.value}
       />
       <CitiesTypeahead
         labelText="city"
