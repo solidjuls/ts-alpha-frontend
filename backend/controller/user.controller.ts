@@ -94,6 +94,7 @@ export const getAll = async () => {
           tld_code: true,
         },
       },
+      name: true
     },
   });
 
@@ -101,6 +102,7 @@ export const getAll = async () => {
     id: user.id.toString(),
     name: `${user.first_name} ${user.last_name}`,
     countryCode: user.countries?.tld_code,
+    playdek: user.name,
   })) as UserType[];
 };
 

@@ -37,7 +37,7 @@ const extractUserInfo = async (jsonArray, emails) => {
 
   for (const item of jsonArray) {
     if (emails.includes(item["Email"])) {
-      const playdeckId = item["Playdek ID"];
+      const playdekId = item["Playdek ID"];
       const federation = item["Federation"];
       const fullName = item["NAME"];
       const fullNameSplitted = fullName.split(" ");
@@ -49,7 +49,7 @@ const extractUserInfo = async (jsonArray, emails) => {
       // const countryId = await getCountryIdByCode(fedCode);
       console.log("cityId", cityId, cityDescription, item["Email"]);
       users.push({
-        name: playdeckId,
+        name: playdekId,
         first_name: fullNameSplitted[0],
         last_name: fullNameSplitted[1],
         email: item["Email"],
