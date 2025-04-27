@@ -128,7 +128,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data, countries, citi
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <EditTextComponent
-        labelText="playdeckName"
+        labelText="playdekName"
         inputValue={form?.name.value}
         onInputValueChange={(value) => onInputValueChange("name", value)}
         css={{ width: inputWidth }}

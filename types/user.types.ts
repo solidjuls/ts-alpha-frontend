@@ -3,6 +3,7 @@ export type UserType = {
   name?: string;
   rating?: number;
   countryCode: string;
+  playdek?: string;
 };
 
 export type AuthType = {

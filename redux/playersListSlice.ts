@@ -10,7 +10,7 @@ interface PLayersListState {
   filters: {
     playersSelected: MultiSelectItemType[];
     countriesSelected: string[];
-    playdeckInput: string;
+    playdekSelected: MultiSelectItemType[];
   };
   currentPage: number;
   totalPages: number;
@@ -24,7 +24,7 @@ const initialState: PLayersListState = {
   filters: {
     playersSelected: [],
     countriesSelected: [],
-    playdeckInput: "",
+    playdekSelected: [],
   },
   currentPage: 1,
   totalPages: 1,
@@ -35,18 +35,18 @@ export const fetchPlayersList = createAsyncThunk(
   "list/fetchPlayersList",
   async (_, { getState }) => {
     const state = getState() as RootState;
-    const { playersSelected } = state.playersList.filters;
-    const { countriesSelected } = state.playersList.filters;
-    const { playdeckInput } = state.playersList.filters;
+    const { playersSelected, countriesSelected, playdekSelected } = state.playersList.filters;
     const { currentPage } = state.playersList;
 
+    const allPlayers = [...playersSelected, ...playdekSelected];
+
     const response = await getAxiosInstance().get(
-      `/api/rating?playerFilter=${playersSelected.map((item) => item.code)}&p=${currentPage}&countrySelected=${countriesSelected}&playdeck=${playdeckInput}&pso=20`,
+      `/api/rating?playerFilter=${allPlayers.map((item) => item.code)}&p=${currentPage}&countrySelected=${countriesSelected}&pso=20`,
     );
 
     return {
-      items: response.data,
-      totalPages: Math.ceil(response.data.totalRows / 20),
+      items: response.data.results || [],
+      totalPages: Math.ceil(parseInt(response.data.totalRows) / 20),
     };
   },
 );
@@ -68,9 +68,9 @@ const listSlice = createSlice({
       state.currentPage = 1;
       state.filters.countriesSelected = action.payload;
     },
-    setPlaydeckFilter: (state, action) => {
+    setPlaydekFilter: (state, action) => {
       state.currentPage = 1;
-      state.filters.playdeckInput = action.payload;
+      state.filters.playdekSelected = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -96,7 +96,7 @@ const listSlice = createSlice({
 export const {
   setPlayersFilter,
   setCountriesFilter,
-  setPlaydeckFilter,
+  setPlaydekFilter,
   setClearFilter,
   setCurrentPage,
 } = listSlice.actions;

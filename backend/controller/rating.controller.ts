@@ -5,7 +5,11 @@ import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/clie
 
 const DEFAULT_RATING = 5000;
 
-export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = null) => {
+export const getAllPlayers = async (
+  p: number | string, 
+  pageSizeOverride: number | null = null, 
+  playerFilter: string | null = null
+) => {
   const pageSize = pageSizeOverride || 20;
   const page = Number(p);
   let skip = (page - 1) * pageSize;

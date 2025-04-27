@@ -164,7 +164,7 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
         error={form?.email.error}
       />
       <EditTextComponent
-        labelText="playdeckName"
+        labelText="playdekName"
         inputValue={form?.name.value}
         onInputValueChange={(value) => onInputValueChange("name", value)}
         css={{ width: inputWidth }}
