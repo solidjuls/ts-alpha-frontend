@@ -22,14 +22,14 @@ const colors = {
   ties: '#808080',     // Gray for ties
   
   // Win/loss type colors - consistent regardless of source
-  defcon: '#6A5ACD',    // Slate blue for DEFCON (changed from sea green)
-  scoring: '#4682B4',   // Steel blue for Scoring/Final Scoring/Europe Control
+  defcon: '#6A5ACD',    // Slate blue for DEFCON
+  scoring: '#4682B4',   // Steel blue for Final Scoring
   vp: '#8B4513',        // Saddle brown for VP Track
-  wargames: '#2F4F4F',  // Dark slate gray for Wargames (moved from Cuban)
+  wargames: '#2F4F4F',  // Dark slate gray for Wargames
   forfeit: '#A0522D',   // Sienna for Forfeit
   timer: '#8B7355',     // Peru for Timer Expired
   cuban: '#2F4F4F',     // Dark slate gray for Cuban Missile Crisis
-  scoringCard: '#4682B4', // Steel blue for Scoring Card Held
+  scoringCard: '#20B2AA', // Light sea green for Scoring Card Held
   unknown: '#A9A9A9'    // Dark gray for Unknown
 };
 
