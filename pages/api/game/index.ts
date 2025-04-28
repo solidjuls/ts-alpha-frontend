@@ -9,10 +9,11 @@ interface QueryParams {
   userFilter?: string | null;
   toFilter?: string | null;
   video?: string;
+  fromDate?: string;
 }
 
 const createPrismaFilter = (params: QueryParams) => {
-  const { id, userFilter, toFilter, video } = params;
+  const { id, userFilter, toFilter, video, fromDate } = params;
 
   const filter: Prisma.game_resultsWhereInput = {};
 
@@ -37,6 +38,13 @@ const createPrismaFilter = (params: QueryParams) => {
     filter.video1 = { not: null };
   }
 
+<<<<<<< HEAD
+=======
+  if (fromDate) {
+    filter.game_date = { gte: new Date(fromDate) };
+  }
+
+>>>>>>> af2c755 (Update player page)
   return filter;
 };
 
