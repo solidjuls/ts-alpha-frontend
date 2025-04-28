@@ -257,8 +257,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
         );
         router.push("/");
       } catch (e) {
-        console.log("error submitform", e);
-        setErrorMsg("There was an error submitting the result");
+        setErrorMsg("An error occurred while submitting the form");
       } finally {
         setIsSubmitting(false);
       }

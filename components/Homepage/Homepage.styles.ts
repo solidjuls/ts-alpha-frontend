@@ -5,7 +5,6 @@ const borderStyle = "solid 1px $greyLight";
 export const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "column",
-  // borderBottom: borderStyle,
   padding: "4px",
   margin: "4px",
   borderWidth: "1px",
@@ -33,10 +32,13 @@ export const StyledResultsPanel = styled("div", {
   flexDirection: "column",
   backgroundColor: "$infoForm",
   border: "solid 1px none",
-  borderRadius: "12px",
+  borderRadius: "8px",
   flexGrow: "1",
   marginBottom: "12px",
   minHeight: "600px",
+  width: "100%",
+  maxWidth: "52rem",
+  padding: "4px 16px 0px 16px",
 });
 
 export const FilterPanel = styled("div", {
@@ -45,12 +47,12 @@ export const FilterPanel = styled("div", {
   alignItems: "center",
   gap: 5,
   width: "100%",
-  maxWidth: "1000px",
+  maxWidth: "52rem",
   backgroundColor: "white",
   borderRadius: "8px",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  padding: "8px",
-  margin: "0 0 8px 0",
+  padding: "16px",
+  margin: "0 0 16px 0",
   borderBottom: borderStyle,
   "@sm": {
     flexDirection: "column",

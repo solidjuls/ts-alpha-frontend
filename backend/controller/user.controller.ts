@@ -128,6 +128,7 @@ export const get = async (id) => {
         select: {
           id: true,
           country_name: true,
+          tld_code: true,
         },
       },
     },
