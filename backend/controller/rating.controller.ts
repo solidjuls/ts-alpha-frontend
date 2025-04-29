@@ -157,7 +157,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         const oldGameDate = await getGameByGameId(input.oldId);
 
         if (!oldGameDate) {
-          throw new Error("Old game id is wrong")
+          throw new Error("Old game id is wrong");
         }
 
         console.log("oldGameDate", oldGameDate, input);

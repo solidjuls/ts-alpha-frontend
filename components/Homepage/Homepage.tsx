@@ -22,16 +22,16 @@ import {
   setCurrentPage,
   setPlayersFilter,
   setTournamentFilter,
-  setVideoFilter
+  setVideoFilter,
 } from "../../redux/gameListSlice";
 import { Checkbox } from "components/Checkbox";
 import { UserType } from "types/user.types";
 import { MultiSelectItemType } from "types/types";
 
 type ResultsPanelProps = {
-  data: Game[]
-  isLoading?: boolean
-}
+  data: Game[];
+  isLoading?: boolean;
+};
 
 const responsive = {
   "@sm": {
@@ -136,16 +136,21 @@ const EmptyState = () => {
 };
 
 type FilterUserProps = {
-  users: UserType[]
-  selectedValues: MultiSelectItemType[]
-}
+  users: UserType[];
+  selectedValues: MultiSelectItemType[];
+};
 
 type FilterTournamentProps = {
-  tournaments: TournamentsType[]
-  selectedValues: MultiSelectItemType[]
-}
+  tournaments: TournamentsType[];
+  selectedValues: MultiSelectItemType[];
+};
 
-const FilterUser: React.FC<FilterUserProps> = ({ onFilterChange, users, selectedValues, setSelectedValues }) => {
+const FilterUser: React.FC<FilterUserProps> = ({
+  onFilterChange,
+  users,
+  selectedValues,
+  setSelectedValues,
+}) => {
   const usersMemo = useMemo(
     () => users.map((item) => ({ code: item.id as string, name: item.name as string })),
     [users],
@@ -163,7 +168,11 @@ const FilterUser: React.FC<FilterUserProps> = ({ onFilterChange, users, selected
     </Box>
   );
 };
-const FilterTournament: React.FC<FilterTournamentProps> = ({ tournaments, selectedValues, setSelectedValues }) => {
+const FilterTournament: React.FC<FilterTournamentProps> = ({
+  tournaments,
+  selectedValues,
+  setSelectedValues,
+}) => {
   const tournamentsMemo = useMemo(
     () => tournaments.map((item) => ({ code: item.id.toString(), name: item.tournament_name })),
     [tournaments],
@@ -184,11 +193,16 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({ tournaments, select
 
 const Filter = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData<TournamentsType[]>({
+  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData<
+    TournamentsType[]
+  >({
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
-  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
+  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({
+    url: "/api/user",
+    cacheId: "user-list",
+  });
   const { filters } = useSelector((state: RootState) => state.gameList);
   const { playersSelected, tournamentSelected, videoSelected } = filters;
 
@@ -205,24 +219,32 @@ const Filter = () => {
   // --blue-700: #1769aa;
   // --blue-800: #125386;
 
-  if (isLoadingTournament || isLoadingUsers) return null
+  if (isLoadingTournament || isLoadingUsers) return null;
   return (
     <FilterPanel>
-      {users && <FilterUser
-        users={users}
-        selectedValues={playersSelected}
-        setSelectedValues={(value) => {
-          dispatch(setPlayersFilter(value));
-        }}
-        closeOnSelect={false}
-      />}
-      {tournaments && <FilterTournament
-        tournaments={tournaments}
-        selectedValues={tournamentSelected}
-        setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
-        closeOnSelect={false}
-      />}
-      <Checkbox text="Games with videos" onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))} checked={videoSelected} />
+      {users && (
+        <FilterUser
+          users={users}
+          selectedValues={playersSelected}
+          setSelectedValues={(value) => {
+            dispatch(setPlayersFilter(value));
+          }}
+          closeOnSelect={false}
+        />
+      )}
+      {tournaments && (
+        <FilterTournament
+          tournaments={tournaments}
+          selectedValues={tournamentSelected}
+          setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
+          closeOnSelect={false}
+        />
+      )}
+      <Checkbox
+        text="Games with videos"
+        onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
+        checked={videoSelected}
+      />
       <Flex>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear

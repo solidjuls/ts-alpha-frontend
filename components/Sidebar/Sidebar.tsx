@@ -122,18 +122,18 @@ const Items = ({ styles, role }: any) => {
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
-          <Text strong="bold" css={horizontalItemStyles}>
-            <FormattedMessage id="profileText" />
-          </Text>
+        <Text strong="bold" css={horizontalItemStyles}>
+          <FormattedMessage id="profileText" />
+        </Text>
       </UnstyledLink>
-      {(role === userRoles.SUPERADMIN) && (
+      {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/recreateform" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Recreate Form
           </Text>
         </UnstyledLink>
       )}
-      {(role === userRoles.SUPERADMIN) && (
+      {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/usercreate" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Register user
@@ -246,7 +246,7 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            {(role === userRoles.SUPERADMIN) && (
+            {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
                   <Text strong="bold" css={horizontalItemStyles}>
@@ -255,7 +255,7 @@ const VerticalSidebar = () => {
                 </Item>
               </UnstyledLink>
             )}
-            {(role === userRoles.SUPERADMIN) && (
+            {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/userprofile" passHref>
                 <Item>
                   <Text strong="bold" css={horizontalItemStyles}>
@@ -272,9 +272,7 @@ const VerticalSidebar = () => {
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/about" passHref>
-              <Text strong="bold">
-                About Us
-              </Text>
+              <Text strong="bold">About Us</Text>
             </UnstyledLink>
             <UnstyledLink href="/login" passHref>
               <Item>

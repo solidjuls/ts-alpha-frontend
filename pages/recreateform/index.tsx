@@ -102,7 +102,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     cacheId: "user-list",
   });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments?status=${tournamentStatus['open']}`,
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
     cacheId: "tournament-list",
   });
 
@@ -229,7 +229,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   };
 
   if (loadingTournaments || loadingUsers) return null;
-  
+
   const usersParsed = users?.map((item) => ({
     value: item.id,
     text: item.name,

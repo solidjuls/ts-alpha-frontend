@@ -155,20 +155,35 @@ const AboutPage = () => (
       <Section>
         <Subtitle>Community and Resources</Subtitle>
         <p>
-          Most of our communication happens on WhatsApp and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
-          games via email.
+          Most of our communication happens on WhatsApp and{" "}
+          <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">
+            Discord
+          </Link>
+          , but players can also set up games via email.
         </p>
         <p>
           You can find the full ITS rules and the names of Junta members{" "}
-          <Link href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/edit?usp=drivesdk" target="_blank">here</Link>.
+          <Link
+            href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/edit?usp=drivesdk"
+            target="_blank"
+          >
+            here
+          </Link>
+          .
         </p>
         <p>
           To sign up for tournaments and create a user profile, please use this{" "}
-          <Link href="https://forms.gle/3tj6uSNHnY9vr8KH9" target="_blank">Google form</Link>.
+          <Link href="https://forms.gle/3tj6uSNHnY9vr8KH9" target="_blank">
+            Google form
+          </Link>
+          .
         </p>
         <p>
           For questions, contact JR Jones at{" "}
-          <Link href="mailto:its.junta@gmail.com" target="_blank">its.junta@gmail.com</Link>.
+          <Link href="mailto:its.junta@gmail.com" target="_blank">
+            its.junta@gmail.com
+          </Link>
+          .
         </p>
       </Section>
 
@@ -176,7 +191,9 @@ const AboutPage = () => (
         <Subtitle>Useful Resources</Subtitle>
         <List>
           <li>
-            <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
+            <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">
+              Twilight Struggle Reddit
+            </Link>
           </li>
           <li>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
@@ -184,10 +201,15 @@ const AboutPage = () => (
             </Link>
           </li>
           <li>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy’s Card Tracker</Link>
+            <Link href="https://david.mcwebsite.net/ts/" target="_blank">
+              David McHealy’s Card Tracker
+            </Link>
           </li>
           <li>
-            <Link href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx" target="_blank">
+            <Link
+              href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx"
+              target="_blank"
+            >
               GMT Twilight Struggle Page
             </Link>
           </li>
@@ -197,7 +219,9 @@ const AboutPage = () => (
             </Link>
           </li>
           <li>
-            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
+            <Link href="https://twilightstrategy.com/" target="_blank">
+              Twilight Strategy Guide
+            </Link>
           </li>
         </List>
       </Section>

@@ -1,10 +1,10 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 export type Country = {
-  country_name: string
-  id: string
-  tld_code: string
-}
+  country_name: string;
+  id: string;
+  tld_code: string;
+};
 
 export type City = {
   iD: string;

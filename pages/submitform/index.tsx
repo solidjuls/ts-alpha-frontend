@@ -8,7 +8,7 @@ import { useSession } from "contexts/AuthProvider";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
 import { UserType } from "types/user.types";
-import { tournamentStatus } from 'utils/constants'
+import { tournamentStatus } from "utils/constants";
 
 type SubmitFormProps = {
   role: number;
@@ -78,8 +78,10 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     url: "/api/user",
     cacheId: "user-list",
   });
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?status=${tournamentStatus['open']}`,
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<
+    TournamentsType[]
+  >({
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
     cacheId: "tournament-list",
   });
 
@@ -267,15 +269,17 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   };
   if (loadingTournaments || loadingUsers) return null;
 
-  const usersParsed: DropdownItemType[] = users?.map((item) => ({
-    value: item.id,
-    text: item.name,
-  })) || [];
+  const usersParsed: DropdownItemType[] =
+    users?.map((item) => ({
+      value: item.id,
+      text: item.name,
+    })) || [];
 
-  const leagueTypes: DropdownItemType[] = tournaments?.map((item) => ({
-    value: item.id.toString(),
-    text: item.tournament_name,
-  })) || [];
+  const leagueTypes: DropdownItemType[] =
+    tournaments?.map((item) => ({
+      value: item.id.toString(),
+      text: item.tournament_name,
+    })) || [];
 
   return (
     <SubmitForm

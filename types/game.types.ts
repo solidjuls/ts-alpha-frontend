@@ -1,10 +1,13 @@
 import { DropdownItemType } from "types/types";
+import { TournamentStatusType } from "utils/constants";
 import { z } from "zod";
 
 export type TournamentsType = {
   id: number;
   tournament_name: string;
+  status_id: TournamentStatusType;
 };
+
 export type SubmitFormValue<T> = {
   value: T;
   error: boolean;

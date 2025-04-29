@@ -11,7 +11,7 @@ type DropdownWithLabelProps = {
   items: DropdownItemType[];
   selectedValueProperty?: string;
   selectedInputProperty?: string;
-  height?: string
+  height?: string;
   error: boolean;
   css: any;
 };

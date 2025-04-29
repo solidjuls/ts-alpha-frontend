@@ -88,12 +88,13 @@ export const endType: Array<DropdownItemType> = [
   },
 ];
 
-export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus]
+export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus];
 export const tournamentStatus = {
   closed: 2,
   finished: 3,
   ongoing: 4,
-  open: 1
+  open: 1,
+  new: 5,
 } as const;
 
 const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn: string }) => {

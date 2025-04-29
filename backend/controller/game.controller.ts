@@ -2,7 +2,7 @@ import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
 import { calculateRating } from "./rating.controller";
 import { Prisma } from "@prisma/client";
-import { TournamentStatusType } from 'utils/constants'
+import { TournamentStatusType } from "utils/constants";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -50,7 +50,11 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, page: number, pageSize: number) => {
+export const getGameWithRatings = async (
+  filter: Prisma.game_resultsWhereInput,
+  page: number,
+  pageSize: number,
+) => {
   pageSize = pageSize || 20;
 
   const skip = (page - 1) * pageSize;
@@ -83,8 +87,8 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
       tournaments: {
         select: {
           tournament_name: true,
-          id: true
-        }
+          id: true,
+        },
       },
       users_game_results_usa_player_idTousers: {
         select: {
@@ -95,7 +99,7 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
               tld_code: true,
             },
           },
-        }
+        },
       },
       users_game_results_ussr_player_idTousers: {
         select: {
@@ -106,8 +110,8 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
               tld_code: true,
             },
           },
-        }
-      }
+        },
+      },
     },
     where: {
       ...filter,
@@ -137,7 +141,7 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
     };
   });
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
-  console.log("getGamesWithRating", getGamesWithRating)
+  console.log("getGamesWithRating", getGamesWithRating);
   return { getGamesWithRating, totalRows };
 };
 
@@ -157,20 +161,47 @@ export const getGameByGameId = async (id: string) =>
     },
   });
 
-export const getTournamentNames = async (status: TournamentStatusType) => {
-  const filter = status ? {
-    where: {
-      status_id: Number(status)
-    }} : undefined
+export const getTournamentNames = async (status: TournamentStatusType | undefined) => {
+  const filter = status
+    ? {
+        where: {
+          status_id: Number(status),
+        },
+      }
+    : undefined;
 
   return await prisma.tournaments.findMany({
     select: {
       id: true,
       tournament_name: true,
+      status_id: true,
     },
     ...filter,
     orderBy: {
       id: "asc",
+    },
+  });
+};
+
+export const addTournament = async (tournamentName: string, status: TournamentStatusType) => {
+  return await prisma.tournaments.create({
+    data: {
+      tournament_name: tournamentName,
+      status_id: Number(status),
+    },
+  });
+};
+
+export const updateTournament = async (
+  id: number,
+  status: TournamentStatusType,
+) => {
+  return await prisma.tournaments.update({
+    where: {
+      id: id,
+    },
+    data: {
+      status_id: Number(status),
     },
   });
 };

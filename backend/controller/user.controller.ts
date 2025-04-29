@@ -135,7 +135,7 @@ export const get = async (id: string) => {
       id: Number(id),
     },
   });
-  if (!user) return {}
+  if (!user) return {};
 
   const rating = await getRatingByPlayer({ playerId: user?.id });
   const userNormalized = {
