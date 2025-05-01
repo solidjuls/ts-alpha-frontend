@@ -175,6 +175,7 @@ export const getTournamentNames = async (status: TournamentStatusType | undefine
       id: true,
       tournament_name: true,
       status_id: true,
+      created_at: true
     },
     ...filter,
     orderBy: {
