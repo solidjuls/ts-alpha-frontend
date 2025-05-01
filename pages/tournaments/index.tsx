@@ -9,7 +9,7 @@ import { Button } from "components/Button";
 import { useEffect, useState } from "react";
 import { TournamentsType } from "types/game.types";
 import { styled } from "stitches.config";
-import getAxiosInstance from "utils/axios";
+import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { Checkbox } from "components/Checkbox";
 
 const formStyles = {
@@ -76,17 +76,27 @@ const Row = styled("div", {
   },
 
   variants: {
-    selected: {
-      true: {
-        backgroundColor: "$rowSelected",
+    status: {
+      closed: {
+        backgroundColor: "$redAlpha",
       },
-    },
-  },
-});
+      ongoing: {
+        backgroundColor: "$greenAlpha",
+      },
+      open: {
+        backgroundColor: "$yellowAlpha",
+      },
+      finished: {
+        backgroundColor: "$blueAlpha",
+      },
+    }
+  }
+})
 
 const useTournamentState = () => {
   const { data, setData, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments`,
+    cacheId: 'tournaments'
   });
   const [all, setAll] = useState(true);
   const [closed, setClosed] = useState(false);
@@ -176,31 +186,18 @@ const Legend = () => {
   );
 };
 
-const getStatusColor = (statusId: TournamentStatusType, alpha: boolean) => {
-  switch (statusId) {
-    case tournamentStatus.closed:
-      return alpha ? '$redSolid' : "$redAlpha"
-    case tournamentStatus.ongoing:
-      return alpha ? '$greenSolid' : "$greenAlpha"
-    case tournamentStatus.open:
-      return alpha ? '$yellowSolid' : "$yellowAlpha"
-    case tournamentStatus.finished:
-      return alpha ? '$blueSolid' : "$blueAlpha"
-    default:
-      return '$hover'; // fallback color if status is unknown
-  }
-};
+const statusIdToName = Object.fromEntries(
+  Object.entries(tournamentStatus).map(([key, value]) => [value, key])
+);
 
 const Tournaments = () => {
   const { data, setData, isLoading, all, setAll, closed, setClosed, regOpen, setRegOpen, refetch } =
     useTournamentState();
   const [tournamentName, setTournamentName] = useState<string>("");
 console.log("data", data)
-  //   const { data: cities, isLoading: citiesLoading } = useFetchInitialData<City[]>({
-  //     url: `/api/cities`,
-  //   });
 
-  if (isLoading) return <Spinner size="3" />;
+
+  // if (isLoading) return <Spinner size="3" />;
 
   const handleDelete = (tournamentId: number) => {
     // setItems((prev) => prev.filter((_, i) => i !== index));
@@ -230,6 +227,7 @@ console.log("data", data)
       status: newStatus,
     });
     if (resp.status === 200) {
+       await clearAllCache("tournaments");
       await refetch()
     }
   }
@@ -261,7 +259,7 @@ console.log("data", data)
           return (
             <Flex key={index} css={{ flexDirection: "row", justifyContent: "space-between" }}>
               <Flex css={{ flexDirection: "column" }}>
-                <Row  onClick={() => handleDelete(item.id)} css={{ backgroundColor: getStatusColor(item.status_id, false) }}>
+                <Row status={statusIdToName[item.status_id]}  onClick={() => handleDelete(item.id)} >
                   {item.tournament_name}
                 </Row>
               </Flex>
@@ -282,7 +280,7 @@ console.log("data", data)
     </Form>
   );
 };
-
+// css={{ backgroundColor: getStatusColor(item.status_id, false) }}
 // export async function getServerSideProps({ req, res }: ServerType) {
 //   const payload = getInfoFromCookies(req, res);
 
