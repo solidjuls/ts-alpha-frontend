@@ -54,4 +54,4 @@ const Legend = () => {
   );
 };
 
-export { Legend }
+export default Legend

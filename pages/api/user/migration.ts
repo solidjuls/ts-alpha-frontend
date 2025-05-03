@@ -1,7 +1,7 @@
 import {
   getNonExistingEmails,
   getCityIdByDescription,
-  getCountryIdByCode,
+  // getCountryIdByCode,
 } from "backend/controller/user.controller";
 const fs = require("fs");
 const path = require("path");
@@ -46,14 +46,14 @@ const extractUserInfo = async (jsonArray, emails) => {
       const phone = item["Phone Number"];
 
       const cityId = await getCityIdByDescription(cityDescription);
-      const countryId = await getCountryIdByCode(fedCode);
+      // const countryId = await getCountryIdByCode(fedCode);
       console.log("cityId", cityId, cityDescription, item["Email"]);
       users.push({
         name: playdeckId,
         first_name: fullNameSplitted[0],
         last_name: fullNameSplitted[1],
         email: item["Email"],
-        country_id: Number(countryId?.id),
+        // country_id: Number(countryId?.id),
         regional_federation_id: "",
         timezone_id: "",
         city_id: Number(cityId?.id),

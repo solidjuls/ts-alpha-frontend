@@ -12,7 +12,7 @@ import { TournamentsType } from "types/game.types";
 import { styled } from "stitches.config";
 import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { Checkbox } from "components/Checkbox";
-import { Legend } from './Legend'
+import Legend from './Legend'
 
 const DeleteIcon = styled(Cross2Icon, {
   color: 'red',
