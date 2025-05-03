@@ -15,7 +15,6 @@ const useFetchInitialData = <T>({ url, cacheId }: FetchParams) => {
   const cache = cacheId ? { id: cacheId } : undefined;
 
   const fetchData = async () => {
-    console.log("why?")
     setIsLoading(true);
     setError(null);
     try {

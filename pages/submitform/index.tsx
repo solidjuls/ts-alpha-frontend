@@ -81,7 +81,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<
     TournamentsType[]
   >({
-    url: `/api/game/tournaments?status=${tournamentStatus["ongoing"]}`,
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
     cacheId: "tournament-list",
   });
 

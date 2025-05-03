@@ -102,7 +102,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     cacheId: "user-list",
   });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments?status=${tournamentStatus["ongoing"]}`,
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
     cacheId: "tournament-list",
   });
 
@@ -236,8 +236,8 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   }));
 
   const leagueTypes = tournaments?.map((item) => ({
-    value: item.text,
-    text: item.text,
+    value: item.id.toString(),
+    text: item.tournament_name,
   }));
 
   return (

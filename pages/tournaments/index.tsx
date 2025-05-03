@@ -1,16 +1,28 @@
+import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
+import { Cross2Icon } from '@radix-ui/react-icons';
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { tournamentStatus, TournamentStatusType } from "utils/constants";
-import { City, Country, DropdownItemType, ServerType } from "types/types";
+import { DropdownItemType } from "types/types";
 import { Flex, Form, Span } from "components/Atoms";
 import { EditTextComponent } from "components/EditFormComponents";
 import { Button } from "components/Button";
-import { useState } from "react";
 import { TournamentsType } from "types/game.types";
 import { styled } from "stitches.config";
 import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { Checkbox } from "components/Checkbox";
+import { Legend } from './Legend'
+
+const DeleteIcon = styled(Cross2Icon, {
+  color: 'red',
+  cursor: 'pointer',
+  width: '20px',
+  height: '20px',
+  '&:hover': {
+    opacity: 0.7,
+  },
+});
 
 const formStyles = {
   alignItems: "center",
@@ -56,27 +68,20 @@ const Container = styled("div", {
 
 const TournamentNameCell = styled("div", {
   padding: "8px",
-  flex: '1 1 50%',
-  backgroundColor: "$rowBackground",
   color: "$text",
   borderRadius: "$medium",
-  cursor: "pointer",
   userSelect: "none",
   transition: "background-color 0.2s",
-
-  "&:hover": {
-    backgroundColor: "$rowHover",
-  },
-
+  flex: '1 1 50%',
   variants: {
     status: {
       closed: {
         backgroundColor: "$redAlpha",
       },
-      ongoing: {
+      open: {
         backgroundColor: "$greenAlpha",
       },
-      open: {
+      ongoing: {
         backgroundColor: "$yellowAlpha",
       },
       finished: {
@@ -109,8 +114,19 @@ const useTournamentState = () => {
   if ((data && all) || (data && !all && !closed && !open)) {
     localData = data;
   }
+
+  const sortTournamentsByStatus = (a: TournamentsType, b: TournamentsType) => {
+    const priority = (status: TournamentStatusType) => {
+      if (status === 5) return 0;
+      if (status === 1) return 1;
+      return 2;
+    };
+  
+    return priority(a.status_id) - priority(b.status_id);
+  };
+
   return {
-    data: localData,
+    data: localData.sort(sortTournamentsByStatus),
     setData,
     isLoading,
     refetch,
@@ -123,84 +139,27 @@ const useTournamentState = () => {
   };
 };
 
-const LegendContainer = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  gap: "$small",
-  padding: "$medium",
-});
-
-// Each row of the legend
-const LegendItem = styled("div", {
-  display: "flex",
-  alignItems: "center",
-  gap: "$small",
-  color: "$text",
-});
-
-// Color box
-const ColorBox = styled("div", {
-  width: "24px",
-  height: "24px",
-});
-
-// Label text
-const Label = styled("span", {
-  fontSize: "14px",
-});
-
-const Legend = () => {
-  return (
-    <LegendContainer>
-      <LegendItem>
-        <ColorBox css={{ backgroundColor: "$redSolid" }} />
-        {/* <ColorBox css={{ backgroundColor: "$redAlpha" }} /> */}
-        <Label>Closed</Label>
-      </LegendItem>
-
-      <LegendItem>
-        <ColorBox css={{ backgroundColor: "$greenSolid" }} />
-        {/* <ColorBox css={{ backgroundColor: "$greenAlpha" }} /> */}
-        <Label>Active</Label>
-      </LegendItem>
-
-      <LegendItem>
-        <ColorBox css={{ backgroundColor: "$yellowSolid" }} />
-        {/* <ColorBox css={{ backgroundColor: "$yellowAlpha" }} /> */}
-        <Label>Registration Open</Label>
-      </LegendItem>
-
-      <LegendItem>
-        <ColorBox css={{ backgroundColor: "$blueSolid" }} />
-        {/* <ColorBox css={{ backgroundColor: "$blueAlpha" }} /> */}
-        <Label>Registration Closed</Label>
-      </LegendItem>
-    </LegendContainer>
-  );
-};
-
 const statusIdToName = Object.fromEntries(
   Object.entries(tournamentStatus).map(([key, value]) => [value, key])
 );
-const parseTournamentStatusIntoArray = (statusObj: Record<string, number>): DropdownItemType[] => {
-  return Object.entries(statusObj).map(([key, value]) => ({
-    text: key,
-    value: value.toString(),
-  }));
-};
 
 const Tournaments = () => {
   const { data, setData, isLoading, all, setAll, closed, setClosed, open, setOpen, refetch } =
     useTournamentState();
   const [tournamentName, setTournamentName] = useState<string>("");
-console.log("data", data)
-
 
   // if (isLoading) return <Spinner size="3" />;
 
-  const handleDelete = (tournamentId: number) => {
-    // setItems((prev) => prev.filter((_, i) => i !== index));
-    console.log("handleDelete", tournamentId);
+  const handleDelete = async (tournament: TournamentsType) => {
+    if (tournament.status_id === tournamentStatus.new) {
+      const resp = await getAxiosInstance().delete("/api/game/tournaments", {
+        params: { id: tournament.id.toString() }
+      });
+      if (resp.status === 200) {
+        await clearAllCache("tournaments");
+        await refetch()
+      }
+    }
   };
 
   const addNewTournament = async () => {
@@ -216,13 +175,12 @@ console.log("data", data)
   };
 
   const onStatusChange = async (value: string, tournament: TournamentsType) => {
-    
     const resp = await getAxiosInstance().post("/api/game/tournaments", {
       id: tournament.id,
-      status: (value === tournamentStatus.closed.toString()) ? tournamentStatus.open.toString() : tournamentStatus.closed.toString()
+      status: (value === tournamentStatus.closed.toString() || value === tournamentStatus.new.toString()) ? tournamentStatus.open.toString() : tournamentStatus.closed.toString()
     });
     if (resp.status === 200) {
-       await clearAllCache("tournaments");
+      await clearAllCache("tournaments");
       await refetch()
     }
   }
@@ -231,13 +189,12 @@ console.log("data", data)
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
       <Flex css={{ flexDirection: "row", width: "100%" }}>
         <EditTextComponent
-          labelText="firstName"
+          labelText="newTournament"
           inputValue={tournamentName}
           onInputValueChange={(value) => setTournamentName(value)}
-          // css={{ width: inputWidth }}
-          // error={form?.first_name.error}
+          css={{ width: "300px" }}
         />
-        <Button onClick={addNewTournament}>Add</Button>
+        <Button style={{ height: "35px", marginBottom: "0", alignSelf: "flex-end" }} onClick={addNewTournament}>Add</Button>
       </Flex>
       <Legend />
       <Flex css={{ flexDirection: "row", width: "100%" }}>
@@ -253,10 +210,13 @@ console.log("data", data)
         {data?.map((item, index) => {
           return (
             <Flex key={index} css={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <TournamentNameCell status={statusIdToName[item.status_id]}  onClick={() => handleDelete(item.id)} >
-                  {item.tournament_name}
+                <TournamentNameCell status={statusIdToName[item.status_id]} >
+                  <Flex css={{ flexDirection: "row", alignItems: "center" }}>
+                    {item.tournament_name} 
+                    {item.status_id === tournamentStatus.new && <DeleteIcon onClick={() => handleDelete(item)} />}
+                  </Flex>
                 </TournamentNameCell>
-                <UpdateCell onClick={() => onStatusChange(item.status_id?.toString(), item)}><Span>{statusIdToName[item.status_id]}</Span></UpdateCell>
+              <UpdateCell onClick={() => onStatusChange(item.status_id?.toString(), item)}><Span>{statusIdToName[item.status_id]}</Span></UpdateCell>
             </Flex>
           );
         })}

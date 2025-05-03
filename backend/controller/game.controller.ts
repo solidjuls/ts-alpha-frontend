@@ -184,6 +184,15 @@ export const getTournamentNames = async (status: TournamentStatusType | undefine
   });
 };
 
+export const removeTournament = async (id: string) => {
+  console.log("id", id)
+  return await prisma.tournaments.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+};
+
 export const addTournament = async (tournamentName: string, status: TournamentStatusType) => {
   return await prisma.tournaments.create({
     data: {

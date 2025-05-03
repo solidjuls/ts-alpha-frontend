@@ -35,7 +35,7 @@ module.exports = {
     preferredGamingPlatform: "Preferred Gaming Platform",
     preferredGameDuration: "Preferred Game Duration",
     timeZone: "Timezone",
-
+    newTournament: "New tournament",
     city: "City",
     country: "Federation",
   },
