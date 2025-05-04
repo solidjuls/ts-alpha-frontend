@@ -32,7 +32,7 @@ const formStyles = {
   },
 };
 
-const getInitialState = ({ data }) => {
+const getInitialState = (data) => {
   return {
     name: {
       value: data.name,

@@ -194,6 +194,10 @@ export const gameDurations: Array<DropdownItemType> = [
     text: "3 hours",
   },
   {
+    value: "Asynch - 1 day",
+    text: "Asynch - 1 day",
+  },
+  {
     value: "Asynch - 3 days",
     text: "Asynch - 3 days",
   },

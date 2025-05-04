@@ -92,6 +92,7 @@ const RecreateRating = ({
           items={leagueTypes}
           selectedItem={form.gameType.value}
           placeholder="Select tournament"
+          height="270px"
           error={form.gameType.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
