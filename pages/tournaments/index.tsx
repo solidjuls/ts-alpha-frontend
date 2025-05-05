@@ -3,8 +3,8 @@ import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
 import { Cross2Icon } from '@radix-ui/react-icons';
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { tournamentStatus, TournamentStatusType } from "utils/constants";
-import { DropdownItemType } from "types/types";
+import { tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
+import { ServerType } from "types/types";
 import { Flex, Form, Span } from "components/Atoms";
 import { EditTextComponent } from "components/EditFormComponents";
 import { Button } from "components/Button";
@@ -210,7 +210,7 @@ const Tournaments = () => {
         {data?.map((item, index) => {
           return (
             <Flex key={index} css={{ flexDirection: "row", justifyContent: "space-between" }}>
-                <TournamentNameCell status={statusIdToName[item.status_id]} >
+                <TournamentNameCell status={statusIdToName[item.status_id]}>
                   <Flex css={{ flexDirection: "row", alignItems: "center" }}>
                     {item.tournament_name} 
                     {item.status_id === tournamentStatus.new && <DeleteIcon onClick={() => handleDelete(item)} />}
@@ -224,19 +224,19 @@ const Tournaments = () => {
     </Form>
   );
 };
-// css={{ backgroundColor: getStatusColor(item.status_id, false) }}
-// export async function getServerSideProps({ req, res }: ServerType) {
-//   const payload = getInfoFromCookies(req, res);
 
-//   if (!payload || payload?.role !== userRoles.SUPERADMIN) {
-//     return {
-//       redirect: {
-//         permanent: false,
-//         destination: "/login",
-//       },
-//     };
-//   }
-//   return { props: { role: payload.role || null } };
-// }
+export async function getServerSideProps({ req, res }: ServerType) {
+  const payload = getInfoFromCookies(req, res);
+
+  if (!payload || payload?.role !== userRoles.SUPERADMIN) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+  return { props: { role: payload.role || null } };
+}
 
 export default Tournaments;

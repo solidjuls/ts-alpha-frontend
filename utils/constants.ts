@@ -97,14 +97,6 @@ export const tournamentStatus = {
   new: 5,
 } as const;
 
-const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn: string }) => {
-  // if TIE then Wargammes, Final Scoring
-  // if endTurn <= 7 then VP Track, DEFCON, Forfeit, Timer Expired, Europe COntrol, Scoring Card Held, Cuban Missile...
-};
-
-const getEndTurn = ({ winningOption }: { winningOption: string }) => {
-  // if TIE then 8, 9, 10
-};
 export const gameWinningOptions: Array<DropdownItemType> = [
   {
     value: "1",
