@@ -191,6 +191,7 @@ const Tournaments = () => {
         <EditTextComponent
           labelText="newTournament"
           inputValue={tournamentName}
+          maxLength={50}
           onInputValueChange={(value) => setTournamentName(value)}
           css={{ width: "300px" }}
         />
