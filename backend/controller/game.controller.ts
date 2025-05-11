@@ -179,7 +179,7 @@ export const getTournamentNames = async (status: TournamentStatusType | undefine
     },
     ...filter,
     orderBy: {
-      id: "asc",
+      created_at: "desc"
     },
   });
 };
