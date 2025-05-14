@@ -96,7 +96,9 @@ const SubmitForm = ({
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
-          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value || "")}
+          onSelect={(value: DropdownItemType) =>
+            onInputValueChange("opponentWas", value?.value || "")
+          }
         />
         <DropdownWithLabel
           labelText="gameWinner"

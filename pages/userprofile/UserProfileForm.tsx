@@ -13,9 +13,9 @@ import { DropdownItemType } from "types/types";
 
 type UserProfileFormProps = {
   data: UserProfileState;
-  countries: DropdownItemType[]
-  cities: DropdownItemType[]
-}
+  countries?: DropdownItemType[];
+  cities?: DropdownItemType[];
+};
 
 const inputWidth = "300px";
 const dropdownWidth = "300px";

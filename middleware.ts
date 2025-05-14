@@ -23,8 +23,8 @@ export async function middleware(request: NextRequest) {
     if (allowedUsers.includes(payload.id)) {
       return NextResponse.next();
     }
-  } catch(error: unknown) {
-    console.log("token expired from middleware")
+  } catch (error: unknown) {
+    console.log("token expired from middleware");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

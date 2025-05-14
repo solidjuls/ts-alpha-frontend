@@ -88,14 +88,15 @@ export const endType: Array<DropdownItemType> = [
   },
 ];
 
-const getEndType = ({ winningOption, endTurn }: { winningOption: string; endTurn: string }) => {
-  // if TIE then Wargammes, Final Scoring
-  // if endTurn <= 7 then VP Track, DEFCON, Forfeit, Timer Expired, Europe COntrol, Scoring Card Held, Cuban Missile...
-};
+export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus];
+export const tournamentStatus = {
+  closed: 2,
+  finished: 3,
+  ongoing: 4,
+  open: 1,
+  new: 5,
+} as const;
 
-const getEndTurn = ({ winningOption }: { winningOption: string }) => {
-  // if TIE then 8, 9, 10
-};
 export const gameWinningOptions: Array<DropdownItemType> = [
   {
     value: "1",
@@ -183,6 +184,10 @@ export const gameDurations: Array<DropdownItemType> = [
   {
     value: "3 hours",
     text: "3 hours",
+  },
+  {
+    value: "Asynch - 1 day",
+    text: "Asynch - 1 day",
   },
   {
     value: "Asynch - 3 days",

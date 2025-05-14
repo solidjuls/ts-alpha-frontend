@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
 import { GameRecreate, GameWinner } from "types/game.types";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
-import { userRoles } from "utils/constants";
+import { tournamentStatus, userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 import RecreateRating from "pages/recreateform/RecreateRating";
 import useFetchInitialData from "hooks/useFetchInitialData";
@@ -102,7 +102,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     cacheId: "user-list",
   });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments`,
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
     cacheId: "tournament-list",
   });
 
@@ -229,15 +229,15 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   };
 
   if (loadingTournaments || loadingUsers) return null;
-  
+
   const usersParsed = users?.map((item) => ({
     value: item.id,
     text: item.name,
   }));
 
   const leagueTypes = tournaments?.map((item) => ({
-    value: item.text,
-    text: item.text,
+    value: item.id.toString(),
+    text: item.tournament_name,
   }));
 
   return (

@@ -7,7 +7,7 @@ import { MultiSelectItemType } from "types/types";
 interface GameListState {
   items: {
     results: Game[];
-  },
+  };
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filters: {
@@ -38,7 +38,8 @@ const initialState: GameListState = {
 // Async thunk for fetching the list
 export const fetchGameList = createAsyncThunk("list/fetchGameList", async (_, { getState }) => {
   const state = getState() as RootState;
-  const { tournamentSelected, playersSelected, videoSelected, invalidateCache } = state.gameList.filters;
+  const { tournamentSelected, playersSelected, videoSelected, invalidateCache } =
+    state.gameList.filters;
   const { currentPage } = state.gameList;
 
   await clearAllCache("game-list");
@@ -100,7 +101,12 @@ const listSlice = createSlice({
   },
 });
 
-export const { setTournamentFilter, setPlayersFilter, setVideoFilter, setClearFilter, setCurrentPage } =
-  listSlice.actions;
+export const {
+  setTournamentFilter,
+  setPlayersFilter,
+  setVideoFilter,
+  setClearFilter,
+  setCurrentPage,
+} = listSlice.actions;
 
 export default listSlice.reducer;

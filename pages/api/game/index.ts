@@ -29,23 +29,27 @@ const createPrismaFilter = (params: QueryParams) => {
   }
 
   if (toFilter) {
-    const toFilterArray = toFilter.split(",");
-    filter.game_type = { in: toFilterArray};
+    const toFilterArray = toFilter.split(",").map((item) => Number(item));
+    filter.game_type = { in: toFilterArray };
   }
 
-  if (video==='true') {
+  if (video === "true") {
     filter.video1 = { not: null };
   }
-console.log({...filter})
+
   return filter;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { p = 1, pageSize = 20 } = req.query;
- 
-  let filter = createPrismaFilter(req.query)
 
-  const { getGamesWithRating, totalRows } = await getGameWithRatings(filter, Number(p), Number(pageSize));
+  let filter = createPrismaFilter(req.query);
+
+  const { getGamesWithRating, totalRows } = await getGameWithRatings(
+    filter,
+    Number(p),
+    Number(pageSize),
+  );
 
   const response = {
     results: getGamesWithRating,

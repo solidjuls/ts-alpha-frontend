@@ -33,7 +33,6 @@ const StyledTrigger = styled(Trigger, {
   padding: "0px",
   border: "1px solid #ced4da",
   outline: "none",
-  width: "390px",
   // boxShadow: `0 0 0 1px #ced4da"`,
   borderRadius: 4,
   backgroundColor: "white",
@@ -87,13 +86,15 @@ const DropdownMenu = ({
   onSelect,
   error,
   height = undefined,
+  width = "390px",
   css,
 }: {
   items: DropdownItemType[];
   selectedItem: string;
   onSelect: (value: string) => void;
-  placeholder: string;
+  placeholder?: string;
   height?: string;
+  width?: string;
   error?: boolean;
   css?: Stitches.CSS;
 }) => {
@@ -103,7 +104,7 @@ const DropdownMenu = ({
 
   return (
     <Root>
-      <StyledTrigger border={error ? "error" : undefined}>
+      <StyledTrigger css={{ width: width }} border={error ? "error" : undefined}>
         <Box
           css={{
             position: "relative",
@@ -123,7 +124,7 @@ const DropdownMenu = ({
         </Box>
       </StyledTrigger>
 
-      <StyledContent css={{ height: height }}>
+      <StyledContent css={{ maxHeight: height, width: width  }}>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}

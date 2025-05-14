@@ -2,6 +2,7 @@ import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
 import { calculateRating } from "./rating.controller";
 import { Prisma } from "@prisma/client";
+import { TournamentStatusType } from "utils/constants";
 
 const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Game[]> = async (
   gamesWithRatingRelated: any,
@@ -35,7 +36,8 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
           game.users_game_results_ussr_player_idTousers.first_name +
           " " +
           game.users_game_results_ussr_player_idTousers.last_name,
-        gameType: game.game_type,
+        gameType: game.tournaments.tournament_name,
+        tournamentId: game.tournaments.id,
         game_code: game.game_code,
         gameDate: game.game_date,
         videoURL: game.video1,
@@ -48,7 +50,11 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
 };
 
 // Games with their ratings and return normalized data
-export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, page: number, pageSize: number) => {
+export const getGameWithRatings = async (
+  filter: Prisma.game_resultsWhereInput,
+  page: number,
+  pageSize: number,
+) => {
   pageSize = pageSize || 20;
 
   const skip = (page - 1) * pageSize;
@@ -59,7 +65,31 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
     },
   });
   const games = await prisma.game_results.findMany({
-    include: {
+    select: {
+      id: true,
+      usa_player_id: true,
+      ussr_player_id: true,
+      created_at: true,
+      end_mode: true,
+      end_turn: true,
+      game_code: true,
+      game_date: true,
+      video1: true,
+      game_winner: true,
+      usa_previous_rating: true,
+      ussr_previous_rating: true,
+      ratings_history: {
+        select: {
+          rating: true,
+          player_id: true,
+        },
+      },
+      tournaments: {
+        select: {
+          tournament_name: true,
+          id: true,
+        },
+      },
       users_game_results_usa_player_idTousers: {
         select: {
           first_name: true,
@@ -80,12 +110,6 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
               tld_code: true,
             },
           },
-        },
-      },
-      ratings_history: {
-        select: {
-          rating: true,
-          player_id: true,
         },
       },
     },
@@ -117,6 +141,7 @@ export const getGameWithRatings = async (filter: Prisma.game_resultsWhereInput, 
     };
   });
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
+  console.log("getGamesWithRating", getGamesWithRating);
   return { getGamesWithRating, totalRows };
 };
 
@@ -136,14 +161,57 @@ export const getGameByGameId = async (id: string) =>
     },
   });
 
-export const getTournamentNames = async () => {
-  return await prisma.constants.findMany({
+export const getTournamentNames = async (status: TournamentStatusType | undefined) => {
+  const filter = status
+    ? {
+        where: {
+          status_id: Number(status),
+        },
+      }
+    : undefined;
+
+  return await prisma.tournaments.findMany({
     select: {
-      code: true,
-      text: true,
+      id: true,
+      tournament_name: true,
+      status_id: true,
+      created_at: true
     },
+    ...filter,
     orderBy: {
-      id: "asc",
+      created_at: "desc"
+    },
+  });
+};
+
+export const removeTournament = async (id: string) => {
+  console.log("id", id)
+  return await prisma.tournaments.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+};
+
+export const addTournament = async (tournamentName: string, status: TournamentStatusType) => {
+  return await prisma.tournaments.create({
+    data: {
+      tournament_name: tournamentName,
+      status_id: Number(status),
+    },
+  });
+};
+
+export const updateTournament = async (
+  id: number,
+  status: TournamentStatusType,
+) => {
+  return await prisma.tournaments.update({
+    where: {
+      id: id,
+    },
+    data: {
+      status_id: Number(status),
     },
   });
 };
@@ -164,7 +232,7 @@ const submitGame = async (data: GameAPI) => {
     ussr_player_id: BigInt(data.ussrPlayerId),
     usa_previous_rating: usaRating,
     ussr_previous_rating: ussrRating,
-    game_type: data.gameType,
+    game_type: Number(data.gameType),
     game_code: data.gameCode,
     reported_at: dateNow,
     game_winner: data.gameWinner,
