@@ -36,8 +36,8 @@ const getGamesWithRatingDifference: (gamesWithRatingRelated: any) => Promise<Gam
           game.users_game_results_ussr_player_idTousers.first_name +
           " " +
           game.users_game_results_ussr_player_idTousers.last_name,
-        gameType: game.tournaments.tournament_name,
-        tournamentId: game.tournaments.id,
+        gameType: game.tournaments?.tournament_name,
+        tournamentId: game.tournaments?.id,
         game_code: game.game_code,
         gameDate: game.game_date,
         videoURL: game.video1,
