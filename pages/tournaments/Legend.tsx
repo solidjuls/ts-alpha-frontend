@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import { styled } from "stitches.config";
 
 const LegendContainer = styled("div", {
@@ -14,7 +14,7 @@ const LegendItem = styled("div", {
   alignItems: "center",
   gap: "$small",
   color: "$text",
-  margin: "4px"
+  margin: "4px",
 });
 
 // Color box
@@ -54,4 +54,4 @@ const Legend = () => {
   );
 };
 
-export default Legend
+export default Legend;
