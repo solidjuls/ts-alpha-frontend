@@ -124,7 +124,7 @@ const DropdownMenu = ({
         </Box>
       </StyledTrigger>
 
-      <StyledContent css={{ maxHeight: height, width: width  }}>
+      <StyledContent css={{ maxHeight: height, width: width }}>
         {items.map((item) => (
           <StyledItem key={item.value} onSelect={() => onSelect(item.value)}>
             {item.text}

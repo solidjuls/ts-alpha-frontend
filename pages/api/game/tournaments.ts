@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json(JSON.parse(gameParsed));
   } else if (req.method === "PATCH") {
     const { name, status } = req.body;
-    
+
     const tournamentNames = await addTournament(name, status);
 
     const gameParsed = JSON.stringify(tournamentNames);
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === "DELETE") {
     const { id } = req.query;
     const tournament = await removeTournament(id);
-    console.log("tournament", tournament)
+    console.log("tournament", tournament);
     res.status(200).json(JSON.parse(tournament.id));
   }
 }
