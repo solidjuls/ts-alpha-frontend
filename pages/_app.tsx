@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 import Layout from "components/Layout";
+import { SessionProvider } from "next-auth/react";
 
 import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as needed
 import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
@@ -17,18 +18,20 @@ import { store } from "../redux/store";
 
 function App({ Component, pageProps, name, id, email, role }: AppProps) {
   return (
-    <AuthProvider name={name} email={email} id={id} role={role}>
-      <Provider store={store}>
-        <IntlContextProvider>
-          {/* @ts-ignore */}
-          <Theme>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Theme>
-        </IntlContextProvider>
-      </Provider>
-    </AuthProvider>
+    <SessionProvider>
+      <AuthProvider name={name} email={email} id={id} role={role}>
+        <Provider store={store}>
+          <IntlContextProvider>
+            {/* @ts-ignore */}
+            <Theme>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </Theme>
+          </IntlContextProvider>
+        </Provider>
+      </AuthProvider>
+    </SessionProvider>
   );
 }
 

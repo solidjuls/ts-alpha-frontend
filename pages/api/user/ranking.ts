@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ranking: ranking.ranking?.toString() || "0",
       rating: ranking.rating?.toString() || "0",
       federationRanking: ranking.federation_ranking?.toString() || "0",
-      federationTotalPlayers: ranking.federation_total_players?.toString() || "0"
+      federationTotalPlayers: ranking.federation_total_players?.toString() || "0",
     };
 
     res.status(200).json(response);
@@ -80,4 +80,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error("Error fetching user ranking:", error);
     res.status(500).json({ error: "Failed to fetch user ranking" });
   }
-} 
+}

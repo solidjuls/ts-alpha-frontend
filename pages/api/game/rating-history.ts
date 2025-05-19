@@ -85,7 +85,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Custom JSON serialization to handle BigInt values
     const serializedData = JSON.stringify(ratingHistory, (_, value) => {
-      if (typeof value === 'bigint') {
+      if (typeof value === "bigint") {
         return value.toString();
       }
       return value;
@@ -96,4 +96,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error("Error fetching rating history:", error);
     res.status(500).json({ error: "Failed to fetch rating history" });
   }
-} 
+}
