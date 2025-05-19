@@ -76,7 +76,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             });
             handleCountryChange(selectedOptions);
           }}
-          placeholder="Select Countries..."
+          placeholder="Select Federations..."
           maxDisplayItems={2}
         />
         <FilterDivider />
