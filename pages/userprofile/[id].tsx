@@ -48,24 +48,28 @@ interface RankingData {
 }
 
 interface UserProfileContentProps {
-  data: UserProfileData;
+  data: UserProfileData | null;
+  rankingData: RankingData | null;
+  isLoading: boolean;
 }
 
-interface FetchParams {
-  url: string;
-  cacheId?: string;
-  enabled?: boolean;
+interface RatingChartContentProps {
+  loadingGameResult: boolean
+  id: string
+  showError: boolean
 }
 
-const UserProfileContent = ({ data }: UserProfileContentProps) => {
-  const { data: rankingData } = useFetchInitialData<RankingData>({
-    url: `/api/user/ranking?userId=${data.id}`,
-    enabled: !!data.id, // Only fetch ranking if we have a valid user ID
-  } as FetchParams);
+interface UserProfileProps {
+  id: string;
+}
 
-  const countryCode = data.countries?.tld_code;
+const UserProfileContent = ({ isLoading, data, rankingData }: UserProfileContentProps) => {
+  if (isLoading) return <Spinner size="3" />;
+
+  if (!data) return <Text css={{ color: "#666" }}>No user data found</Text>;
+
+  const countryCode = data?.countries?.tld_code;
   const flagPath = countryCode ? `/flags/${countryCode}.png` : null;
-
   return (
     <>
       <DisplayInfo label="Player's name" infoText={`${data.first_name} ${data.last_name}`} />
@@ -96,15 +100,68 @@ const UserProfileContent = ({ data }: UserProfileContentProps) => {
   );
 };
 
-interface UserProfileProps {
-  id: string;
-}
+const ChartError = () => (
+  <Box
+    css={{
+      width: "100%",
+      maxWidth: "52rem",
+      backgroundColor: "white",
+      padding: "24px",
+      border: "solid 1px lightgray",
+      borderRadius: "8px",
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "200px",
+    }}
+  >
+    <Text css={{ color: "#666" }}>No games found for this player</Text>
+  </Box>
+);
+
+const LoadingChart = () => (
+  <Box
+    css={{
+      width: "100%",
+      maxWidth: "52rem",
+      backgroundColor: "white",
+      padding: "24px",
+      border: "solid 1px lightgray",
+      borderRadius: "8px",
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "400px",
+    }}
+  >
+    <Spinner size="3" />
+  </Box>
+);
+
+const RatingChartContent: React.FC<RatingChartContentProps> = ({ loadingGameResult, id, showError }) => {
+  if (loadingGameResult) return <LoadingChart />;
+  if (showError) return <ChartError />;
+
+  return <RatingChart playerId={id} />;
+};
 
 const UserProfile = ({ id }: UserProfileProps) => {
   const { data, isLoading, error } = useFetchInitialData<UserProfileData>({
     url: `/api/user?id=${id}`,
   });
-  const gameDataResult = useFetchInitialData<{ results: Game[] }>({
+
+  const { data: rankingData } = useFetchInitialData<RankingData>({
+    url: `/api/user/ranking?userId=${data?.id}`,
+    enabled: !!data?.id,
+  });
+
+  const {
+    data: dataGameResult,
+    isLoading: loadingGameResult,
+    error: errorGameResult,
+  } = useFetchInitialData<{ results: Game[] }>({
     url: `/api/game?userFilter=${id}&pageSize=100`,
   });
 
@@ -141,7 +198,8 @@ const UserProfile = ({ id }: UserProfileProps) => {
             gridTemplateColumns: "1fr 2fr",
             backgroundColor: "white",
             padding: "24px",
-            alignItems: "left",
+            alignItems: isLoading ? "center" : "left",
+            justifyItems: isLoading ? 'flex-end' : 'flex-start',
             border: "solid 1px lightgray",
             height: isLoading ? "250px" : "auto",
             borderRadius: "8px",
@@ -149,62 +207,16 @@ const UserProfile = ({ id }: UserProfileProps) => {
             width: "100%",
           }}
         >
-          {isLoading ? (
-            <Spinner size="3" />
-          ) : data ? (
-            <UserProfileContent data={data} />
-          ) : (
-            <Text css={{ color: "#666" }}>No user data found</Text>
-          )}
+          <UserProfileContent isLoading={isLoading} data={data} rankingData={rankingData} />
         </Box>
       </DetailContainer>
-      {gameDataResult.isLoading ? (
-        <DetailContainer backButton={false}>
-          <Box
-            css={{
-              width: "100%",
-              maxWidth: "52rem",
-              backgroundColor: "white",
-              padding: "24px",
-              border: "solid 1px lightgray",
-              borderRadius: "8px",
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "400px",
-            }}
-          >
-            <Spinner size="3" />
-          </Box>
-        </DetailContainer>
-      ) : gameDataResult.data?.results && gameDataResult.data.results.length > 0 ? (
-        <>
-          <DetailContainer backButton={false}>
-            <RatingChart playerId={id} />
-          </DetailContainer>
-        </>
-      ) : (
-        <DetailContainer backButton={false}>
-          <Box
-            css={{
-              width: "100%",
-              maxWidth: "52rem",
-              backgroundColor: "white",
-              padding: "24px",
-              border: "solid 1px lightgray",
-              borderRadius: "8px",
-              boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
-            <Text css={{ color: "#666" }}>No games found for this player</Text>
-          </Box>
-        </DetailContainer>
-      )}
+      <DetailContainer backButton={false}>
+        <RatingChartContent
+          loadingGameResult={loadingGameResult}
+          id={id}
+          showError={!!dataGameResult?.results && dataGameResult.results.length === 0}
+        />
+      </DetailContainer>
       <DetailContainer backButton={false}>
         <Flex
           css={{
@@ -220,10 +232,10 @@ const UserProfile = ({ id }: UserProfileProps) => {
           <Text css={{ fontSize: "18px", fontWeight: "bold", marginBottom: "8px" }}>
             Recent Games
           </Text>
-          {gameDataResult.isLoading ? (
+          {loadingGameResult ? (
             <Spinner size="3" />
-          ) : gameDataResult.data?.results ? (
-            <ResultsPanel data={gameDataResult.data.results.slice(0, 10)} />
+          ) : dataGameResult?.results ? (
+            <ResultsPanel data={dataGameResult.results.slice(0, 10)} />
           ) : null}
         </Flex>
       </DetailContainer>

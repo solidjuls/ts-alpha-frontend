@@ -5,9 +5,10 @@ import { AxiosError } from "axios";
 interface FetchParams {
   url: string;
   cacheId?: string;
+  enabled?: boolean
 }
 
-const useFetchInitialData = <T>({ url, cacheId }: FetchParams) => {
+const useFetchInitialData = <T>({ url, cacheId, enabled = true }: FetchParams) => {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<AxiosError | null>(null);
@@ -27,11 +28,11 @@ const useFetchInitialData = <T>({ url, cacheId }: FetchParams) => {
     }
   };
   useEffect(() => {
-    if (!isMounted.current) {
+    if (enabled && !isMounted.current) {
       isMounted.current = true;
       fetchData();
     }
-  }, []);
+  }, [enabled]);
 
   return { data, setData, isLoading, error, refetch: fetchData };
 };
