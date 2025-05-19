@@ -15,4 +15,4 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
   );
 };
 
-export default PlayerRow; 
+export default PlayerRow;

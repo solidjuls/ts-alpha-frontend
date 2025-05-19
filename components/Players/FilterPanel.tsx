@@ -41,8 +41,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   handlePlaydekChange,
 }) => {
   // Convert selected values to string arrays for MultiSelectCombobox
-  const playerSelectedValues = playersSelected.map(item => item.code);
-  const playdekSelectedValues = playdekSelected.map(item => item.code);
+  const playerSelectedValues = playersSelected.map((item) => item.code);
+  const playdekSelectedValues = playdekSelected.map((item) => item.code);
 
   return (
     <StyledFilterPanel>
@@ -52,9 +52,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           selected={playerSelectedValues}
           onChange={(selected) => {
             // Convert selected string[] to the format expected by handlePlayerChange
-            const selectedOptions = selected.map(value => {
-              const option = playerOptions.find(opt => opt.value === value);
-              return { value: option?.value || '', label: option?.label || '' };
+            const selectedOptions = selected.map((value) => {
+              const option = playerOptions.find((opt) => opt.value === value);
+              return { value: option?.value || "", label: option?.label || "" };
             });
             handlePlayerChange(selectedOptions);
           }}
@@ -63,16 +63,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         />
         <FilterDivider />
       </FilterSelectContainer>
-      
+
       <FilterSelectContainer>
         <MultiSelectCombobox
           options={countryOptions}
           selected={countriesSelected}
           onChange={(selected) => {
             // Convert selected string[] to the format expected by handleCountryChange
-            const selectedOptions = selected.map(value => {
-              const option = countryOptions.find(opt => opt.value === value);
-              return { value: option?.value || '', label: option?.label || '' };
+            const selectedOptions = selected.map((value) => {
+              const option = countryOptions.find((opt) => opt.value === value);
+              return { value: option?.value || "", label: option?.label || "" };
             });
             handleCountryChange(selectedOptions);
           }}
@@ -81,15 +81,15 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         />
         <FilterDivider />
       </FilterSelectContainer>
-      
+
       <MultiSelectCombobox
         options={playdekOptions}
         selected={playdekSelectedValues}
         onChange={(selected) => {
           // Convert selected string[] to the format expected by handlePlaydekChange
-          const selectedOptions = selected.map(value => {
-            const option = playdekOptions.find(opt => opt.value === value);
-            return { value: option?.value || '', label: option?.label || '' };
+          const selectedOptions = selected.map((value) => {
+            const option = playdekOptions.find((opt) => opt.value === value);
+            return { value: option?.value || "", label: option?.label || "" };
           });
           handlePlaydekChange(selectedOptions);
         }}
@@ -100,4 +100,4 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   );
 };
 
-export default FilterPanel; 
+export default FilterPanel;

@@ -12,16 +12,14 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
       <StyledResultsPanel>
         {isLoading ? (
           <Spinner />
+        ) : Array.isArray(data) && data.length > 0 ? (
+          data.map((player, index) => <PlayerRow key={index} index={index} player={player} />)
         ) : (
-          Array.isArray(data) && data.length > 0 ? (
-            data.map((player, index) => <PlayerRow key={index} index={index} player={player} />)
-          ) : (
-            <Text css={{ textAlign: "center", marginTop: "20px" }}>No players found</Text>
-          )
+          <Text css={{ textAlign: "center", marginTop: "20px" }}>No players found</Text>
         )}
       </StyledResultsPanel>
     </Flex>
   );
 };
 
-export default ResultsPanel; 
+export default ResultsPanel;

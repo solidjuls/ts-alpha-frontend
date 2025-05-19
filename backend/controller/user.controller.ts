@@ -94,7 +94,7 @@ export const getAll = async () => {
           tld_code: true,
         },
       },
-      name: true
+      name: true,
     },
   });
 

@@ -45,4 +45,4 @@ export interface CardColumnProps {
 export interface PlayerRowProps {
   index: number;
   player: Player;
-} 
+}

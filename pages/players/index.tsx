@@ -4,10 +4,7 @@ import { Pagination } from "components/Pagination";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "redux/store";
-import {
-  fetchPlayersList,
-  setCurrentPage,
-} from "../../redux/playersListSlice";
+import { fetchPlayersList, setCurrentPage } from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
 import { UserType } from "types/user.types";
 import React from "react";
@@ -33,7 +30,7 @@ const Players = () => {
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList as PlayersListState,
   );
-  
+
   // Use the custom hook for filter logic
   const {
     playerInputValue,
@@ -51,7 +48,7 @@ const Players = () => {
     handlePlayerChange,
     handleCountryChange,
     handlePlaydekChange,
-    hasAnySelections
+    hasAnySelections,
   } = usePlayersFilters(users || undefined, countries || undefined);
 
   useEffect(() => {
@@ -63,9 +60,9 @@ const Players = () => {
   };
 
   if (isLoadingUsers || isLoadingCountries) return null;
-  
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <h1>Players list</h1>
       <FilterPanel
         playerInputValue={playerInputValue}
@@ -84,15 +81,16 @@ const Players = () => {
         handleCountryChange={handleCountryChange}
         handlePlaydekChange={handlePlaydekChange}
       />
-      
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0 }}>
         <ResultsStyleWrapper>
-          <ResultsPanel
-            data={Array.isArray(items) ? items : []}
-            isLoading={status === "loading"}
-          />
+          <ResultsPanel data={Array.isArray(items) ? items : []} isLoading={status === "loading"} />
           <PaginationContainer>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+            />
           </PaginationContainer>
         </ResultsStyleWrapper>
       </div>

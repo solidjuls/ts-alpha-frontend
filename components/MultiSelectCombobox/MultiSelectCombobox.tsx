@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useRef, useEffect, type KeyboardEvent } from "react"
-import styles from "./MultiSelectCombobox.module.css"
-import { Tooltip } from "@radix-ui/themes"
+import type React from "react";
+import { useState, useRef, useEffect, type KeyboardEvent } from "react";
+import styles from "./MultiSelectCombobox.module.css";
+import { Tooltip } from "@radix-ui/themes";
 
 export type Option = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 interface MultiSelectComboboxProps {
-  options: Option[]
-  selected: string[]
-  onChange: (selected: string[]) => void
-  placeholder?: string
-  maxDisplayItems?: number
-  className?: string
-  disabled?: boolean
+  options: Option[];
+  selected: string[];
+  onChange: (selected: string[]) => void;
+  placeholder?: string;
+  maxDisplayItems?: number;
+  className?: string;
+  disabled?: boolean;
 }
 
 export const MultiSelectCombobox: React.FC<MultiSelectComboboxProps> = ({
@@ -29,81 +29,81 @@ export const MultiSelectCombobox: React.FC<MultiSelectComboboxProps> = ({
   className = "",
   disabled = false,
 }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("")
-  const comboboxRef = useRef<HTMLDivElement>(null)
-  const searchInputRef = useRef<HTMLInputElement>(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const comboboxRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Filter and sort options based on search query and selection
   const filteredOptions = options
     .filter((option) => option.label.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
-      const aSelected = selected.includes(a.value)
-      const bSelected = selected.includes(b.value)
-      if (aSelected && !bSelected) return -1
-      if (!aSelected && bSelected) return 1
-      return 0
-    })
+      const aSelected = selected.includes(a.value);
+      const bSelected = selected.includes(b.value);
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
 
   // Handle clicking outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Focus search input when dropdown opens
   useEffect(() => {
     if (isOpen && searchInputRef.current) {
-      searchInputRef.current.focus()
+      searchInputRef.current.focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const toggleOption = (value: string) => {
     if (selected.includes(value)) {
-      onChange(selected.filter((item) => item !== value))
+      onChange(selected.filter((item) => item !== value));
     } else {
-      onChange([...selected, value])
+      onChange([...selected, value]);
     }
-  }
+  };
 
   const removeItem = (value: string, e?: React.MouseEvent) => {
     if (e) {
-      e.stopPropagation()
+      e.stopPropagation();
     }
-    onChange(selected.filter((item) => item !== value))
-  }
+    onChange(selected.filter((item) => item !== value));
+  };
 
   const clearAll = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onChange([])
-  }
+    e.stopPropagation();
+    onChange([]);
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Escape") {
-      setIsOpen(false)
+      setIsOpen(false);
     } else if (e.key === "Backspace" && searchQuery === "" && selected.length > 0) {
-      removeItem(selected[selected.length - 1])
+      removeItem(selected[selected.length - 1]);
     }
-  }
+  };
 
   // Get display text for the combobox
   const getDisplayContent = () => {
     if (selected.length === 0) {
-      return <span className={styles.placeholder}>{placeholder}</span>
+      return <span className={styles.placeholder}>{placeholder}</span>;
     }
 
     // Show individual pill only when exactly one item is selected
     if (selected.length === 1) {
-      const value = selected[0]
-      const option = options.find((opt) => opt.value === value)
+      const value = selected[0];
+      const option = options.find((opt) => opt.value === value);
       return (
         <div className={styles.selectedItems}>
           <span className={styles.selectedPill}>
@@ -118,14 +118,22 @@ export const MultiSelectCombobox: React.FC<MultiSelectComboboxProps> = ({
             </button>
           </span>
         </div>
-      )
+      );
     }
 
     // Show count for all other cases
-    return <span className={styles.selectedCount}>{selected.length} items selected</span>
-  }
+    return <span className={styles.selectedCount}>{selected.length} items selected</span>;
+  };
 
-  const OptionItem = ({ option, isSelected, onSelect }: { option: Option; isSelected: boolean; onSelect: () => void }) => {
+  const OptionItem = ({
+    option,
+    isSelected,
+    onSelect,
+  }: {
+    option: Option;
+    isSelected: boolean;
+    onSelect: () => void;
+  }) => {
     const labelRef = useRef<HTMLSpanElement>(null);
     const [isTruncated, setIsTruncated] = useState(false);
 
@@ -161,19 +169,20 @@ export const MultiSelectCombobox: React.FC<MultiSelectComboboxProps> = ({
           className={styles.checkbox}
           tabIndex={-1}
         />
-        <span ref={labelRef} className={styles.optionLabel}>{option.label}</span>
+        <span ref={labelRef} className={styles.optionLabel}>
+          {option.label}
+        </span>
       </div>
     );
 
-    return isTruncated ? (
-      <Tooltip content={option.label}>
-        {content}
-      </Tooltip>
-    ) : content;
-  }
+    return isTruncated ? <Tooltip content={option.label}>{content}</Tooltip> : content;
+  };
 
   return (
-    <div ref={comboboxRef} className={`${styles.multiselectCombobox} ${className} ${disabled ? styles.disabled : ""}`}>
+    <div
+      ref={comboboxRef}
+      className={`${styles.multiselectCombobox} ${className} ${disabled ? styles.disabled : ""}`}
+    >
       <div
         className={`${styles.comboboxControl} ${isOpen ? styles.open : ""}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -231,5 +240,5 @@ export const MultiSelectCombobox: React.FC<MultiSelectComboboxProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

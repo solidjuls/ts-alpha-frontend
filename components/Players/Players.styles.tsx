@@ -82,4 +82,4 @@ export const FilterDivider = styled("div", {
   height: "24px",
   backgroundColor: "$greyLight",
   margin: "0 8px",
-}); 
+});

@@ -18,4 +18,4 @@ const CardColumn: React.FC<CardColumnProps> = ({ header, value, countryCode }) =
   );
 };
 
-export default CardColumn; 
+export default CardColumn;

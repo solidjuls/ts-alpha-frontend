@@ -147,17 +147,13 @@ type FilterTournamentProps = {
   setSelectedValues: (value: MultiSelectItemType[]) => void;
 };
 
-const FilterUser: React.FC<FilterUserProps> = ({
-  users,
-  selectedValues,
-  setSelectedValues,
-}) => {
+const FilterUser: React.FC<FilterUserProps> = ({ users, selectedValues, setSelectedValues }) => {
   const options = useMemo(
     () => users.map((item) => ({ value: item.id as string, label: item.name as string })),
     [users],
   );
 
-  const selected = selectedValues.map(item => item.code);
+  const selected = selectedValues.map((item) => item.code);
 
   return (
     <Box css={{ margin: "4px" }}>
@@ -165,9 +161,9 @@ const FilterUser: React.FC<FilterUserProps> = ({
         options={options}
         selected={selected}
         onChange={(selected) => {
-          const selectedOptions = selected.map(value => {
-            const option = options.find(opt => opt.value === value);
-            return { code: option?.value || '', name: option?.label || '' };
+          const selectedOptions = selected.map((value) => {
+            const option = options.find((opt) => opt.value === value);
+            return { code: option?.value || "", name: option?.label || "" };
           });
           setSelectedValues(selectedOptions);
         }}
@@ -188,7 +184,7 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
     [tournaments],
   );
 
-  const selected = selectedValues.map(item => item.code);
+  const selected = selectedValues.map((item) => item.code);
 
   return (
     <Box css={{ margin: "4px" }}>
@@ -196,9 +192,9 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
         options={options}
         selected={selected}
         onChange={(selected) => {
-          const selectedOptions = selected.map(value => {
-            const option = options.find(opt => opt.value === value);
-            return { code: option?.value || '', name: option?.label || '' };
+          const selectedOptions = selected.map((value) => {
+            const option = options.find((opt) => opt.value === value);
+            return { code: option?.value || "", name: option?.label || "" };
           });
           setSelectedValues(selectedOptions);
         }}
