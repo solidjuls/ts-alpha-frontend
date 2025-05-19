@@ -4,6 +4,68 @@ import { UserType } from "types/user.types";
 import { getRatingByPlayer } from "./rating.controller";
 const nodemailer = require("nodemailer");
 
+interface UpdateUserInput {
+  email: string;
+  firstName: string;
+  lastName: string;
+  name: string;
+  phone: string;
+  preferredGamingPlatform?: string;
+  preferredGameDuration?: string;
+  city?: number;
+  country?: number;
+}
+
+interface CreateUserInput {
+  email: string;
+  first_name: string;
+  last_name: string;
+  name: string;
+  preferredGamingPlatform?: string;
+  preferredGameDuration?: string;
+  city?: number;
+  country?: number;
+}
+
+interface ResetPasswordMailInput {
+  mail: string;
+}
+
+interface ResetPasswordInput {
+  token: string;
+  pwd: string;
+}
+
+interface MailBodyInput {
+  firstName: string | null;
+  hashedUrl: string;
+}
+
+interface UserWithGameResults {
+  id: bigint;
+  first_name: string | null;
+  last_name: string | null;
+  name: string | null;
+  email: string | null;
+  phone_number: string | null;
+  last_login_at: Date | null;
+  preferred_gaming_platform: string | null;
+  preferred_game_duration: string | null;
+  timezone_id: string | null;
+  cities?: {
+    id: bigint;
+    name: string;
+    timeZoneId: string | null;
+  } | null;
+  countries?: {
+    id: bigint;
+    country_name: string;
+    tld_code: string;
+  } | null;
+  game_results_game_results_usa_player_idTousers?: Array<{ game_date: Date }>;
+  game_results_game_results_ussr_player_idTousers?: Array<{ game_date: Date }>;
+}
+
 export const authorize = async ({ email, pwd }: { email: string; pwd: string }) => {
   const user = await prisma.users.findFirst({
     where: {
@@ -105,7 +167,7 @@ export const getAll = async () => {
 };
 
 export const get = async (id: string) => {
-  const user = await prisma.users.findFirst({
+  const user = (await prisma.users.findFirst({
     select: {
       id: true,
       first_name: true,
@@ -131,21 +193,54 @@ export const get = async (id: string) => {
           tld_code: true,
         },
       },
+      game_results_game_results_usa_player_idTousers: {
+        select: {
+          game_date: true,
+        },
+        orderBy: {
+          game_date: "desc",
+        },
+        take: 1,
+      },
+      game_results_game_results_ussr_player_idTousers: {
+        select: {
+          game_date: true,
+        },
+        orderBy: {
+          game_date: "desc",
+        },
+        take: 1,
+      },
     },
     where: {
       id: Number(id),
     },
-  });
+  })) as UserWithGameResults | null;
+
   if (!user) return {};
 
   const rating = await getRatingByPlayer({ playerId: user?.id });
+
+  // Get the most recent game date from either USA or USSR games
+  const lastGameDate = [
+    ...(user.game_results_game_results_usa_player_idTousers || []),
+    ...(user.game_results_game_results_ussr_player_idTousers || []),
+  ].sort((a, b) => new Date(b.game_date).getTime() - new Date(a.game_date).getTime())[0]?.game_date;
+
+  const {
+    game_results_game_results_usa_player_idTousers,
+    game_results_game_results_ussr_player_idTousers,
+    ...userWithoutGames
+  } = user;
+
   const userNormalized = {
-    ...user,
+    ...userWithoutGames,
     cities: {
       id: user.cities?.id,
       name: user.cities ? `${user.cities.name} - ${user.cities.timeZoneId}` : "-",
     },
     rating: rating?.rating,
+    last_game_at: lastGameDate || null,
   };
 
   const userParsed = JSON.stringify({ ...userNormalized }, (key, value) =>
@@ -154,7 +249,7 @@ export const get = async (id: string) => {
   return JSON.parse(userParsed);
 };
 
-export const update = async (input) => {
+export const update = async (input: UpdateUserInput) => {
   const updateUser = await prisma.users.update({
     where: {
       email: input.email,
@@ -174,7 +269,7 @@ export const update = async (input) => {
   return { success: true };
 };
 
-export const create = async (input) => {
+export const create = async (input: CreateUserInput) => {
   const existingUser = await prisma.users.findUnique({
     where: { email: input.email },
   });
@@ -188,7 +283,6 @@ export const create = async (input) => {
       last_name: input.last_name,
       name: input.name,
       email: input.email,
-      // phone_number: input.phone,
       preferred_gaming_platform: input.preferredGamingPlatform,
       preferred_game_duration: input.preferredGameDuration,
       city_id: input.city,
@@ -237,7 +331,7 @@ async function sendEmail(mail: string, firstName: string | null, hashedUrl: stri
     });
   });
 }
-export const resetPasswordMail = async ({ mail }) => {
+export const resetPasswordMail = async ({ mail }: ResetPasswordMailInput) => {
   const user = await prisma.users.findFirst({
     select: {
       id: true,
@@ -258,9 +352,7 @@ export const resetPasswordMail = async ({ mail }) => {
   return { success: true };
 };
 
-export const resetPassword = async ({ token, pwd }) => {
-  // const cookies = new Cookies(ctx.req, ctx.res);
-  // cookies.set("token");
+export const resetPassword = async ({ token, pwd }: ResetPasswordInput) => {
   try {
     const decrypted = decryptHash(token);
     console.log("decrypted", decrypted);
@@ -283,7 +375,7 @@ export const resetPassword = async ({ token, pwd }) => {
   return { success: true };
 };
 
-const mailBody = ({ firstName, hashedUrl }) => {
+const mailBody = ({ firstName, hashedUrl }: MailBodyInput) => {
   const body = `<table style="box-sizing:border-box;border-collapse:separate!important;width:100%;background-color:#fff;border-spacing:0;vertical-align:top;text-align:left;height:100%;color:#222222;font-family:&quot;Helvetica&quot;,&quot;Arial&quot;,sans-serif;font-weight:normal;line-height:19px;font-size:14px;margin:0;padding:10px" width="100%" bgcolor="#fff">
                         <tbody>
                             <tr style="vertical-align:top;text-align:left;padding:0" align="left">

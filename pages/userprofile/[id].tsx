@@ -29,7 +29,7 @@ interface UserProfileData {
   last_name: string;
   name: string;
   email: string;
-  last_login_at: string | null;
+  last_game_at: string | null;
   rating: number;
   countries?: {
     tld_code: string;
@@ -72,8 +72,8 @@ const UserProfileContent = ({ data }: UserProfileContentProps) => {
       <DisplayInfo label="Playdek" infoText={data.name} />
       <DisplayInfo label="Email" infoText={data.email} />
       <DisplayInfo
-        label="Last activity date"
-        infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
+        label="Last game date"
+        infoText={data.last_game_at ? dateFormat(new Date(data.last_game_at)) : "-"}
       />
       <DisplayInfo label="Rating" infoText={String(data.rating || 0)} />
       <DisplayInfo
