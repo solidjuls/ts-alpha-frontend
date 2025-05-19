@@ -8,8 +8,6 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
 import dynamic from "next/dynamic";
-import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
 import { NextApiRequest, NextApiResponse } from "next";
 import { ParsedUrlQuery } from "querystring";
 import { Game } from "types/game.types";
@@ -109,8 +107,6 @@ const UserProfile = ({ id }: UserProfileProps) => {
   const gameDataResult = useFetchInitialData<{ results: Game[] }>({
     url: `/api/game?userFilter=${id}&pageSize=100`,
   });
-  const { data: session } = useSession();
-  const email = session?.user?.email;
 
   if (error) {
     return (
