@@ -59,43 +59,27 @@ export const StyledCardRow = styled("div", {
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
 });
 
-// Filter Panel Styles
+export const FilterPanel = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+  margin: "0 0 16px 0",
+  padding: "8px",
+  backgroundColor: "$infoForm",
+  borderRadius: "12px",
+});
+
 export const FilterSelectContainer = styled("div", {
-  position: "relative",
-  marginRight: "15px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: "8px",
 });
 
 export const FilterDivider = styled("div", {
-  position: "absolute",
-  right: "-10px",
-  top: 0,
-  bottom: 0,
   width: "1px",
-  backgroundColor: "#eee",
-});
-
-export const SelectStyles = {
-  control: (base: any) => ({
-    ...base,
-    width: "300px",
-    minHeight: "40px",
-    maxHeight: "40px",
-    border: "none",
-    boxShadow: "none",
-    "&:hover": {
-      border: "none"
-    }
-  }),
-  input: (base: any) => ({
-    ...base,
-    margin: "0px",
-    padding: "0px"
-  }),
-  menu: (base: any) => ({
-    ...base,
-    zIndex: 9999
-  }),
-  multiValue: () => ({
-    display: "none"
-  })
-}; 
+  height: "24px",
+  backgroundColor: "$greyLight",
+  margin: "0 8px",
+}); 

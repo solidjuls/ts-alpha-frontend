@@ -1,10 +1,9 @@
 import React from "react";
-import Select from "react-select";
+import { MultiSelectCombobox, Option } from "components/MultiSelectCombobox/MultiSelectCombobox";
 import { FilterPanel as StyledFilterPanel } from "components/Homepage/Homepage.styles";
-import { Option, CustomSelectContainer } from "./CustomSelect";
 import { SelectOption } from "./Players.types";
 import { MultiSelectItemType } from "types/types";
-import { FilterSelectContainer, FilterDivider, SelectStyles } from "./Players.styles";
+import { FilterSelectContainer, FilterDivider } from "./Players.styles";
 
 interface FilterPanelProps {
   playerInputValue: string;
@@ -41,90 +40,61 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   handleCountryChange,
   handlePlaydekChange,
 }) => {
+  // Convert selected values to string arrays for MultiSelectCombobox
+  const playerSelectedValues = playersSelected.map(item => item.code);
+  const playdekSelectedValues = playdekSelected.map(item => item.code);
+
   return (
     <StyledFilterPanel>
       <FilterSelectContainer>
-        <Select<SelectOption, true>
-          isMulti
+        <MultiSelectCombobox
           options={playerOptions}
+          selected={playerSelectedValues}
+          onChange={(selected) => {
+            // Convert selected string[] to the format expected by handlePlayerChange
+            const selectedOptions = selected.map(value => {
+              const option = playerOptions.find(opt => opt.value === value);
+              return { value: option?.value || '', label: option?.label || '' };
+            });
+            handlePlayerChange(selectedOptions);
+          }}
           placeholder="Select Players..."
-          closeMenuOnSelect={false}
-          blurInputOnSelect={false}
-          inputValue={playerInputValue}
-          onInputChange={(newValue, action) => {
-            if (action.action === "input-change") {
-              setPlayerInputValue(newValue);
-            }
-          }}
-          onChange={handlePlayerChange}
-          value={playerOptions.filter(option => 
-            playersSelected?.some((item: MultiSelectItemType) => item.code === option.value)
-          )}
-          components={{ 
-            Option,
-            SelectContainer: CustomSelectContainer,
-            MultiValue: () => null
-          }}
-          menuPortalTarget={document.body}
-          styles={SelectStyles}
-          aria-label="Players"
+          maxDisplayItems={2}
         />
         <FilterDivider />
       </FilterSelectContainer>
       
       <FilterSelectContainer>
-        <Select<SelectOption, true>
-          isMulti
+        <MultiSelectCombobox
           options={countryOptions}
+          selected={countriesSelected}
+          onChange={(selected) => {
+            // Convert selected string[] to the format expected by handleCountryChange
+            const selectedOptions = selected.map(value => {
+              const option = countryOptions.find(opt => opt.value === value);
+              return { value: option?.value || '', label: option?.label || '' };
+            });
+            handleCountryChange(selectedOptions);
+          }}
           placeholder="Select Countries..."
-          closeMenuOnSelect={false}
-          blurInputOnSelect={false}
-          inputValue={countryInputValue}
-          onInputChange={(newValue, action) => {
-            if (action.action === "input-change") {
-              setCountryInputValue(newValue);
-            }
-          }}
-          onChange={handleCountryChange}
-          value={countryOptions.filter(option => 
-            countriesSelected?.includes(option.value)
-          )}
-          components={{ 
-            Option,
-            SelectContainer: CustomSelectContainer,
-            MultiValue: () => null
-          }}
-          menuPortalTarget={document.body}
-          styles={SelectStyles}
-          aria-label="Countries"
+          maxDisplayItems={2}
         />
         <FilterDivider />
       </FilterSelectContainer>
       
-      <Select<SelectOption, true>
-        isMulti
+      <MultiSelectCombobox
         options={playdekOptions}
+        selected={playdekSelectedValues}
+        onChange={(selected) => {
+          // Convert selected string[] to the format expected by handlePlaydekChange
+          const selectedOptions = selected.map(value => {
+            const option = playdekOptions.find(opt => opt.value === value);
+            return { value: option?.value || '', label: option?.label || '' };
+          });
+          handlePlaydekChange(selectedOptions);
+        }}
         placeholder="Select Playdeks..."
-        closeMenuOnSelect={false}
-        blurInputOnSelect={false}
-        inputValue={playdekInputValue}
-        onInputChange={(newValue, action) => {
-          if (action.action === "input-change") {
-            setPlaydekInputValue(newValue);
-          }
-        }}
-        onChange={handlePlaydekChange}
-        value={playdekOptions.filter(option => 
-          playdekSelected?.some((item: MultiSelectItemType) => item.code === option.value)
-        )}
-        components={{ 
-          Option,
-          SelectContainer: CustomSelectContainer,
-          MultiValue: () => null
-        }}
-        menuPortalTarget={document.body}
-        styles={SelectStyles}
-        aria-label="Playdeks"
+        maxDisplayItems={2}
       />
     </StyledFilterPanel>
   );

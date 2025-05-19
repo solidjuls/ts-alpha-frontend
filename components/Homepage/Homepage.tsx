@@ -8,7 +8,7 @@ import { Game, TournamentsType } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
-import MultiSelect from "components/MultiSelect";
+import { MultiSelectCombobox, Option } from "components/MultiSelectCombobox/MultiSelectCombobox";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
@@ -138,54 +138,72 @@ const EmptyState = () => {
 type FilterUserProps = {
   users: UserType[];
   selectedValues: MultiSelectItemType[];
+  setSelectedValues: (value: MultiSelectItemType[]) => void;
 };
 
 type FilterTournamentProps = {
   tournaments: TournamentsType[];
   selectedValues: MultiSelectItemType[];
+  setSelectedValues: (value: MultiSelectItemType[]) => void;
 };
 
 const FilterUser: React.FC<FilterUserProps> = ({
-  onFilterChange,
   users,
   selectedValues,
   setSelectedValues,
 }) => {
-  const usersMemo = useMemo(
-    () => users.map((item) => ({ code: item.id as string, name: item.name as string })),
+  const options = useMemo(
+    () => users.map((item) => ({ value: item.id as string, label: item.name as string })),
     [users],
   );
 
+  const selected = selectedValues.map(item => item.code);
+
   return (
     <Box css={{ margin: "4px" }}>
-      <MultiSelect
-        items={usersMemo}
+      <MultiSelectCombobox
+        options={options}
+        selected={selected}
+        onChange={(selected) => {
+          const selectedOptions = selected.map(value => {
+            const option = options.find(opt => opt.value === value);
+            return { code: option?.value || '', name: option?.label || '' };
+          });
+          setSelectedValues(selectedOptions);
+        }}
         placeholder="Select Players..."
-        selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
-        closeOnSelect={false}
+        maxDisplayItems={2}
       />
     </Box>
   );
 };
+
 const FilterTournament: React.FC<FilterTournamentProps> = ({
   tournaments,
   selectedValues,
   setSelectedValues,
 }) => {
-  const tournamentsMemo = useMemo(
-    () => tournaments.map((item) => ({ code: item.id.toString(), name: item.tournament_name })),
+  const options = useMemo(
+    () => tournaments.map((item) => ({ value: item.id.toString(), label: item.tournament_name })),
     [tournaments],
   );
 
+  const selected = selectedValues.map(item => item.code);
+
   return (
     <Box css={{ margin: "4px" }}>
-      <MultiSelect
-        items={tournamentsMemo}
+      <MultiSelectCombobox
+        options={options}
+        selected={selected}
+        onChange={(selected) => {
+          const selectedOptions = selected.map(value => {
+            const option = options.find(opt => opt.value === value);
+            return { code: option?.value || '', name: option?.label || '' };
+          });
+          setSelectedValues(selectedOptions);
+        }}
         placeholder="Select Tournaments..."
-        selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
-        closeOnSelect={false}
+        maxDisplayItems={2}
       />
     </Box>
   );
@@ -209,39 +227,27 @@ const Filter = () => {
   const onClear = () => {
     dispatch(setClearFilter());
   };
-  // --blue-50: #f4fafe;
-  // --blue-100: #cae6fc;
-  // --blue-200: #a0d2fa;
-  // --blue-300: #75bef8;
-  // --blue-400: #4baaf5;
-  // --blue-500: #2196f3;
-  // --blue-600: #1c80cf;
-  // --blue-700: #1769aa;
-  // --blue-800: #125386;
 
   if (isLoadingTournament || isLoadingUsers) return null;
+
   return (
     <FilterPanel>
       {users && (
         <FilterUser
           users={users}
           selectedValues={playersSelected}
-          setSelectedValues={(value) => {
-            dispatch(setPlayersFilter(value));
-          }}
-          closeOnSelect={false}
+          setSelectedValues={(value: MultiSelectItemType[]) => dispatch(setPlayersFilter(value))}
         />
       )}
       {tournaments && (
         <FilterTournament
           tournaments={tournaments}
           selectedValues={tournamentSelected}
-          setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
-          closeOnSelect={false}
+          setSelectedValues={(value: MultiSelectItemType[]) => dispatch(setTournamentFilter(value))}
         />
       )}
       <Checkbox
-        text="Games with videos"
+        text="Video"
         onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
         checked={videoSelected}
       />

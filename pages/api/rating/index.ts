@@ -56,7 +56,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } else {
     // @ts-ignore - Ignoring type error for now as the function works correctly
-    players = await getAllPlayers(Number(p), null, null);
+    players = await getAllPlayers(Number(p), pageSize, null);
     
     playersWithRating = players.map((player) => ({
       id: String(player.id),
