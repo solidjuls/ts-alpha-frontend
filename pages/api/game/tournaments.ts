@@ -1,6 +1,7 @@
 import {
   addTournament,
-  getTournamentNames,
+  getTournamentsByStatus,
+  getTournamentsById,
   removeTournament,
   updateTournament,
 } from "backend/controller/game.controller";
@@ -14,11 +15,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const gameParsed = JSON.stringify(tournamentNames);
     res.status(200).json(JSON.parse(gameParsed));
   } else if (req.method === "GET") {
-    const { status } = req.query;
-    const tournamentNames = await getTournamentNames(status);
+    const { status, id } = req.query;
 
-    const gameParsed = JSON.stringify(tournamentNames);
-    res.status(200).json(JSON.parse(gameParsed));
+    let tournament;
+    if (id && typeof id === "string") {
+      tournament = await getTournamentsById(id);
+    }
+    if (status) {
+      tournament = await getTournamentsByStatus(status);
+    }
+
+    const tournamentParsed = JSON.stringify(tournament);
+    res.status(200).json(JSON.parse(tournamentParsed));
   } else if (req.method === "PATCH") {
     const { name, status } = req.body;
 
@@ -28,8 +36,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json(JSON.parse(gameParsed));
   } else if (req.method === "DELETE") {
     const { id } = req.query;
-    const tournament = await removeTournament(id);
-    console.log("tournament", tournament);
-    res.status(200).json(JSON.parse(tournament.id));
+    let tournament;
+    if (id && typeof id === "string") {
+      tournament = await removeTournament(id);
+    }
+
+    res.status(200).json(JSON.parse(tournament?.id.toString() || ""));
   }
 }

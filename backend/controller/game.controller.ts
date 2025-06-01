@@ -161,7 +161,7 @@ export const getGameByGameId = async (id: string) =>
     },
   });
 
-export const getTournamentNames = async (status: TournamentStatusType | undefined) => {
+export const getTournamentsByStatus = async (status: TournamentStatusType | undefined) => {
   const filter = status
     ? {
         where: {
@@ -178,6 +178,23 @@ export const getTournamentNames = async (status: TournamentStatusType | undefine
       created_at: true,
     },
     ...filter,
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+};
+
+export const getTournamentsById = async (id: string) => {
+  return await prisma.tournaments.findFirst({
+    select: {
+      id: true,
+      tournament_name: true,
+      status_id: true,
+      created_at: true,
+    },
+    where: {
+      id: Number(id),
+    },
     orderBy: {
       created_at: "desc",
     },

@@ -206,3 +206,10 @@ export const gameDurations: Array<DropdownItemType> = [
     text: "Asynch - 45 days",
   },
 ];
+
+export const getTournamentStatusNames = (status_id: TournamentStatusType) => {
+  const statusIdToName = Object.fromEntries(
+    Object.entries(tournamentStatus).map(([key, value]) => [value, key]),
+  );
+  return statusIdToName[status_id]
+}
