@@ -16,8 +16,34 @@ const TournamentRegistration = () => {
     url: `/api/game/tournaments?id=${id}`,
     cacheId: "tournaments",
   });
-  console.log("id", data);
+
+  const onRegisterClick = () => {
+    try {
+        // @ts-ignore
+        await getAxiosInstance().patch(
+          "/api/game/submit",
+          {
+            data: normalizeData(form),
+          },
+          {
+            cache: {
+              update: {
+                "game-list": "delete",
+              },
+            },
+          },
+        );
+        router.push("/");
+      } catch (e) {
+        console.log("error submitform", e);
+        setErrorMsg("There was an error submitting the result");
+      } finally {
+        setIsSubmitting(false);
+      }
+  }
+
   if (isLoading) return;
+
   return (
     <DetailContainer>
       <Box

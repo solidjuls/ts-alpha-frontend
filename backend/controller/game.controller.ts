@@ -202,7 +202,6 @@ export const getTournamentsById = async (id: string) => {
 };
 
 export const removeTournament = async (id: string) => {
-  console.log("id", id);
   return await prisma.tournaments.delete({
     where: {
       id: Number(id),
@@ -227,6 +226,16 @@ export const updateTournament = async (id: number, status: TournamentStatusType)
     data: {
       status_id: Number(status),
     },
+  });
+};
+
+export const registerTournament = async (id: number, userId: number) => {
+  return await prisma.tournament_registration.create({
+    data: {
+      tournamentId: id,
+      playerId: userId,
+      status: 'pending'
+    }
   });
 };
 
