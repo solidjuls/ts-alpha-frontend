@@ -4,7 +4,7 @@ import { getGameByGameId } from "./game.controller";
 import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
 
 const DEFAULT_RATING = 5000;
-
+const FRIENDLY_GAME = "47"
 export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = null) => {
   const pageSize = pageSizeOverride || 20;
   const page = Number(p);
@@ -32,7 +32,7 @@ const getRatingDifference = (
 ) => {
   let basicCalculus = (defeated - winner) * 0.05;
   console.log("getRatingDifference", defeated, winner, addValue, gameType);
-  if (gameType === "Friendly Game") basicCalculus = basicCalculus / 2;
+  if (gameType === FRIENDLY_GAME) basicCalculus = basicCalculus / 2;
 
   const newValue = roundValue(basicCalculus) + addValue;
 
@@ -60,11 +60,12 @@ const getNewRatings = (
 ) => {
   let newUsaRating: number = 0;
   let newUssrRating: number = 0;
+
   if (gameWinner === "1") {
     const ratingDifference: number = getRatingDifference(
       ussrRating,
       usaRating,
-      gameType === "Friendly Game" ? 50 : 100,
+      gameType === FRIENDLY_GAME ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating + ratingDifference;
@@ -73,7 +74,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       usaRating,
       ussrRating,
-      gameType === "Friendly Game" ? 50 : 100,
+      gameType === FRIENDLY_GAME ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating - ratingDifference;
@@ -117,7 +118,7 @@ export const calculateRating = async ({
     playerId: ussrPlayerId,
     prismaTransaction,
   });
-  // const newValue = Math.round((defeated - winner) * 0.05) + addValue;
+
   console.log("usaRating, ussrRating", usaRating, ussrRating);
   return getNewRatings(
     usaRating?.rating || DEFAULT_RATING,
