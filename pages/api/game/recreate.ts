@@ -1,10 +1,14 @@
 import { deleteGameRatings, startRecreatingRatings } from "backend/controller/rating.controller";
 import { submit } from "backend/controller/game.controller";
-import { authenticateJWT } from "pages/api/auth/middleware";
+import { checkAuth } from "backend/utils/adminCheck";
+import { NextApiRequest, NextApiResponse } from "next/types";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
     try {
+      
+      await checkAuth(req, res)
+
       let newGameWithId = {};
 
       if (req.body.data.op === "delete") {
