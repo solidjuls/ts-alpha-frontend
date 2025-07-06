@@ -15,7 +15,19 @@ export const StyledResultsPanel = styled("div", {
 export const PlayerInfo = styled("div", {
   display: "flex",
   flexDirection: "column",
-  // borderBottom: borderStyle,
+  width: '100%',
+  padding: "4px",
+  margin: "4px",
+  borderWidth: "1px",
+  borderRadius: "6px",
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+});
+
+export const DueDateCell = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: 'center',
   padding: "4px",
   margin: "4px",
   borderWidth: "1px",

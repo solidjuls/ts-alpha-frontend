@@ -2,7 +2,14 @@ import { prisma } from "backend/utils/prisma";
 
 export const getSchedules = async () => {
   const scheduleResults = await prisma.schedule.findMany({
-    include: {
+    select: {
+      game_results: {
+        select: {
+          game_winner: true,
+          game_date: true,
+        }
+      },
+      due_date: true,
       tournaments: {
         select: {
           tournament_name: true,
@@ -33,9 +40,15 @@ export const getSchedules = async () => {
           },
         },
       },
+    },
+    orderBy: {
+      due_date: 'asc'
     }
   })
   return scheduleResults.map(result => ({
+    gameWinner: result.game_results?.game_winner || null,
+    gameDate: result.game_results?.game_date || null,
+    dueDate: result.due_date,
     nameUsa: `${result.users_schedule_usa_player_idTousers.first_name} ${result.users_schedule_usa_player_idTousers.last_name}`,
     nameUssr: `${result.users_schedule_ussr_player_idTousers.first_name} ${result.users_schedule_ussr_player_idTousers.last_name}`,
     idUsa: result.users_schedule_usa_player_idTousers.id.toString(),

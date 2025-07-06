@@ -1,26 +1,26 @@
 import { Box, Flex } from "components/Atoms";
 import useFetchInitialData from "hooks/useFetchInitialData"
 import { useEffect } from "react"
-import { PlayerInfo, StyledResultsPanel, UnstyledLink } from "./Schedule.styles";
+import { PlayerInfo, StyledResultsPanel, UnstyledLink, DueDateCell } from "./Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
 import Text
  from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 type ScheduleType = {
-    countryUsa: string
-    countryUssr: string
-    idUsa: string
-    idUssr: string
-    nameUsa: string;
-    nameUssr: string
-    tournamentId: string
-    tournamentName: string
+  countryUsa: string
+  countryUssr: string
+  idUsa: string
+  idUssr: string
+  nameUsa: string;
+  nameUssr: string
+  tournamentId: string
+  tournamentName: string
 }
 
 type SchedulePanelProps = {
-    data: ScheduleType[] | null
-    isLoading: boolean
+  data: ScheduleType[] | null
+  isLoading: boolean
 }
 
 const PlayerInfoBox = ({
@@ -56,6 +56,7 @@ const PlayerInfoBox = ({
           flexDirection: "row",
           lineHeight: 1,
           alignItems: "center",
+          justifyContent: "space-between"
         }}
       >
         <FlagIcon code={countryUssr} />
@@ -69,6 +70,7 @@ const PlayerInfoBox = ({
 
 const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
   return (
+    <Flex>
     <PlayerInfo>
       <Flex
         css={{
@@ -94,6 +96,10 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
         nameUssr={schedule.nameUssr}
       />
     </PlayerInfo>
+    <DueDateCell>
+        Due Date: 10/10/2020
+    </DueDateCell>
+    </Flex>
   );
 };
 
@@ -120,9 +126,14 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
 };
 
 const Schedule = () => {
-    const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: "/api/schedule" })
-    console.log(data)
-    return <SchedulePanel data={data}/>
+  const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: "/api/schedule" })
+  console.log(data)
+  // admin view, superadminview, player view
+  // admin view: I can see my tournament schedules with a filter, I can update due date, I can reset a game
+  // super admin view: I can see everything with a tournament filter, and do everything
+  // player view. I can only see submit option
+
+  return <SchedulePanel data={data}/>
 }
 
 export default Schedule
