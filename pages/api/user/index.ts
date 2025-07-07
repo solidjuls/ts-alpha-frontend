@@ -1,6 +1,7 @@
 import { get, getAll, update, create } from "backend/controller/user.controller";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   if (req.method === "POST") {
