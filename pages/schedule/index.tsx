@@ -10,6 +10,8 @@ import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
 import DayPickerInput from "react-day-picker/DayPickerInput";
+import { Button } from "components/Button";
+import { DueDateDisplay } from "components/DueDateDisplay";
 
 type ScheduleType = {
   countryUsa: string
@@ -102,18 +104,9 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
       />
     </PlayerInfo>
     <DueDateCell>
-      <DayPickerInput
-            value={new Date(schedule.dueDate)}
-            format="YYYY/MM/DD"
-            placeholder="YYYY/MM/DD"
-            formatDate={dateFormat}
-            // onDayChange={(value) => onInputValueChange(value)}
-            dayPickerProps={{
-              showWeekNumbers: true,
-              todayButton: "Today",
-            }}
-          />
-        Due Date: 
+      <DueDateDisplay dueDate={schedule.dueDate}
+  admin={true}
+  gamePlayed={false} />
     </DueDateCell>
     </Flex>
   );
@@ -139,7 +132,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
   );
 };
 
-const Schedule = () => {
+const Schedule = ({ isSuperAdmin, tournaments, userId }) => {
   const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: "/api/schedule" })
   console.log(data)
   // admin view, superadminview, player view
