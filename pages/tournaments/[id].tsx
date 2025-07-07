@@ -17,7 +17,7 @@ const TournamentRegistration = () => {
     cacheId: "tournaments",
   });
 
-  const onRegisterClick = () => {
+  const onRegisterClick = async () => {
     try {
         // @ts-ignore
         await getAxiosInstance().patch(

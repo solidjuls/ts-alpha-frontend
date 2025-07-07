@@ -1,7 +1,7 @@
 import "react-day-picker/lib/style.css";
 import { Box, Flex } from "components/Atoms";
 import useFetchInitialData from "hooks/useFetchInitialData"
-import { PlayerInfo, ResultsStyleWrapper, DueDateCell } from "./Schedule.styles";
+import { PlayerInfo, ResultsStyleWrapper, DueDateCell } from "components/Schedule/Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
 import Text
