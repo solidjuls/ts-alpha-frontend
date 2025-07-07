@@ -1,7 +1,7 @@
+import "react-day-picker/lib/style.css";
 import { Box, Flex } from "components/Atoms";
 import useFetchInitialData from "hooks/useFetchInitialData"
-import { useEffect } from "react"
-import { PlayerInfo, StyledResultsPanel, UnstyledLink, DueDateCell } from "./Schedule.styles";
+import { PlayerInfo, ResultsStyleWrapper, DueDateCell } from "./Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
 import Text
@@ -9,6 +9,8 @@ import Text
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
+import DayPickerInput from "react-day-picker/DayPickerInput";
+
 type ScheduleType = {
   countryUsa: string
   countryUssr: string
@@ -18,6 +20,7 @@ type ScheduleType = {
   nameUssr: string
   tournamentId: string
   tournamentName: string
+  dueDate: string
 }
 
 type SchedulePanelProps = {
@@ -99,7 +102,18 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
       />
     </PlayerInfo>
     <DueDateCell>
-        Due Date: 10/10/2020
+      <DayPickerInput
+            value={new Date(schedule.dueDate)}
+            format="YYYY/MM/DD"
+            placeholder="YYYY/MM/DD"
+            formatDate={dateFormat}
+            // onDayChange={(value) => onInputValueChange(value)}
+            dayPickerProps={{
+              showWeekNumbers: true,
+              todayButton: "Today",
+            }}
+          />
+        Due Date: 
     </DueDateCell>
     </Flex>
   );
@@ -109,21 +123,19 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
-        <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
+        <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
           <Spinner />
-        </StyledResultsPanel>
+        </ResultsStyleWrapper>
       </Flex>
     );
   }
 
   return (
-    <StyledResultsPanel>
+    <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-        <UnstyledLink key={index} href={`/games/`} passHref>
           <ScheduleRow key={index} schedule={schedule} />
-        </UnstyledLink>
       ))}
-    </StyledResultsPanel>
+    </ResultsStyleWrapper>
   );
 };
 

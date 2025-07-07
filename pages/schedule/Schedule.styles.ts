@@ -1,7 +1,7 @@
 import { styled } from "stitches.config";
 import Link from "next/link";
 
-export const StyledResultsPanel = styled("div", {
+export const ResultsStyleWrapper = styled("div", {
   display: "flex",
   flexDirection: "column",
   backgroundColor: "$infoForm",
@@ -9,7 +9,9 @@ export const StyledResultsPanel = styled("div", {
   borderRadius: "12px",
   flexGrow: "1",
   marginBottom: "12px",
-  minHeight: "600px",
+  width: "100%",
+  maxWidth: "1000px",
+  height: "500px",
 });
 
 export const PlayerInfo = styled("div", {
