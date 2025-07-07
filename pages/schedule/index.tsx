@@ -7,6 +7,8 @@ import { dateFormat } from "utils/dates";
 import Text
  from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
+import { getInfoFromCookies } from "utils/cookies";
+import { ServerType } from "types/types";
 type ScheduleType = {
   countryUsa: string
   countryUssr: string
@@ -134,6 +136,21 @@ const Schedule = () => {
   // player view. I can only see submit option
 
   return <SchedulePanel data={data}/>
+}
+
+export async function getServerSideProps({ req, res }: ServerType) {
+  const payload = getInfoFromCookies(req, res);
+
+  console.log("payload", payload)
+  // if (!payload || payload?.role !== userRoles.SUPERADMIN) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
+  return { props: {  } };
 }
 
 export default Schedule

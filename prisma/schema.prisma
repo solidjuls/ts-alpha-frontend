@@ -214,6 +214,7 @@ model tournaments {
   tournament_admins       tournament_admins[]
   schedule                schedule[]
   standings               standings[]
+  tournament_admins       tournament_admins[]
   tournament_registration tournament_registration[]
   TournamentStatus        TournamentStatus          @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournaments_TournamentStatus_FK")
 
