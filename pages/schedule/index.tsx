@@ -12,6 +12,14 @@ import { ServerType } from "types/types";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
+import CsvUploadButton from "./CsvButtonUpload";
+import { userRoles } from "utils/constants";
+
+interface ScheduleProps {
+  isSuperAdmin: boolean
+  tournaments: string[]
+  userId: string
+}
 
 type ScheduleType = {
   countryUsa: string
@@ -126,21 +134,25 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-          <ScheduleRow key={index} schedule={schedule} />
+        <ScheduleRow key={index} schedule={schedule} />
       ))}
     </ResultsStyleWrapper>
   );
 };
 
-const Schedule = ({ isSuperAdmin, tournaments, userId }) => {
-  const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: "/api/schedule" })
+const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }) => {
+  const tournamentQueryParam = tournaments?.length > 0 ? `${tournaments.join(",")}` : ''
+  const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
   console.log(data)
   // admin view, superadminview, player view
   // admin view: I can see my tournament schedules with a filter, I can update due date, I can reset a game
   // super admin view: I can see everything with a tournament filter, and do everything
   // player view. I can only see submit option
 
-  return <SchedulePanel data={data}/>
+  return <Flex css={{ flexDirection: 'column' }}>
+          <CsvUploadButton tournament={tournaments?.[0]} />
+          <SchedulePanel data={data} />
+        </Flex>
 }
 
 export async function getServerSideProps({ req, res }: ServerType) {
@@ -155,7 +167,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
   //     },
   //   };
   // }
-  return { props: {  } };
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: payload?.tournaments, userId: payload?.id } };
 }
 
 export default Schedule
