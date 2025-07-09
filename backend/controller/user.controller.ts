@@ -53,6 +53,20 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
+export const getUserIdByEmails = async (emails: string[]) => {
+  return await prisma.users.findMany({
+    where: {
+      email: {
+        in: emails,
+      },
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
+}
+
 export const getCountryCodeById = async (id: string) =>
   await prisma.countries.findFirst({
     where: {

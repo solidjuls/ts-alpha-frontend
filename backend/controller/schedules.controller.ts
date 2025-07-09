@@ -1,4 +1,5 @@
 import { prisma } from "backend/utils/prisma";
+import { ScheduleType } from "types/types";
 
 export const getSchedules = async () => {
   const scheduleResults = await prisma.schedule.findMany({
@@ -59,3 +60,16 @@ export const getSchedules = async () => {
     tournamentId: result.tournaments.id.toString()
   }))
 };
+
+export const insertSchedule = async (schedules: ScheduleType[]) => {
+     await prisma.schedule.createMany({
+      data: schedules.map((s) => ({
+        tournaments_id: s.tournaments_id,
+        game_code: s.game_code,
+        usa_player_id: BigInt(s.usa_player_id),
+        ussr_player_id: BigInt(s.ussr_player_id),
+        due_date: new Date(s.due_date),
+      })),
+      skipDuplicates: true,
+    });
+}
