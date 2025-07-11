@@ -26,10 +26,6 @@ const Main = styled("main", {
   boxShadow: "$default",
 });
 
-const Section = styled("section", {
-  marginBottom: "$medium",
-});
-
 const Title = styled("h1", {
   color: "$text",
 });
@@ -38,13 +34,29 @@ const Subtitle = styled("h2", {
   color: "$text",
 });
 
+const Section = styled("section", {
+  marginBottom: "$medium",
+
+    // Apply left padding to all direct children...
+  "& > *": {
+    paddingLeft: "$large",
+  },
+
+  // ...but remove that padding for Subtitles
+  [`& > ${Subtitle}`]: {
+    paddingLeft: 0,
+  },
+});
+
 const List = styled("ul", {
   listStyle: "disc",
-  paddingLeft: "20px",
+  paddingLeft: "$large",
 });
 
 const Link = styled("a", {
   color: "$link",
+  textDecoration: "none",
+  fontWeight: "bold",
 
   "&:hover": {
     textDecoration: "underline",
@@ -85,19 +97,19 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <strong>ITSL</strong> - The largest yearly international league with geographic
+            <Link href="https://docs.google.com/spreadsheets/d/18OxXxu_pjwxMAI2PNFzyGm7LiP6iOuKdDbQPucboQmI/edit?gid=235090196#gid=235090196">ITSL</Link> - The largest yearly international league with geographic
             divisions (~200 players, 20-game regular season + playoffs).
           </li>
           <li>
-            <strong>OTSL</strong> - A smaller, more casual two-tiered league with non-geographic
+            <Link href="https://docs.google.com/spreadsheets/d/1h9T_3mAAAhV34ldcqQ549pOCEGy1EjMGl8Fc7XWmb18/">OTSL</Link> - A smaller, more casual two-tiered league with non-geographic
             divisions.
           </li>
           <li>
-            <strong>RTSL</strong> - A four-tiered league with relegation/promotion each season
+            <Link href="https://docs.google.com/spreadsheets/d/1aJCCk4sGkTTB0caYjvz0-coSHyKVz4UI5RNo6MF-0OY/">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous (21- or 7-day) leagues.
+            <strong>RATS</strong> - A series of asynchronous (21- or <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1417942401#gid=1417942401">7-day</Link>) leagues.
           </li>
           <li>
             <strong>World Cup</strong> - The largest weekend tournament of the year, featuring an
@@ -110,15 +122,33 @@ const AboutPage = () => (
             <strong>Convention</strong> - A yearly in-person two-day event held in various cities.
           </li>
           <li>
-            <strong>Nations/US Cup</strong> - Regional team tournaments.
+            <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
           </li>
           <li>
-            <strong>Champions League</strong> - An invite-only tournament inspired by UEFA,
+            <Link href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
             featuring winners of regional and grand tournaments.
           </li>
           <li>
-            <strong>Regional/National Championships</strong> - Local leagues feeding into the
+            <strong>Regional/National Leagues</strong> - Local leagues feeding into the
             Champions League.
+            <List>
+              <li>Atlantic League (US) - President Justin Abramson</li>
+              <li>Basque League - President Markel Elortza</li>
+              <li>Canadian League - President Max Goldman</li>
+              <li>Chinese League - President Weiran Xie</li>
+              <li>Dutch League - President Aleksei Lobunko</li>
+              <li>Eastern European League - President Juri Golomako</li>
+              <li>French League - President Franck Rondepierre</li>
+              <li>Greek League - President Tasos Manolopoulos</li>
+              <li>Italian League - President Daniel Squindo</li>
+              <li>Korean Twilight Struggle League (KTSL) - President Youngbae Park</li>
+              <li>Liga de Federaciones de Twilight Struggle (LFTS) - President Jarib Flores</li>
+              <li>Midwest League (US) - President Derek Miller</li>
+              <li>Nordic Cup - President Anton Skott</li>
+              <li>Polish League - President Ziemowit Pazderski</li>
+              <li>Western US League - President Patrick Gong</li>
+              <li>UK League - President Tasos Manolopoulos</li>
+            </List>
           </li>
         </List>
       </Section>
@@ -155,11 +185,8 @@ const AboutPage = () => (
       <Section>
         <Subtitle>Community and Resources</Subtitle>
         <p>
-          Most of our communication happens on WhatsApp and{" "}
-          <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">
-            Discord
-          </Link>
-          , but players can also set up games via email.
+          Most of our communication happens on <Link href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
+          games via email.
         </p>
         <p>
           You can find the full ITS rules and the names of Junta members{" "}
@@ -225,10 +252,30 @@ const AboutPage = () => (
           </li>
         </List>
       </Section>
+      <Section>
+        <Subtitle>Community Twilight Struggle Videos</Subtitle>
+        <p>
+          The videos and streams below are from members of the ITS community. Watching videos of Twilight Struggle with people commenting is one of the best ways to learn the game.
+        </p>
+        <List>
+          <li>
+            <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.twitch.tv/actionroundzero" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link> (DRock1984): <Link href="https://www.twitch.tv/drock1984" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@drock1984" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/pioneertowel" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link> (Ziemowit): <Link href="https://www.youtube.com/@Ziemowit_TS" target="_blank">YouTube</Link>
+          </li>
+        </List>
+      </Section>
     </Main>
 
     <Footer>
-      <p>&copy; 2025 Twilight-Struggle.com | All rights reserved.</p>
+      <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
     </Footer>
   </PageContainer>
 );
