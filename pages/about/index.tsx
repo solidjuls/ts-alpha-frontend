@@ -62,6 +62,15 @@ const Link = styled("a", {
     textDecoration: "underline",
     color: "$linkHover",
   },
+
+  variants: {
+    inactive: {
+      true: {
+        textDecoration: "line-through",
+      },
+    },
+  },
+
 });
 
 const Footer = styled("footer", {
@@ -109,7 +118,7 @@ const AboutPage = () => (
             (formerly the Reddit tournament).
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous (21- or <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1417942401#gid=1417942401">7-day</Link>) leagues.
+            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>).
           </li>
           <li>
             <strong>World Cup</strong> - The largest weekend tournament of the year, featuring an
@@ -132,22 +141,22 @@ const AboutPage = () => (
             <strong>Regional/National Leagues</strong> - Local leagues feeding into the
             Champions League.
             <List>
-              <li>Atlantic League (US) - President Justin Abramson</li>
-              <li>Basque League - President Markel Elortza</li>
-              <li>Canadian League - President Max Goldman</li>
-              <li>Chinese League - President Weiran Xie</li>
-              <li>Dutch League - President Aleksei Lobunko</li>
-              <li>Eastern European League - President Juri Golomako</li>
-              <li>French League - President Franck Rondepierre</li>
-              <li>Greek League - President Tasos Manolopoulos</li>
-              <li>Italian League - President Daniel Squindo</li>
-              <li>Korean Twilight Struggle League (KTSL) - President Youngbae Park</li>
-              <li>Liga de Federaciones de Twilight Struggle (LFTS) - President Jarib Flores</li>
-              <li>Midwest League (US) - President Derek Miller</li>
-              <li>Nordic Cup - President Anton Skott</li>
-              <li>Polish League - President Ziemowit Pazderski</li>
-              <li>Western US League - President Patrick Gong</li>
-              <li>UK League - President Tasos Manolopoulos</li>
+              <li>Atlantic League (US) - <Link href="https://twilight-struggle.com/userprofile/2232">President Justin Abramson</Link></li>
+              <li>Basque League - <Link href="https://twilight-struggle.com/userprofile/2971">President Markel Elortza</Link></li>
+              <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">President Max Goldman</Link></li>
+              <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">President Weiran Xie</Link></li>
+              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/1558">President Aleksei Lobunko</Link></li>
+              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2230">President Juri Golomako</Link></li>
+              <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">President Franck Rondepierre</Link></li>
+              <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">President Tasos Manolopoulos</Link></li>
+              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1798">President Daniel Squindo</Link></li>
+              <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">President Youngbae Park</Link></li>
+              <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">President Jarib Flores</Link></li>
+              <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">President Derek Miller</Link></li>
+              <li>Nordic Cup - <Link href="https://twilight-struggle.com/userprofile/1630">President Anton Skott</Link></li>
+              <li>Polish League - <Link href="https://twilight-struggle.com/userprofile/2878">President Ziemowit Pazderski</Link></li>
+              <li>Western US League - <Link href="https://twilight-struggle.com/userprofile/2525">President Patrick Gong</Link></li>
+              <li>UK League - <Link href="https://twilight-struggle.com/userprofile/2743">President Tasos Manolopoulos</Link></li>
             </List>
           </li>
         </List>
@@ -183,7 +192,7 @@ const AboutPage = () => (
       </Section>
 
       <Section>
-        <Subtitle>Community and Resources</Subtitle>
+        <Subtitle>ITS Community</Subtitle>
         <p>
           Most of our communication happens on <Link href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
           games via email.
@@ -255,17 +264,128 @@ const AboutPage = () => (
       <Section>
         <Subtitle>Community Twilight Struggle Videos</Subtitle>
         <p>
-          The videos and streams below are from members of the ITS community. Watching videos of Twilight Struggle with people commenting is one of the best ways to learn the game.
+          The videos and streams below are from members of the ITS community. Watching videos of Twilight Struggle with commentary is one of the best ways to learn the game. Links with a flag may indicate content in a language other than English. Crossed-out links lead to pages that are no longer actively posting videos, but may have some past videos of Twilight Struggle. Contact <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link> for updates to this page.
         </p>
         <List>
           <li>
-            <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.twitch.tv/actionroundzero" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
+            <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.twitch.tv/actionroundzero" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1572">Alex Yoosup Lim</Link> (FreeTibet): <Link href="https://www.youtube.com/@Alex-YSL" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FKR.png&w=32&q=75" alt="Korean Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1620">Ani Palmer</Link> (ani palmer): <Link href="https://www.youtube.com/@AniPalmerTS" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1627">Antoine Danel</Link> (tonio76): <Link href="https://www.youtube.com/@tonio76ts4" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link> (stenskott): <Link href="https://www.twitch.tv/thegoddessashlee" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ashleefreeman1219" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1634">Aran Warszawski</Link> (aranwar): <Link href="https://www.youtube.com/@aranwar" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FIL.png&w=32&q=75" alt="Hebrew Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1645">Ashlee Freeman</Link> (TheGoddessAshlee): <Link href="https://www.twitch.tv/stenskott_" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/asprayofrocks" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1658">Bartosz Wróbel</Link> (Sparrov): <Link href="https://www.youtube.com/@SparrovTS/featured" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1780">Craig Richards</Link> (Caecius): <Link href="https://www.twitch.tv/caecius" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/c/CaeciusG" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1781">Crow Crowlas</Link> (Cardlinger): <Link href="https://www.twitch.tv/crowcrowlas" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/channel/UC8jyJ0oldrJUxNEGBZEGS6w" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link> (DRock1984): <Link href="https://www.twitch.tv/drock1984" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@drock1984" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/pioneertowel" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/1879">Edward Prem</Link> (EdPrem): <Link href="https://www.youtube.com/c/GamingwiththeColonel" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link> (N3ige): <Link href="https://www.youtube.com/@neige856" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/1984">Guangheng Wu</Link> (harrywgh): <Link href="https://www.youtube.com/channel/UCHg3vmoH73MJ79D7-Umpwjw" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2000">Hasan Jamil</Link> (peacetreaty): <Link href="https://www.youtube.com/channel/UCMq--dchvaIWVk-m5O3Cdbw" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2011">Hervé Godinot</Link> (Peace Turtle): <Link href="https://www.youtube.com/@defcon1335/" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2129">Jesse Marshall</Link> (Jessemarshall): <Link href="https://www.twitch.tv/thewinningagenda" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@TheWinningAgenda" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2190">Jordan Cass</Link> (donzobean12): <Link href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2215">Josiah Emery</Link> (aunthemod): <Link href="https://www.youtube.com/channel/UCHg3vmoH73MJ79D7-Umpwjw" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2216">JR Jones</Link> (dsotc27): <Link href="https://www.twitch.tv/dsotc" target="_blank">Twitch</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/yaymeta11ic/" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2235">Justin Nordstrom</Link> (Flour Power): <Link href="https://www.youtube.com/user/justnord2010" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2271">Kevin Gute</Link> (gute321): <Link href="https://www.twitch.tv/gute321" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/user/gute321" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link> (gute321): <Link href="https://www.twitch.tv/maxgolds12" target="_blank">Twitch</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2431">Michael Panettieri</Link> (meta11ic): <Link href="https://www.twitch.tv/yaymeta11ic" target="_blank">Twitch</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2509">Onur Ulusel</Link> (NacRuno): <Link href="https://www.youtube.com/channel/UCwYZsrT1dTfKUY04y9P3_UQ" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FTR.png&w=32&q=75" alt="Turkish Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2537">Paweł Januszewski</Link> (PawelJanuszewski): <Link href="https://www.youtube.com/channel/UCVf9V2S0unETHDNpspdqNOg" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2555">Peter Frantz</Link> (Frantzypantz): <Link href="https://www.youtube.com/user/Roguefire05" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2606">Ricki McLaughlin</Link> (Feallsanachail): <Link href="https://www.youtube.com/@feallsanachail" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2670">Sean Wanschoor</Link> (Hannarchie): <Link href="https://www.youtube.com/channel/UCRvAqSws-5hgewoaz49UlTw" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2701">Siu Chun Mok</Link> (Miracle_JM): <Link href="https://www.youtube.com/channel/UCItukdJLRnm1IXsotlA-BFA" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FHK.png&w=32&q=75" alt="Chinese Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2705">Sophie Askew</Link> (passengera34): <Link href="https://www.youtube.com/@soaskew" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <strong>Team Catalunya:</strong> <Link href="https://www.youtube.com/@twilightcatalunya9604" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FCAT.png&w=32&q=75" alt="Spanish Speaker" />
+          </li>
+          <li>
+            <strong>Team Hong Kong:</strong> <Link href="https://www.youtube.com/channel/UC9MOfg1UizgFNZX3fUIB--Q" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FHK.png&w=32&q=75" alt="Chinese Speaker" />
+          </li>
+          <li>
+            <strong>Team Washington:</strong> <Link href="https://www.youtube.com/channel/UCGlIPl6x2zMfrvuZ1B76QPg" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <strong>Team United Kingdom:</strong> <Link href="https://www.youtube.com/channel/UChJInzqac0tPrlFO8CcknjQ" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2762">Tim Furrow</Link> (eelusion): <Link href="https://www.twitch.tv/eelusion/videos" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@eelusion5397/videos" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2827">Wojciech Pietrzak</Link> (Ultima Tulinka): <Link href="https://www.youtube.com/@wojciechpietrzak1981/" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link> (ybloveej): <Link href="https://www.youtube.com/c/%ED%99%A9%ED%88%AC%EB%8D%B0%EC%9D%B4" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FKR.png&w=32&q=75" alt="Korean Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link> (Ziemowit): <Link href="https://www.youtube.com/@Ziemowit_TS" target="_blank">YouTube</Link>
