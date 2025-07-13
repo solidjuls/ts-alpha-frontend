@@ -1,5 +1,11 @@
 import React from "react";
+import { Box } from "components/Atoms";
+import { TopPlayerRating } from "components/TopPlayerRating";
 import { styled } from "stitches.config";
+
+const RightBox = styled(Box, {
+  float: "right",
+});
 
 const PageContainer = styled("div", {
   fontFamily: "$body",
@@ -164,6 +170,9 @@ const AboutPage = () => (
 
       <Section>
         <Subtitle>ITSR Rating System</Subtitle>
+        <RightBox>
+          <TopPlayerRating />
+        </RightBox>
         <p>
           Although most of our games are played on Playdek’s online app, their rating system can be
           gamed. Thus, we use our own <strong>ITSR</strong>, an Elo-based system. Here’s a summary
@@ -268,7 +277,7 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.twitch.tv/actionroundzero" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
+            <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1572">Alex Yoosup Lim</Link> (FreeTibet): <Link href="https://www.youtube.com/@Alex-YSL" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FKR.png&w=32&q=75" alt="Korean Speaker" />
