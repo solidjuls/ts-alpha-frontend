@@ -352,6 +352,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2431">Michael Panettieri</Link> (meta11ic): <Link href="https://www.twitch.tv/yaymeta11ic" target="_blank">Twitch</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2437">Michael Stone</Link> (kmmesq): <Link href="https://www.twitch.tv/headlineolympics" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@Headline_Olympics" target="_blank">YouTube</Link>
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2509">Onur Ulusel</Link> (NacRuno): <Link href="https://www.youtube.com/channel/UCwYZsrT1dTfKUY04y9P3_UQ" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FTR.png&w=32&q=75" alt="Turkish Speaker" />
           </li>
           <li>
