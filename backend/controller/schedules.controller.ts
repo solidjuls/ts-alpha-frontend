@@ -74,6 +74,7 @@ export const updateSchedule = async (gameResultId: number, scheduleId: number) =
       id: scheduleId
     }
   })
+  return updated
 }
 
 export const insertSchedule = async (schedules: ScheduleDBType[]) => {

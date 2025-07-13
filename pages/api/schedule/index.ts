@@ -28,15 +28,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ussr_player_id: bigint;
         due_date: string;
         game_results_id?: bigint | null;
-      }[] = req.body;
+        id: number
+      } = req.body.data;
 
       // if (!Array.isArray(schedules) || schedules.length === 0) {
       //   return res.status(400).json({ message: 'No schedule data provided' });
       // }
-      console.log("req.body.data", req.body.data)
+      console.log("req.body.data", req.body.data, schedules)
       const submitResponse = await submit(req.body.data)
-      // await updateSchedule(schedules.)
-      console.log("submitResponse", submitResponse, schedules)
+      const scheduleResponse = await updateSchedule(submitResponse.id, Number(schedules.id))
+      console.log("submitResponse", scheduleResponse)
     
       res.status(200).json({ message: 'Schedules inserted successfully' });
     } catch (error) {
