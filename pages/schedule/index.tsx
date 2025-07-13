@@ -1,14 +1,14 @@
 import "react-day-picker/lib/style.css";
 import { Box, Flex } from "components/Atoms";
 import useFetchInitialData from "hooks/useFetchInitialData"
-import { PlayerInfo, ResultsStyleWrapper, DueDateCell } from "components/Schedule/Schedule.styles";
+import { PlayerInfo, ResultsStyleWrapper, DueDateCell, UnstyledLink } from "components/Schedule/Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
 import Text
  from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
-import { ServerType } from "types/types";
+import { ScheduleType, ServerType } from "types/types";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
@@ -21,21 +21,15 @@ interface ScheduleProps {
   userId: string
 }
 
-type ScheduleType = {
-  countryUsa: string
-  countryUssr: string
-  idUsa: string
-  idUssr: string
-  nameUsa: string;
-  nameUssr: string
-  tournamentId: string
-  tournamentName: string
-  dueDate: string
-}
+
 
 type SchedulePanelProps = {
   data: ScheduleType[] | null
   isLoading: boolean
+}
+
+const generateQueryParams = ({ id,idUsa,idUssr,tournamentId, gameCode }:{id: string; idUsa: string; idUssr: string; tournamentId: string; gameCode: string}) => {
+  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`
 }
 
 const PlayerInfoBox = ({
@@ -43,12 +37,17 @@ const PlayerInfoBox = ({
   nameUssr,
   countryUsa,
   countryUssr,
+  idUsa,
+  idUssr,
+  tournamentId,
+  gameCode,
+  id
 }: Pick<
   ScheduleType,
-  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr"
+  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "id" | "idUsa" | "idUssr" | "tournamentId" | "gameCode"
 >) => {
   return (
-    <Box css={{ display: "flex", flexDirection: "row" }}>
+    <UnstyledLink href={`/submit-schedule${generateQueryParams({id,idUsa,idUssr,tournamentId,gameCode})}`} css={{ display: "flex", flexDirection: "row" }}>
       <Box
         css={{
           display: "flex",
@@ -79,7 +78,7 @@ const PlayerInfoBox = ({
           {nameUssr}
         </Text>
       </Box>
-    </Box>
+    </UnstyledLink>
   );
 };
 
@@ -95,9 +94,6 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
           margin: "0 0 0 8px",
         }}
       >
-        <Text fontSize="small" css={{ alignSelf: "center"}}>
-          {`Schedule id #${schedule.id}`}
-        </Text>
         <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
           {schedule.tournamentName}
         </Text>
@@ -109,12 +105,17 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
         countryUssr={schedule.countryUssr}
         nameUsa={schedule.nameUsa}
         nameUssr={schedule.nameUssr}
+        gameCode={schedule.gameCode}
+        idUsa={schedule.idUsa}
+        idUssr={schedule.idUssr}
+        tournamentId={schedule.tournamentId}
+        id={schedule.id}
       />
     </PlayerInfo>
     <DueDateCell>
       <DueDateDisplay dueDate={schedule.dueDate}
-  admin={true}
-  gamePlayed={false} />
+        admin={true}
+        gamePlayed={false} />
     </DueDateCell>
     </Flex>
   );
@@ -149,7 +150,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
   // super admin view: I can see everything with a tournament filter, and do everything
   // player view. I can only see submit option
 
-  return <Flex css={{ flexDirection: 'column' }}>
+  return <Flex css={{ flexDirection: 'column', width: "100%", maxWidth: "800px" }}>
           <CsvUploadButton tournament={tournaments?.[0]} />
           <SchedulePanel data={data} />
         </Flex>
