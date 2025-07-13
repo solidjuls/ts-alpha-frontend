@@ -298,9 +298,9 @@ const Homepage: React.FC = () => {
     (state: RootState) => state.gameList,
   );
 
-  // useEffect(() => {
-  //   dispatch(fetchGameList());
-  // }, [filters, currentPage, dispatch]);
+  useEffect(() => {
+    dispatch(fetchGameList());
+  }, [filters, currentPage, dispatch]);
 
   const onPageChange = async (page: string) => {
     dispatch(setCurrentPage(page));

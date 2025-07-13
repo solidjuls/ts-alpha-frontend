@@ -38,5 +38,7 @@ module.exports = {
     newTournament: "New tournament",
     city: "City",
     country: "Federation",
+
+    scheduleId: "Schedule id",
   },
 };

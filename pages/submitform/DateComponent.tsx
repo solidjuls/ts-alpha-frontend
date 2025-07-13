@@ -7,19 +7,22 @@ import { dateFormat } from "utils/dates";
 type DateComponentProps = {
   labelText: string;
   inputValue: Date;
+  disabled?: boolean;
   onInputValueChange: (value: Date) => void;
 };
 
 const DateComponent = ({
   labelText,
   inputValue,
+  disabled,
   onInputValueChange = () => {},
 }: DateComponentProps) => (
   <WithLabel labelText={labelText}>
-    <DayPickerInput
+  <DayPickerInput
       value={inputValue}
       format="YYYY/MM/DD"
       placeholder="Game date"
+      inputProps={{ disabled: disabled }}
       formatDate={dateFormat}
       onDayChange={(value) => onInputValueChange(value)}
       dayPickerProps={{

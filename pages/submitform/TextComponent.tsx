@@ -8,6 +8,7 @@ type TextComponentProps = {
   placeholder: string;
   onInputValueChange: (value: string) => void;
   error: boolean;
+  disabled?: boolean;
   css?: any;
 };
 const TextComponent = ({
