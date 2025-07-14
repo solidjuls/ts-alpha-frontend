@@ -233,42 +233,67 @@ const AboutPage = () => (
       </Section>
 
       <Section>
-        <Subtitle>Useful Resources</Subtitle>
-        <List>
-          <li>
-            <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">
-              Twilight Struggle Reddit
-            </Link>
-          </li>
-          <li>
+        <Subtitle>How to Play Twilight Struggle</Subtitle>
+        <p>
+          Twilight Struggle has a STEEP learning curve. Watching gameplay videos is a great way to learn (you can see many of those videos in the next section), but the resources below may also be helpful.
+        </p>
+        <dl>
+          <dt>
+            <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
+          </dt>
+          <dd>
+            A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
+          </dd>
+          <dt>
+            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy's Card Tracker</Link>
+          </dt>
+          <dd>
+            One of the first online card trackers for Twilight Struggle and it is used by many members of the ITS community. ITS tournaments generally allow the use of card trackers.
+          </dd>
+          <dt>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
-              Juri Golomako’s Card Tracker
+              Juri Golomako's Card Tracker
             </Link>
-          </li>
-          <li>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">
-              David McHealy’s Card Tracker
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx"
-              target="_blank"
-            >
+          </dt>
+          <dd>
+            A more recent card tracker for Twilight Struggle, created by a member of the ITS community.
+          </dd>
+          
+          <dt>
+            <Link href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx" target="_blank">
               GMT Twilight Struggle Page
             </Link>
-          </li>
-          <li>
+          </dt>
+          <dd>
+            The official GMY page of the tabletop version of Twilight Struggle.
+          </dd>
+          <dt>
             <Link href="https://www.playdekgames.com/twilight-struggle" target="_blank">
               Playdek Twilight Struggle
             </Link>
-          </li>
-          <li>
-            <Link href="https://twilightstrategy.com/" target="_blank">
-              Twilight Strategy Guide
-            </Link>
-          </li>
-        </List>
+          </dt>
+          <dd>
+            Playdek is the most popular digital edition of Twilight Struggle. It is also the version used in ITS leagues.
+          </dd>
+          <dt>
+            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
+          </dt>
+          <dd>
+            Twilight Strategy is a website and a great resource for beginners. While some of the strategies may be dated, the card descriptions and much of the other information are still helpful.
+          </dd>
+          <dt>
+            <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
+          </dt>
+          <dd>
+            A long (maybe the longest tabletop video of alltime) compilation video of Legendary Tactics' individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
+          </dd>
+          <dt>
+            <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
+          </dt>
+          <dd>
+            A synopsis of the more current strategy used by top-level Twilight Struggle players, developed by members of the Chinese Twilight Struggle community and compiled by ITS member <Link href="https://twilight-struggle.com/userprofile/2287">Kris Wei</Link>.
+          </dd>
+        </dl>
       </Section>
       <Section>
         <Subtitle>Community Twilight Struggle Videos</Subtitle>
