@@ -257,6 +257,14 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   );
 };
 
+// validate a schedule cannot be submitted twice. add protections to schedule submit form
+// check on schedule form that game results are leaded
+// change the UI according to the game result
+// Add schedule edit functionality. Replace users
+// test game recreation/deletion
+// allow recreate form to submit any result
+
+
 // export async function getServerSideProps({ req, res }: ServerType) {
 //   const payload = getInfoFromCookies(req, res);
 
