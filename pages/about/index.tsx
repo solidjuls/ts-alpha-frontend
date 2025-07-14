@@ -198,6 +198,7 @@ const AboutPage = () => (
           </ul>
           <li>Minimum change: ±1 point; maximum change: ±200 points per game.</li>
         </ol>
+        <p>You can see a more detailed explanation of the ITSR system and an example in our <Link href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/edit?tab=t.0#heading=h.azamypt6qhvt">community rules</Link>.</p>
       </Section>
 
       <Section>
