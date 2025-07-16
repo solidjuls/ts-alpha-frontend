@@ -337,6 +337,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/1781">Crow Crowlas</Link> (Cardlinger): <Link href="https://www.twitch.tv/crowcrowlas" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/channel/UC8jyJ0oldrJUxNEGBZEGS6w" target="_blank">YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/1814">David Choo</Link> (Churchill A): <Link href="https://www.youtube.com/@davidchoo0702" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link> (DRock1984): <Link href="https://www.twitch.tv/drock1984" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@drock1984" target="_blank">YouTube</Link>
           </li>
           <li>
@@ -359,6 +362,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2129">Jesse Marshall</Link> (Jessemarshall): <Link href="https://www.twitch.tv/thewinningagenda" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@TheWinningAgenda" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/3040">Jo&atilde;o Pereira</Link> (Knight4): <Link href="https://www.youtube.com/@Knight4_TS" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2190">Jordan Cass</Link> (donzobean12): <Link href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank">YouTube</Link>
