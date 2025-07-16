@@ -409,6 +409,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2606">Ricki McLaughlin</Link> (Feallsanachail): <Link href="https://www.youtube.com/@feallsanachail" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2621">Rodrigo Laso</Link> (Aldurini): <Link href="https://www.youtube.com/@aldurinii" target="_blank">YouTube</Link> <Image src="/flags/ES.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2670">Sean Wanschoor</Link> (Hannarchie): <Link href="https://www.youtube.com/channel/UCRvAqSws-5hgewoaz49UlTw" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
