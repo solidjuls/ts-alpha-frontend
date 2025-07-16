@@ -113,8 +113,14 @@ const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: i
 
 const Players = () => {
   const [playdeckValue, setPlaydeckValue] = useState("");
-  const { data: users, isLoading: isLoadingUsers, error } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
-  const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({ url: `/api/countries` });
+  const {
+    data: users,
+    isLoading: isLoadingUsers,
+    error,
+  } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
+  const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({
+    url: `/api/countries`,
+  });
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.playersList,
@@ -130,8 +136,12 @@ const Players = () => {
     dispatch(setCurrentPage(page));
   };
 
-  if (isLoadingUsers || isLoadingCountries) return null
-  const paginationVisibility = !(playersSelected?.length !== 0  || countriesSelected?.length !== 0 || playdeckInput)
+  if (isLoadingUsers || isLoadingCountries) return null;
+  const paginationVisibility = !(
+    playersSelected?.length !== 0 ||
+    countriesSelected?.length !== 0 ||
+    playdeckInput
+  );
   return (
     <>
       <h1>Players list</h1>
@@ -147,7 +157,7 @@ const Players = () => {
           css={{ width: "300px", height: "40px" }}
           onSelect={(value) => value && dispatch(setCountriesFilter(value.value))}
           onBlur={() => {
-            dispatch(setCountriesFilter(""))
+            dispatch(setCountriesFilter(""));
           }}
           items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
           selectedItem={countriesSelected?.value}
@@ -175,7 +185,9 @@ const Players = () => {
           isLoading={status === "loading"}
         />
       </ResultsStyleWrapper>
-     {paginationVisibility && <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />}
+      {paginationVisibility && (
+        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+      )}
     </>
   );
 };

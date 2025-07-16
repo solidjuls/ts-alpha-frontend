@@ -18,19 +18,28 @@ export const { styled, globalCss, css, getCssText, createTheme, keyframes } = cr
       primary: "$gray900",
       secondary: "$gray700",
       tertiary: "$gray500",
+      link: "#b12236",
+      linkHover: "#365f65",
     },
-  },
-  fontSizes: {
+    fontSizes: {
     fontSizeS: "12px",
     fontSizeM: "16px",
     fontSizeL: "20px",
     fontSizeXL: "24px",
+    },
+    space: {
+      small: '8px',
+      medium: '16px',
+      large: '32px',
+    }
   },
+  
   media: {
     sm: "(max-width: 480px)",
     md: "(max-width: 768px)",
     lg: "(max-width: 1024px)",
   },
+  
 });
 
 // export const globalMultiselectStyles = (filter) => globalCss({

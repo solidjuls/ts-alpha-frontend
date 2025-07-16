@@ -73,8 +73,8 @@ type GameProps = {
 };
 
 type GameContentProps = {
-  data: Game
-}
+  data: Game;
+};
 
 const GameContent: React.FC<GameContentProps> = ({ data }) => {
   const { role } = useSession();
@@ -117,7 +117,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
     let winnerName = "";
     let loserName = "";
 
-    const flags: CountryFlags = countryFlags
+    const flags: CountryFlags = countryFlags;
     const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`;
     if (data.gameWinner === "3") {
       return `${data.gameType}: ${data.game_code} - ${data.usaPlayer} ${flags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${flags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
@@ -130,7 +130,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
       winnerName = data.ussrPlayer + " " + flags[data.ussrCountryCode?.toLowerCase()];
       loserName = data.usaPlayer + " " + flags[data.usaCountryCode?.toLowerCase()];
     }
-    
+
     return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
   };
 
@@ -196,9 +196,11 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           {deleteSuccessMessage && <div>Game deleted successfully</div>}
         </>
       )}
-      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && <div style={{ padding: "12px", border: "solid 1px black" }}>
-        <LabelCopy text={generateText()} />
-      </div>}
+      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+        <div style={{ padding: "12px", border: "solid 1px black" }}>
+          <LabelCopy text={generateText()} />
+        </div>
+      )}
     </>
   );
 };
@@ -206,7 +208,9 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
 const Game: React.FC<GameProps> = ({ gameId }) => {
   const router = useRouter();
 
-  const { data, isLoading } = useFetchInitialData<GameAPIResponseType>({ url: `/api/game?id=${gameId}` });
+  const { data, isLoading } = useFetchInitialData<GameAPIResponseType>({
+    url: `/api/game?id=${gameId}`,
+  });
   if (!data) return null;
 
   if (data.results && data.results.length === 0) {
@@ -235,14 +239,28 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   );
 };
 
-const ChevronContainer = ({ rating, previousRating }: {rating: number; previousRating: number; }) =>
+const ChevronContainer = ({
+  rating,
+  previousRating,
+}: {
+  rating: number;
+  previousRating: number;
+}) =>
   rating > previousRating ? (
     <StyledChevronUpIcon color="green" />
   ) : (
     <StyledChevronDownIcon color="red" />
   );
 
-const Rating = ({ rating, previousRating, isUSSR }: {rating: number; previousRating: number; isUSSR?: Boolean}) => {
+const Rating = ({
+  rating,
+  previousRating,
+  isUSSR,
+}: {
+  rating: number;
+  previousRating: number;
+  isUSSR?: Boolean;
+}) => {
   return !isUSSR ? (
     <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
       <Text fontSize="small">{previousRating}</Text>

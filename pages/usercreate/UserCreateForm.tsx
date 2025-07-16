@@ -122,7 +122,7 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
       };
     });
   };
-  
+
   const normalizeData = (localForm: UserCreateState) => {
     let payloadObject: Partial<Record<keyof UserCreateState, string>> = {};
 

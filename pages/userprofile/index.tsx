@@ -1,22 +1,24 @@
 import { Spinner } from "@radix-ui/themes";
-import { EditTextComponent } from "components/EditFormComponents";
-import { useSession } from "contexts/AuthProvider";
-import { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import UserProfileForm from "./UserProfileForm";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { ServerType } from "types/types";
+import { City, Country, ServerType } from "types/types";
+import { User } from "types/game.types";
 
-const UserProfileContainer = ({ id }) => {
-  const { data, isLoading } = useFetchInitialData({ url: `/api/user?id=${id}` });
-  const { data: countries, isLoading: countriesLoading } = useFetchInitialData({
+interface UserProfileProps {
+  id: string;
+}
+
+const UserProfileContainer: React.FC<UserProfileProps> = ({ id }) => {
+  const { data, isLoading } = useFetchInitialData<User>({ url: `/api/user?id=${id}` });
+  const { data: countries, isLoading: countriesLoading } = useFetchInitialData<Country[]>({
     url: `/api/countries`,
   });
-  const { data: cities, isLoading: citiesLoading } = useFetchInitialData({
+  const { data: cities, isLoading: citiesLoading } = useFetchInitialData<City[]>({
     url: `/api/cities`,
   });
 
-  if (isLoading || countriesLoading || citiesLoading) return <Spinner size="3" />;
+  if (isLoading || countriesLoading || citiesLoading || !data) return <Spinner size="3" />;
 
   return (
     <UserProfileForm

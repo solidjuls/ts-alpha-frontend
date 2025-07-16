@@ -10,7 +10,7 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
-import { SubmitFormNormalizeType, SubmitFormState } from ".";
+import { SubmitFormState } from ".";
 
 const dropdownWidth = "370px";
 
@@ -70,6 +70,7 @@ const SubmitForm = ({
           items={leagueTypes}
           selectedItem={form.gameType.value}
           placeholder="Select tournament"
+          height="270px"
           error={form.gameType.error}
           css={{ width: dropdownWidth }}
           onSelect={(value) => onInputValueChange("gameType", value)}
@@ -95,7 +96,9 @@ const SubmitForm = ({
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
-          onSelect={(value: DropdownItemType) => onInputValueChange("opponentWas", value?.value || "")}
+          onSelect={(value: DropdownItemType) =>
+            onInputValueChange("opponentWas", value?.value || "")
+          }
         />
         <DropdownWithLabel
           labelText="gameWinner"
@@ -133,7 +136,7 @@ const SubmitForm = ({
           inputValue={form.video1.value}
           placeholder="Link to the video..."
           error={form.video1.error}
-          css={{ width: "500px" }}
+          css={{ width: "300px" }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         <Button

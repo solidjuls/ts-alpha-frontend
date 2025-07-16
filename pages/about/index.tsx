@@ -1,9 +1,7 @@
 import React from "react";
+import { Box } from "components/Atoms";
+import { TopPlayerRating } from "components/TopPlayerRating";
 import { styled } from "stitches.config";
-import Image from 'next/image'
-
-const WIDTH = 24;
-const HEIGHT = 16;
 
 const PageContainer = styled("div", {
   fontFamily: "$body",
@@ -30,10 +28,6 @@ const Main = styled("main", {
   boxShadow: "$default",
 });
 
-const Section = styled("section", {
-  marginBottom: "$medium",
-});
-
 const Title = styled("h1", {
   color: "$text",
 });
@@ -42,18 +36,43 @@ const Subtitle = styled("h2", {
   color: "$text",
 });
 
+const Section = styled("section", {
+  marginBottom: "$medium",
+
+    // Apply left padding to all direct children...
+  "& > *": {
+    paddingLeft: "$large",
+  },
+
+  // ...but remove that padding for Subtitles
+  [`& > ${Subtitle}`]: {
+    paddingLeft: 0,
+  },
+});
+
 const List = styled("ul", {
   listStyle: "disc",
-  paddingLeft: "20px",
+  paddingLeft: "$large",
 });
 
 const Link = styled("a", {
   color: "$link",
+  textDecoration: "none",
+  fontWeight: "bold",
 
   "&:hover": {
     textDecoration: "underline",
     color: "$linkHover",
   },
+
+  variants: {
+    inactive: {
+      true: {
+        textDecoration: "line-through",
+      },
+    },
+  },
+
 });
 
 const Footer = styled("footer", {
@@ -89,19 +108,19 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <strong>ITSL</strong> - The largest yearly international league with geographic
+            <Link href="https://docs.google.com/spreadsheets/d/18OxXxu_pjwxMAI2PNFzyGm7LiP6iOuKdDbQPucboQmI/edit?gid=235090196#gid=235090196">ITSL</Link> - The largest yearly international league with geographic
             divisions (~200 players, 20-game regular season + playoffs).
           </li>
           <li>
-            <strong>OTSL</strong> - A smaller, more casual two-tiered league with non-geographic
+            <Link href="https://docs.google.com/spreadsheets/d/1h9T_3mAAAhV34ldcqQ549pOCEGy1EjMGl8Fc7XWmb18/">OTSL</Link> - A smaller, more casual two-tiered league with non-geographic
             divisions.
           </li>
           <li>
-            <strong>RTSL</strong> - A four-tiered league with relegation/promotion each season
+            <Link href="https://docs.google.com/spreadsheets/d/1aJCCk4sGkTTB0caYjvz0-coSHyKVz4UI5RNo6MF-0OY/">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous (21- or 7-day) leagues.
+            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>).
           </li>
           <li>
             <strong>World Cup</strong> - The largest weekend tournament of the year, featuring an
@@ -114,24 +133,45 @@ const AboutPage = () => (
             <strong>Convention</strong> - A yearly in-person two-day event held in various cities.
           </li>
           <li>
-            <strong>Nations/US Cup</strong> - Regional team tournaments.
+            <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
           </li>
           <li>
-            <strong>Champions League</strong> - An invite-only tournament inspired by UEFA,
+            <Link href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
             featuring winners of regional and grand tournaments.
           </li>
           <li>
-            <strong>Regional/National Championships</strong> - Local leagues feeding into the
+            <strong>Regional/National Leagues</strong> - Local leagues feeding into the
             Champions League.
+            <List>
+              <li>Atlantic League (US) - <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link></li>
+              <li>Basque League - <Link href="https://twilight-struggle.com/userprofile/2971">Markel Elortza</Link></li>
+              <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link></li>
+              <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">Weiran Xie</Link></li>
+              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">Peter Heuvelman</Link></li>
+              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link> and <Link href="https://twilight-struggle.com/userprofile/2535">Pavel Lobatsevich</Link></li>
+              <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
+              <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
+              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
+              <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link></li>
+              <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link></li>
+              <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link></li>
+              <li>Nordic League - <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link></li>
+              <li>Polish League - <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link></li>
+              <li>Western US League - <Link href="https://twilight-struggle.com/userprofile/2525">Patrick Gong</Link></li>
+              <li>UK League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
+            </List>
           </li>
         </List>
       </Section>
 
       <Section>
         <Subtitle>ITSR Rating System</Subtitle>
+        <RightBox>
+          <TopPlayerRating />
+        </RightBox>
         <p>
           Although most of our games are played on Playdek’s online app, their rating system can be
-          gamed. Thus, we use our own <strong>ITSR</strong>, an Elo-based system. Here’s a summary
+          gamed. Thus, we use our own <strong>ITSR</strong> based on the AREA rating system. Here’s a summary
           of how it works:
         </p>
         <ol>
@@ -154,12 +194,13 @@ const AboutPage = () => (
           </ul>
           <li>Minimum change: ±1 point; maximum change: ±200 points per game.</li>
         </ol>
+        <p>You can see a more detailed explanation of the ITSR system and an example in our <Link href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/edit?tab=t.0#heading=h.azamypt6qhvt">community rules</Link>.</p>
       </Section>
 
       <Section>
-        <Subtitle>Community and Resources</Subtitle>
+        <Subtitle>ITS Community</Subtitle>
         <p>
-          Most of our communication happens on WhatsApp and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
+          Most of our communication happens on <Link href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
           games via email.
         </p>
         <p>
@@ -189,49 +230,41 @@ const AboutPage = () => (
       </Section>
 
       <Section>
-        <Subtitle>Useful Resources</Subtitle>
-        <List>
-          <li>
+        <Subtitle>How to Play Twilight Struggle</Subtitle>
+        <p>
+          Twilight Struggle has a STEEP learning curve. Watching gameplay videos is a great way to learn (you can see many of those videos in the next section), but the resources below may also be helpful.
+        </p>
+        <dl>
+          <dt>
             <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
-<<<<<<< Updated upstream
           </li>
           <li>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
               Juri Golomako’s Card Tracker
-=======
-          </dt>
-          <dd>
-            A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
-          </dd>
-          <dt>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy&apos;s Card Tracker</Link>
-          </dt>
-          <dd>
-            One of the first online card trackers for Twilight Struggle and it is used by many members of the ITS community. ITS tournaments generally allow the use of card trackers.
-          </dd>
-          <dt>
-            <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
-              Juri Golomako&apos;s Card Tracker
->>>>>>> Stashed changes
             </Link>
-          </li>
-          <li>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy’s Card Tracker</Link>
-          </li>
-          <li>
+          </dt>
+          <dd>
+            A more recent card tracker for Twilight Struggle, created by a member of the ITS community.
+          </dd>
+          
+          <dt>
             <Link href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx" target="_blank">
               GMT Twilight Struggle Page
             </Link>
-          </li>
-          <li>
+          </dt>
+          <dd>
+            The official GMY page of the tabletop version of Twilight Struggle.
+          </dd>
+          <dt>
             <Link href="https://www.playdekgames.com/twilight-struggle" target="_blank">
               Playdek Twilight Struggle
             </Link>
-          </li>
-          <li>
+          </dt>
+          <dd>
+            Playdek is the most popular digital edition of Twilight Struggle. It is also the version used in ITS leagues.
+          </dd>
+          <dt>
             <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
-<<<<<<< Updated upstream
-=======
           </dt>
           <dd>
             Twilight Strategy is a website and a great resource for beginners. While some of the strategies may be dated, the card descriptions and much of the other information are still helpful.
@@ -240,7 +273,7 @@ const AboutPage = () => (
             <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
           </dt>
           <dd>
-            A long (maybe the longest tabletop video of alltime) compilation video of Legendary Tactics¸ individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
+            A long (maybe the longest tabletop video of all-time) compilation video of Legendary Tactics&apos; individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
           </dd>
           <dt>
             <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
@@ -287,6 +320,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/1781">Crow Crowlas</Link> (Cardlinger): <Link href="https://www.twitch.tv/crowcrowlas" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/channel/UC8jyJ0oldrJUxNEGBZEGS6w" target="_blank">YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/1814">David Choo</Link> (Churchill A): <Link href="https://www.youtube.com/@davidchoo0702" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link> (DRock1984): <Link href="https://www.twitch.tv/drock1984" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@drock1984" target="_blank">YouTube</Link>
           </li>
           <li>
@@ -305,7 +341,13 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2011">Hervé Godinot</Link> (Peace Turtle): <Link href="https://www.youtube.com/@defcon1335/" target="_blank" inactive>YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link> (Blacklisted): <Link href="https://www.youtube.com/@BlacklistedTS" target="_blank">YouTube</Link> <Image src="/flags/ES.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2129">Jesse Marshall</Link> (Jessemarshall): <Link href="https://www.twitch.tv/thewinningagenda" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@TheWinningAgenda" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/3040">Jo&atilde;o Pereira</Link> (Knight4): <Link href="https://www.youtube.com/@Knight4_TS" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2190">Jordan Cass</Link> (donzobean12): <Link href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank">YouTube</Link>
@@ -317,7 +359,10 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2216">JR Jones</Link> (dsotc27): <Link href="https://www.twitch.tv/dsotc" target="_blank">Twitch</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/yaymeta11ic/" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2230">Juri Golomako</Link> (Partisan.Bel): <Link href="https://www.youtube.com/@twilightstrugglebelarus2769/" target="_blank">YouTube</Link> <Image src="/flags/BY.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/pioneertowel/" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link> 
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2235">Justin Nordstrom</Link> (Flour Power): <Link href="https://www.youtube.com/user/justnord2010" target="_blank" inactive>YouTube</Link>
@@ -347,6 +392,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2606">Ricki McLaughlin</Link> (Feallsanachail): <Link href="https://www.youtube.com/@feallsanachail" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2621">Rodrigo Laso</Link> (Aldurini): <Link href="https://www.youtube.com/@aldurinii" target="_blank">YouTube</Link> <Image src="/flags/ES.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2670">Sean Wanschoor</Link> (Hannarchie): <Link href="https://www.youtube.com/channel/UCRvAqSws-5hgewoaz49UlTw" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
@@ -374,21 +422,23 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
+            <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2827">Wojciech Pietrzak</Link> (Ultima Tulinka): <Link href="https://www.youtube.com/@wojciechpietrzak1981/" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link> (ybloveej): <Link href="https://www.youtube.com/c/%ED%99%A9%ED%88%AC%EB%8D%B0%EC%9D%B4" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link> (Ziemowit): <Link href="https://www.youtube.com/@Ziemowit_TS" target="_blank">YouTube</Link>
->>>>>>> Stashed changes
+            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
           </li>
         </List>
       </Section>
     </Main>
 
     <Footer>
-      <p>&copy; 2025 Twilight-Struggle.com | All rights reserved.</p>
+      <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
     </Footer>
   </PageContainer>
 );

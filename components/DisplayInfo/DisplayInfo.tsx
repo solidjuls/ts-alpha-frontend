@@ -4,7 +4,7 @@ import { StyledLabel, StyledLabelInfo } from "./DisplayInfo.styles";
 type DisplayInfoProps = {
   label: string;
   infoText: string;
-  maxWidth: string;
+  maxWidth?: string;
 };
 
 const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "300px" }) => {

@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 
 type DetailContainerProps = {
   children: ReactNode;
+  backButton?: boolean;
 };
 const DetailContainer: React.FC<DetailContainerProps> = ({ children, backButton = true }) => {
   return (

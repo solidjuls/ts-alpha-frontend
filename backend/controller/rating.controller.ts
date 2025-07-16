@@ -4,7 +4,7 @@ import { getGameByGameId } from "./game.controller";
 import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
 
 const DEFAULT_RATING = 5000;
-
+const FRIENDLY_GAME = "47"
 export const getAllPlayers = async (p, pageSizeOverride = null, playerFilter = null) => {
   const pageSize = pageSizeOverride || 20;
   const page = Number(p);
@@ -32,7 +32,7 @@ const getRatingDifference = (
 ) => {
   let basicCalculus = (defeated - winner) * 0.05;
   console.log("getRatingDifference", defeated, winner, addValue, gameType);
-  if (gameType === "Friendly Game") basicCalculus = basicCalculus / 2;
+  if (gameType === FRIENDLY_GAME) basicCalculus = basicCalculus / 2;
 
   const newValue = roundValue(basicCalculus) + addValue;
 
@@ -60,11 +60,12 @@ const getNewRatings = (
 ) => {
   let newUsaRating: number = 0;
   let newUssrRating: number = 0;
+
   if (gameWinner === "1") {
     const ratingDifference: number = getRatingDifference(
       ussrRating,
       usaRating,
-      gameType === "Friendly Game" ? 50 : 100,
+      gameType === FRIENDLY_GAME ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating + ratingDifference;
@@ -73,7 +74,7 @@ const getNewRatings = (
     const ratingDifference: number = getRatingDifference(
       usaRating,
       ussrRating,
-      gameType === "Friendly Game" ? 50 : 100,
+      gameType === FRIENDLY_GAME ? 50 : 100,
       gameType,
     );
     newUsaRating = usaRating - ratingDifference;
@@ -117,7 +118,7 @@ export const calculateRating = async ({
     playerId: ussrPlayerId,
     prismaTransaction,
   });
-  // const newValue = Math.round((defeated - winner) * 0.05) + addValue;
+
   console.log("usaRating, ussrRating", usaRating, ussrRating);
   return getNewRatings(
     usaRating?.rating || DEFAULT_RATING,
@@ -156,13 +157,17 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
 
+        if (!oldGameDate) {
+          throw new Error("Old game id is wrong");
+        }
+
         console.log("oldGameDate", oldGameDate, input);
 
         if (
           oldGameDate.usa_player_id.toString() === input.usaPlayerId &&
           oldGameDate.ussr_player_id.toString() === input.ussrPlayerId &&
           oldGameDate.game_winner === input.gameWinner &&
-          oldGameDate.game_type === input.gameType
+          oldGameDate.game_type === Number(input.gameType)
         ) {
           await prismaTransaction.game_results.update({
             data: {
@@ -243,7 +248,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               ussr_player_id: BigInt(input.ussrPlayerId),
               usa_previous_rating: usaRating,
               ussr_previous_rating: ussrRating,
-              game_type: input.gameType,
+              game_type: Number(input.gameType),
               game_code: input.gameCode,
               game_winner: input.gameWinner,
               end_turn: Number(input.endTurn),
@@ -269,7 +274,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
               createdAt: game.created_at,
               updatedAt: dateNow,
               gameId: game.id,
-              gameType: game.game_type,
+              gameType: game.game_type?.toString() as string,
               prismaTransaction,
             });
             console.log("new rating created", usaRating, ussrRating);
@@ -287,8 +292,8 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         }
       },
       {
-        maxWait: 5000, // default: 2000
-        timeout: 20000, // default: 5000
+        maxWait: 500000, // default: 2000
+        timeout: 2000000, // default: 5000
       },
     );
   } catch (error) {
@@ -360,7 +365,7 @@ export const deleteGameRatings = async (input: GameRecreate) => {
               createdAt: game.created_at,
               updatedAt: dateNow,
               gameId: game.id,
-              gameType: game.game_type,
+              gameType: game.game_type?.toString() as string,
               prismaTransaction,
             });
             console.log("new rating created", usaRating, ussrRating);

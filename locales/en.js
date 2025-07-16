@@ -2,7 +2,7 @@ module.exports = {
   messages: {
     description: "This is a non-page component that requires its own namespace",
     currentURL: "Current URL",
-    typeOfGame: "Type of game",
+    typeOfGame: "Tournament",
     gameRecreateId: "Game ID",
     checkID: "Check ID",
     oldId: "Old game id",
@@ -35,7 +35,7 @@ module.exports = {
     preferredGamingPlatform: "Preferred Gaming Platform",
     preferredGameDuration: "Preferred Game Duration",
     timeZone: "Timezone",
-
+    newTournament: "New tournament",
     city: "City",
     country: "Federation",
   },

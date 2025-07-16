@@ -1,13 +1,15 @@
 import { get, getAll, update, create } from "backend/controller/user.controller";
+import { checkAuth } from "backend/utils/adminCheck";
+import { NextApiRequest, NextApiResponse } from "next/types";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   if (req.method === "POST") {
     const user = await update(req.body);
     res.status(200).json();
   } else if (req.method === "PUT") {
-    console.log("user create", req.body);
+    await checkAuth(req, res)
     const response = await create(req.body);
     if (response.error) {
       res.status(500).json(response.error);

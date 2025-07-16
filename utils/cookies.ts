@@ -16,16 +16,16 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
 
   try {
     const payload = jwt.verify(token, process.env.TOKEN_SECRET);
-  
+
     if (!payload) return null;
-  
+
     return {
       id: payload.id,
       name: payload.name,
       mail: payload.mail,
       role: payload.role,
     };
-  } catch(error) {
+  } catch (error) {
     return null;
   }
 };

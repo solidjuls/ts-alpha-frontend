@@ -42,6 +42,15 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
   };
 };
 
+export const isUserAdmin = async (email: string) => {
+  const user = await prisma.users.findFirst({
+    where: {
+      email,
+    },
+  });
+  return user?.role_id === 3
+}
+
 export const getCountryCodeById = async (id: string) =>
   await prisma.countries.findFirst({
     where: {
@@ -104,7 +113,7 @@ export const getAll = async () => {
   })) as UserType[];
 };
 
-export const get = async (id) => {
+export const get = async (id: string) => {
   const user = await prisma.users.findFirst({
     select: {
       id: true,
@@ -135,6 +144,8 @@ export const get = async (id) => {
       id: Number(id),
     },
   });
+  if (!user) return {};
+
   const rating = await getRatingByPlayer({ playerId: user?.id });
   const userNormalized = {
     ...user,

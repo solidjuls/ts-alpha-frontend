@@ -7,12 +7,14 @@ type EditTextComponentProps = {
   inputValue: string;
   onInputValueChange: (value: string) => void;
   error: boolean;
+  maxLength: number;
   css?: any;
 };
 const EditTextComponent = ({
   labelText,
   inputValue,
   onInputValueChange,
+  maxLength = 255,
   error,
   css,
   ...rest
@@ -22,6 +24,7 @@ const EditTextComponent = ({
       <Input
         type="text"
         id="video1"
+        maxLength={maxLength}
         defaultValue={inputValue}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           onInputValueChange(event.target.value)

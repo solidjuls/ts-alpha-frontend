@@ -24,7 +24,13 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({ children, name, email, id, role }) => {
+const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({
+  children,
+  name,
+  email,
+  id,
+  role,
+}) => {
   const router = useRouter();
   const [auth, setAuth] = useState<AuthType>({ name, email, id, role });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
