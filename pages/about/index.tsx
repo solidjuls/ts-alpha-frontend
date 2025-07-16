@@ -179,7 +179,7 @@ const AboutPage = () => (
         </RightBox>
         <p>
           Although most of our games are played on Playdek’s online app, their rating system can be
-          gamed. Thus, we use our own <strong>ITSR</strong>, an Elo-based system. Here’s a summary
+          gamed. Thus, we use our own <strong>ITSR</strong> based on the AREA rating system. Here’s a summary
           of how it works:
         </p>
         <ol>
