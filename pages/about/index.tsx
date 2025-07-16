@@ -250,14 +250,14 @@ const AboutPage = () => (
             A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
           </dd>
           <dt>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy¸s Card Tracker</Link>
+            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy&apos;s Card Tracker</Link>
           </dt>
           <dd>
             One of the first online card trackers for Twilight Struggle and it is used by many members of the ITS community. ITS tournaments generally allow the use of card trackers.
           </dd>
           <dt>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
-              Juri Golomako¸s Card Tracker
+              Juri Golomako&apos;s Card Tracker
             </Link>
           </dt>
           <dd>
