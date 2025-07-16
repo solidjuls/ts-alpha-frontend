@@ -155,7 +155,7 @@ const AboutPage = () => (
               <li>Basque League - <Link href="https://twilight-struggle.com/userprofile/2971">President Markel Elortza</Link></li>
               <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">President Max Goldman</Link></li>
               <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">President Weiran Xie</Link></li>
-              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/1558">President Aleksei Lobunko</Link></li>
+              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">President Peter Heuvelman</Link></li>
               <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2230">President Juri Golomako</Link></li>
               <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">President Franck Rondepierre</Link></li>
               <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">President Tasos Manolopoulos</Link></li>
