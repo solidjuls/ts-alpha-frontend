@@ -355,6 +355,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2011">Hervé Godinot</Link> (Peace Turtle): <Link href="https://www.youtube.com/@defcon1335/" target="_blank" inactive>YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link> (Blacklisted): <Link href="https://www.youtube.com/@BlacklistedTS" target="_blank">YouTube</Link> <Image src="/flags/ES.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2129">Jesse Marshall</Link> (Jessemarshall): <Link href="https://www.twitch.tv/thewinningagenda" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@TheWinningAgenda" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
@@ -367,7 +370,10 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2216">JR Jones</Link> (dsotc27): <Link href="https://www.twitch.tv/dsotc" target="_blank">Twitch</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/yaymeta11ic/" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2230">Juri Golomako</Link> (Partisan.Bel): <Link href="https://www.youtube.com/@twilightstrugglebelarus2769/" target="_blank">YouTube</Link> <Image src="/flags/BY.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link> (PioneerTowel): <Link href="https://www.twitch.tv/pioneertowel/" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@pioneertowel" target="_blank">YouTube</Link> 
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2235">Justin Nordstrom</Link> (Flour Power): <Link href="https://www.youtube.com/user/justnord2010" target="_blank" inactive>YouTube</Link>
