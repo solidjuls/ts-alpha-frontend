@@ -151,22 +151,22 @@ const AboutPage = () => (
             <strong>Regional/National Leagues</strong> - Local leagues feeding into the
             Champions League.
             <List>
-              <li>Atlantic League (US) - <Link href="https://twilight-struggle.com/userprofile/2232">President Justin Abramson</Link></li>
-              <li>Basque League - <Link href="https://twilight-struggle.com/userprofile/2971">President Markel Elortza</Link></li>
-              <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">President Max Goldman</Link></li>
-              <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">President Weiran Xie</Link></li>
-              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">President Peter Heuvelman</Link></li>
-              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">President Konstantin Zakharov</Link></li>
-              <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">President Franck Rondepierre</Link></li>
-              <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">President Tasos Manolopoulos</Link></li>
-              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1798">President Daniel Squindo</Link></li>
-              <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">President Youngbae Park</Link></li>
-              <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">President Jarib Flores</Link></li>
-              <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">President Derek Miller</Link></li>
-              <li>Nordic Cup - <Link href="https://twilight-struggle.com/userprofile/1630">President Anton Skott</Link></li>
-              <li>Polish League - <Link href="https://twilight-struggle.com/userprofile/2878">President Ziemowit Pazderski</Link></li>
-              <li>Western US League - <Link href="https://twilight-struggle.com/userprofile/2525">President Patrick Gong</Link></li>
-              <li>UK League - <Link href="https://twilight-struggle.com/userprofile/2743">President Tasos Manolopoulos</Link></li>
+              <li>Atlantic League (US) - <Link href="https://twilight-struggle.com/userprofile/2232">Justin Abramson</Link></li>
+              <li>Basque League - <Link href="https://twilight-struggle.com/userprofile/2971">Markel Elortza</Link></li>
+              <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link></li>
+              <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">Weiran Xie</Link></li>
+              <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">Peter Heuvelman</Link></li>
+              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link></li>
+              <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
+              <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
+              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
+              <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link></li>
+              <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link></li>
+              <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link></li>
+              <li>Nordic League - <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link></li>
+              <li>Polish League - <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link></li>
+              <li>Western US League - <Link href="https://twilight-struggle.com/userprofile/2525">Patrick Gong</Link></li>
+              <li>UK League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
             </List>
           </li>
         </List>
@@ -437,6 +437,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2827">Wojciech Pietrzak</Link> (Ultima Tulinka): <Link href="https://www.youtube.com/@wojciechpietrzak1981/" target="_blank">YouTube</Link>
