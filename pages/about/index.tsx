@@ -156,7 +156,7 @@ const AboutPage = () => (
               <li>Canadian League - <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link></li>
               <li>Chinese League - <Link href="https://twilight-struggle.com/userprofile/2886">Weiran Xie</Link></li>
               <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">Peter Heuvelman</Link></li>
-              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link></li>
+              <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link> and <Link href="https://twilight-struggle.com/userprofile/2535">Pavel Lobatsevich</Link></li>
               <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
               <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
               <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
