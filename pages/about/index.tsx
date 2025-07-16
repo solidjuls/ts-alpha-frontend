@@ -290,7 +290,7 @@ const AboutPage = () => (
             <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
           </dt>
           <dd>
-            A long (maybe the longest tabletop video of alltime) compilation video of Legendary Tactics¸ individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
+            A long (maybe the longest tabletop video of all-time) compilation video of Legendary Tactics¸ individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
           </dd>
           <dt>
             <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
