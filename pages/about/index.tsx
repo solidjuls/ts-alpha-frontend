@@ -2,6 +2,10 @@ import React from "react";
 import { Box } from "components/Atoms";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { styled } from "stitches.config";
+import Image from 'next/image'
+
+const WIDTH = 24;
+const HEIGHT = 16;
 
 const RightBox = styled(Box, {
   float: "right",
@@ -246,14 +250,14 @@ const AboutPage = () => (
             A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
           </dd>
           <dt>
-            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy's Card Tracker</Link>
+            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy¸s Card Tracker</Link>
           </dt>
           <dd>
             One of the first online card trackers for Twilight Struggle and it is used by many members of the ITS community. ITS tournaments generally allow the use of card trackers.
           </dd>
           <dt>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
-              Juri Golomako's Card Tracker
+              Juri Golomako¸s Card Tracker
             </Link>
           </dt>
           <dd>
@@ -286,7 +290,7 @@ const AboutPage = () => (
             <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
           </dt>
           <dd>
-            A long (maybe the longest tabletop video of alltime) compilation video of Legendary Tactics' individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
+            A long (maybe the longest tabletop video of alltime) compilation video of Legendary Tactics¸ individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
           </dd>
           <dt>
             <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
@@ -306,19 +310,19 @@ const AboutPage = () => (
             <strong>Action Round Zero</strong> (Official ITS Community Stream): <Link href="https://www.youtube.com/@ActionRoundZero" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1572">Alex Yoosup Lim</Link> (FreeTibet): <Link href="https://www.youtube.com/@Alex-YSL" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FKR.png&w=32&q=75" alt="Korean Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/1572">Alex Yoosup Lim</Link> (FreeTibet): <Link href="https://www.youtube.com/@Alex-YSL" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1620">Ani Palmer</Link> (ani palmer): <Link href="https://www.youtube.com/@AniPalmerTS" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1627">Antoine Danel</Link> (tonio76): <Link href="https://www.youtube.com/@tonio76ts4" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/1627">Antoine Danel</Link> (tonio76): <Link href="https://www.youtube.com/@tonio76ts4" target="_blank">YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link> (stenskott): <Link href="https://www.twitch.tv/thegoddessashlee" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ashleefreeman1219" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1634">Aran Warszawski</Link> (aranwar): <Link href="https://www.youtube.com/@aranwar" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FIL.png&w=32&q=75" alt="Hebrew Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/1634">Aran Warszawski</Link> (aranwar): <Link href="https://www.youtube.com/@aranwar" target="_blank">YouTube</Link> <Image src="/flags/IL.png"  width={WIDTH} height={HEIGHT} alt="Hebrew Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1645">Ashlee Freeman</Link> (TheGoddessAshlee): <Link href="https://www.twitch.tv/stenskott_" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/asprayofrocks" target="_blank">YouTube</Link>
@@ -339,7 +343,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/1879">Edward Prem</Link> (EdPrem): <Link href="https://www.youtube.com/c/GamingwiththeColonel" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link> (N3ige): <Link href="https://www.youtube.com/@neige856" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link> (N3ige): <Link href="https://www.youtube.com/@neige856" target="_blank">YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1984">Guangheng Wu</Link> (harrywgh): <Link href="https://www.youtube.com/channel/UCHg3vmoH73MJ79D7-Umpwjw" target="_blank">YouTube</Link>
@@ -348,7 +352,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2000">Hasan Jamil</Link> (peacetreaty): <Link href="https://www.youtube.com/channel/UCMq--dchvaIWVk-m5O3Cdbw" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2011">Hervé Godinot</Link> (Peace Turtle): <Link href="https://www.youtube.com/@defcon1335/" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FFR.png&w=32&q=75" alt="French Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2011">Hervé Godinot</Link> (Peace Turtle): <Link href="https://www.youtube.com/@defcon1335/" target="_blank" inactive>YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2129">Jesse Marshall</Link> (Jessemarshall): <Link href="https://www.twitch.tv/thewinningagenda" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/@TheWinningAgenda" target="_blank" inactive>YouTube</Link>
@@ -381,7 +385,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2437">Michael Stone</Link> (kmmesq): <Link href="https://www.twitch.tv/headlineolympics" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@Headline_Olympics" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2509">Onur Ulusel</Link> (NacRuno): <Link href="https://www.youtube.com/channel/UCwYZsrT1dTfKUY04y9P3_UQ" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FTR.png&w=32&q=75" alt="Turkish Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2509">Onur Ulusel</Link> (NacRuno): <Link href="https://www.youtube.com/channel/UCwYZsrT1dTfKUY04y9P3_UQ" target="_blank" inactive>YouTube</Link> <Image src="/flags/TR.png"  width={WIDTH} height={HEIGHT} alt="Turkish Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2537">Paweł Januszewski</Link> (PawelJanuszewski): <Link href="https://www.youtube.com/channel/UCVf9V2S0unETHDNpspdqNOg" target="_blank" inactive>YouTube</Link>
@@ -396,16 +400,16 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2670">Sean Wanschoor</Link> (Hannarchie): <Link href="https://www.youtube.com/channel/UCRvAqSws-5hgewoaz49UlTw" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2701">Siu Chun Mok</Link> (Miracle_JM): <Link href="https://www.youtube.com/channel/UCItukdJLRnm1IXsotlA-BFA" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FHK.png&w=32&q=75" alt="Chinese Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2701">Siu Chun Mok</Link> (Miracle_JM): <Link href="https://www.youtube.com/channel/UCItukdJLRnm1IXsotlA-BFA" target="_blank" inactive>YouTube</Link> <Image src="/flags/HK.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2705">Sophie Askew</Link> (passengera34): <Link href="https://www.youtube.com/@soaskew" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
-            <strong>Team Catalunya:</strong> <Link href="https://www.youtube.com/@twilightcatalunya9604" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FCAT.png&w=32&q=75" alt="Spanish Speaker" />
+            <strong>Team Catalunya:</strong> <Link href="https://www.youtube.com/@twilightcatalunya9604" target="_blank">YouTube</Link> <Image src="/flags/CAT.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
           </li>
           <li>
-            <strong>Team Hong Kong:</strong> <Link href="https://www.youtube.com/channel/UC9MOfg1UizgFNZX3fUIB--Q" target="_blank" inactive>YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FHK.png&w=32&q=75" alt="Chinese Speaker" />
+            <strong>Team Hong Kong:</strong> <Link href="https://www.youtube.com/channel/UC9MOfg1UizgFNZX3fUIB--Q" target="_blank" inactive>YouTube</Link> <Image src="/flags/HK.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <strong>Team Washington:</strong> <Link href="https://www.youtube.com/channel/UCGlIPl6x2zMfrvuZ1B76QPg" target="_blank" inactive>YouTube</Link>
@@ -423,7 +427,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2827">Wojciech Pietrzak</Link> (Ultima Tulinka): <Link href="https://www.youtube.com/@wojciechpietrzak1981/" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link> (ybloveej): <Link href="https://www.youtube.com/c/%ED%99%A9%ED%88%AC%EB%8D%B0%EC%9D%B4" target="_blank">YouTube</Link> <img src="https://twilight-struggle.com/_next/image?url=%2Fflags%2FKR.png&w=32&q=75" alt="Korean Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link> (ybloveej): <Link href="https://www.youtube.com/c/%ED%99%A9%ED%88%AC%EB%8D%B0%EC%9D%B4" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link> (Ziemowit): <Link href="https://www.youtube.com/@Ziemowit_TS" target="_blank">YouTube</Link>
