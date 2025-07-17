@@ -44,6 +44,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('[Schedule Bulk Insert]', error);
       res.status(500).json({ message: 'Internal Server Error' });
     }
+  } else if (req.method === 'PATCH') {
+    // old player, new player, tournament Id
+    // replace all occurrences that still have not been submitted
+
+    // new schedule from here as well
   } else if (req.method === 'GET') {
    const response = await getSchedules()
    res.status(200).json(response);
