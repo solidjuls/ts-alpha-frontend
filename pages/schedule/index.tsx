@@ -14,6 +14,9 @@ import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import CsvUploadButton from "./CsvButtonUpload";
 import { userRoles } from "utils/constants";
+import UserTypeahead from "pages/submitform/UserTypeahead";
+import ReplacePlayers from "./ReplacePlayers";
+import AddNewSchedule from "./AddNewSchedule";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
@@ -145,6 +148,11 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
   const tournamentQueryParam = tournaments?.length > 0 ? `${tournaments.join(",")}` : ''
   const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
   console.log(data)
+
+  if (isLoading || !data) return null
+
+  const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
+
   // admin view, superadminview, player view
   // admin view: I can see my tournament schedules with a filter, I can update due date, I can reset a game
   // super admin view: I can see everything with a tournament filter, and do everything
@@ -152,6 +160,9 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
 
   return <Flex css={{ flexDirection: 'column', width: "100%", maxWidth: "800px" }}>
           <CsvUploadButton tournament={tournaments?.[0]} />
+          <ReplacePlayers />
+          <AddNewSchedule />
+          {/* {isSuperAdmin && <TournamentFilter />} */}
           <SchedulePanel data={data} />
         </Flex>
 }
