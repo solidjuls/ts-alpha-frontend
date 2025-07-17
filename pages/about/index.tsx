@@ -2,6 +2,14 @@ import React from "react";
 import { Box } from "components/Atoms";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { styled } from "stitches.config";
+import Image from 'next/image'
+
+const WIDTH = 24;
+const HEIGHT = 16;
+
+const RightBox = styled(Box, {
+  float: "right",
+});
 
 const PageContainer = styled("div", {
   fontFamily: "$body",
@@ -237,10 +245,19 @@ const AboutPage = () => (
         <dl>
           <dt>
             <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
-          </li>
-          <li>
+          </dt>
+          <dd>
+            A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
+          </dd>
+          <dt>
+            <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy&apos;s Card Tracker</Link>
+          </dt>
+          <dd>
+            One of the first online card trackers for Twilight Struggle and it is used by many members of the ITS community. ITS tournaments generally allow the use of card trackers.
+          </dd>
+          <dt>
             <Link href="https://gentle-island-0bac64303.5.azurestaticapps.net/" target="_blank">
-              Juri Golomako’s Card Tracker
+              Juri Golomako&apos;s Card Tracker
             </Link>
           </dt>
           <dd>
@@ -359,6 +376,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2216">JR Jones</Link> (dsotc27): <Link href="https://www.twitch.tv/dsotc" target="_blank">Twitch</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2229">JunRu Li</Link> (whitesheep412): <Link href="https://v.douyu.com/author/08Aeq1GZeAqL" target="_blank">Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2230">Juri Golomako</Link> (Partisan.Bel): <Link href="https://www.youtube.com/@twilightstrugglebelarus2769/" target="_blank">YouTube</Link> <Image src="/flags/BY.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
           </li>
           <li>
@@ -366,6 +386,12 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2235">Justin Nordstrom</Link> (Flour Power): <Link href="https://www.youtube.com/user/justnord2010" target="_blank" inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2137">Jie Huang</Link> (MDZZ): <Link href="https://space.bilibili.com/1626326/lists/976714?type=series" target="_blank" inactive>Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2271">Kevin Gute</Link> (gute321): <Link href="https://www.twitch.tv/gute321" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/user/gute321" target="_blank" inactive>YouTube</Link>
@@ -387,6 +413,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2555">Peter Frantz</Link> (Frantzypantz): <Link href="https://www.youtube.com/user/Roguefire05" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2579">Qiyang Xiong</Link> (YunFei): <Link href="https://space.bilibili.com/433398370/lists/1072004?type=season" target="_blank" inactive>Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2606">Ricki McLaughlin</Link> (Feallsanachail): <Link href="https://www.youtube.com/@feallsanachail" target="_blank" inactive>YouTube</Link>
@@ -428,10 +457,13 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2827">Wojciech Pietrzak</Link> (Ultima Tulinka): <Link href="https://www.youtube.com/@wojciechpietrzak1981/" target="_blank">YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2832">Wuhao Yang</Link> (OptNoob): <Link href="https://space.bilibili.com/24264350/lists/5501480?type=season" target="_blank">Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link> (ybloveej): <Link href="https://www.youtube.com/c/%ED%99%A9%ED%88%AC%EB%8D%B0%EC%9D%B4" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
-            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link> (Ziemowit): <Link href="https://www.youtube.com/@Ziemowit_TS" target="_blank">YouTube</Link>
           </li>
         </List>
       </Section>
