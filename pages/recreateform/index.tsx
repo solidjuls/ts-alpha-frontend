@@ -126,7 +126,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const validated = () => {
     let submit = true;
     Object.keys(form).forEach((key: string) => {
-      if (key !== "video1" && form[key as keyof RecreateFormState].value === "") {
+      if (key !== "video1" && key !== "oldId" && form[key as keyof RecreateFormState].value === "") {
         setForm((prevState: any) => ({
           ...prevState,
           [key]: {
