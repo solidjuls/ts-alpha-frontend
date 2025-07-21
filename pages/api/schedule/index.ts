@@ -50,7 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // new schedule from here as well
   } else if (req.method === 'GET') {
-   const response = await getSchedules()
-   res.status(200).json(response);
+    console.log("query", req.query)
+    const userId = req.query?.uid as string
+    const response = await getSchedules({ userId: Number(userId) })
+    res.status(200).json(response);
   }
 }

@@ -8,15 +8,21 @@ import Text
  from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
-import { ScheduleType, ServerType } from "types/types";
+import { DropdownItemType, ScheduleType, ServerType } from "types/types";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import CsvUploadButton from "./CsvButtonUpload";
-import { userRoles } from "utils/constants";
+import { tournamentStatus, userRoles } from "utils/constants";
 import UserTypeahead from "pages/submitform/UserTypeahead";
 import ReplacePlayers from "./ReplacePlayers";
 import AddNewSchedule from "./AddNewSchedule";
+import { TournamentsType } from "types/game.types";
+import { DropdownWithLabel } from "components/EditFormComponents";
+import { useEffect } from "react";
+import { fetchScheduleList } from "../../redux/scheduleSlice";
+import { AppDispatch, RootState } from "redux/store";
+import { useDispatch, useSelector } from "react-redux";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
@@ -145,25 +151,50 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
 };
 
 const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }) => {
-  const tournamentQueryParam = tournaments?.length > 0 ? `${tournaments.join(",")}` : ''
-  const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
-  console.log(data)
+  const dispatch = useDispatch<AppDispatch>();
+  const { items, status, filters, currentPage, totalPages } = useSelector(
+    (state: RootState) => state.scheduleList,
+  );
+  
+  useEffect(() => {
+    dispatch(fetchScheduleList({isSuperAdmin, tournaments, userId}))
+  }, [])
 
-  if (isLoading || !data) return null
+  const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
+    TournamentsType[]
+  >({
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
+    cacheId: "tournament-list",
+  });
+  // const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
+  // console.log(data)
 
-  const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
+  if (status === "loading" || loadingTournaments || !items) return null
 
-  // admin view, superadminview, player view
-  // admin view: I can see my tournament schedules with a filter, I can update due date, I can reset a game
-  // super admin view: I can see everything with a tournament filter, and do everything
-  // player view. I can only see submit option
+  // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
+  const leagueTypes: DropdownItemType[] =
+    tournamentAPI?.map((item) => ({
+      value: item.id.toString(),
+      text: item.tournament_name,
+    })) || [];
 
   return <Flex css={{ flexDirection: 'column', width: "100%", maxWidth: "800px" }}>
           <CsvUploadButton tournament={tournaments?.[0]} />
+          <DropdownWithLabel
+            labelText="typeOfGame"
+            key="gameType"
+            items={leagueTypes}
+            // selectedItem={form.gameType.value}
+            placeholder="Select tournament"
+            height="270px"
+            // error={form.gameType.error}
+            css={{ width: '200px' }}
+            onSelect={(value) => onInputValueChange("gameType", value)}
+          />
           <ReplacePlayers />
           <AddNewSchedule />
           {/* {isSuperAdmin && <TournamentFilter />} */}
-          <SchedulePanel data={data} />
+          <SchedulePanel data={items} />
         </Flex>
 }
 

@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
-import { ScheduleDBType, ScheduleType } from "types/types";
+import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async () => {
+export const getSchedules = async ({ userId } : { userId: number }) => {
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -46,8 +46,15 @@ export const getSchedules = async () => {
     },
     orderBy: {
       due_date: 'asc'
+    },
+    where: {
+      OR: [
+        { usa_player_id: userId },
+        { ussr_player_id: userId }
+      ]
     }
   })
+
   return scheduleResults.map(result => ({
     gameWinner: result.game_results?.game_winner || null,
     gameDate: result.game_results?.game_date || null,
@@ -78,14 +85,14 @@ export const updateSchedule = async (gameResultId: number, scheduleId: number) =
 }
 
 export const insertSchedule = async (schedules: ScheduleDBType[]) => {
-     await prisma.schedule.createMany({
-      data: schedules.map((s) => ({
-        tournaments_id: s.tournaments_id,
-        game_code: s.game_code,
-        usa_player_id: BigInt(s.usa_player_id),
-        ussr_player_id: BigInt(s.ussr_player_id),
-        due_date: new Date(s.due_date),
-      })),
-      skipDuplicates: true,
-    });
+  await prisma.schedule.createMany({
+    data: schedules.map((s) => ({
+      tournaments_id: s.tournaments_id,
+      game_code: s.game_code,
+      usa_player_id: BigInt(s.usa_player_id),
+      ussr_player_id: BigInt(s.ussr_player_id),
+      due_date: new Date(s.due_date),
+    })),
+    skipDuplicates: true,
+  });
 }
