@@ -11,6 +11,15 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     },
   });
 
+  const tournaments = await prisma.tournament_admins.findMany({
+    select: {
+      tournamentId: true
+    },
+    where: {
+      userId: user?.id
+    },
+  });
+
   if (!user) return null;
 
   if (!user.password) {
@@ -32,12 +41,14 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
       last_login_at: new Date(),
     },
   });
+// get all tournaments administrated by user
 
   return {
     id: user.id,
     email: user.email,
     name: user.first_name,
     // @ts-ignore
+    tournaments: tournaments?.map(item => item.tournamentId),
     role: user.role_id,
   };
 };
@@ -50,6 +61,18 @@ export const isUserAdmin = async (email: string) => {
   });
   return user?.role_id === 3
 }
+export const getUserIdByEmails = async (emails: string[]) => {
+  return await prisma.users.findMany({
+    where: {
+      email: {
+        in: emails,
+      },
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
 
 export const getCountryCodeById = async (id: string) =>
   await prisma.countries.findFirst({

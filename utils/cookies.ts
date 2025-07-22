@@ -24,6 +24,7 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
       name: payload.name,
       mail: payload.mail,
       role: payload.role,
+      tournaments: payload.tournaments,
     };
   } catch (error) {
     return null;
