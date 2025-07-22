@@ -318,7 +318,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         reporter_id: BigInt(input.usaPlayerId),
       },
     })
-    console.error("logAdded", logAdded);
+    console.log("logAdded", logAdded);
   } catch (error) {
     throw error;
   } finally {
@@ -410,6 +410,28 @@ export const deleteGameRatings = async (input: GameRecreate) => {
         timeout: 20000, // default: 5000
       },
     );
+        // after the transaction is done, we save it to the log table
+    const logAdded = await prisma.game_results_modified_log.create({
+      data: {
+        gameId: input.oldId,
+        created_at: new Date(Date.now()),
+        updated_at: new Date(Date.now()),
+        usa_player_id: BigInt(input.usaPlayerId),
+        ussr_player_id: BigInt(input.ussrPlayerId),
+        // usa_previous_rating: usaRating,
+        // ussr_previous_rating: ussrRating,
+        game_type: Number(input.gameType),
+        game_code: input.gameCode,
+        reported_at: new Date(Date.now()),
+        game_winner: input.gameWinner,
+        end_turn: Number(input.endTurn),
+        end_mode: input.endMode,
+        game_date: new Date(Date.now()),
+        video1: input.video1 || null,
+        reporter_id: BigInt(input.usaPlayerId),
+      },
+    })
+    console.log("logAdded", logAdded);
   } catch (error) {
     console.error("transaction", error);
     return null;
