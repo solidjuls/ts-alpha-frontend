@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId } : { userId: number }) => {
+export const getSchedules = async ({ userId, tournament } : { userId: number, tournament: number | undefined }) => {
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -49,6 +49,7 @@ export const getSchedules = async ({ userId } : { userId: number }) => {
     },
     where: {
       OR: [
+        { tournaments_id: tournament },
         { usa_player_id: userId },
         { ussr_player_id: userId }
       ]
@@ -79,6 +80,24 @@ export const updateSchedule = async (gameResultId: number, scheduleId: number) =
     },
     where: {
       id: scheduleId
+    }
+  })
+  return updated
+}
+
+export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: string, tournamentId: number) => {
+  const updated = await prisma.schedule.updateMany({
+    data: {
+      usa_player_id: newPlayer,
+      ussr_player_id: newPlayer,
+    },
+    where: {
+      OR: [
+        {usa_player_id: oldPlayer},
+        {ussr_player_id: oldPlayer}
+      ],
+      tournaments_id: tournamentId,
+      game_results_id: null
     }
   })
   return updated

@@ -1,4 +1,4 @@
-import { getSchedules, updateSchedule } from 'backend/controller/schedules.controller';
+import { getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
 import { submit } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from 'next';
 // export const zGameAPI = z.object({
@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // if (!Array.isArray(schedules) || schedules.length === 0) {
       //   return res.status(400).json({ message: 'No schedule data provided' });
       // }
-      console.log("req.body.data", req.body.data, schedules)
+      
       const submitResponse = await submit(req.body.data)
       const scheduleResponse = await updateSchedule(submitResponse.id, Number(schedules.id))
       console.log("submitResponse", scheduleResponse)
@@ -45,14 +45,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(500).json({ message: 'Internal Server Error' });
     }
   } else if (req.method === 'PATCH') {
-    // old player, new player, tournament Id
     // replace all occurrences that still have not been submitted
-
+    const {pold, pnew, t} = req.body.data;
+    console.log("pold, pnew, t", pold, pnew, t)
+    const updated = await replaceSchedulePlayers(pold, pnew, Number(t))
+    res.status(200).json(updated);
     // new schedule from here as well
   } else if (req.method === 'GET') {
     console.log("query", req.query)
     const userId = req.query?.uid as string
-    const response = await getSchedules({ userId: Number(userId) })
+    const tournament = req.query?.t
+
+    const response = await getSchedules({ userId: Number(userId), tournament: tournament && Number(tournament) })
     res.status(200).json(response);
   }
 }
