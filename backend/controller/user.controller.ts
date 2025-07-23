@@ -61,6 +61,7 @@ export const isUserAdmin = async (email: string) => {
   });
   return user?.role_id === 3
 }
+
 export const getUserIdByEmails = async (emails: string[]) => {
   return await prisma.users.findMany({
     where: {
@@ -73,6 +74,7 @@ export const getUserIdByEmails = async (emails: string[]) => {
       email: true,
     },
   });
+}
 
 export const getCountryCodeById = async (id: string) =>
   await prisma.countries.findFirst({
