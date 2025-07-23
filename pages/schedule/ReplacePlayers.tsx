@@ -6,12 +6,16 @@ import { useState } from "react";
 import { DropdownItemType } from "types/types";
 import { UserType } from "types/user.types";
 
-const ReplacePlayers = () => {
+interface ReplacePlayersProps {
+  tournament: string | undefined
+}
+
+const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [oldUser, setOldUser] = useState("")
   const [newUser, setNewUser] = useState("")
 
   const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
-    url: "/api/user",
+    url: `/api/user?t=${tournament}`,
     cacheId: "user-list",
   });
 
@@ -23,13 +27,11 @@ const ReplacePlayers = () => {
       text: item.name,
     })) || [];
 
-  // fetch users registered to tournaments only
   // add a submit change button that will update the schedule
   return <Flex>
           <UserTypeahead
             labelText="oldPlayer"
             selectedItem={oldUser}
-            // error={form.opponentWas.error}
             users={usersParsed}
             placeholder="Player to replace..."
             css={{ width: '200px' }}
@@ -41,7 +43,6 @@ const ReplacePlayers = () => {
           <UserTypeahead
             labelText="newPlayer"
             selectedItem={newUser}
-            // error={form.opponentWas.error}
             users={usersParsed}
             placeholder="Type the new player..."
             css={{ width: '200px' }}

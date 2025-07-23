@@ -62,6 +62,34 @@ export const isUserAdmin = async (email: string) => {
   return user?.role_id === 3
 }
 
+export const getUsersByTournament = async (tournaments: string) => {
+  const users =  await prisma.users.findMany({
+    where: {
+      tournament_registration: {
+        some: {
+          tournamentId: Number(tournaments),
+        },
+      },
+    },
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
+    },
+  });
+
+  return users.map((user) => ({
+    id: user.id.toString(),
+    name: `${user.first_name} ${user.last_name}`,
+    countryCode: user.countries?.tld_code,
+  })) as UserType[];
+}
+
 export const getUserIdByEmails = async (emails: string[]) => {
   return await prisma.users.findMany({
     where: {

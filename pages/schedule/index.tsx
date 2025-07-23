@@ -14,7 +14,6 @@ import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import CsvUploadButton from "./CsvButtonUpload";
 import { tournamentStatus, userRoles } from "utils/constants";
-import UserTypeahead from "pages/submitform/UserTypeahead";
 import ReplacePlayers from "./ReplacePlayers";
 import AddNewSchedule from "./AddNewSchedule";
 import { TournamentsType } from "types/game.types";
@@ -161,9 +160,9 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
   }, [])
 
   const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
-    TournamentsType[]
+    TournamentsType
   >({
-    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
+    url: `/api/game/tournaments?id=${tournaments?.[0]}`,
     cacheId: "tournament-list",
   });
   // const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
@@ -172,11 +171,10 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
   if (status === "loading" || loadingTournaments || !items) return null
 
   // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
-  const leagueTypes: DropdownItemType[] =
-    tournamentAPI?.map((item) => ({
-      value: item.id.toString(),
-      text: item.tournament_name,
-    })) || [];
+  const leagueTypes: DropdownItemType[] = [{
+    value: tournamentAPI?.id.toString(),
+      text: tournamentAPI?.tournament_name,
+  }]
 
   return <Flex css={{ flexDirection: 'column', width: "100%", maxWidth: "800px" }}>
           <CsvUploadButton tournament={tournaments?.[0]} />
@@ -184,14 +182,14 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
             labelText="typeOfGame"
             key="gameType"
             items={leagueTypes}
-            // selectedItem={form.gameType.value}
+            selectedItem={tournamentAPI?.id.toString()}
             placeholder="Select tournament"
             height="270px"
             // error={form.gameType.error}
             css={{ width: '200px' }}
             onSelect={(value) => onInputValueChange("gameType", value)}
           />
-          <ReplacePlayers />
+          <ReplacePlayers tournament={tournamentAPI?.id.toString()}/>
           <AddNewSchedule />
           {/* {isSuperAdmin && <TournamentFilter />} */}
           <SchedulePanel data={items} />
