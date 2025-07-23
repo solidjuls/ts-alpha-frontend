@@ -151,10 +151,20 @@ export const getGameByGameId = async (id: string) =>
       created_at: true,
       updated_at: true,
       reported_at: true,
+      game_code: true,
+      end_turn: true,
+      end_mode: true,
+      video1: true,
       usa_player_id: true,
       ussr_player_id: true,
       game_winner: true,
       game_type: true,
+      id: true,
+      tournaments: {
+        select: {
+          id: true,
+        },
+      },
     },
     where: {
       id: Number(id),
