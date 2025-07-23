@@ -3,8 +3,9 @@ import cookie from "cookie";
 /* @ts-ignore */
 import jwt from "jsonwebtoken";
 import { authorize } from "backend/controller/user.controller";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { mail, pwd } = req.body;
   const user = await authorize({
     email: mail,
@@ -28,8 +29,9 @@ export default async function handler(req, res) {
     return;
   }
   if (!user) return;
+  console.log("user.tournaments", user.tournaments)
   const token = jwt.sign(
-    { mail: user.email, name: user.name, role: user.role, id: user.id.toString() },
+    { mail: user.email, name: user.name, role: user.role, id: user.id.toString(), tournaments: user.tournaments },
     process.env.TOKEN_SECRET,
     {
       expiresIn: "60d",
@@ -49,5 +51,5 @@ export default async function handler(req, res) {
 
   res
     .status(200)
-    .json({ name: user.name, email: user.email, id: user.id.toString(), role: user.role });
+    .json({ name: user.name, email: user.email, id: user.id.toString(), role: user.role, tournaments: user.tournaments });
 }

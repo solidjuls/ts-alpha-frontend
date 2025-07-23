@@ -15,9 +15,9 @@ import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 
-function App({ Component, pageProps, name, id, email, role }: AppProps) {
+function App({ Component, pageProps, name, id, email, role, tournaments }: AppProps) {
   return (
-    <AuthProvider name={name} email={email} id={id} role={role}>
+    <AuthProvider name={name} email={email} id={id} role={role} tournaments={tournaments}>
       <Provider store={store}>
         <IntlContextProvider>
           {/* @ts-ignore */}
@@ -52,6 +52,7 @@ App.getInitialProps = async (appContext: AppContext) => {
     id: payload.id,
     email: payload.mail,
     role: payload.role,
+    tournaments: payload.tournaments
   };
 };
 
