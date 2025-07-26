@@ -22,6 +22,8 @@ import { useEffect } from "react";
 import { fetchScheduleList } from "../../redux/scheduleSlice";
 import { AppDispatch, RootState } from "redux/store";
 import { useDispatch, useSelector } from "react-redux";
+import { styled } from "stitches.config";
+import { ScheduleFilter } from "./ScheduleFilter";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
@@ -33,6 +35,23 @@ type SchedulePanelProps = {
   data: ScheduleType[] | null
   isLoading: boolean
 }
+
+const ResponsiveContainer = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  maxWidth: "1100px",
+  variants: {
+    direction: {
+      row: {
+        flexDirection: "row",
+      },
+      column: {
+        flexDirection: "column",
+      },
+    },
+  },
+});
 
 const generateQueryParams = ({ id,idUsa,idUssr,tournamentId, gameCode }:{id: string; idUsa: string; idUssr: string; tournamentId: string; gameCode: string}) => {
   return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`
@@ -163,8 +182,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
     url: `/api/game/tournaments?id=${tournaments?.[0]}`,
     cacheId: "tournament-list",
   });
-  // const { data, isLoading } = useFetchInitialData<ScheduleType[]>({ url: `/api/schedule?sa=${isSuperAdmin}${tournamentQueryParam}` })
-  // console.log(data)
 
   if (status === "loading" || loadingTournaments || !items) return null
 
@@ -174,24 +191,22 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
       text: tournamentAPI?.tournament_name,
   }]
 
-  return <Flex css={{ flexDirection: 'column', width: "100%", maxWidth: "800px" }}>
-          <CsvUploadButton tournament={tournaments?.[0]} />
-          <DropdownWithLabel
-            labelText="typeOfGame"
-            key="gameType"
-            items={leagueTypes}
-            selectedItem={tournamentAPI?.id.toString()}
-            placeholder="Select tournament"
-            height="270px"
-            // error={form.gameType.error}
-            css={{ width: '200px' }}
-            onSelect={(value) => onInputValueChange("gameType", value)}
-          />
-          <ReplacePlayers tournament={tournamentAPI?.id.toString()} />
-          <AddNewSchedule tournament={tournamentAPI?.id.toString()} />
-          {/* {isSuperAdmin && <TournamentFilter />} */}
-          <SchedulePanel data={items} />
-        </Flex>
+  return <ResponsiveContainer>
+          <Flex css={{ flexDirection: 'column', width: "100%" }}>
+            <DropdownWithLabel
+              labelText="typeOfGame"
+              key="gameType"
+              items={leagueTypes}
+              selectedItem={tournamentAPI?.id.toString()}
+              placeholder="Select tournament"
+              height="270px"
+              width='250px'
+              // onSelect={(value) => onInputValueChange("gameType", value)}
+            />
+            <ScheduleFilter userAdminTournaments={tournamentAPI} />
+            <SchedulePanel data={items} />
+          </Flex>
+        </ResponsiveContainer>
 }
 
 export async function getServerSideProps({ req, res }: ServerType) {

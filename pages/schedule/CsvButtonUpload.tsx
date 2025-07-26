@@ -2,6 +2,8 @@ import { Button } from "components/Button";
 import { useState } from "react";
 import getAxiosInstance from "utils/axios";
 import Papa from 'papaparse'
+import { FileInput, Title } from "./styles";
+import { Flex } from "components/Atoms";
 
 export default function CsvUploadButton({ tournament }:{ tournament: string }) {
   const [file, setFile] = useState<File | null>(null);
@@ -44,19 +46,22 @@ console.log("Finished", file)
   };
 
   return (
-    <div>
-      <input
-        type="file"
-        accept=".csv"
-        onChange={handleChange}
-      />
-      <Button
-        onClick={handleUpload}
-        disabled={!file}
-      >
-        Upload CSV
-      </Button>
-      <p>{status}</p>
-    </div>
+    <Flex css={{ flexDirection: 'column'}}>
+      <Title>Upload CSV Schedule</Title>
+      <Flex css={{ margin: '8px 0 8px 0' }}>
+        <FileInput
+          type="file"
+          accept=".csv"
+          onChange={handleChange}
+        />
+        <Button
+          onClick={handleUpload}
+          disabled={!file}
+        >
+          Upload CSV
+        </Button>
+        <p>{status}</p>
+      </Flex>
+    </Flex>
   );
 }

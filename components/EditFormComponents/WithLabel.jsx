@@ -6,7 +6,7 @@ const cssFlexTextComponent = {
   display: "flex",
   flexDirection: "column",
 };
-const cssLabel = { marginBottom: 8, marginRight: 15, width: "200px" };
+const cssLabel = { marginBottom: 8, marginRight: 15};
 
 const WithLabel = ({ labelText, children }) => {
   return (
