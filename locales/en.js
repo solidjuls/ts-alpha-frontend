@@ -4,7 +4,7 @@ module.exports = {
     currentURL: "Current URL",
     typeOfGame: "Tournament",
     gameRecreateId: "Game ID",
-    checkID: "Check ID",
+    checkID: "Game Code",
     oldId: "Old game id",
     opponentWas: "Your opponent was:",
     gameWinner: "Game winner",
@@ -28,7 +28,7 @@ module.exports = {
     newPlayer: "New Player",
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",
-
+    dueDate: "Due date",
     phone: "Phone",
     PlayedAs: "I played as:",
     firstName: "First Name",

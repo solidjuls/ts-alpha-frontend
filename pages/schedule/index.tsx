@@ -29,8 +29,6 @@ interface ScheduleProps {
   userId: string
 }
 
-
-
 type SchedulePanelProps = {
   data: ScheduleType[] | null
   isLoading: boolean
@@ -189,8 +187,8 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
             css={{ width: '200px' }}
             onSelect={(value) => onInputValueChange("gameType", value)}
           />
-          <ReplacePlayers tournament={tournamentAPI?.id.toString()}/>
-          <AddNewSchedule />
+          <ReplacePlayers tournament={tournamentAPI?.id.toString()} />
+          <AddNewSchedule tournament={tournamentAPI?.id.toString()} />
           {/* {isSuperAdmin && <TournamentFilter />} */}
           <SchedulePanel data={items} />
         </Flex>

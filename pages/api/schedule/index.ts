@@ -1,21 +1,6 @@
-import { getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
+import { addSchedulePlayers, getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
 import { submit } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from 'next';
-// export const zGameAPI = z.object({
-//   gameWinner: z.enum(["1", "2", "3"]),
-//   gameCode: z.string(),
-//   gameType: z.string(),
-//   usaPlayerId: z.string(),
-//   ussrPlayerId: z.string(),
-//   endTurn: z.string(),
-//   endMode: z.string(),
-//   video1: z.optional(z.string()),
-// });
-
-// export const zGameRecreateAPI = zGameAPI.extend({
-//   oldId: z.string(),
-//   gameDate: z.string(),
-// });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -44,13 +29,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('[Schedule Bulk Insert]', error);
       res.status(500).json({ message: 'Internal Server Error' });
     }
+  } else if (req.method === 'PUT') {
+    const {usa, ussr, t, d, gc} = req.body.data;
+    console.log("usa, ussr, t, d", usa, ussr, t, d, gc)
+    const updated = await addSchedulePlayers(usa, ussr, Number(t), d, gc)
+    res.status(200).json(updated);
   } else if (req.method === 'PATCH') {
-    // replace all occurrences that still have not been submitted
     const {pold, pnew, t} = req.body.data;
     console.log("pold, pnew, t", pold, pnew, t)
     const updated = await replaceSchedulePlayers(pold, pnew, Number(t))
     res.status(200).json(updated);
-    // new schedule from here as well
   } else if (req.method === 'GET') {
     console.log("query", req.query)
     const userId = req.query?.uid as string
