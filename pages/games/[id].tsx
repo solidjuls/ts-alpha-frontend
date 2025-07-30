@@ -21,6 +21,15 @@ import { userRoles } from "utils/constants";
 import countryFlags from "public/country_flags.json";
 import LabelCopy from "components/LabelCopy/LabelCopy";
 
+const spanStyle = {
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  '@media (max-width: 600px)': {
+    maxWidth: '130px',
+  },
+}
+
 const StyledLink = styled(Link, {
   textDecoration: "none",
   color: "Black",
@@ -167,7 +176,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           </Flex>
           <Box css={{ width: "5px" }} />
           <Flex css={{ flexDirection: "column", alignItems: "start" }}>
-            <Span>{data.gameType}</Span>
+            <Span css={spanStyle}>{data.gameType}</Span>
             <Span>{data.game_code}</Span>
             <Span>{getWinnerText(data.gameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>
