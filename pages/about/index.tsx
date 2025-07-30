@@ -367,10 +367,10 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/3040">Jo&atilde;o Pereira</Link> (Knight4): <Link href="https://www.youtube.com/@Knight4_TS" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2190">Jordan Cass</Link> (donzobean12): <Link href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2190">Jordan Cass</Link> (donzobean12): <Link href="https://www.twitch.tv/donzobean" target="_blank">Twitch</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2215">Josiah Emery</Link> (aunthemod): <Link href="https://www.youtube.com/channel/UCHg3vmoH73MJ79D7-Umpwjw" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2215">Josiah Emery</Link> (aunthemod): <Link href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2216">JR Jones</Link> (dsotc27): <Link href="https://www.twitch.tv/dsotc" target="_blank">Twitch</Link>
