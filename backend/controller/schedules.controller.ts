@@ -97,8 +97,8 @@ export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: strin
     },
     where: {
       OR: [
-        {usa_player_id: oldPlayer},
-        {ussr_player_id: oldPlayer}
+        { usa_player_id: oldPlayer },
+        { ussr_player_id: oldPlayer }
       ],
       tournaments_id: tournamentId,
       game_results_id: null
@@ -122,7 +122,7 @@ export const addSchedulePlayers = async (usa: string, ussr: string, t: number, d
 export const insertSchedule = async (schedules: ScheduleDBType[]) => {
   await prisma.schedule.createMany({
     data: schedules.map((s) => ({
-      tournaments_id: s.tournaments_id,
+      tournaments_id: Number(s.tournaments_id),
       game_code: s.game_code,
       usa_player_id: BigInt(s.usa_player_id),
       ussr_player_id: BigInt(s.ussr_player_id),

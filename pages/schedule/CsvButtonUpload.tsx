@@ -3,9 +3,9 @@ import { useState } from "react";
 import getAxiosInstance from "utils/axios";
 import Papa from 'papaparse'
 import { FileInput, Title } from "./styles";
-import { Flex } from "components/Atoms";
+import { Flex, Span } from "components/Atoms";
 
-export default function CsvUploadButton({ tournament }:{ tournament: string }) {
+export default function CsvUploadButton({ tournament } : { tournament: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState("");
 
@@ -25,7 +25,6 @@ export default function CsvUploadButton({ tournament }:{ tournament: string }) {
   const handleUpload = async () => {
     if (!file) return;
 
-console.log("Finished", file)
     setStatus("Uploading...");
 
     await getAxiosInstance().post(
@@ -48,11 +47,14 @@ console.log("Finished", file)
   return (
     <Flex css={{ flexDirection: 'column'}}>
       <Title>Upload CSV Schedule</Title>
+      <Span>1- Select a tournament from the dropdown</Span>
+      <Span>2- Upload a .csv file with the correct format (due_date,game_code,tournaments_id,usa_player_email,ussr_player_email)</Span>
       <Flex css={{ margin: '8px 0 8px 0' }}>
         <FileInput
           type="file"
           accept=".csv"
           onChange={handleChange}
+          css={{ pointerEvents: !tournament ? 'none' : 'unset' }}
         />
         <Button
           onClick={handleUpload}

@@ -24,6 +24,22 @@ export const PlayerInfo = styled("div", {
   borderRadius: "6px",
   border: "solid 1px $greyLight",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  variants: {
+    status: {
+      played: {
+        backgroundColor: "rgba(0, 128, 0, 0.4)",
+      },
+      default: {
+        backgroundColor: "white",
+      },
+      duedate: {
+        backgroundColor: "rgba(255, 0, 0, 0.4)",
+      },
+    },
+  },
+  defaultVariants: {
+    status: "default",
+  },
 });
 
 export const DueDateCell = styled("div", {

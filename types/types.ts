@@ -42,6 +42,7 @@ export type ScheduleType = {
   nameUsa: string;
   nameUssr: string
   gameCode: string;
+  gameWinner: string
   tournamentId: string
   tournamentName: string
   dueDate: string

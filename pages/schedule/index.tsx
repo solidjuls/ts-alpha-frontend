@@ -107,10 +107,32 @@ const PlayerInfoBox = ({
   );
 };
 
+const isDueInDays = (date: string, days: number): boolean => {
+  const target = new Date(date).getTime();
+  const now = Date.now();
+
+  const diffMs = target - now;
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+  return diffDays <= days;
+};
+
+type VariantType = (schedule: ScheduleType) => "played" | "duedate" | "default"
+
+const getVariant: VariantType = (schedule) => {
+  if (schedule.gameWinner && schedule.gameDate) {
+    return "played"
+  } else if (isDueInDays(schedule.dueDate, 30)) {
+    return "duedate"
+  }
+
+  return "default"
+}
+
 const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
   return (
     <Flex>
-    <PlayerInfo>
+    <PlayerInfo status={getVariant(schedule)}>
       <Flex
         css={{
           display: "flex",
@@ -180,8 +202,12 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
   });
 
   useEffect(() => {
-    if (!loadingTournaments) dispatch(fetchScheduleList({isSuperAdmin, tournaments: [filters.tournamentSelected], userId}))
-    // dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
+    if (!loadingTournaments && filters.tournamentSelected) {
+      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [filters.tournamentSelected], userId}))
+    }
+    if (!filters.tournamentSelected) {
+      dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
+    }
   }, [filters.tournamentSelected, loadingTournaments])
 
   if (status === "loading" || loadingTournaments || !items) return null
@@ -204,7 +230,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
               width='320px'
               onSelect={(value) => dispatch(setTournamentFilter(value))}
             />
-            <ScheduleFilter userAdminTournaments={filters.tournamentSelected} />
+            <ScheduleFilter userAdminTournaments={filters.tournamentSelected} noSchedule={items?.length === 0} />
             <SchedulePanel data={items} />
           </Flex>
         </ResponsiveContainer>

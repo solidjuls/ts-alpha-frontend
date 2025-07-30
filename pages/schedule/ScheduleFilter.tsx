@@ -18,7 +18,7 @@ interface ScheduleFilterProps {
   userAdminTournaments: TournamentsType | null
 }
 
-export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments }) => {
+export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
   const [checked, setChecked] = React.useState(true);
 
   return (
@@ -27,8 +27,8 @@ export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournam
       {checked && (
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
-          <ReplacePlayers tournament={userAdminTournaments} />
-          <AddNewSchedule tournament={userAdminTournaments} />
+          {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
+          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />}
         </Panel>
       )}
     </div>

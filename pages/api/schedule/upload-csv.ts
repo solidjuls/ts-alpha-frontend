@@ -1,7 +1,7 @@
 import { insertSchedule } from "backend/controller/schedules.controller";
 import { getUserIdByEmails } from "backend/controller/user.controller";
 import { NextApiRequest, NextApiResponse } from "next";
-import { ScheduleType } from "types/types";
+import { ScheduleDBType, ScheduleType } from "types/types";
 
 type Game = {
   due_date: string;
@@ -30,8 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userIdsWithEmail.map(user => [user.email.toLowerCase(), user.id])
     );
 
-    const convertedSchedules: ScheduleType[] = file.map(schedule => {
-        console.log(schedule)
+    const convertedSchedules: ScheduleDBType[] = file.map(schedule => {
         return {
             due_date: schedule.due_date,
             game_code: schedule.game_code,
@@ -41,7 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
     });
 
-    console.log("req.body", convertedSchedules)
     await insertSchedule(convertedSchedules)
 
     return res.status(200).json({})
