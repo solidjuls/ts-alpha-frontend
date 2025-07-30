@@ -33,11 +33,12 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
     })) || [];
 
   const updatePlayers = async () => {
-    const updated = await getAxiosInstance().patch('/api/schedule', {data: {
-      pold:oldUser,
-      pnew:newUser,
-      t:tournament
-    }})
+    const updated = await getAxiosInstance().patch('/api/schedule', {
+      data: {
+        pold:oldUser,
+        pnew:newUser,
+        t:tournament
+      }})
 
     setResponseMessage(`${updated?.data?.count} players have been updated`)
   }

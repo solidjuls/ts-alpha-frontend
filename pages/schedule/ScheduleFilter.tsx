@@ -26,9 +26,9 @@ export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournam
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
       {checked && (
         <Panel>
-          <CsvUploadButton tournament={userAdminTournaments?.[0]} />
-          <ReplacePlayers tournament={userAdminTournaments?.id.toString()} />
-          <AddNewSchedule tournament={userAdminTournaments?.id.toString()} />
+          <CsvUploadButton tournament={userAdminTournaments} />
+          <ReplacePlayers tournament={userAdminTournaments} />
+          <AddNewSchedule tournament={userAdminTournaments} />
         </Panel>
       )}
     </div>

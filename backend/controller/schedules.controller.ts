@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId, tournament } : { userId: number, tournament: number | undefined }) => {
+export const getSchedules = async ({ userId, tournament } : { userId: number, tournament: string[] | undefined }) => {
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -49,7 +49,11 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
     },
     where: {
       OR: [
-        { tournaments_id: tournament },
+        {
+          tournaments_id: {
+            in: tournament?.map(Number),
+          }
+        },
         { usa_player_id: userId },
         { ussr_player_id: userId }
       ]

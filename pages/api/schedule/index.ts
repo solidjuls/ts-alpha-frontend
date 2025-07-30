@@ -44,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const userId = req.query?.uid as string
     const tournament = req.query?.t
 
-    const response = await getSchedules({ userId: Number(userId), tournament: tournament && Number(tournament) })
+    const response = await getSchedules({ userId: Number(userId), tournament: tournament?.split(',') })
     res.status(200).json(response);
   }
 }

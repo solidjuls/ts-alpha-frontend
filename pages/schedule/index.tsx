@@ -18,8 +18,8 @@ import ReplacePlayers from "./ReplacePlayers";
 import AddNewSchedule from "./AddNewSchedule";
 import { TournamentsType } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
-import { useEffect } from "react";
-import { fetchScheduleList } from "../../redux/scheduleSlice";
+import { useEffect, useState } from "react";
+import { fetchScheduleList, setTournamentFilter } from "../../redux/scheduleSlice";
 import { AppDispatch, RootState } from "redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "stitches.config";
@@ -172,24 +172,25 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
     (state: RootState) => state.scheduleList,
   );
   
-  useEffect(() => {
-    dispatch(fetchScheduleList({isSuperAdmin, tournaments, userId}))
-  }, [])
-
   const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
-    TournamentsType
+    TournamentsType[]
   >({
-    url: `/api/game/tournaments?id=${tournaments?.[0]}`,
+    url: `/api/game/tournaments?id=${tournaments.join(',')}`,
     cacheId: "tournament-list",
   });
+
+  useEffect(() => {
+    if (!loadingTournaments) dispatch(fetchScheduleList({isSuperAdmin, tournaments: [filters.tournamentSelected], userId}))
+    // dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
+  }, [filters.tournamentSelected, loadingTournaments])
 
   if (status === "loading" || loadingTournaments || !items) return null
 
   // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
-  const leagueTypes: DropdownItemType[] = [{
-    value: tournamentAPI?.id.toString(),
-      text: tournamentAPI?.tournament_name,
-  }]
+  const leagueTypes: DropdownItemType[] = tournamentAPI?.map((item: TournamentsType) => ({
+    value: item.id.toString(),
+    text: item.tournament_name,
+  })) || []
 
   return <ResponsiveContainer>
           <Flex css={{ flexDirection: 'column', width: "100%" }}>
@@ -197,13 +198,13 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
               labelText="typeOfGame"
               key="gameType"
               items={leagueTypes}
-              selectedItem={tournamentAPI?.id.toString()}
+              selectedItem={filters.tournamentSelected}
               placeholder="Select tournament"
               height="270px"
-              width='250px'
-              // onSelect={(value) => onInputValueChange("gameType", value)}
+              width='320px'
+              onSelect={(value) => dispatch(setTournamentFilter(value))}
             />
-            <ScheduleFilter userAdminTournaments={tournamentAPI} />
+            <ScheduleFilter userAdminTournaments={filters.tournamentSelected} />
             <SchedulePanel data={items} />
           </Flex>
         </ResponsiveContainer>
