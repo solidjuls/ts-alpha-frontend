@@ -11,4 +11,6 @@ export const checkAuth = async (req: NextApiRequest, res: NextApiResponse) => {
     res.status(401).json("Unauthorized");
     throw new Error("Unauthorized")
   }
+
+  return decoded?.mail
 }

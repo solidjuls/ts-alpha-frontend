@@ -167,7 +167,7 @@ type GameLogType = {
     game_winner: string;
 } | null
 
-const addGameToLogTable = async (prismaTransaction, input: GameLogType) => {
+const addGameToLogTable = async (prismaTransaction, input: GameLogType, emailReporter: string) => {
     const logAdded = await prismaTransaction.game_results_modified_log.create({
       data: {
         gameId: input.id,
@@ -185,12 +185,12 @@ const addGameToLogTable = async (prismaTransaction, input: GameLogType) => {
         end_mode: input.end_mode,
         game_date: new Date(Date.now()),
         video1: input.video1 || null,
-        reporter_id: BigInt(input.usa_player_id),
+        reporter_id: emailReporter,
       },
     })
     console.log("logAdded", logAdded);
 }
-export const startRecreatingRatings = async (input: GameRecreate, role: number) => {
+export const startRecreatingRatings = async (input: GameRecreate, role: number, emailReporter: string) => {
   try {
     await prisma.$transaction(
       async (prismaTransaction) => {
@@ -201,7 +201,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         if (!oldGameDate) {
           throw new Error("Old game id is wrong");
         }
-        await addGameToLogTable(prismaTransaction, oldGameDate)
+        await addGameToLogTable(prismaTransaction, oldGameDate, emailReporter)
         console.log("oldGameDate", oldGameDate);
 
         if (
@@ -348,7 +348,7 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
   return { success: true };
 };
 
-export const deleteGameRatings = async (input: GameRecreate) => {
+export const deleteGameRatings = async (input: GameRecreate, emailReporter: string) => {
   try {
     await prisma.$transaction(
       async (prismaTransaction) => {
@@ -356,7 +356,7 @@ export const deleteGameRatings = async (input: GameRecreate) => {
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
         if (oldGameDate) {
-          await addGameToLogTable(prismaTransaction, oldGameDate)
+          await addGameToLogTable(prismaTransaction, oldGameDate, emailReporter)
         }
         console.log("oldGameDate", oldGameDate);
         // we select all games with date created_at >= oldId game
