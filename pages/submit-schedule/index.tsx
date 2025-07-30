@@ -97,7 +97,6 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
   });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments?id=${form.gameType.value}`,
-    cacheId: "tournament-list",
   });
 
   const normalizeData: RecreateFormNormalizeType = (localForm: ScheduleFormState) => {

@@ -198,7 +198,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
     TournamentsType[]
   >({
     url: `/api/game/tournaments?id=${tournaments.join(',')}`,
-    cacheId: "tournament-list",
   });
 
   useEffect(() => {

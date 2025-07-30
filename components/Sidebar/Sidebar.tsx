@@ -121,6 +121,11 @@ const Items = ({ styles, role }: any) => {
           Submit Form
         </Text>
       </UnstyledLink>
+      <UnstyledLink href="/schedule" passHref>
+        <Text strong="bold" css={styles}>
+          My Schedule
+        </Text>
+      </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
         <Text strong="bold" css={horizontalItemStyles}>
           <FormattedMessage id="profileText" />
@@ -252,6 +257,11 @@ const VerticalSidebar = () => {
                   Submit Form
                 </Text>
               </Item>
+            </UnstyledLink>
+            <UnstyledLink href="/schedule" passHref>
+              <Text strong="bold" css={horizontalItemStyles}>
+                My Schedule
+              </Text>
             </UnstyledLink>
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
