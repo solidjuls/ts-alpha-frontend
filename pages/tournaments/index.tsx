@@ -3,7 +3,7 @@ import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
+import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 import { Flex, Form, Span } from "components/Atoms";
 import { EditTextComponent } from "components/EditFormComponents";
@@ -140,10 +140,6 @@ const useTournamentState = () => {
   };
 };
 
-const statusIdToName = Object.fromEntries(
-  Object.entries(tournamentStatus).map(([key, value]) => [value, key]),
-);
-
 const Tournaments = () => {
   const { data, setData, isLoading, all, setAll, closed, setClosed, open, setOpen, refetch } =
     useTournamentState();
@@ -230,7 +226,7 @@ const Tournaments = () => {
         {data?.map((item, index) => {
           return (
             <Flex key={index} css={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <TournamentNameCell status={statusIdToName[item.status_id]}>
+              <TournamentNameCell status={getTournamentStatusNames(item.status_id)}>
                 <Flex css={{ flexDirection: "row", alignItems: "center" }}>
                   {item.tournament_name}
                   {item.status_id === tournamentStatus.new && (
@@ -239,7 +235,7 @@ const Tournaments = () => {
                 </Flex>
               </TournamentNameCell>
               <UpdateCell onClick={() => onStatusChange(item.status_id?.toString(), item)}>
-                <Span>{statusIdToName[item.status_id]}</Span>
+                <Span>{getTournamentStatusNames(item.status_id)}</Span>
               </UpdateCell>
             </Flex>
           );

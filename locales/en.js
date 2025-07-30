@@ -24,6 +24,8 @@ module.exports = {
     profileText: "Profile",
     greeting: "Hi",
 
+    oldPlayer: "Player to be replaced",
+    newPlayer: "New Player",
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",
 
@@ -38,5 +40,7 @@ module.exports = {
     newTournament: "New tournament",
     city: "City",
     country: "Federation",
+
+    scheduleId: "Schedule id",
   },
 };

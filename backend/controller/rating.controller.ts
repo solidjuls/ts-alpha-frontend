@@ -149,6 +149,47 @@ export const getRatingByPlayer = async ({
   });
 };
 
+type GameLogType = {
+    id: bigint;
+    tournaments: {
+        id: number;
+    } | null;
+    game_code: string;
+    created_at: Date | null;
+    updated_at: Date | null;
+    usa_player_id: bigint;
+    ussr_player_id: bigint;
+    end_turn: string;
+    end_mode: string;
+    video1: string
+    game_type: number | null;
+    reported_at: Date;
+    game_winner: string;
+} | null
+
+const addGameToLogTable = async (prismaTransaction, input: GameLogType) => {
+    const logAdded = await prismaTransaction.game_results_modified_log.create({
+      data: {
+        gameId: input.id,
+        created_at: new Date(Date.now()),
+        updated_at: new Date(Date.now()),
+        usa_player_id: BigInt(input.usa_player_id),
+        ussr_player_id: BigInt(input.ussr_player_id),
+        // usa_previous_rating: usaRating,
+        // ussr_previous_rating: ussrRating,
+        game_type: Number(input.tournaments?.id),
+        game_code: input.game_code,
+        reported_at: new Date(Date.now()),
+        game_winner: input.game_winner,
+        end_turn: Number(input.end_turn),
+        end_mode: input.end_mode,
+        game_date: new Date(Date.now()),
+        video1: input.video1 || null,
+        reporter_id: BigInt(input.usa_player_id),
+      },
+    })
+    console.log("logAdded", logAdded);
+}
 export const startRecreatingRatings = async (input: GameRecreate, role: number) => {
   try {
     await prisma.$transaction(
@@ -156,12 +197,12 @@ export const startRecreatingRatings = async (input: GameRecreate, role: number) 
         const dateNow = new Date(Date.now());
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
-
+      
         if (!oldGameDate) {
           throw new Error("Old game id is wrong");
         }
-
-        console.log("oldGameDate", oldGameDate, input);
+        await addGameToLogTable(prismaTransaction, oldGameDate)
+        console.log("oldGameDate", oldGameDate);
 
         if (
           oldGameDate.usa_player_id.toString() === input.usaPlayerId &&
@@ -314,6 +355,9 @@ export const deleteGameRatings = async (input: GameRecreate) => {
         const dateNow = new Date(Date.now());
         // we select the oldId game created_at
         const oldGameDate = await getGameByGameId(input.oldId);
+        if (oldGameDate) {
+          await addGameToLogTable(prismaTransaction, oldGameDate)
+        }
         console.log("oldGameDate", oldGameDate);
         // we select all games with date created_at >= oldId game
         const allGamesAffected = await prismaTransaction.game_results.findMany({

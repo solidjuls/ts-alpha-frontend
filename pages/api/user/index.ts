@@ -1,6 +1,6 @@
 import { get, getAll, update, create } from "backend/controller/user.controller";
 import { checkAuth } from "backend/utils/adminCheck";
-import { NextApiRequest, NextApiResponse } from "next/types";
+import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;

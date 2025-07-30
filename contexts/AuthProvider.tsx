@@ -7,7 +7,7 @@ import type { AuthType } from "../types/user.types";
 type LoginFnType = (mail: string, pwd: string) => void;
 type LogoutFnType = () => void;
 
-type AuthContextProps = Pick<AuthType, "name" | "email" | "id"> & {
+type AuthContextProps = Pick<AuthType, "name" | "email" | "id" | "role" | "tournaments"> & {
   setAuthentication?: (authProps: AuthType) => void;
   login?: LoginFnType;
   logout?: LogoutFnType;
@@ -18,6 +18,7 @@ const KEY = "ts-user";
 const AuthContext = createContext<AuthContextProps>({
   email: undefined,
   name: undefined,
+  errorMsg: null
 });
 
 type AuthProviderProps = {
@@ -30,9 +31,10 @@ const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({
   email,
   id,
   role,
+  tournaments
 }) => {
   const router = useRouter();
-  const [auth, setAuth] = useState<AuthType>({ name, email, id, role });
+  const [auth, setAuth] = useState<AuthType>({ name, email, id, role, tournaments });
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const setAuthentication = (authProps: AuthType) => {
@@ -46,7 +48,7 @@ const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({
         mail,
         pwd,
       });
-
+console.log("AuthContext.data", data)
       if (data && setAuthentication) {
         router.push("/");
         setAuthentication(data);
@@ -65,13 +67,14 @@ const AuthProvider: React.FC<AuthProviderProps & AuthType> = ({
       console.log("sign out error", e);
     }
   };
-
+console.log("AuthContext.Provider", auth.tournaments)
   return (
     <AuthContext.Provider
       value={{
         id: auth.id,
         email: auth.email,
         name: auth.name,
+        tournaments: auth.tournaments,
         role: auth.role,
         setAuthentication,
         errorMsg,
