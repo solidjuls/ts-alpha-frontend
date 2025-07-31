@@ -251,7 +251,7 @@ model game_results_modified_log {
   video1               String?   @db.VarChar(255)
   video2               String?   @db.VarChar(255)
   video3               String?   @db.VarChar(255)
-  reporter_id          BigInt?   @db.UnsignedBigInt
+  reporter_id          String?   @db.VarChar(255)
   usa_previous_rating  Int       @default(0)
   ussr_previous_rating Int       @default(0)
 }

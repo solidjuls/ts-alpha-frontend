@@ -7,17 +7,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "POST") {
     try {
       
-      await checkAuth(req, res)
+      const emailReporter = await checkAuth(req, res)
 
       let newGameWithId = {};
 
       if (req.body.data.op === "delete") {
-        newGameWithId = await deleteGameRatings(req.body.data);
+        newGameWithId = await deleteGameRatings(req.body.data, emailReporter);
       } else {
         if (!req.body.data.oldId) {
           await submit(req.body.data);
         } else {
-          newGameWithId = await startRecreatingRatings(req.body.data, 3);
+          newGameWithId = await startRecreatingRatings(req.body.data, 3, emailReporter);
         }
       }
 
