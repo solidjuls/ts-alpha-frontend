@@ -160,7 +160,7 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
       />
     </PlayerInfo>
     <DueDateCell>
-      <DueDateDisplay dueDate={schedule.dueDate}
+      <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id}
         admin={true}
         gamePlayed={false} />
     </DueDateCell>

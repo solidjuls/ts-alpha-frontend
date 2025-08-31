@@ -20,11 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       //   return res.status(400).json({ message: 'No schedule data provided' });
       // }
       
-      const submitResponse = await submit(req.body.data)
-      const scheduleResponse = await updateSchedule(submitResponse.id, Number(schedules.id))
-      console.log("submitResponse", scheduleResponse)
+      if (schedules.due_date) {
+        const scheduleResponse = await updateSchedule({ dueDate: new Date(schedules.due_date), scheduleId: Number(schedules.id) })
+        console.log("scheduleResponse", scheduleResponse)
+        res.status(200).json({ message: `Due date for schedule ${schedules.id} updated successfully` });
+        return
+      } else {
+        const submitResponse = await submit(req.body.data)
+        const scheduleResponse = await updateSchedule({gameResultId: submitResponse.id, scheduleId: Number(schedules.id)})
+        console.log("submitResponse", scheduleResponse)
+      }
     
-      res.status(200).json({ message: 'Schedules inserted successfully' });
+      res.status(200).json({ message: 'Schedules updated successfully' });
     } catch (error) {
       console.error('[Schedule Bulk Insert]', error);
       res.status(500).json({ message: 'Internal Server Error' });

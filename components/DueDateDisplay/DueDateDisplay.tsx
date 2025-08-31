@@ -5,19 +5,20 @@ import 'react-day-picker/lib/style.css';
 import { Button } from 'components/Button'
 import { format as formatDate } from 'date-fns';
 import { dateFormat } from "utils/dates";
+import getAxiosInstance from 'utils/axios';
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
   admin: boolean;
   gamePlayed: boolean;
-  onSaveDate?: (date: Date) => Promise<void>;
+  scheduleId: string;
 }
 
 const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   dueDate,
   admin,
   gamePlayed,
-  onSaveDate,
+  scheduleId
 }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(
     typeof dueDate === 'string' ? new Date(dueDate) : dueDate
@@ -25,10 +26,15 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   const [loading, setLoading] = useState(false);
 
   const handleSave = async () => {
-    if (!onSaveDate) return;
+    // if (!onSaveDate) return;
     setLoading(true);
     try {
-      await onSaveDate(selectedDate);
+      await getAxiosInstance().post('/api/schedule/', {
+            data: {
+              due_date: selectedDate,
+              id: scheduleId
+            },
+          })
     } finally {
       setLoading(false);
     }

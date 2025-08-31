@@ -77,10 +77,11 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
   }))
 };
 
-export const updateSchedule = async (gameResultId: number, scheduleId: number) => {
+export const updateSchedule = async ({ gameResultId, scheduleId, dueDate } : { gameResultId?: number, scheduleId: number, dueDate?: Date}) => {
   const updated = await prisma.schedule.update({
     data: {
-      game_results_id: gameResultId
+      game_results_id: gameResultId,
+      due_date: dueDate
     },
     where: {
       id: scheduleId
