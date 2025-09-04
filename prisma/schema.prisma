@@ -56,7 +56,7 @@ model game_results {
   reporter_id                              BigInt?           @db.UnsignedBigInt
   usa_previous_rating                      Int               @default(0)
   ussr_previous_rating                     Int               @default(0)
-  tournaments                              tournaments?      @relation(fields: [game_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_game_results_tournament")
+  tournaments                              tournaments?      @relation(fields: [game_type], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_game_type_foreign")
   users_game_results_reporter_idTousers    users?            @relation("game_results_reporter_idTousers", fields: [reporter_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_reporter_id_foreign")
   users_game_results_usa_player_idTousers  users             @relation("game_results_usa_player_idTousers", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_usa_player_id_foreign")
   users_game_results_ussr_player_idTousers users             @relation("game_results_ussr_player_idTousers", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_ussr_player_id_foreign")

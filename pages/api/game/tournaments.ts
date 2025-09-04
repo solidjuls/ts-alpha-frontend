@@ -15,7 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { id, status } = req.query;
 
         if (typeof id === "string") {
-          const tournament = await getTournamentsById(id);
+          console.log("(userId, tournamentId) ", id)
+          const tournament = await getTournamentsById(id.split(','));
           return res.status(200).json(tournament);
         }
 

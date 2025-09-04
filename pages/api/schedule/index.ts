@@ -1,21 +1,6 @@
-import { getSchedules, updateSchedule } from 'backend/controller/schedules.controller';
+import { addSchedulePlayers, getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
 import { submit } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from 'next';
-// export const zGameAPI = z.object({
-//   gameWinner: z.enum(["1", "2", "3"]),
-//   gameCode: z.string(),
-//   gameType: z.string(),
-//   usaPlayerId: z.string(),
-//   ussrPlayerId: z.string(),
-//   endTurn: z.string(),
-//   endMode: z.string(),
-//   video1: z.optional(z.string()),
-// });
-
-// export const zGameRecreateAPI = zGameAPI.extend({
-//   oldId: z.string(),
-//   gameDate: z.string(),
-// });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -34,25 +19,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // if (!Array.isArray(schedules) || schedules.length === 0) {
       //   return res.status(400).json({ message: 'No schedule data provided' });
       // }
-      console.log("req.body.data", req.body.data, schedules)
-      const submitResponse = await submit(req.body.data)
-      const scheduleResponse = await updateSchedule(submitResponse.id, Number(schedules.id))
-      console.log("submitResponse", scheduleResponse)
+      
+      if (schedules.due_date) {
+        const scheduleResponse = await updateSchedule({ dueDate: new Date(schedules.due_date), scheduleId: Number(schedules.id) })
+        console.log("scheduleResponse", scheduleResponse)
+        res.status(200).json({ message: `Due date for schedule ${schedules.id} updated successfully` });
+        return
+      } else {
+        const submitResponse = await submit(req.body.data)
+        const scheduleResponse = await updateSchedule({gameResultId: submitResponse.id, scheduleId: Number(schedules.id)})
+        console.log("submitResponse", scheduleResponse)
+      }
     
-      res.status(200).json({ message: 'Schedules inserted successfully' });
+      res.status(200).json({ message: 'Schedules updated successfully' });
     } catch (error) {
       console.error('[Schedule Bulk Insert]', error);
       res.status(500).json({ message: 'Internal Server Error' });
     }
+  } else if (req.method === 'PUT') {
+    const {usa, ussr, t, d, gc} = req.body.data;
+    console.log("usa, ussr, t, d", usa, ussr, t, d, gc)
+    const updated = await addSchedulePlayers(usa, ussr, Number(t), d, gc)
+    res.status(200).json(updated);
   } else if (req.method === 'PATCH') {
-    // old player, new player, tournament Id
-    // replace all occurrences that still have not been submitted
-
-    // new schedule from here as well
+    const {pold, pnew, t} = req.body.data;
+    console.log("pold, pnew, t", pold, pnew, t)
+    const updated = await replaceSchedulePlayers(pold, pnew, Number(t))
+    res.status(200).json(updated);
   } else if (req.method === 'GET') {
     console.log("query", req.query)
     const userId = req.query?.uid as string
-    const response = await getSchedules({ userId: Number(userId) })
+    const tournament = req.query?.t
+
+    const response = await getSchedules({ userId: Number(userId), tournament: tournament?.split(',') })
     res.status(200).json(response);
   }
 }

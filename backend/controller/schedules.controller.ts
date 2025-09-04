@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId } : { userId: number }) => {
+export const getSchedules = async ({ userId, tournament } : { userId: number, tournament: string[] | undefined }) => {
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -49,6 +49,11 @@ export const getSchedules = async ({ userId } : { userId: number }) => {
     },
     where: {
       OR: [
+        {
+          tournaments_id: {
+            in: tournament?.map(Number),
+          }
+        },
         { usa_player_id: userId },
         { ussr_player_id: userId }
       ]
@@ -72,10 +77,11 @@ export const getSchedules = async ({ userId } : { userId: number }) => {
   }))
 };
 
-export const updateSchedule = async (gameResultId: number, scheduleId: number) => {
+export const updateSchedule = async ({ gameResultId, scheduleId, dueDate } : { gameResultId?: number, scheduleId: number, dueDate?: Date}) => {
   const updated = await prisma.schedule.update({
     data: {
-      game_results_id: gameResultId
+      game_results_id: gameResultId,
+      due_date: dueDate
     },
     where: {
       id: scheduleId
@@ -84,10 +90,40 @@ export const updateSchedule = async (gameResultId: number, scheduleId: number) =
   return updated
 }
 
+export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: string, tournamentId: number) => {
+  const updated = await prisma.schedule.updateMany({
+    data: {
+      usa_player_id: newPlayer,
+      ussr_player_id: newPlayer,
+    },
+    where: {
+      OR: [
+        { usa_player_id: oldPlayer },
+        { ussr_player_id: oldPlayer }
+      ],
+      tournaments_id: tournamentId,
+      game_results_id: null
+    }
+  })
+  return updated
+}
+
+export const addSchedulePlayers = async (usa: string, ussr: string, t: number, d: Date, gc: string) => {
+  return await prisma.schedule.create({
+    data: {
+      tournaments_id: t,
+      game_code: gc,
+      usa_player_id: BigInt(usa),
+      ussr_player_id: BigInt(ussr),
+      due_date: d,
+    }
+  })
+}
+
 export const insertSchedule = async (schedules: ScheduleDBType[]) => {
   await prisma.schedule.createMany({
     data: schedules.map((s) => ({
-      tournaments_id: s.tournaments_id,
+      tournaments_id: Number(s.tournaments_id),
       game_code: s.game_code,
       usa_player_id: BigInt(s.usa_player_id),
       ussr_player_id: BigInt(s.ussr_player_id),

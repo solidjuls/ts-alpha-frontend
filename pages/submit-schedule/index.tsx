@@ -1,7 +1,7 @@
 import getAxiosInstance from "utils/axios";
 import { useEffect, useState } from "react";
 import { getInfoFromCookies } from "utils/cookies";
-import { GameRecreate, GameWinner } from "types/game.types";
+import { GameRecreate, GameWinner, TournamentsType } from "types/game.types";
 import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
@@ -84,7 +84,7 @@ const initializeState: InitializeStateType = (searchParams: ReadonlyURLSearchPar
   };
 };
 
-const RecreateFormContainer = ({ role }: SubmitFormProps) => {
+const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<ScheduleFormState>(() => initializeState(searchParams));
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -95,9 +95,8 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     url: "/api/user",
     cacheId: "user-list",
   });
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
+  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments?id=${form.gameType.value}`,
-    cacheId: "tournament-list",
   });
 
   const normalizeData: RecreateFormNormalizeType = (localForm: ScheduleFormState) => {
@@ -213,7 +212,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
             },
           },
         );
-        router.push("/");
+        router.push("/schedule");
       } catch (e) {
         setErrorMsg(e?.response?.data || "There was an error submitting the result");
       } finally {
@@ -238,15 +237,15 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     value: item.id,
     text: item.name,
   }));
-
+console.log("tournaments", tournaments)
   return (
     <SubmitSchedule
       role={role}
       form={form}
       onSubmit={onSubmit}
       users={usersParsed}
-      tournamentId={tournaments?.id.toString()}
-      tournamentName={tournaments?.tournament_name}
+      tournamentId={tournaments?.[0].id.toString()}
+      tournamentName={tournaments?.[0].tournament_name}
       onInputValueChange={onInputValueChange}
       buttonDisabled={buttonDisabled}
       setButtonDisabled={setButtonDisabled}
@@ -279,4 +278,4 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
 //   return { props: { role: payload.role || null } };
 // }
 
-export default RecreateFormContainer;
+export default SubmitScheduleContainer;

@@ -8,7 +8,8 @@ interface ScheduleState {
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   filters: {
-    setTournamentFilter: string;
+    tournamentSelected: string;
+    invalidateCache: boolean
   };
   modeUI: 'ADMIN' | 'SUPER_ADMIN' | 'PLAYER_VIEW';
   currentPage: number;
@@ -22,7 +23,8 @@ const initialState: ScheduleState = {
   status: "idle",
   error: null,
   filters: {
-    setTournamentFilter: "",
+    tournamentSelected: "",
+    invalidateCache: false
   },
   currentPage: 1,
   totalPages: 1,
@@ -43,7 +45,7 @@ export const fetchScheduleList = createAsyncThunk(
     const URLparams = new URLSearchParams();
     if (userId) URLparams.append("uid", userId);
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
-
+console.log("fetchScheduleList", tournaments)
     // isSuperAdmin & tournament filter selected
     const response = await getAxiosInstance().get(
       `/api/schedule?${URLparams.toString()}`,
@@ -60,9 +62,10 @@ const listSlice = createSlice({
   name: "scheduleList",
   initialState,
   reducers: {
-    setTournamentFilter: (state) => {
+    setTournamentFilter: (state, action) => {
       state.currentPage = 1;
-      state.filters.setTournamentFilter = "";
+      state.filters.invalidateCache = state.filters.tournamentSelected !== action.payload;
+      state.filters.tournamentSelected = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;

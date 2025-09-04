@@ -11,7 +11,7 @@ type UserTypeaheadProps = {
   onBlur: () => void;
   placeholder: string;
   css: any;
-  error: boolean;
+  error?: boolean;
 };
 
 const UserTypeahead: React.FC<UserTypeaheadProps> = ({

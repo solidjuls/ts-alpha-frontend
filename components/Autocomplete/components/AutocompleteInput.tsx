@@ -17,7 +17,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
 }) => {
   const { getInputProps, openMenu } = useAutocompleteState();
   return (
-    <div display="block" position="relative">
+    <div>
       <Input
         {...getInputProps({
           placeholder,

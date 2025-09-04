@@ -24,7 +24,6 @@ const DropdownWithLabel = ({
   onSelect,
   items,
   error,
-  css,
   height = undefined,
   ...rest
 }: DropdownWithLabelProps) => (
