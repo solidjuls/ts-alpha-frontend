@@ -18,7 +18,7 @@ interface ScheduleFilterProps {
   userAdminTournaments: TournamentsType | null
 }
 
-export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
+const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
   const [checked, setChecked] = React.useState(true);
 
   return (
@@ -52,3 +52,5 @@ export const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournam
 // add new schedule -> players, tournament, due date
 // super admin view: I can see everything with a tournament filter, and do everything
 // // player view. I can only see submit option and the tournament filter with my open tournaments
+
+export default ScheduleFilter

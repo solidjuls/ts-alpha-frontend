@@ -4,18 +4,17 @@ import useFetchInitialData from "hooks/useFetchInitialData"
 import { PlayerInfo, ResultsStyleWrapper, DueDateCell, UnstyledLink } from "components/Schedule/Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
-import Text
- from "components/Text";
+import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
 import { DropdownItemType, ScheduleType, ServerType } from "types/types";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
-import CsvUploadButton from "./CsvButtonUpload";
+import CsvUploadButton from "../../components/Schedule/CsvButtonUpload";
 import { tournamentStatus, userRoles } from "utils/constants";
-import ReplacePlayers from "./ReplacePlayers";
-import AddNewSchedule from "./AddNewSchedule";
+import ReplacePlayers from "../../components/Schedule/ReplacePlayers";
+import AddNewSchedule from "../../components/Schedule/AddNewSchedule";
 import { TournamentsType } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { useEffect, useState } from "react";
@@ -23,7 +22,7 @@ import { fetchScheduleList, setTournamentFilter } from "../../redux/scheduleSlic
 import { AppDispatch, RootState } from "redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "stitches.config";
-import { ScheduleFilter } from "./ScheduleFilter";
+import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
