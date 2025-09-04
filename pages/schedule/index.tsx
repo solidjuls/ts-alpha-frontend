@@ -237,15 +237,14 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
-  console.log("payload", payload)
-  // if (!payload || payload?.role !== userRoles.SUPERADMIN) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
+  if (payload?.role !== userRoles.SUPERADMIN) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
   return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: payload?.tournaments, userId: payload?.id } };
 }
 
