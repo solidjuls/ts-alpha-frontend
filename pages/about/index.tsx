@@ -270,7 +270,7 @@ const AboutPage = () => (
             </Link>
           </dt>
           <dd>
-            The official GMY page of the tabletop version of Twilight Struggle.
+            The official page from the publisher (GMT) of the tabletop version of Twilight Struggle.
           </dd>
           <dt>
             <Link href="https://www.playdekgames.com/twilight-struggle" target="_blank">
