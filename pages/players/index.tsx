@@ -166,7 +166,7 @@ const Players = () => {
           type="text"
           filter="filter"
           value={playdeckValue}
-          placeholder="Type the playdeck name"
+          placeholder="Type the Playdek name"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             setPlaydeckValue(() => event.target.value)
           }
