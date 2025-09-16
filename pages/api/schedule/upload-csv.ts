@@ -18,7 +18,8 @@ type UserEmailMapType = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end("Method not allowed");
-  const { file, tournament } = req.body?.data
+  try {
+    const { file, tournament } = req.body?.data
     
     const allEmails = file.flatMap(item => [item.usa_player_email, item.ussr_player_email].filter(Boolean));
     const uniqueEmails = Array.from(new Set(allEmails));
@@ -43,4 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await insertSchedule(convertedSchedules)
 
     return res.status(200).json({})
+  } catch(e) {
+    return res.status(500).json({})
+  }
 }

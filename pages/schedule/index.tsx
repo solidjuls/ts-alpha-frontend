@@ -23,10 +23,11 @@ import { AppDispatch, RootState } from "redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "stitches.config";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
+import axios from "axios";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
-  tournaments: string[]
+  tournaments: DropdownItemType[]
   userId: string
 }
 
@@ -193,40 +194,44 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
     (state: RootState) => state.scheduleList,
   );
   
-  const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
-    TournamentsType[]
-  >({
-    url: `/api/game/tournaments?id=${tournaments.join(',')}`,
-  });
+  // const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
+  //   TournamentsType[]
+  // >({
+  //   url: `}`,
+  // });
 
-  useEffect(() => {
-    if (!loadingTournaments && filters.tournamentSelected) {
-      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [filters.tournamentSelected], userId}))
-    }
-    if (!filters.tournamentSelected) {
-      dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
-    }
-  }, [filters.tournamentSelected, loadingTournaments])
+  // useEffect(() => {
+  //   if (!loadingTournaments && filters.tournamentSelected) {
+      
+  //   }
+  //   if (!filters.tournamentSelected) {
+  //     dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
+  //   }
+  // }, [filters.tournamentSelected, loadingTournaments])
 
-  if (status === "loading" || loadingTournaments || !items) return null
+  // if (status === "loading" || loadingTournaments || !items) return null
 
   // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
-  const leagueTypes: DropdownItemType[] = tournamentAPI?.map((item: TournamentsType) => ({
-    value: item.id.toString(),
-    text: item.tournament_name,
-  })) || []
-
+  useEffect(() => {
+    if (tournaments.length > 0) {
+      dispatch(setTournamentFilter(tournaments[0].value))
+      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournaments[0].value as string], userId}))
+    }
+  }, [])
+console.log("filters.tournamentSelected", filters.tournamentSelected)
   return <ResponsiveContainer>
           <Flex css={{ flexDirection: 'column', width: "100%" }}>
             <DropdownWithLabel
               labelText="typeOfGame"
               key="gameType"
-              items={leagueTypes}
+              items={tournaments}
               selectedItem={filters.tournamentSelected}
               placeholder="Select tournament"
               height="270px"
               width='320px'
-              onSelect={(value) => dispatch(setTournamentFilter(value))}
+              onSelect={(value) =>  {
+                dispatch(fetchScheduleList({isSuperAdmin, tournaments: [value], userId}))
+              }}
             />
             <ScheduleFilter userAdminTournaments={filters.tournamentSelected} noSchedule={items?.length === 0} />
             <SchedulePanel data={items} />
@@ -236,16 +241,28 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
 
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
+  const protocol = req.headers['x-forwarded-proto'] || 'http'
+  const host = req.headers['host']
+  const baseUrl = `${protocol}://${host}`
 
-  if (payload?.role !== userRoles.SUPERADMIN) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
-  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: payload?.tournaments, userId: payload?.id } };
+  const response = await axios.get(
+    `${baseUrl}/api/game/tournaments?id=${payload?.tournaments.join(',')}`
+  )
+
+  const leagueTypes: DropdownItemType[] = response.data?.map((item: TournamentsType) => ({
+    value: item.id.toString(),
+    text: item.tournament_name,
+  })) || []
+
+  // if (payload?.role !== userRoles.SUPERADMIN) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: leagueTypes, userId: payload?.id } };
 }
 
 export default Schedule
