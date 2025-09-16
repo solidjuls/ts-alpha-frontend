@@ -1,4 +1,5 @@
 import { Button } from "components/Button";
+import { useRouter } from 'next/router'
 import { useState } from "react";
 import getAxiosInstance from "utils/axios";
 import Papa from 'papaparse'
@@ -6,8 +7,54 @@ import { FileInput, Title } from "./styles";
 import { Flex, Span } from "components/Atoms";
 
 export default function CsvUploadButton({ tournament } : { tournament: string }) {
+  const router = useRouter()
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState("");
+
+  const completeCSVSchema = (results) => {
+    const expectedHeaders = [
+      "due_date",
+      "game_code",
+      "tournaments_id",
+      "usa_player_email",
+      "ussr_player_email"
+    ];
+    const headers = results.meta.fields;
+
+    const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
+    if (!isHeaderValid) {
+      setStatus("Invalid schema! Expected headers:", expectedHeaders, "but got:", headers);
+      return;
+    }
+
+    let valid = true;
+    results.data.forEach((row, i) => {
+      // due_date should look like YYYY-MM-DD
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(row.due_date)) {
+        setStatus(`Row ${i + 2}: Invalid due_date ${row.due_date}`);
+        valid = false;
+      }
+      // game_code should be 4 digits
+      if (!/^\d{4}$/.test(row.game_code)) {
+        setStatus(`Row ${i + 2}: Invalid game_code ${row.game_code}`);
+        valid = false;
+      }
+      // Emails should be valid format
+      ["usa_player_email", "ussr_player_email"].forEach((field) => {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row[field])) {
+          setStatus(`Row ${i + 2}: Invalid email in ${field} ${row[field]}`);
+          valid = false;
+        }
+      });
+    });
+
+    if (valid) {
+      setStatus("✅ CSV schema and data are valid!");
+      setFile(results.data)
+    } else {
+      console.warn("⚠️ CSV has schema/data issues. See errors above.");
+    }
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.length) {
@@ -15,9 +62,10 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
 
         Papa.parse(csvParse, {
             header: true,
-            complete: function(results) {
-                setFile(results.data)
-            }
+            complete: completeCSVSchema
+            // complete: function(results) {
+            //     setFile(results.data)
+            // }
         })
     }
   };
@@ -27,7 +75,7 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
 
     setStatus("Uploading...");
 
-    await getAxiosInstance().post(
+    const response = await getAxiosInstance().post(
         "/api/schedule/upload-csv",
         {
             data: {
@@ -36,12 +84,12 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
             }
         },
     )
-
-    // if (res.ok) {
-    //   setStatus("✅ Upload and parse successful!");
-    // } else {
-    //   setStatus("❌ Upload failed.");
-    // }
+    if (response.status === 200) {
+      router.reload()
+    } else if (response.status === 500) {
+      setStatus("❌ Upload failed.");
+    }
+    // return valid error codes. Users should be all registered, tournament should exist
   };
 
   return (

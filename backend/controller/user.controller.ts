@@ -19,7 +19,8 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
       userId: user?.id
     },
   });
-
+  // same with tournament registrated
+  
   if (!user) return null;
 
   if (!user.password) {
