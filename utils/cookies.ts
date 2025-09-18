@@ -7,6 +7,10 @@ type CookiesReturn = (
 ) => {
   mail: string;
   role: number;
+  tournamentsAdmin: number[]
+  tournamentsRegistered: number[]
+  id: number
+  name: string
 } | null;
 
 export const getInfoFromCookies: CookiesReturn = (req, res) => {
@@ -24,7 +28,8 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
       name: payload.name,
       mail: payload.mail,
       role: payload.role,
-      tournaments: payload.tournaments,
+      tournamentsAdmin: payload.tournamentsAdmin,
+      tournamentsRegistered: payload.tournamentsRegistered
     };
   } catch (error) {
     return null;

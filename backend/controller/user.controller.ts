@@ -11,7 +11,7 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     },
   });
 
-  const tournaments = await prisma.tournament_admins.findMany({
+  const tournamentsAdmin = await prisma.tournament_admins.findMany({
     select: {
       tournamentId: true
     },
@@ -20,7 +20,15 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     },
   });
   // same with tournament registrated
-  
+  const tournamentsRegistered = await prisma.tournament_registration.findMany({
+    select: {
+      tournamentId: true
+    },
+    where: {
+      player_email: email
+    },
+  });
+console.log("tournamentsRegistered", tournamentsRegistered, tournamentsAdmin)
   if (!user) return null;
 
   if (!user.password) {
@@ -49,7 +57,8 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
     email: user.email,
     name: user.first_name,
     // @ts-ignore
-    tournaments: tournaments?.map(item => item.tournamentId),
+    tournamentsAdmin: tournamentsAdmin?.map(item => item.tournamentId),
+    tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId),
     role: user.role_id,
   };
 };
@@ -64,12 +73,19 @@ export const isUserAdmin = async (email: string) => {
 }
 
 export const getUsersByTournament = async (tournaments: string) => {
+  const userEmails = await prisma.tournament_registration.findMany({
+    select: {
+      player_email: true
+    },
+    where: {
+      tournamentId: Number(tournaments)
+    }
+  })
+
   const users =  await prisma.users.findMany({
     where: {
-      tournament_registration: {
-        some: {
-          tournamentId: Number(tournaments),
-        },
+      email: {
+        in: userEmails.map(item => item.player_email),
       },
     },
     select: {

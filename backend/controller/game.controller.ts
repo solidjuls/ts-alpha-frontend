@@ -141,7 +141,7 @@ export const getGameWithRatings = async (
     };
   });
   const getGamesWithRating = await getGamesWithRatingDifference(normalizedGames);
-  console.log("getGamesWithRating", getGamesWithRating);
+
   return { getGamesWithRating, totalRows };
 };
 

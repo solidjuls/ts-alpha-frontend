@@ -27,7 +27,8 @@ import axios from "axios";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
-  tournaments: DropdownItemType[]
+  tournamentsAdmin: DropdownItemType[]
+  tournamentsRegistered: DropdownItemType[]
   userId: string
 }
 
@@ -188,7 +189,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
   );
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }) => {
+const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.scheduleList,
@@ -213,18 +214,18 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }
 
   // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
   useEffect(() => {
-    if (tournaments.length > 0) {
-      dispatch(setTournamentFilter(tournaments[0].value))
-      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournaments[0].value as string], userId}))
+    if (tournamentsRegistered.length > 0) {
+      dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
+      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0]?.value as string], userId}))
     }
   }, [])
-console.log("filters.tournamentSelected", filters.tournamentSelected)
+console.log("tournamentsAdmin", tournamentsAdmin)
   return <ResponsiveContainer>
           <Flex css={{ flexDirection: 'column', width: "100%" }}>
             <DropdownWithLabel
               labelText="typeOfGame"
               key="gameType"
-              items={tournaments}
+              items={tournamentsRegistered}
               selectedItem={filters.tournamentSelected}
               placeholder="Select tournament"
               height="270px"
@@ -245,15 +246,23 @@ export async function getServerSideProps({ req, res }: ServerType) {
   const host = req.headers['host']
   const baseUrl = `${protocol}://${host}`
 
-  const response = await axios.get(
-    `${baseUrl}/api/game/tournaments?id=${payload?.tournaments.join(',')}`
-  )
+  const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered)
+  // payload?.tournamentsRegistered
+  const response = payload?.tournamentsAdmin ? await axios.get(
+    `${baseUrl}/api/game/tournaments?id=${tournamentsConcatArray?.join(',')}`
+  ) : []
 
-  const leagueTypes: DropdownItemType[] = response.data?.map((item: TournamentsType) => ({
+  const leagueTypesAdmin: DropdownItemType[] = response?.data?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id)).map((item: TournamentsType) => ({
     value: item.id.toString(),
     text: item.tournament_name,
   })) || []
 
+  const leagueTypesRegistered: DropdownItemType[] = response?.data?.filter((item: TournamentsType) => payload?.tournamentsRegistered.includes(item.id)).map((item: TournamentsType) => ({
+    value: item.id.toString(),
+    text: item.tournament_name,
+  })) || []
+
+console.log("payload", payload, leagueTypesAdmin, leagueTypesRegistered)
   // if (payload?.role !== userRoles.SUPERADMIN) {
   //   return {
   //     redirect: {
@@ -262,7 +271,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
   //     },
   //   };
   // }
-  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: leagueTypes, userId: payload?.id } };
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: leagueTypesRegistered, tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
 export default Schedule
