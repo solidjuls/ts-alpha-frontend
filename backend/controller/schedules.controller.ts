@@ -48,15 +48,19 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
       due_date: 'asc'
     },
     where: {
-      OR: [
+      AND: [
         {
           tournaments_id: {
             in: tournament?.map(Number),
-          }
+          },
         },
-        { usa_player_id: userId },
-        { ussr_player_id: userId }
-      ]
+        {
+          OR: [
+            { usa_player_id: userId },
+            { ussr_player_id: userId },
+          ],
+        },
+      ],
     }
   })
 

@@ -5,6 +5,9 @@ import ReplacePlayers from './ReplacePlayers';
 import AddNewSchedule from './AddNewSchedule';
 import CsvUploadButton from './CsvButtonUpload';
 import { TournamentsType } from 'types/game.types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from 'redux/store';
+import { setAdminView } from "../../redux/scheduleSlice";
 
 const Panel = styled('div', {
   padding: '16px',
@@ -20,13 +23,18 @@ interface ScheduleFilterProps {
 
 const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
   const [checked, setChecked] = React.useState(true);
-
+  const dispatch = useDispatch<AppDispatch>();
+  const { filters } = useSelector(
+    (state: RootState) => state.scheduleList,
+  );
+  
   return (
     <div>
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
       {checked && (
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
+          {!noSchedule && <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />}
           {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
           {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />}
         </Panel>

@@ -9,6 +9,7 @@ interface ScheduleState {
   error: string | null;
   filters: {
     tournamentSelected: string;
+    adminView: boolean;
     invalidateCache: boolean
   };
   modeUI: 'ADMIN' | 'SUPER_ADMIN' | 'PLAYER_VIEW';
@@ -24,6 +25,7 @@ const initialState: ScheduleState = {
   error: null,
   filters: {
     tournamentSelected: "",
+    adminView: false,
     invalidateCache: false
   },
   currentPage: 1,
@@ -45,7 +47,7 @@ export const fetchScheduleList = createAsyncThunk(
     const URLparams = new URLSearchParams();
     if (userId) URLparams.append("uid", userId);
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
-console.log("fetchScheduleList", tournaments)
+console.log("fetchScheduleList", tournaments, state.scheduleList.filters.adminView)
     // isSuperAdmin & tournament filter selected
     const response = await getAxiosInstance().get(
       `/api/schedule?${URLparams.toString()}`,
@@ -66,6 +68,10 @@ const listSlice = createSlice({
       state.currentPage = 1;
       state.filters.invalidateCache = state.filters.tournamentSelected !== action.payload;
       state.filters.tournamentSelected = action.payload;
+    },
+    setAdminView: (state, action) => {
+      state.filters.invalidateCache = state.filters.adminView !== action.payload;
+      state.filters.adminView = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -90,6 +96,7 @@ const listSlice = createSlice({
 
 export const {
   setTournamentFilter,
+  setAdminView
 } = listSlice.actions;
 
 export default listSlice.reducer;
