@@ -42,7 +42,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
 // bg={color} px={3} py={1} borderRadius="md".   gap={2}
   const renderLabel = (color: string) => (
     <Box>
-      <Span>{formatDate(new Date(dueDate), 'yyyy/MM/dd')}</Span>
+      <Span css={{ margin: "0 4px 0 4px" }}>{formatDate(new Date(dueDate), 'yyyy/MM/dd')}</Span>
     </Box>
   );
 
