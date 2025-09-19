@@ -1,29 +1,19 @@
 import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
+import {  ResultsStyleWrapper, UnstyledLink } from "components/Schedule/Schedule.styles";
 import { ServerType } from "types/types";
-import { Flex, Form, Span } from "components/Atoms";
+import Text from "components/Text";
+import { Box, Flex, Form, Span } from "components/Atoms";
 import { EditTextComponent } from "components/EditFormComponents";
 import { Button } from "components/Button";
 import { TournamentsType } from "types/game.types";
 import { styled } from "stitches.config";
 import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { Checkbox } from "components/Checkbox";
-import Modal from "components/Modal";
 import Legend from "./Legend";
-
-const DeleteIcon = styled(Cross2Icon, {
-  color: "red",
-  cursor: "pointer",
-  width: "20px",
-  height: "20px",
-  "&:hover": {
-    opacity: 0.7,
-  },
-});
 
 const formStyles = {
   alignItems: "center",
@@ -37,43 +27,16 @@ const formStyles = {
   },
 };
 
-// Individual cell
-const UpdateCell = styled("div", {
-  // backgroundColor: '$hover',
-  // borderRadius: '$medium',
-  position: "relative",
+const TournamentNameRow = styled("div", {
   display: "flex",
-  flex: "1 1 50%",
-  justifyContent: "center",
+  flexDirection: "column",
+  width: '100%',
+  padding: "4px",
   margin: "4px",
-  alignItems: "center",
-  color: "$text",
-  fontWeight: "bold",
-  cursor: "pointer",
-  transition: "background-color 0.3s, transform 0.2s",
-
-  "&:hover": {
-    transform: "scale(1.05)",
-  },
-});
-
-const Container = styled("div", {
-  width: "600px",
-  height: "500px",
-  overflowY: "scroll",
-  backgroundColor: "$background",
-  border: "1px solid $gray500",
-  borderRadius: "4px",
-  padding: "$medium",
-});
-
-const TournamentNameCell = styled("div", {
-  padding: "8px",
-  color: "$text",
-  borderRadius: "$medium",
-  userSelect: "none",
-  transition: "background-color 0.2s",
-  flex: "1 1 50%",
+  borderWidth: "1px",
+  borderRadius: "6px",
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
   variants: {
     status: {
       closed: {
@@ -82,10 +45,10 @@ const TournamentNameCell = styled("div", {
       open: {
         backgroundColor: "$greenAlpha",
       },
-      ongoing: {
+      registrationOpen: {
         backgroundColor: "$yellowAlpha",
       },
-      finished: {
+      upcoming: {
         backgroundColor: "$blueAlpha",
       },
     },
@@ -140,6 +103,41 @@ const useTournamentState = () => {
   };
 };
 
+type TournamentStatusKey = keyof typeof tournamentStatus;
+const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (statusId) => {
+  return (Object.keys(tournamentStatus) as TournamentStatusKey[])
+    .find((key) => tournamentStatus[key] === statusId) || "closed";
+};
+
+const PlayerInfoBox = ({
+  tournamentName,
+  tournamentId,
+  status
+}) => {
+  return (
+    <UnstyledLink href={`/tournaments/${tournamentId}`} css={{ display: "flex", flexDirection: "row" }}>
+      <Box
+        css={{
+          display: "flex",
+          margin: "8px",
+          flexDirection: "row",
+          lineHeight: 1,
+          alignItems: "center",
+          width: '100%',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Text fontSize="medium">
+          {tournamentName}
+        </Text>
+        <Text fontSize="medium">
+          {status}
+        </Text>
+      </Box>
+    </UnstyledLink>
+  );
+};
+
 const Tournaments = () => {
   const { data, setData, isLoading, all, setAll, closed, setClosed, open, setOpen, refetch } =
     useTournamentState();
@@ -147,55 +145,15 @@ const Tournaments = () => {
 
   // if (isLoading) return <Spinner size="3" />;
 
-  const handleDelete = async (tournament: TournamentsType) => {
-    if (tournament.status_id === tournamentStatus.new) {
-      const resp = await getAxiosInstance().delete("/api/game/tournaments", {
-        params: { id: tournament.id.toString() },
-      });
-      if (resp.status === 200) {
-        await clearAllCache("tournaments");
-        await refetch();
-      }
-    }
-  };
-
   const addNewTournament = async () => {
     if (tournamentName) {
       const resp = await getAxiosInstance().patch("/api/game/tournaments", {
         name: tournamentName,
-        status: 5,
+        status: 4,
       });
       if (resp.status === 200) {
         setData((prevState) => [...prevState, resp.data]);
       }
-    }
-  };
-
-  const onStatusChange = async (value: string, tournament: TournamentsType) => {
-    const status =
-      value === tournamentStatus.closed.toString() || value === tournamentStatus.new.toString()
-        ? tournamentStatus.open.toString()
-        : tournamentStatus.closed.toString();
-    const statusName = Object.entries(tournamentStatus).find(
-      ([_, v]) => v.toString() === status,
-    )?.[0];
-
-    if (
-      window &&
-      !window.confirm(
-        `You want to change the status of ${tournament.tournament_name} to ${statusName}. Are you sure?`,
-      )
-    ) {
-      return;
-    }
-
-    const resp = await getAxiosInstance().post("/api/game/tournaments", {
-      id: tournament.id,
-      status,
-    });
-    if (resp.status === 200) {
-      await clearAllCache("tournaments");
-      await refetch();
     }
   };
 
@@ -222,25 +180,14 @@ const Tournaments = () => {
         <Checkbox text="Closed" onCheckedChange={() => setClosed(!closed)} checked={closed} />
         <Checkbox text="Open" onCheckedChange={() => setOpen(!open)} checked={open} />
       </Flex>
-      <Container>
-        {data?.map((item, index) => {
+      <ResultsStyleWrapper>
+        {data?.map((item) => {
           return (
-            <Flex key={index} css={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <TournamentNameCell status={getTournamentStatusNames(item.status_id)}>
-                <Flex css={{ flexDirection: "row", alignItems: "center" }}>
-                  {item.tournament_name}
-                  {item.status_id === tournamentStatus.new && (
-                    <DeleteIcon onClick={() => handleDelete(item)} />
-                  )}
-                </Flex>
-              </TournamentNameCell>
-              <UpdateCell onClick={() => onStatusChange(item.status_id?.toString(), item)}>
-                <Span>{getTournamentStatusNames(item.status_id)}</Span>
-              </UpdateCell>
-            </Flex>
-          );
-        })}
-      </Container>
+            <TournamentNameRow status={getVariant(item.status_id)}>
+              <PlayerInfoBox tournamentId={item.id} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)}/>
+            </TournamentNameRow>
+          )})}
+      </ResultsStyleWrapper>
     </Form>
   );
 };
