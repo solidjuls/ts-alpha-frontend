@@ -32,6 +32,12 @@ export const PlayerInfo = styled("div", {
       default: {
         backgroundColor: "white",
       },
+      firstAlert: {
+        backgroundColor: 'rgba(255, 165, 0, 0.45)'
+      },
+      secondAlert: {
+        backgroundColor: 'rgba(255, 165, 0, 0.85)'
+      },
       duedate: {
         backgroundColor: "rgba(255, 0, 0, 0.4)",
       },

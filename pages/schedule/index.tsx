@@ -108,29 +108,35 @@ const PlayerInfoBox = ({
   );
 };
 
-const isDueInDays = (date: string, days: number): boolean => {
+const isDueInDays = (date: string): number => {
   const target = new Date(date).getTime();
   const now = Date.now();
 
-  const diffMs = target - now;
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-  return diffDays <= days;
+  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 };
 
-type VariantType = (schedule: ScheduleType) => "played" | "duedate" | "default"
+type VariantType = (schedule: ScheduleType) => 
+  "played" | "duedate" | "default" | "firstAlert" | "secondAlert";
 
 const getVariant: VariantType = (schedule) => {
   if (schedule.gameWinner && schedule.gameDate) {
-    return "played"
-  } else if (isDueInDays(schedule.dueDate, 30)) {
-    return "duedate"
+    return "played";
   }
 
-  return "default"
-}
+  const daysLeft = isDueInDays(schedule.dueDate);
 
-const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
+  if (daysLeft <= 0) {
+    return "duedate";
+  } else if (daysLeft >= 1 && daysLeft <= 14) {
+    return "secondAlert";
+  } else if (daysLeft >= 15 && daysLeft <= 30) {
+    return "firstAlert";
+  }
+
+  return "default";
+};
+
+const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType }) => {
   return (
     <Flex>
     <PlayerInfo status={getVariant(schedule)}>
@@ -162,14 +168,14 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
     </PlayerInfo>
     <DueDateCell>
       <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id}
-        admin={true}
+        admin={isAdmin}
         gamePlayed={false} />
     </DueDateCell>
     </Flex>
   );
 };
 
-const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
+const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -183,7 +189,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-        <ScheduleRow key={index} schedule={schedule} />
+        <ScheduleRow key={index} schedule={schedule} isAdmin={isAdmin} />
       ))}
     </ResultsStyleWrapper>
   );
@@ -195,24 +201,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
     (state: RootState) => state.scheduleList,
   );
   
-  // const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
-  //   TournamentsType[]
-  // >({
-  //   url: `}`,
-  // });
-
-  // useEffect(() => {
-  //   if (!loadingTournaments && filters.tournamentSelected) {
-      
-  //   }
-  //   if (!filters.tournamentSelected) {
-  //     dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
-  //   }
-  // }, [filters.tournamentSelected, loadingTournaments])
-
-  // if (status === "loading" || loadingTournaments || !items) return null
-
-  // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
   useEffect(() => {
     if (tournamentsRegistered.length > 0) {
       dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
@@ -234,8 +222,8 @@ console.log("tournamentsAdmin", tournamentsAdmin)
                 dispatch(fetchScheduleList({isSuperAdmin, tournaments: [value], userId}))
               }}
             />
-            <ScheduleFilter userAdminTournaments={filters.tournamentSelected} noSchedule={items?.length === 0} />
-            <SchedulePanel data={items} />
+            {tournamentsAdmin.length > 0 && <ScheduleFilter userAdminTournaments={tournamentsAdmin.length > 0} noSchedule={items?.length === 0} />}
+            <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0}/>
           </Flex>
         </ResponsiveContainer>
 }
