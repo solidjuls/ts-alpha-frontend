@@ -43,7 +43,7 @@ const TournamentRegistration = () => {
   }
 
   if (isLoading) return;
-
+console.log("data", data)
   return (
     <DetailContainer>
       <Box

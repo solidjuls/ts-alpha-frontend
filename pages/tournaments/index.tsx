@@ -167,11 +167,10 @@ const Tournaments = () => {
           onInputValueChange={(value) => setTournamentName(value)}
           css={{ width: "300px" }}
         />
-        <Button
-          style={{ height: "35px", marginBottom: "0", alignSelf: "flex-end" }}
-          onClick={addNewTournament}
-        >
-          Add
+        <Button css={{ width: "150px", margin: "8px" }}>
+          <UnstyledLink href="/tournament-create">
+            Create new tournament
+          </UnstyledLink>
         </Button>
       </Flex>
       <Legend />

@@ -36,8 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case "PATCH": {
-        const { name, status } = req.body;
-
+        const { name, status, admins, startingDate, description } = req.body;
+        console.log("name, status, admins, startingDate, description", name, status, admins, startingDate, description)
         if (!name || !status) {
           return res.status(400).json({ error: "Missing name or status in request body" });
         }

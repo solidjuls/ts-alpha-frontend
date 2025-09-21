@@ -42,5 +42,10 @@ module.exports = {
     country: "Federation",
 
     scheduleId: "Schedule id",
+    tournamentName: "Tournament Name",
+    statusId: 'Status',
+    admins: "Administrators",
+    tournamentDescription: "Description",
+    startingDate: "Starting Date"
   },
 };
