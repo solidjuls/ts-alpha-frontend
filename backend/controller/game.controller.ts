@@ -200,6 +200,19 @@ export const getTournamentsById = async (ids: string[]) => {
       id: true,
       tournament_name: true,
       status_id: true,
+      description: true,
+      starting_date: true,
+      tournament_admins: {
+        select: {
+          users: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true
+            }
+          }
+        }
+      },
       created_at: true,
     },
     where: {
@@ -221,13 +234,31 @@ export const removeTournament = async (id: string) => {
   });
 };
 
-export const addTournament = async (tournamentName: string, status: TournamentStatusType) => {
-  return await prisma.tournaments.create({
+interface TournamentDBType {
+  tournamentName: string
+  status: TournamentStatusType
+  admins: number
+  startingDate: Date
+  description: string
+}
+
+export const addTournament = async ({ tournamentName, status, admins, startingDate, description }: TournamentDBType) => {
+  const newTournament = await prisma.tournaments.create({
     data: {
       tournament_name: tournamentName,
       status_id: Number(status),
+      starting_date: startingDate,
+      description: description,
     },
   });
+  console.log("newTournament", newTournament)
+  
+  await prisma.tournament_admins.create({
+    data: {
+      tournamentId: newTournament.id,
+      userId: admins
+    }
+  })
 };
 
 export const updateTournament = async (id: number, status: TournamentStatusType) => {

@@ -17,7 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (typeof id === "string") {
           console.log("(userId, tournamentId) ", id)
           const tournament = await getTournamentsById(id.split(','));
-          return res.status(200).json(tournament);
+          const tournamentWithIdParsed = JSON.stringify(tournament, (key, value) =>
+            typeof value === "bigint" ? value.toString() : value,
+          );
+          return res.status(200).json(JSON.parse(tournamentWithIdParsed));
         }
 
         const tournaments = await getTournamentsByStatus(status);
@@ -41,8 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!name || !status) {
           return res.status(400).json({ error: "Missing name or status in request body" });
         }
-
-        const created = await addTournament(name, status);
+        const startingDateFormatted = startingDate ? new Date(startingDate) : startingDate
+        const created = await addTournament({ tournamentName: name, status, admins, startingDate: startingDateFormatted, description });
         return res.status(200).json(created);
       }
 
