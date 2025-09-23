@@ -128,10 +128,10 @@ const AboutPage = () => (
             (formerly the Reddit tournament).
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
+            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the top players competing for the championship at the end.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round.
+            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
           </li>
           <li>
             <strong>World Cup</strong> - The largest weekend tournament of the year, featuring an
