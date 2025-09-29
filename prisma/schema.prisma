@@ -61,7 +61,7 @@ model game_results {
   users_game_results_usa_player_idTousers  users             @relation("game_results_usa_player_idTousers", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_usa_player_id_foreign")
   users_game_results_ussr_player_idTousers users             @relation("game_results_ussr_player_idTousers", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "game_results_ussr_player_id_foreign")
   ratings_history                          ratings_history[]
-  schedule                                 schedule[]
+  schedule                                 schedule?
 
   @@index([end_mode], map: "game_results_end_mode_index")
   @@index([end_turn], map: "game_results_end_turn_index")
@@ -263,7 +263,7 @@ model schedule {
   usa_player_id                        BigInt?       @db.UnsignedBigInt
   ussr_player_id                       BigInt?       @db.UnsignedBigInt
   due_date                             DateTime      @db.Date
-  game_results_id                      BigInt?       @db.UnsignedBigInt
+  game_results_id                      BigInt?       @unique(map: "unique_game_results_id") @db.UnsignedBigInt
   created_at                           DateTime?     @default(now()) @db.Timestamp(0)
   updated_at                           DateTime?     @default(now()) @db.Timestamp(0)
   tournaments                          tournaments   @relation(fields: [tournaments_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_1")
@@ -271,7 +271,6 @@ model schedule {
   users_schedule_ussr_player_idTousers users?        @relation("schedule_ussr_player_idTousers", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_3")
   game_results                         game_results? @relation(fields: [game_results_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_4")
 
-  @@index([game_results_id], map: "game_results_id")
   @@index([tournaments_id], map: "tournaments_id")
   @@index([usa_player_id], map: "usa_player_id")
   @@index([ussr_player_id], map: "ussr_player_id")

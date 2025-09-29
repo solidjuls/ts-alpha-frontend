@@ -2,6 +2,7 @@ import { prisma, PrismaTransactionType } from "backend/utils/prisma";
 import { BiggerLowerValue, GameRecreate, GameWinner } from "types/game.types";
 import { getGameByGameId } from "./game.controller";
 import { getTopNRatedPlayers, getTopNRatedPlayersWithFilter } from "@prisma/client/sql";
+import { updateScheduleByResultId } from "./schedules.controller";
 
 const DEFAULT_RATING = 5000;
 const FRIENDLY_GAME = "47"
@@ -357,7 +358,9 @@ export const deleteGameRatings = async (input: GameRecreate, emailReporter: stri
         const oldGameDate = await getGameByGameId(input.oldId);
         if (oldGameDate) {
           await addGameToLogTable(prismaTransaction, oldGameDate, emailReporter)
+          await updateScheduleByResultId({ gameResultId: Number(oldGameDate.id) })
         }
+
         console.log("oldGameDate", oldGameDate);
         // we select all games with date created_at >= oldId game
         const allGamesAffected = await prismaTransaction.game_results.findMany({

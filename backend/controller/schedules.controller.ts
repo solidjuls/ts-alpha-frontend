@@ -107,6 +107,18 @@ export const validateScheduleIntegrity = async ({ usaPlayerId, id, ussrPlayerId,
   return schedule
 }
 
+export const updateScheduleByResultId = async ({ gameResultId } : { gameResultId: number }) => {
+  const updated = await prisma.schedule.update({
+    data: {
+      game_results_id: null,
+    },
+    where: {
+      game_results_id: gameResultId
+    }
+  })
+  return updated
+}
+
 export const updateSchedule = async ({ gameResultId, scheduleId, dueDate } : { gameResultId?: number, scheduleId: number, dueDate?: Date}) => {
   const updated = await prisma.schedule.update({
     data: {

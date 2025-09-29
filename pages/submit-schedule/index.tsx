@@ -214,7 +214,7 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
             },
           },
         );
-        //router.push("/schedule");
+        router.push("/schedule");
       } catch (e) {
         console.log("error submitform", e?.response?.data?.message);
         setErrorMsg(e?.response?.data?.message || "There was an error submitting the result");
