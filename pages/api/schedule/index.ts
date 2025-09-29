@@ -66,12 +66,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const updated = await replaceSchedulePlayers(pold, pnew, Number(t))
     res.status(200).json(updated);
   } else if (req.method === 'GET') {
-    console.log("query", req.query)
+    const { p = 1, pso = 20, a } = req.query;
     const userId = req.query?.uid as string
     const tournament = req.query?.t
     const user = req.query?.u
 
-    const response = await getSchedules({ userId: Number(userId), tournament: tournament?.split(','), user })
-    res.status(200).json(response);
+    const { results, totalRows } = await getSchedules({ userId: Number(userId), tournament: tournament?.split(','), user, page: Number(p), pageSize: Number(pso), adminView: a === '1' })
+    res.status(200).json({
+      results,
+      totalRows
+    });
   }
 }

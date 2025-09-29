@@ -11,7 +11,7 @@ export const ResultsStyleWrapper = styled("div", {
   marginBottom: "12px",
   width: "100%",
   maxWidth: "1000px",
-  height: "500px",
+  minHeight: "600px",
 });
 
 export const PlayerInfo = styled("div", {

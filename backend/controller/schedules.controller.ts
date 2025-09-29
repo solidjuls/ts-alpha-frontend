@@ -1,7 +1,31 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId, tournament, user } : { userId: number, tournament: string[] | undefined, user: string | undefined }) => {
+export const getSchedules = async ({ userId, tournament, user, page, pageSize, adminView } : { userId: number, tournament: string[] | undefined, user: string | undefined, page: number, pageSize: number, adminView: boolean }) => {
+    pageSize = pageSize || 20;
+
+  const skip = (page - 1) * pageSize;
+  const where: any = {
+    AND: [
+      {
+        tournaments_id: {
+          in: tournament?.map(Number),
+        },
+      },
+    ],
+  };
+
+  if (!adminView) {
+    where.AND.push({
+      OR: [
+        { usa_player_id: userId },
+        { ussr_player_id: userId },
+      ],
+    });
+  }
+ const totalRows = await prisma.schedule.count({
+    where,
+  });
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -46,33 +70,21 @@ export const getSchedules = async ({ userId, tournament, user } : { userId: numb
       },
     },
     orderBy: [
-    {
-      game_results_id: {
-        sort: 'asc',
-      },
-    },
+    // {
+    //   game_results_id: {
+    //     sort: 'asc',
+    //   },
+    // },
     {
       due_date: 'asc',
     },
   ],
-    where: {
-      AND: [
-        {
-          tournaments_id: {
-            in: tournament?.map(Number),
-          },
-        },
-        {
-          OR: [
-            { usa_player_id: userId },
-            { ussr_player_id: userId },
-          ],
-        },
-      ],
-    }
+    where,
+    skip,
+    take: pageSize,
   })
 
-  return scheduleResults.map(result => ({
+  const results = scheduleResults.map(result => ({
     gameWinner: result.game_results?.game_winner || null,
     gameDate: result.game_results?.game_date || null,
     dueDate: result.due_date,
@@ -88,6 +100,9 @@ export const getSchedules = async ({ userId, tournament, user } : { userId: numb
     tournamentName: result.tournaments.tournament_name,
     tournamentId: result.tournaments.id.toString()
   }))
+  return {
+    results, totalRows
+  }
 };
 
 export const validateScheduleIntegrity = async ({ usaPlayerId, id, ussrPlayerId, gameCode, gameType } : { usaPlayerId: number, id: number, ussrPlayerId: number, gameCode: string, gameType: number }) => {

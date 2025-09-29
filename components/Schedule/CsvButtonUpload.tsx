@@ -12,20 +12,20 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
   const [status, setStatus] = useState("");
 
   const completeCSVSchema = (results) => {
-    const expectedHeaders = [
-      "due_date",
-      "game_code",
-      "tournaments_id",
-      "usa_player_email",
-      "ussr_player_email"
-    ];
-    const headers = results.meta.fields;
+    // const expectedHeaders = [
+    //   "due_date",
+    //   "game_code",
+    //   "tournaments_id",
+    //   "usa_player_email",
+    //   "ussr_player_email"
+    // ];
+    // const headers = results.meta.fields;
 
-    const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
-    if (!isHeaderValid) {
-      setStatus("Invalid schema! Expected headers:", expectedHeaders, "but got:", headers);
-      return;
-    }
+    // const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
+    // if (!isHeaderValid) {
+    //   setStatus("Invalid schema! Expected headers:", expectedHeaders, "but got:", headers);
+    //   return;
+    // }
 
     let valid = true;
     results.data.forEach((row, i) => {
@@ -35,7 +35,7 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
         valid = false;
       }
       // game_code should be 4 digits
-      if (!/^\d{4}$/.test(row.game_code)) {
+      if (!/^[A-Za-z0-9]{4}$/.test(row.game_code)) {
         setStatus(`Row ${i + 2}: Invalid game_code ${row.game_code}`);
         valid = false;
       }
@@ -80,7 +80,7 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
         {
             data: {
                 file,
-                tournament
+                tournament: 303
             }
         },
     )

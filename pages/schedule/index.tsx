@@ -29,6 +29,8 @@ import { UserType } from "types/user.types";
 import { Input } from "components/Input";
 import TextComponent from "pages/submitform/TextComponent";
 import { getWinnerText } from "utils/games";
+import { Pagination } from "components/Pagination";
+import { setCurrentPage } from "../../redux/scheduleSlice";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
@@ -218,14 +220,25 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   
   useEffect(() => {
     if (tournamentsRegistered.length > 0) {
-      dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
+      console.log("asas", currentPage)
+      // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
       dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0]?.value as string], userId}))
     }
-  }, [])
+  }, [filters, currentPage, dispatch]);
+
+  if (status === "loading") return null;
+
+    const onPageChange = async (page: string) => {
+      dispatch(setCurrentPage(page));
+    };
 
   return <>
           <h1>My Schedule</h1>
-          <ResponsiveContainer>
+          <ResponsiveContainer
+            direction={{
+              "@initial": "row",
+              "@sm": "column",
+            }}>
             <Flex css={{ flexDirection: 'column', width: "100%", gap: "4px", marginTop: '16px' }}>
               {/* <Flex css={{ flexDirection: 'row', width: "100%", gap: "4px" }}>
                 <DropdownWithLabel
@@ -244,6 +257,11 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
               
               {tournamentsAdmin.length > 0 && <ScheduleFilter userAdminTournaments={tournamentsAdmin.length > 0} noSchedule={items?.length === 0} />}
               <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0}/>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
             </Flex>
           </ResponsiveContainer>
         </>

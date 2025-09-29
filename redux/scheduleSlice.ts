@@ -60,11 +60,15 @@ export const fetchScheduleList = createAsyncThunk(
   async (params: FetchScheduleParams, { getState }) => {
     const { isSuperAdmin, tournaments, userFilter, userId } = params
     const state = getState() as RootState;
-    
+    const { currentPage, totalPages, filters } = state.scheduleList;
+
     const URLparams = new URLSearchParams();
     if (userId) URLparams.append("uid", userId);
+    if (currentPage) URLparams.append("p", currentPage.toString());
+    URLparams.append("pso", "20");
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
-    
+    if (filters.adminView) URLparams.append("a", filters.adminView ? '1' : '0');
+
     await clearAllCache("schedule-list");
     // isSuperAdmin & tournament filter selected
     const response = await getAxiosInstance().get(
@@ -73,8 +77,8 @@ export const fetchScheduleList = createAsyncThunk(
     );
 
     return {
-      items: response.data,
-      // totalPages: Math.ceil(response.data.totalRows / 20),
+      items: response.data.results,
+      totalPages: Math.ceil(response.data.totalRows / 20),
     };
   },
 );
@@ -115,7 +119,8 @@ const listSlice = createSlice({
 
 export const {
   setTournamentFilter,
-  setAdminView
+  setAdminView,
+  setCurrentPage
 } = listSlice.actions;
 
 export default listSlice.reducer;

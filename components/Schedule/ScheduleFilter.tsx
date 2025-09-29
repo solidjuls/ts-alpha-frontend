@@ -48,8 +48,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
       {checked && (
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
-          {!noSchedule && <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />}
-          <UserTypeahead
+          <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />
+          {/* <UserTypeahead
             labelText="players"
             selectedItem={filters.playerToDelete}
             // error={form.admins.error}
@@ -64,7 +64,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
             }
           />
           {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
-          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />}
+          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />} */}
         </Panel>
       )}
     </div>
