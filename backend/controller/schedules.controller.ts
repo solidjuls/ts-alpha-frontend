@@ -90,6 +90,23 @@ export const getSchedules = async ({ userId, tournament, user } : { userId: numb
   }))
 };
 
+export const validateScheduleIntegrity = async ({ usaPlayerId, id, ussrPlayerId, gameCode, gameType } : { usaPlayerId: number, id: number, ussrPlayerId: number, gameCode: string, gameType: number }) => {
+  const schedule = await prisma.schedule.findFirst({
+    select: {
+      game_results_id: true,
+      id: true,
+    },
+    where: {
+      id: id,
+      usa_player_id: BigInt(usaPlayerId),
+      ussr_player_id: BigInt(ussrPlayerId),
+      game_code: gameCode,
+      tournaments_id: gameType,
+    }
+  })
+  return schedule
+}
+
 export const updateSchedule = async ({ gameResultId, scheduleId, dueDate } : { gameResultId?: number, scheduleId: number, dueDate?: Date}) => {
   const updated = await prisma.schedule.update({
     data: {

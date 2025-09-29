@@ -1,4 +1,4 @@
-import { addSchedulePlayers, deleteSchedulePlayer, getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
+import { addSchedulePlayers, deleteSchedulePlayer, getSchedules, replaceSchedulePlayers, updateSchedule, validateScheduleIntegrity } from 'backend/controller/schedules.controller';
 import { submit } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -26,9 +26,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: `Due date for schedule ${schedules.id} updated successfully` });
         return
       } else {
+        const validateSchedule = await validateScheduleIntegrity({ usaPlayerId: Number(req.body.data.usaPlayerId), id: Number(req.body.data.id), ussrPlayerId: Number(req.body.data.ussrPlayerId), gameCode: req.body.data.gameCode, gameType: Number(req.body.data.gameType) })
+
+        if (validateSchedule?.game_results_id) {
+          res.status(400).json({ message: `Schedule ${schedules.id} already submitted` });
+          return
+        }
+        if (!validateSchedule?.id) {
+          res.status(400).json({ message: `Schedule not found` });
+          return
+        }
         const submitResponse = await submit(req.body.data)
         const scheduleResponse = await updateSchedule({gameResultId: submitResponse.id, scheduleId: Number(schedules.id)})
         console.log("submitResponse", scheduleResponse)
+
+        
       }
     
       res.status(200).json({ message: 'Schedules updated successfully' });

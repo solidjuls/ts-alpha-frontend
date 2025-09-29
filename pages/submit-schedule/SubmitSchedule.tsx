@@ -179,7 +179,7 @@ const SubmitSchedule = ({
           css={{ width: "200px", fontSize: "18px" }}
           onClick={onSubmit}
         >
-          {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
+          {isSubmitting ? <Spinner size="3" /> : "Submit"}
         </Button>
       </Box>
     </Form>
