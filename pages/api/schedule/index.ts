@@ -1,4 +1,4 @@
-import { addSchedulePlayers, getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
+import { addSchedulePlayers, deleteSchedulePlayer, getSchedules, replaceSchedulePlayers, updateSchedule } from 'backend/controller/schedules.controller';
 import { submit } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from 'next';
 
@@ -42,16 +42,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const updated = await addSchedulePlayers(usa, ussr, Number(t), d, gc)
     res.status(200).json(updated);
   } else if (req.method === 'PATCH') {
-    const {pold, pnew, t} = req.body.data;
-    console.log("pold, pnew, t", pold, pnew, t)
+    const {pold, pnew, t, u} = req.body.data;
+    console.log("pold, pnew, t", pold, pnew, t, u)
+
+    if (u) {
+      const updated = await deleteSchedulePlayer(Number(u), Number(t))
+      res.status(200).json(`${updated}`);
+      return
+    }
+
     const updated = await replaceSchedulePlayers(pold, pnew, Number(t))
     res.status(200).json(updated);
   } else if (req.method === 'GET') {
     console.log("query", req.query)
     const userId = req.query?.uid as string
     const tournament = req.query?.t
+    const user = req.query?.u
 
-    const response = await getSchedules({ userId: Number(userId), tournament: tournament?.split(',') })
+    const response = await getSchedules({ userId: Number(userId), tournament: tournament?.split(','), user })
     res.status(200).json(response);
   }
 }

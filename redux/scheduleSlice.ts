@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import getAxiosInstance from "utils/axios";
+import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { MultiSelectItemType } from "types/types";
 
 interface ScheduleState {
@@ -35,22 +35,41 @@ const initialState: ScheduleState = {
 interface FetchScheduleParams {
   isSuperAdmin: boolean;
   tournaments: string[];
+  userFilter: string
   userId: string
 }
+
+export const deletePlayerFromSchedule = createAsyncThunk(
+  "list/deletePlayerFromSchedule",
+  async (params: FetchScheduleParams, { getState }) => {
+    const { isSuperAdmin, userFilter, userId } = params
+    const URLparams = new URLSearchParams();
+    if (userFilter) URLparams.append("u", userFilter);
+    const response = await getAxiosInstance().patch(
+      `/api/schedule?${URLparams.toString()}`,
+    );
+    return {
+      items: response.data,
+      // totalPages: Math.ceil(response.data.totalRows / 20),
+    };
+  }
+)
 
 export const fetchScheduleList = createAsyncThunk(
   "list/fetchScheduleList",
   async (params: FetchScheduleParams, { getState }) => {
-    const { isSuperAdmin, tournaments, userId } = params
+    const { isSuperAdmin, tournaments, userFilter, userId } = params
     const state = getState() as RootState;
     
     const URLparams = new URLSearchParams();
     if (userId) URLparams.append("uid", userId);
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
-console.log("fetchScheduleList", tournaments, state.scheduleList.filters.adminView)
+    
+    await clearAllCache("schedule-list");
     // isSuperAdmin & tournament filter selected
     const response = await getAxiosInstance().get(
       `/api/schedule?${URLparams.toString()}`,
+      { id: `schedule-list` },
     );
 
     return {

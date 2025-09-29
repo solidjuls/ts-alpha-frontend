@@ -260,15 +260,15 @@ model schedule {
   id                                   Int           @id @default(autoincrement())
   tournaments_id                       Int
   game_code                            String        @db.VarChar(100)
-  usa_player_id                        BigInt        @db.UnsignedBigInt
-  ussr_player_id                       BigInt        @db.UnsignedBigInt
+  usa_player_id                        BigInt?       @db.UnsignedBigInt
+  ussr_player_id                       BigInt?       @db.UnsignedBigInt
   due_date                             DateTime      @db.Date
   game_results_id                      BigInt?       @db.UnsignedBigInt
   created_at                           DateTime?     @default(now()) @db.Timestamp(0)
   updated_at                           DateTime?     @default(now()) @db.Timestamp(0)
   tournaments                          tournaments   @relation(fields: [tournaments_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_1")
-  users_schedule_usa_player_idTousers  users         @relation("schedule_usa_player_idTousers", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_2")
-  users_schedule_ussr_player_idTousers users         @relation("schedule_ussr_player_idTousers", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_3")
+  users_schedule_usa_player_idTousers  users?        @relation("schedule_usa_player_idTousers", fields: [usa_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_2")
+  users_schedule_ussr_player_idTousers users?        @relation("schedule_ussr_player_idTousers", fields: [ussr_player_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_3")
   game_results                         game_results? @relation(fields: [game_results_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "schedule_ibfk_4")
 
   @@index([game_results_id], map: "game_results_id")

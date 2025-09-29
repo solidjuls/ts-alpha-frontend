@@ -1,7 +1,7 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId, tournament } : { userId: number, tournament: string[] | undefined }) => {
+export const getSchedules = async ({ userId, tournament, user } : { userId: number, tournament: string[] | undefined, user: string | undefined }) => {
   const scheduleResults = await prisma.schedule.findMany({
     select: {
       game_results: {
@@ -12,6 +12,7 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
       },
       game_code: true,
       id: true,
+      game_results_id: true,
       due_date: true,
       tournaments: {
         select: {
@@ -44,9 +45,16 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
         },
       },
     },
-    orderBy: {
-      due_date: 'asc'
+    orderBy: [
+    {
+      game_results_id: {
+        sort: 'asc',
+      },
     },
+    {
+      due_date: 'asc',
+    },
+  ],
     where: {
       AND: [
         {
@@ -70,6 +78,7 @@ export const getSchedules = async ({ userId, tournament } : { userId: number, to
     dueDate: result.due_date,
     gameCode: result.game_code,
     id: result.id.toString(),
+    gameResultsId: result.game_results_id?.toString(),
     nameUsa: `${result.users_schedule_usa_player_idTousers.first_name} ${result.users_schedule_usa_player_idTousers.last_name}`,
     nameUssr: `${result.users_schedule_ussr_player_idTousers.first_name} ${result.users_schedule_ussr_player_idTousers.last_name}`,
     idUsa: result.users_schedule_usa_player_idTousers.id.toString(),
@@ -109,6 +118,29 @@ export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: strin
       game_results_id: null
     }
   })
+  return updated
+}
+
+export const deleteSchedulePlayer = async (playerId: number, tournamentId: number) => {
+  const updated = await prisma.schedule.updateMany({
+    where: {
+      tournaments_id: tournamentId,
+      usa_player_id: playerId,
+    },
+    data: {
+      usa_player_id: null,
+    },
+  });
+
+  await prisma.schedule.updateMany({
+    where: {
+      tournaments_id: tournamentId,
+      ussr_player_id: playerId,
+    },
+    data: {
+      ussr_player_id: null,
+    },
+  });
   return updated
 }
 

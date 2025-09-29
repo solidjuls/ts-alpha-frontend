@@ -25,6 +25,7 @@ module.exports = {
     greeting: "Hi",
 
     oldPlayer: "Player to be replaced",
+    players: "Players",
     newPlayer: "New Player",
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",

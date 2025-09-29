@@ -207,7 +207,7 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
           {
             cache: {
               update: {
-                "game-list": "delete",
+                "schedule-list": "delete",
               },
             },
           },
@@ -225,11 +225,11 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
     setForm((prevState: any) => ({
         ...prevState,
         gameType: {
-          value: tournaments?.id,
+          value: tournaments?.[0].id,
           error: false,
         }
       }));
-    }, [tournaments?.id])
+    }, [tournaments])
 
   if (loadingTournaments || loadingUsers) return null;
 
@@ -237,7 +237,7 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
     value: item.id,
     text: item.name,
   }));
-console.log("tournaments", tournaments)
+
   return (
     <SubmitSchedule
       role={role}
