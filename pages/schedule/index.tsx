@@ -222,7 +222,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   useEffect(() => {
     if (tournamentsRegistered?.length > 0) {
       // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
-      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0]?.value as string], userId}))
+      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0] as string], userId}))
     }
   }, [filters, currentPage, dispatch]);
 
@@ -273,6 +273,15 @@ export async function getServerSideProps({ req, res }: ServerType) {
   const host = req.headers['host']
   const baseUrl = `${protocol}://${host}`
 
+  if (!payload) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+
   const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered)
   // payload?.tournamentsRegistered
   const tournaments = payload?.tournamentsAdmin ? await axios.get(
@@ -285,20 +294,13 @@ export async function getServerSideProps({ req, res }: ServerType) {
   })) || []
 
   const tournamentsRegistered = await getTournamentsRegistered(payload?.mail)
-  const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
-    value: item.id.toString(),
-    text: item.tournament_name,
-  })) || []
-  
-  // if (payload?.role !== userRoles.SUPERADMIN) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: leagueTypesRegistered, tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
+  // const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
+  //   value: item.id.toString(),
+  //   text: item.tournament_name,
+  // })) || []
+  console.log("leagueTypesRegistered", tournamentsRegistered);
+
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
 export default Schedule
