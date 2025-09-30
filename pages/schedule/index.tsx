@@ -203,6 +203,16 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading 
     );
   }
 
+  if (data?.length === 0) {
+    return (
+      <Flex css={{ width: "100%" }}>
+        <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
+          You don't have a schedule available. Report your results using the submit form
+        </ResultsStyleWrapper>
+      </Flex>
+    );
+  }
+
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
