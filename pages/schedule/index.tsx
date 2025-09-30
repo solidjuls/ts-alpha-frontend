@@ -36,6 +36,7 @@ interface ScheduleProps {
   isSuperAdmin: boolean
   tournamentsAdmin: DropdownItemType[]
   tournamentsRegistered: DropdownItemType[]
+  isAdmin: boolean
   userId: string
 }
 
@@ -76,19 +77,13 @@ const PlayerInfoBox = ({
   nameUssr,
   countryUsa,
   countryUssr,
-  gameResultsId,
-  idUsa,
-  idUssr,
-  tournamentId,
-  gameCode,
   gameWinner,
-  id
 }: Pick<
   ScheduleType,
-  "nameUsa" | "gameResultsId" | "nameUssr" | "countryUsa" | "countryUssr" | "id" | "idUsa" | "idUssr" | "gameWinner" | "tournamentId" | "gameCode"
+  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner"
 >) => {
   return (
-    <UnstyledLink href={resolveLink({gameResultsId, id,idUsa,idUssr,tournamentId,gameCode})} css={{ display: "flex", flexDirection: "row" }}>
+    <Flex css={{ display: "flex", flexDirection: "row" }}>
       <Box
         css={{
           display: "flex",
@@ -119,7 +114,7 @@ const PlayerInfoBox = ({
           {nameUssr}
         </Text>
       </Box>
-    </UnstyledLink>
+    </Flex>
   );
 };
 
@@ -151,10 +146,11 @@ const getVariant: VariantType = (schedule) => {
   return "default";
 };
 
-const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType }) => {
+const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: boolean }) => {
   return (
     <Flex>
     <PlayerInfo status={getVariant(schedule)}>
+      <UnstyledLink href={resolveLink({gameResultsId: schedule.gameResultsId, id: schedule.id, idUsa: schedule.idUsa, idUssr: schedule.idUssr, tournamentId: schedule.tournamentId, gameCode: schedule.gameCode})} css={{ display: "flex", flexDirection: "column" }}>
       <Flex
         css={{
           display: "flex",
@@ -166,22 +162,16 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType }) => {
         <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
           {schedule.tournamentName}
         </Text>
-        {/* <Text fontSize="small">{dateFormat(new Date(schedule?.gameDate))}</Text> */}
       </Flex>
 
       <PlayerInfoBox
         gameWinner={schedule.gameWinner}
-        gameResultsId={schedule.gameResultsId}
         countryUsa={schedule.countryUsa}
         countryUssr={schedule.countryUssr}
         nameUsa={schedule.nameUsa}
         nameUssr={schedule.nameUssr}
-        gameCode={schedule.gameCode}
-        idUsa={schedule.idUsa}
-        idUssr={schedule.idUssr}
-        tournamentId={schedule.tournamentId}
-        id={schedule.id}
       />
+      </UnstyledLink>
     </PlayerInfo>
     <DueDateCell>
       <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id} gameDate={schedule.gameDate}
@@ -222,14 +212,14 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading 
   );
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId, usersFilter }) => {
+const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.scheduleList,
   );
-  
+
   useEffect(() => {
-    if (tournamentsRegistered.length > 0) {
+    if (tournamentsRegistered?.length > 0) {
       // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
       dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0]?.value as string], userId}))
     }
@@ -298,7 +288,6 @@ export async function getServerSideProps({ req, res }: ServerType) {
     text: item.tournament_name,
   })) || []
 
-console.log("payload", payload, leagueTypesAdmin, leagueTypesRegistered)
   // if (payload?.role !== userRoles.SUPERADMIN) {
   //   return {
   //     redirect: {
