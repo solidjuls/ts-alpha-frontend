@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["typedSql"]
-  engineType = "wasm"
+  engineType = "binary"
 }
 
 datasource db {
