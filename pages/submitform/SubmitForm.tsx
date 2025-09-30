@@ -158,7 +158,7 @@ const SubmitForm = ({
           inputValue={form.video1.value}
           placeholder="Link to the video..."
           error={form.video1.error}
-          css={{ width: "300px" }}
+          css={{ width: dropdownWidth }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         <Button

@@ -58,6 +58,9 @@ export const DueDateCell = styled("div", {
   borderRadius: "6px",
   border: "solid 1px $greyLight",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  '@media (max-width: 600px)': {
+    display: 'none'
+  },
 });
 
 export const UnstyledLink = styled(Link, {

@@ -298,7 +298,11 @@ const VerticalSidebar = () => {
               </UnstyledLink>
             )} */}
             <UnstyledLink href="/about" passHref>
-              <Text strong="bold">About Us</Text>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  <FormattedMessage id="aboutUs" />
+                </Text>
+              </Item>
             </UnstyledLink>
             <UnstyledLink href="/login" passHref>
               <Item>

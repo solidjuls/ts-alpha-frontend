@@ -230,7 +230,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   
   useEffect(() => {
     if (tournamentsRegistered.length > 0) {
-      console.log("asas", currentPage)
       // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
       dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0]?.value as string], userId}))
     }
