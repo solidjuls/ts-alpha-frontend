@@ -182,7 +182,7 @@ const Tournaments = () => {
       <ResultsStyleWrapper>
         {data?.map((item) => {
           return (
-            <TournamentNameRow status={getVariant(item.status_id)}>
+            <TournamentNameRow key={item.id} status={getVariant(item.status_id)}>
               <PlayerInfoBox tournamentId={item.id} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)}/>
             </TournamentNameRow>
           )})}

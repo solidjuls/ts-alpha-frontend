@@ -12,6 +12,7 @@ import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
 import { SubmitFormState } from ".";
 import { styled } from "stitches.config";
+import Link from "next/link";
 
 const Banner = styled('div', {
   alignItems: 'flex-start',
@@ -60,7 +61,7 @@ const SubmitForm = ({
 }: SubmitFormProps) => {
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
-      <Banner><b>Reminder:</b> Results for <b>ITSL Season 15</b> must be submitted through the <a href="/schedule">my schedule</a> page</Banner>
+      <Banner><b>Reminder:</b> Results for <b>ITSL Season 15</b> must be submitted through the <Link href="/schedule">my schedule</Link> page</Banner>
       <Box
         css={{
           display: "flex",
