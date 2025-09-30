@@ -14,6 +14,15 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
       },
     ],
   };
+  const orderBy: any = [];
+  if (!adminView) {
+    orderBy.push({
+      game_results_id: 'asc',
+    });
+  }
+  orderBy.push({
+    due_date: 'asc',
+  });
 
   if (!adminView) {
     where.AND.push({
@@ -69,16 +78,7 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
         },
       },
     },
-    orderBy: [
-    // {
-    //   game_results_id: {
-    //     sort: 'asc',
-    //   },
-    // },
-    {
-      due_date: 'asc',
-    },
-  ],
+    orderBy,
     where,
     skip,
     take: pageSize,

@@ -13,15 +13,6 @@ import { DropdownItemType } from "types/types";
 import { SubmitFormState } from ".";
 import { styled } from "stitches.config";
 
-const variants = {
-  info: {
-    bg: 'hsl(210 20% 97%)',
-    border: 'hsl(210 20% 85%)',
-    iconBg: 'hsl(210 20% 92%)',
-    color: 'hsl(210 30% 8%)',
-  },
-};
-
 const Banner = styled('div', {
   alignItems: 'flex-start',
   padding: '12px 16px',
@@ -29,6 +20,7 @@ const Banner = styled('div', {
   border: '1px solid hsl(210 20% 85%)',
   boxShadow: '0 6px 18px rgba(15,15,15,0.04)',
   maxWidth: '100%',
+  marginBottom: '12px',
   backgroundColor: 'hsl(210 20% 97%)',
   color: 'hsl(210 30% 8%)',
 });
