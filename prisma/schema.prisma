@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions", "referentialIntegrity", "typedSql"]
+  previewFeatures = ["typedSql"]
+  engineType = "wasm"
 }
 
 datasource db {

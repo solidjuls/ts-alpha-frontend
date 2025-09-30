@@ -28,7 +28,6 @@ export const authorize = async ({ email, pwd }: { email: string; pwd: string }) 
       player_email: email
     },
   });
-console.log("tournamentsRegistered", tournamentsRegistered, tournamentsAdmin)
   if (!user) return null;
 
   if (!user.password) {
@@ -70,6 +69,17 @@ export const isUserAdmin = async (email: string) => {
     },
   });
   return user?.role_id === 3
+}
+
+export const getTournamentsRegistered = (email: string) => {
+  return prisma.tournament_registration.findMany({
+    select: {
+      tournamentId: true
+    },
+    where: {
+      player_email: email
+    },
+  })
 }
 
 export const getUsersByTournament = async (tournaments: string) => {

@@ -31,6 +31,7 @@ import TextComponent from "pages/submitform/TextComponent";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { setCurrentPage } from "../../redux/scheduleSlice";
+import { getTournamentsRegistered } from "backend/controller/user.controller";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
@@ -283,11 +284,12 @@ export async function getServerSideProps({ req, res }: ServerType) {
     text: item.tournament_name,
   })) || []
 
-  const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => payload?.tournamentsRegistered.includes(item.id)).map((item: TournamentsType) => ({
+  const tournamentsRegistered = await getTournamentsRegistered(payload?.mail)
+  const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
     value: item.id.toString(),
     text: item.tournament_name,
   })) || []
-
+  
   // if (payload?.role !== userRoles.SUPERADMIN) {
   //   return {
   //     redirect: {
