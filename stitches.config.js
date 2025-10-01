@@ -20,6 +20,10 @@ export const { styled, globalCss, css, getCssText, createTheme, keyframes } = cr
       tertiary: "$gray500",
       link: "#b12236",
       linkHover: "#365f65",
+      redAlpha: "rgba(255, 0, 0, 0.4)",
+      greenAlpha: "rgba(0, 128, 0, 0.4)",
+      yellowAlpha: "rgba(255, 215, 0, 0.4)",
+      blueAlpha: "rgba(0, 0, 255, 0.4)",
     },
     fontSizes: {
     fontSizeS: "12px",

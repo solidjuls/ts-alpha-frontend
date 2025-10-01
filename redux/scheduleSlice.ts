@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "./store";
-import getAxiosInstance from "utils/axios";
+import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { MultiSelectItemType } from "types/types";
 
 interface ScheduleState {
@@ -9,6 +9,7 @@ interface ScheduleState {
   error: string | null;
   filters: {
     tournamentSelected: string;
+    adminView: boolean;
     invalidateCache: boolean
   };
   modeUI: 'ADMIN' | 'SUPER_ADMIN' | 'PLAYER_VIEW';
@@ -24,6 +25,7 @@ const initialState: ScheduleState = {
   error: null,
   filters: {
     tournamentSelected: "",
+    adminView: false,
     invalidateCache: false
   },
   currentPage: 1,
@@ -33,27 +35,50 @@ const initialState: ScheduleState = {
 interface FetchScheduleParams {
   isSuperAdmin: boolean;
   tournaments: string[];
+  userFilter: string
   userId: string
 }
+
+export const deletePlayerFromSchedule = createAsyncThunk(
+  "list/deletePlayerFromSchedule",
+  async (params: FetchScheduleParams, { getState }) => {
+    const { isSuperAdmin, userFilter, userId } = params
+    const URLparams = new URLSearchParams();
+    if (userFilter) URLparams.append("u", userFilter);
+    const response = await getAxiosInstance().patch(
+      `/api/schedule?${URLparams.toString()}`,
+    );
+    return {
+      items: response.data,
+      // totalPages: Math.ceil(response.data.totalRows / 20),
+    };
+  }
+)
 
 export const fetchScheduleList = createAsyncThunk(
   "list/fetchScheduleList",
   async (params: FetchScheduleParams, { getState }) => {
-    const { isSuperAdmin, tournaments, userId } = params
+    const { isSuperAdmin, tournaments, userFilter, userId } = params
     const state = getState() as RootState;
-    
+    const { currentPage, totalPages, filters } = state.scheduleList;
+
     const URLparams = new URLSearchParams();
     if (userId) URLparams.append("uid", userId);
+    if (currentPage) URLparams.append("p", currentPage.toString());
+    URLparams.append("pso", "20");
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
-console.log("fetchScheduleList", tournaments)
+    if (filters.adminView) URLparams.append("a", filters.adminView ? '1' : '0');
+
+    await clearAllCache("schedule-list");
     // isSuperAdmin & tournament filter selected
     const response = await getAxiosInstance().get(
       `/api/schedule?${URLparams.toString()}`,
+      { id: `schedule-list` },
     );
 
     return {
-      items: response.data,
-      // totalPages: Math.ceil(response.data.totalRows / 20),
+      items: response.data.results,
+      totalPages: Math.ceil(response.data.totalRows / 20),
     };
   },
 );
@@ -66,6 +91,10 @@ const listSlice = createSlice({
       state.currentPage = 1;
       state.filters.invalidateCache = state.filters.tournamentSelected !== action.payload;
       state.filters.tournamentSelected = action.payload;
+    },
+    setAdminView: (state, action) => {
+      state.filters.invalidateCache = state.filters.adminView !== action.payload;
+      state.filters.adminView = action.payload;
     },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
@@ -90,6 +119,8 @@ const listSlice = createSlice({
 
 export const {
   setTournamentFilter,
+  setAdminView,
+  setCurrentPage
 } = listSlice.actions;
 
 export default listSlice.reducer;

@@ -11,6 +11,20 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
 import { SubmitFormState } from ".";
+import { styled } from "stitches.config";
+import Link from "next/link";
+
+const Banner = styled('div', {
+  alignItems: 'flex-start',
+  padding: '12px 16px',
+  borderRadius: '10px',
+  border: '1px solid hsl(210 20% 85%)',
+  boxShadow: '0 6px 18px rgba(15,15,15,0.04)',
+  maxWidth: '100%',
+  marginBottom: '12px',
+  backgroundColor: 'hsl(210 20% 97%)',
+  color: 'hsl(210 30% 8%)',
+});
 
 const dropdownWidth = "370px";
 
@@ -47,6 +61,7 @@ const SubmitForm = ({
 }: SubmitFormProps) => {
   return (
     <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+      <Banner><b>Reminder:</b> Results for <b>ITSL Season 15</b> must be submitted through the <Link href="/schedule">my schedule</Link> page</Banner>
       <Box
         css={{
           display: "flex",
@@ -136,7 +151,7 @@ const SubmitForm = ({
           inputValue={form.video1.value}
           placeholder="Link to the video..."
           error={form.video1.error}
-          css={{ width: "300px" }}
+          css={{ width: dropdownWidth }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
         />
         <Button

@@ -22,9 +22,11 @@ module.exports = {
     signOut: "Sign out",
     signIn: "Sign in",
     profileText: "Profile",
+    aboutUs: "About Us",
     greeting: "Hi",
 
     oldPlayer: "Player to be replaced",
+    players: "Players",
     newPlayer: "New Player",
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",
@@ -42,5 +44,10 @@ module.exports = {
     country: "Federation",
 
     scheduleId: "Schedule id",
+    tournamentName: "Tournament Name",
+    statusId: 'Status',
+    admins: "Administrators",
+    tournamentDescription: "Description",
+    startingDate: "Starting Date"
   },
 };

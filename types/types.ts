@@ -37,6 +37,7 @@ export interface ScheduleDBType {
 export type ScheduleType = {
   countryUsa: string
   countryUssr: string
+  gameResultsId: string | null
   idUsa: string
   idUssr: string
   nameUsa: string;

@@ -159,19 +159,19 @@ const SubmitSchedule = ({
           selectedItem={form.endMode.value}
           onSelect={(value: string) => onInputValueChange("endMode", value)}
         />
-        <DateComponent
-          labelText="gameDate"
-          inputValue={form.gameDate.value}
-          disabled={true}
-          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
-        />
         <TextComponent
           labelText="videoLink1"
           inputValue={form.video1.value}
           placeholder="Link to the video..."
           error={form.video1.error}
-          css={{ width: "500px" }}
+          css={{ width: dropdownWidth }}
           onInputValueChange={(value: string) => onInputValueChange("video1", value)}
+        />
+        <DateComponent
+          labelText="gameDate"
+          inputValue={form.gameDate.value}
+          disabled={true}
+          onInputValueChange={(value: Date) => onInputValueChange("gameDate", value)}
         />
         {errorMsg && <Text type="error">{errorMsg}</Text>}
         <Button
@@ -179,7 +179,7 @@ const SubmitSchedule = ({
           css={{ width: "200px", fontSize: "18px" }}
           onClick={onSubmit}
         >
-          {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
+          {isSubmitting ? <Spinner size="3" /> : "Submit"}
         </Button>
       </Box>
     </Form>

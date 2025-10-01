@@ -11,7 +11,7 @@ export type TournamentsType = {
 };
 
 export type SubmitFormValue<T> = {
-  value: T;
+  value: T | undefined;
   error: boolean;
 };
 
@@ -45,6 +45,14 @@ export type User = {
   };
   rating: number;
 };
+ 
+export interface TournamentCreateState {
+  tournamentName: SubmitFormValue<string>;
+  statusId: SubmitFormValue<string>;
+  description: SubmitFormValue<string>;
+  startingDate: SubmitFormValue<Date>;
+  admins: SubmitFormValue<string>;
+}
 
 export type UserCreateState = {
   name: SubmitFormValue<string>;

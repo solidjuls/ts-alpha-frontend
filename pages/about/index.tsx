@@ -116,7 +116,7 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <Link href="bit.ly/ITSLSeason15">ITSL</Link> - The largest yearly international league with geographic
+            <Link href="https://bit.ly/ITSLSeason15" target="_blank">ITSL</Link> - The largest yearly international league with geographic
             divisions (~200 players, 20-game regular season + playoffs).
           </li>
           <li>

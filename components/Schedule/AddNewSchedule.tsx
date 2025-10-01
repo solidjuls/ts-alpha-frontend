@@ -49,7 +49,7 @@ const AddNewSchedule: React.FC<AddNewScheduleProps> = ({ tournament }) => {
 
     setResponseMessage(`New schedule added`)
   }
-  console.log("!usaPlayer || !ussrPlayer || !tournament || !dueDate", usaPlayer, ussrPlayer, tournament, dueDate)
+
   return <Flex css={{ flexDirection: 'column' }}>
           <Title>Add new schedule</Title>
           <Flex css={{ flexDirection: 'row', gap: '4px' }}>

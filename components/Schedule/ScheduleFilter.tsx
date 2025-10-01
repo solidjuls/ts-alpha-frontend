@@ -5,6 +5,13 @@ import ReplacePlayers from './ReplacePlayers';
 import AddNewSchedule from './AddNewSchedule';
 import CsvUploadButton from './CsvButtonUpload';
 import { TournamentsType } from 'types/game.types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from 'redux/store';
+import { setAdminView } from "../../redux/scheduleSlice";
+import UserTypeahead from 'pages/submitform/UserTypeahead';
+import { DropdownItemType } from 'types/types';
+import useFetchInitialData from 'hooks/useFetchInitialData';
+import { UserType } from 'types/user.types';
 
 const Panel = styled('div', {
   padding: '16px',
@@ -20,15 +27,44 @@ interface ScheduleFilterProps {
 
 const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
   const [checked, setChecked] = React.useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { filters } = useSelector(
+    (state: RootState) => state.scheduleList,
+  );
+  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<
+    UserType[]
+  >({
+    url: "/api/game/user",
+    cacheId: "tournaments-list",
+  });
 
+    const usersFilter: DropdownItemType[] = users?.data?.map((item: UserType) => ({
+      value: item.id.toString(),
+      text: item.name,
+    })) || []
   return (
     <div>
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
       {checked && (
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
+          <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />
+          {/* <UserTypeahead
+            labelText="players"
+            selectedItem={filters.playerToDelete}
+            // error={form.admins.error}
+            users={usersFilter}
+            placeholder="Type the player name..."
+            css={{ width: '320px' }}
+            onBlur={() => {
+              // onInputValueChange("admins", "");
+            }}
+            onSelect={(value: DropdownItemType) =>
+              dispatch(deletePlayerFromSchedule({isSuperAdmin, tournaments: [value], userId, playerToDelete}))
+            }
+          />
           {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
-          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />}
+          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />} */}
         </Panel>
       )}
     </div>

@@ -11,7 +11,7 @@ export const ResultsStyleWrapper = styled("div", {
   marginBottom: "12px",
   width: "100%",
   maxWidth: "1000px",
-  height: "500px",
+  minHeight: "600px",
 });
 
 export const PlayerInfo = styled("div", {
@@ -31,6 +31,12 @@ export const PlayerInfo = styled("div", {
       },
       default: {
         backgroundColor: "white",
+      },
+      firstAlert: {
+        backgroundColor: 'rgba(255, 165, 0, 0.45)'
+      },
+      secondAlert: {
+        backgroundColor: 'rgba(255, 165, 0, 0.85)'
       },
       duedate: {
         backgroundColor: "rgba(255, 0, 0, 0.4)",
@@ -52,6 +58,9 @@ export const DueDateCell = styled("div", {
   borderRadius: "6px",
   border: "solid 1px $greyLight",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  '@media (max-width: 600px)': {
+    display: 'none'
+  },
 });
 
 export const UnstyledLink = styled(Link, {

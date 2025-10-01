@@ -43,9 +43,15 @@ const TournamentRegistration = () => {
   }
 
   if (isLoading) return;
-
+console.log("data", data)
+const tournament = data[0]
   return (
     <DetailContainer>
+      <Box css={{
+        border: "solid 1px lightgray",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+        borderRadius: "8px",
+      }}>
       <Box
         css={{
           display: "grid",
@@ -55,23 +61,24 @@ const TournamentRegistration = () => {
           backgroundColor: "white",
           padding: "24px 0 24px 24px",
           alignItems: "left",
-          border: "solid 1px lightgray",
           height: isLoading ? "250px" : "auto",
-          borderRadius: "8px",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+          
           width: "100%",
         }}
       >
-        {isLoading || !data ? (
+        {isLoading || !tournament ? (
           <Spinner size="3" />
         ) : (
           <>
-            <DisplayInfo label="Status" infoText={getTournamentStatusNames(data.status_id)} />
-            <DisplayInfo label="Name" infoText={data.tournament_name} />
-
-            <Button>Register</Button>
+            <DisplayInfo label="Status" infoText={getTournamentStatusNames(tournament.status_id)} />
+            <DisplayInfo label="Name" infoText={tournament.tournament_name} />
+            <DisplayInfo label="Admin" infoText={tournament.tournament_admins[0].users.first_name} />
+            <DisplayInfo label="Starting Date" infoText={tournament.starting_date} />
+            <DisplayInfo label="Description" infoText={tournament.description} />
           </>
         )}
+      </Box>
+        <Button>Register</Button>
       </Box>
     </DetailContainer>
   );

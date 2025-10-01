@@ -6,7 +6,9 @@ import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
 import SubmitSchedule from "./SubmitSchedule";
-import { ScheduleType } from "types/types";
+import { ScheduleType, ServerType } from "types/types";
+import { ParsedUrlQuery } from "querystring";
+import { NextApiRequest, NextApiResponse } from "next/types";
 
 type SubmitFormProps = {
   role: number;
@@ -207,14 +209,15 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
           {
             cache: {
               update: {
-                "game-list": "delete",
+                "schedule-list": "delete",
               },
             },
           },
         );
         router.push("/schedule");
       } catch (e) {
-        setErrorMsg(e?.response?.data || "There was an error submitting the result");
+        console.log("error submitform", e?.response?.data?.message);
+        setErrorMsg(e?.response?.data?.message || "There was an error submitting the result");
       } finally {
         setIsSubmitting(false);
       }
@@ -225,11 +228,11 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
     setForm((prevState: any) => ({
         ...prevState,
         gameType: {
-          value: tournaments?.id,
+          value: tournaments?.[0].id,
           error: false,
         }
       }));
-    }, [tournaments?.id])
+    }, [tournaments])
 
   if (loadingTournaments || loadingUsers) return null;
 
@@ -237,11 +240,12 @@ const SubmitScheduleContainer = ({ role }: SubmitFormProps) => {
     value: item.id,
     text: item.name,
   }));
-console.log("tournaments", tournaments)
+
   return (
     <SubmitSchedule
       role={role}
       form={form}
+      errorMsg={errorMsg}
       onSubmit={onSubmit}
       users={usersParsed}
       tournamentId={tournaments?.[0].id.toString()}
@@ -264,18 +268,23 @@ console.log("tournaments", tournaments)
 // allow recreate form to submit any result
 
 
-// export async function getServerSideProps({ req, res }: ServerType) {
-//   const payload = getInfoFromCookies(req, res);
+export async function getServerSideProps({ req, res, query }: {
+    req: NextApiRequest;
+    res: NextApiResponse;
+    query: ParsedUrlQuery;
+  }) {
+    console.log("params", query)
+  const payload = getInfoFromCookies(req, res);
 
-//   if (!payload || payload?.role !== userRoles.SUPERADMIN) {
-//     return {
-//       redirect: {
-//         permanent: false,
-//         destination: "/login",
-//       },
-//     };
-//   }
-//   return { props: { role: payload.role || null } };
-// }
+  if (!payload) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
+  return { props: { role: payload.role || null } };
+}
 
 export default SubmitScheduleContainer;

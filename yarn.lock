@@ -564,9 +564,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:6.6.0":
-  version: 6.6.0
-  resolution: "@prisma/client@npm:6.6.0"
+"@prisma/client@npm:^6.16.2":
+  version: 6.16.2
+  resolution: "@prisma/client@npm:6.16.2"
   peerDependencies:
     prisma: "*"
     typescript: ">=5.1.0"
@@ -575,7 +575,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10c0/174e4f445ae671dc16af272743b33312f36be34d8d5c0ab92eba8c81d74dc86967fa316bd4db082f1aa0970abf31899a8305e09a6717cb285bdc700aa9273f70
+  checksum: 10c0/2d3356d18de6411dc61b701dfea2a4fc052913f7f7c6019d4cf477a2d391c7ca0adf1601f1d2b9030b5a1c2479b4d7d5b128e1b413218c1b12cd58f1091d2d1a
   languageName: node
   linkType: hard
 
@@ -5813,7 +5813,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "ts-alpha-frontend@workspace:."
   dependencies:
-    "@prisma/client": "npm:6.6.0"
+    "@prisma/client": "npm:^6.16.2"
     "@radix-ui/colors": "npm:^3.0.0"
     "@radix-ui/react-avatar": "npm:^1.1.0"
     "@radix-ui/react-checkbox": "npm:^1.1.1"

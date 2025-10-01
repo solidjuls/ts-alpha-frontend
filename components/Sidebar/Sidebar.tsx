@@ -121,13 +121,11 @@ const Items = ({ styles, role }: any) => {
           Submit Form
         </Text>
       </UnstyledLink>
-      {role === userRoles.SUPERADMIN && (
-        <UnstyledLink href="/schedule" passHref>
-          <Text strong="bold" css={styles}>
-            My Schedule
-          </Text>
-        </UnstyledLink>
-      )}
+      <UnstyledLink href="/schedule" passHref>
+        <Text strong="bold" css={styles}>
+          My Schedule
+        </Text>
+      </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
         <Text strong="bold" css={horizontalItemStyles}>
           <FormattedMessage id="profileText" />
@@ -147,13 +145,13 @@ const Items = ({ styles, role }: any) => {
           </Text>
         </UnstyledLink>
       )}
-      {role === userRoles.SUPERADMIN && (
+      {/* {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/tournaments" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Tournaments
           </Text>
         </UnstyledLink>
-      )}
+      )} */}
       <UnstyledLink href="/about" passHref>
         <Text strong="bold" css={styles}>
           About Us
@@ -260,11 +258,11 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            {role === userRoles.SUPERADMIN && (<UnstyledLink href="/schedule" passHref>
+            <UnstyledLink href="/schedule" passHref>
               <Text strong="bold" css={horizontalItemStyles}>
                 My Schedule
               </Text>
-            </UnstyledLink>)}
+            </UnstyledLink>
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
@@ -290,15 +288,19 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            {role === userRoles.SUPERADMIN && (
+            {/* {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/tournaments" passHref>
                 <Text strong="bold" css={horizontalItemStyles}>
                   Tournaments
                 </Text>
               </UnstyledLink>
-            )}
+            )} */}
             <UnstyledLink href="/about" passHref>
-              <Text strong="bold">About Us</Text>
+              <Item>
+                <Text strong="bold" css={horizontalItemStyles}>
+                  <FormattedMessage id="aboutUs" />
+                </Text>
+              </Item>
             </UnstyledLink>
             <UnstyledLink href="/login" passHref>
               <Item>

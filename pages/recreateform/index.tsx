@@ -102,7 +102,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     cacheId: "user-list",
   });
   const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
+    url: `/api/game/tournaments`,
     cacheId: "tournament-list",
   });
 

@@ -15,7 +15,7 @@ import CsvUploadButton from "../../components/Schedule/CsvButtonUpload";
 import { tournamentStatus, userRoles } from "utils/constants";
 import ReplacePlayers from "../../components/Schedule/ReplacePlayers";
 import AddNewSchedule from "../../components/Schedule/AddNewSchedule";
-import { TournamentsType } from "types/game.types";
+import { GameWinner, TournamentsType } from "types/game.types";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { useEffect, useState } from "react";
 import { fetchScheduleList, setTournamentFilter } from "../../redux/scheduleSlice";
@@ -23,10 +23,21 @@ import { AppDispatch, RootState } from "redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "stitches.config";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
+import axios from "axios";
+import UserTypeahead from "pages/submitform/UserTypeahead";
+import { UserType } from "types/user.types";
+import { Input } from "components/Input";
+import TextComponent from "pages/submitform/TextComponent";
+import { getWinnerText } from "utils/games";
+import { Pagination } from "components/Pagination";
+import { setCurrentPage } from "../../redux/scheduleSlice";
+import { getTournamentsRegistered } from "backend/controller/user.controller";
 
 interface ScheduleProps {
   isSuperAdmin: boolean
-  tournaments: string[]
+  tournamentsAdmin: DropdownItemType[]
+  tournamentsRegistered: DropdownItemType[]
+  isAdmin: boolean
   userId: string
 }
 
@@ -56,22 +67,24 @@ const generateQueryParams = ({ id,idUsa,idUssr,tournamentId, gameCode }:{id: str
   return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`
 }
 
+const resolveLink = ({gameResultsId, id,idUsa,idUssr,tournamentId,gameCode}: {gameResultsId: string | null; id: string; idUsa: string; idUssr: string; tournamentId: string; gameCode: string}) => {
+  if (!gameResultsId) return `/submit-schedule${generateQueryParams({id,idUsa,idUssr,tournamentId,gameCode})}`
+
+  return `/games/${gameResultsId}`
+}
+
 const PlayerInfoBox = ({
   nameUsa,
   nameUssr,
   countryUsa,
   countryUssr,
-  idUsa,
-  idUssr,
-  tournamentId,
-  gameCode,
-  id
+  gameWinner,
 }: Pick<
   ScheduleType,
-  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "id" | "idUsa" | "idUssr" | "tournamentId" | "gameCode"
+  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner"
 >) => {
   return (
-    <UnstyledLink href={`/submit-schedule${generateQueryParams({id,idUsa,idUssr,tournamentId,gameCode})}`} css={{ display: "flex", flexDirection: "row" }}>
+    <Flex css={{ display: "flex", flexDirection: "row" }}>
       <Box
         css={{
           display: "flex",
@@ -82,7 +95,7 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={countryUsa} />
-        <Text fontSize="medium">
+        <Text fontSize="medium" strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}>
           {nameUsa}
         </Text>
       </Box>
@@ -98,40 +111,47 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={countryUssr} />
-        <Text fontSize="medium">
+        <Text fontSize="medium" strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}>
           {nameUssr}
         </Text>
       </Box>
-    </UnstyledLink>
+    </Flex>
   );
 };
 
-const isDueInDays = (date: string, days: number): boolean => {
+const isDueInDays = (date: string): number => {
   const target = new Date(date).getTime();
   const now = Date.now();
 
-  const diffMs = target - now;
-  const diffDays = diffMs / (1000 * 60 * 60 * 24);
-
-  return diffDays <= days;
+  return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 };
 
-type VariantType = (schedule: ScheduleType) => "played" | "duedate" | "default"
+type VariantType = (schedule: ScheduleType) => 
+  "played" | "duedate" | "default" | "firstAlert" | "secondAlert";
 
 const getVariant: VariantType = (schedule) => {
   if (schedule.gameWinner && schedule.gameDate) {
-    return "played"
-  } else if (isDueInDays(schedule.dueDate, 30)) {
-    return "duedate"
+    return "played";
   }
 
-  return "default"
-}
+  const daysLeft = isDueInDays(schedule.dueDate);
 
-const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
+  if (daysLeft <= 0) {
+    return "duedate";
+  } else if (daysLeft >= 1 && daysLeft <= 14) {
+    return "secondAlert";
+  } else if (daysLeft >= 15 && daysLeft <= 30) {
+    return "firstAlert";
+  }
+
+  return "default";
+};
+
+const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: boolean }) => {
   return (
     <Flex>
     <PlayerInfo status={getVariant(schedule)}>
+      <UnstyledLink href={resolveLink({gameResultsId: schedule.gameResultsId, id: schedule.id, idUsa: schedule.idUsa, idUssr: schedule.idUssr, tournamentId: schedule.tournamentId, gameCode: schedule.gameCode})} css={{ display: "flex", flexDirection: "column" }}>
       <Flex
         css={{
           display: "flex",
@@ -143,31 +163,27 @@ const ScheduleRow = ({ schedule }: { schedule: ScheduleType }) => {
         <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
           {schedule.tournamentName}
         </Text>
-        {/* <Text fontSize="small">{dateFormat(new Date(schedule?.gameDate))}</Text> */}
       </Flex>
 
       <PlayerInfoBox
+        gameWinner={schedule.gameWinner}
         countryUsa={schedule.countryUsa}
         countryUssr={schedule.countryUssr}
         nameUsa={schedule.nameUsa}
         nameUssr={schedule.nameUssr}
-        gameCode={schedule.gameCode}
-        idUsa={schedule.idUsa}
-        idUssr={schedule.idUssr}
-        tournamentId={schedule.tournamentId}
-        id={schedule.id}
       />
+      </UnstyledLink>
     </PlayerInfo>
     <DueDateCell>
-      <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id}
-        admin={true}
+      <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id} gameDate={schedule.gameDate}
+        admin={isAdmin}
         gamePlayed={false} />
     </DueDateCell>
     </Flex>
   );
 };
 
-const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
+const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -178,66 +194,86 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isLoading }) => {
     );
   }
 
+  if (data?.length === 0) {
+    return (
+      <Flex css={{ width: "100%" }}>
+        <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
+          You do not have a schedule available. Report your results using the submit form
+        </ResultsStyleWrapper>
+      </Flex>
+    );
+  }
+
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-        <ScheduleRow key={index} schedule={schedule} />
+        <ScheduleRow key={index} schedule={schedule} isAdmin={isAdmin} />
       ))}
     </ResultsStyleWrapper>
   );
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournaments, userId }) => {
+const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.scheduleList,
   );
-  
-  const { data: tournamentAPI, isLoading: loadingTournaments } = useFetchInitialData<
-    TournamentsType[]
-  >({
-    url: `/api/game/tournaments?id=${tournaments.join(',')}`,
-  });
 
   useEffect(() => {
-    if (!loadingTournaments && filters.tournamentSelected) {
-      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [filters.tournamentSelected], userId}))
+    if (tournamentsRegistered?.length > 0) {
+      // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
+      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0] as string], userId}))
     }
-    if (!filters.tournamentSelected) {
-      dispatch(setTournamentFilter(tournamentAPI?.[0].id.toString()))
-    }
-  }, [filters.tournamentSelected, loadingTournaments])
+  }, [filters, currentPage, dispatch]);
 
-  if (status === "loading" || loadingTournaments || !items) return null
+  if (status === "loading") return null;
 
-  // const dataFiltered = data.filter(item => tournaments.includes(item.tournamentId))
-  const leagueTypes: DropdownItemType[] = tournamentAPI?.map((item: TournamentsType) => ({
-    value: item.id.toString(),
-    text: item.tournament_name,
-  })) || []
+    const onPageChange = async (page: string) => {
+      dispatch(setCurrentPage(page));
+    };
 
-  return <ResponsiveContainer>
-          <Flex css={{ flexDirection: 'column', width: "100%" }}>
-            <DropdownWithLabel
-              labelText="typeOfGame"
-              key="gameType"
-              items={leagueTypes}
-              selectedItem={filters.tournamentSelected}
-              placeholder="Select tournament"
-              height="270px"
-              width='320px'
-              onSelect={(value) => dispatch(setTournamentFilter(value))}
-            />
-            <ScheduleFilter userAdminTournaments={filters.tournamentSelected} noSchedule={items?.length === 0} />
-            <SchedulePanel data={items} />
-          </Flex>
-        </ResponsiveContainer>
+  return <>
+          <h1>My Schedule</h1>
+          <ResponsiveContainer
+            direction={{
+              "@initial": "row",
+              "@sm": "column",
+            }}>
+            <Flex css={{ flexDirection: 'column', width: "100%", gap: "4px", marginTop: '16px' }}>
+              {/* <Flex css={{ flexDirection: 'row', width: "100%", gap: "4px" }}>
+                <DropdownWithLabel
+                  labelText="typeOfGame"
+                  key="gameType"
+                  items={tournamentsRegistered}
+                  selectedItem={filters.tournamentSelected}
+                  placeholder="Select tournament"
+                  height="270px"
+                  width='320px'
+                  onSelect={(value) =>  {
+                    dispatch(fetchScheduleList({isSuperAdmin, tournaments: [value], userId}))
+                  }}
+                />
+              </Flex> */}
+              
+              {tournamentsAdmin.length > 0 && <ScheduleFilter userAdminTournaments={tournamentsAdmin.length > 0} noSchedule={items?.length === 0} />}
+              <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0}/>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            </Flex>
+          </ResponsiveContainer>
+        </>
 }
 
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
+  const protocol = req.headers['x-forwarded-proto'] || 'http'
+  const host = req.headers['host']
+  const baseUrl = `${protocol}://${host}`
 
-  if (payload?.role !== userRoles.SUPERADMIN) {
+  if (!payload) {
     return {
       redirect: {
         permanent: false,
@@ -245,7 +281,26 @@ export async function getServerSideProps({ req, res }: ServerType) {
       },
     };
   }
-  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournaments: payload?.tournaments, userId: payload?.id } };
+
+  const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered)
+  // payload?.tournamentsRegistered
+  const tournaments = payload?.tournamentsAdmin ? await axios.get(
+    `${baseUrl}/api/game/tournaments?id=${tournamentsConcatArray?.join(',')}`
+  ) : []
+
+  const leagueTypesAdmin: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id)).map((item: TournamentsType) => ({
+    value: item.id.toString(),
+    text: item.tournament_name,
+  })) || []
+
+  const tournamentsRegistered = await getTournamentsRegistered(payload?.mail)
+  // const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
+  //   value: item.id.toString(),
+  //   text: item.tournament_name,
+  // })) || []
+  console.log("leagueTypesRegistered", tournamentsRegistered);
+
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
 export default Schedule
