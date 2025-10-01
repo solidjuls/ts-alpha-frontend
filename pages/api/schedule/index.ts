@@ -55,7 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(200).json(updated);
   } else if (req.method === 'PATCH') {
     const {pold, pnew, t, u} = req.body.data;
-    console.log("pold, pnew, t", pold, pnew, t, u)
 
     if (u) {
       const updated = await deleteSchedulePlayer(Number(u), Number(t))

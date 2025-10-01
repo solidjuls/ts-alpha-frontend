@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
   if (!user) return;
-  console.log("user.tournaments", user.tournamentsAdmin)
+
   const token = jwt.sign(
     { mail: user.email, name: user.name, role: user.role, id: user.id.toString(), tournamentsAdmin: user.tournamentsAdmin, tournamentsRegistered: user.tournamentsRegistered },
     process.env.TOKEN_SECRET,
