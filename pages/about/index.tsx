@@ -116,7 +116,7 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1b4p1lV5y-Ggn7OgR9CGadfWErcTMmcT_BLQxTdPPTqw/edit?usp=drivesdk">ITSL</Link> - The largest yearly international league with geographic
+            <Link href="bit.ly/ITSLSeason15">ITSL</Link> - The largest yearly international league with geographic
             divisions (~200 players, 20-game regular season + playoffs).
           </li>
           <li>
@@ -161,7 +161,7 @@ const AboutPage = () => (
               <li>Dutch League - <Link href="https://twilight-struggle.com/userprofile/2556">Peter Heuvelman</Link></li>
               <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link> and <Link href="https://twilight-struggle.com/userprofile/2535">Pavel Lobatsevich</Link></li>
               <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
-              <li>Greek League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
+              <li>Greek League</li>
               <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
               <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link></li>
               <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link></li>
@@ -169,7 +169,7 @@ const AboutPage = () => (
               <li>Nordic League - <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link></li>
               <li>Polish League - <Link href="https://twilight-struggle.com/userprofile/2878">Ziemowit Pazderski</Link></li>
               <li>Western US League - <Link href="https://twilight-struggle.com/userprofile/2525">Patrick Gong</Link></li>
-              <li>UK League - <Link href="https://twilight-struggle.com/userprofile/2743">Tasos Manolopoulos</Link></li>
+              <li>UK League</li>
             </List>
           </li>
         </List>
@@ -232,7 +232,7 @@ const AboutPage = () => (
           .
         </p>
         <p>
-          For questions, contact JR Jones at{" "}
+          For questions, contact Junta at{" "}
           <Link href="mailto:its.junta@gmail.com" target="_blank">
             its.junta@gmail.com
           </Link>
