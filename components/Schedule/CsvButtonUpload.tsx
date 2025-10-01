@@ -80,7 +80,7 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
         {
             data: {
                 file,
-                tournament: 303
+                tournament: 318
             }
         },
     )

@@ -6,13 +6,10 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
 
   const skip = (page - 1) * pageSize;
   const where: any = {
-    AND: [
-      {
-        tournaments_id: {
-          in: tournament?.map(Number),
-        },
-      },
-    ],
+    OR: [
+        { usa_player_id: userId },
+        { ussr_player_id: userId },
+      ]
   };
   const orderBy: any = [];
   if (!adminView) {
@@ -24,14 +21,15 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
     due_date: 'asc',
   });
 
-  if (!adminView) {
-    where.AND.push({
-      OR: [
-        { usa_player_id: userId },
-        { ussr_player_id: userId },
-      ],
-    });
-  }
+  // if (!adminView) {
+  //   where.AND.push({
+  //     OR: [
+  //       { usa_player_id: userId },
+  //       { ussr_player_id: userId },
+  //     ],
+  //   });
+  // }
+
  const totalRows = await prisma.schedule.count({
     where,
   });
@@ -83,7 +81,7 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
     skip,
     take: pageSize,
   })
-
+console.log("scheduleResults", scheduleResults.length);
   const results = scheduleResults.map(result => ({
     gameWinner: result.game_results?.game_winner || null,
     gameDate: result.game_results?.game_date || null,
