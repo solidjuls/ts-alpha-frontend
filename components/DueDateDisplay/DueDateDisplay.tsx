@@ -7,6 +7,7 @@ import { Button } from "components/Button";
 import { format as formatDate } from "date-fns";
 import { dateFormat } from "utils/dates";
 import getAxiosInstance from "utils/axios";
+import { Spinner } from "@radix-ui/themes";
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
@@ -30,6 +31,8 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
 
   const handleSave = async () => {
     // if (!onSaveDate) return;
+    if (!selectedDate) return;
+
     setLoading(true);
     try {
       await getAxiosInstance().post("/api/schedule/", {
@@ -82,12 +85,18 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
           placeholder="YYYY/MM/DD"
           formatDate={dateFormat}
           onDayChange={(date: Date) => setSelectedDate(date)}
+          inputProps={{
+            readOnly: true,
+            style: { cursor: "pointer", margin: '4px' },
+          }}
           dayPickerProps={{
             showWeekNumbers: true,
             todayButton: "Today",
           }}
         />
-        <Button onClick={handleSave}>OK</Button>
+        <Button onClick={handleSave}>
+          {loading ? <Spinner size="3" /> : "OK"}
+        </Button>
       </Flex>
     );
   }
