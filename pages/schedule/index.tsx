@@ -299,9 +299,9 @@ export async function getServerSideProps({ req, res }: ServerType) {
   //   value: item.id.toString(),
   //   text: item.tournament_name,
   // })) || []
-  console.log("leagueTypesRegistered", tournamentsRegistered);
+  console.log("payload", payload);
 
-  return { props: { accountCompromised: "2224", isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
+  return { props: { accountCompromised: payload?.id, isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
 export default Schedule
