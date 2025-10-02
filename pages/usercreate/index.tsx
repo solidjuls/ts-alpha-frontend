@@ -32,6 +32,14 @@ export async function getServerSideProps({ req, res }: ServerType) {
       },
     };
   }
+  if (payload?.id === "2224") {
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/login",
+      },
+    };
+  }
   return { props: { role: payload.role || null } };
 }
 

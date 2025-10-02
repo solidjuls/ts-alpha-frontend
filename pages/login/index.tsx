@@ -151,7 +151,17 @@ const LoginForm: React.FC = () => {
 };
 
 const LoggedOutForm = () => {
-  const { logout, name } = useSession();
+  const { logout, name, id } = useSession();
+
+  useEffect(() => {
+    const ddd = async () => {
+      if (id === "2224") {
+        console.log("fuck off");
+        if (logout) await logout();
+      }
+    };
+    ddd()
+  }, []);
 
   return (
     <>
