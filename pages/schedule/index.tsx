@@ -283,8 +283,6 @@ const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, t
     }
   }, [filters, currentPage, dispatch]);
 
-  if (status === "loading") return null;
-
   const onPageChange = async (page: string) => {
     dispatch(setCurrentPage(page));
   };
@@ -313,18 +311,26 @@ const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, t
                   }}
                 />
               </Flex> */}
-              
-              {/* {tournamentsAdmin.length > 0 && <ScheduleFilter userAdminTournaments={tournamentsAdmin.length > 0} noSchedule={items?.length === 0} />} */}
-              <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0}/>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-              />
-            </Flex>
-          </ResponsiveContainer>
-        </>
-}
+
+          {tournamentsAdmin.length > 0 && (
+            <ScheduleFilter
+              userAdminTournaments={tournamentsAdmin.length > 0}
+              noSchedule={items?.length === 0}
+              tournament={tournamentsRegistered?.[0]}
+            />
+          )}
+          <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0} isLoading={status === "loading"} />
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </Flex>
+      </ResponsiveContainer>
+    </>
+  );
+};
 
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);

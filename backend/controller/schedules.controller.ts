@@ -1,10 +1,11 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId, tournament, user, page, pageSize, adminView } : { userId: number, tournament: string[] | undefined, user: string | undefined, page: number, pageSize: number, adminView: boolean }) => {
+export const getSchedules = async ({ userId, tournament, userFilter, page, pageSize, adminView } : { userId: number, tournament: string[] | undefined, userFilter: number | undefined, page: number, pageSize: number, adminView: boolean }) => {
     pageSize = pageSize || 20;
 
   const skip = (page - 1) * pageSize;
+  const userToFilter = userFilter || userId
   const where: any = {
     AND: [
         { tournaments_id: Number(tournament) },
@@ -23,8 +24,8 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
   if (!adminView) {
     where.AND.push({
       OR: [
-        { usa_player_id: userId },
-        { ussr_player_id: userId },
+        { usa_player_id: userToFilter },
+        { ussr_player_id: userToFilter },
       ],
     });
   }

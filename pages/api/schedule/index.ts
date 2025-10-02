@@ -68,9 +68,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { p = 1, pso = 20, a } = req.query;
     const userId = req.query?.uid as string
     const tournament = req.query?.t
-    const user = req.query?.u
-
-    const { results, totalRows } = await getSchedules({ userId: Number(userId), tournament: tournament?.split(','), user, page: Number(p), pageSize: Number(pso), adminView: a === '1' })
+    const userFilter = req.query?.u ? Number(req.query.u) : null
+console.log("user", userFilter)
+    const { results, totalRows } = await getSchedules({ userId: Number(userId), tournament: tournament?.split(','), userFilter, page: Number(p), pageSize: Number(pso), adminView: a === '1' })
     res.status(200).json({
       results,
       totalRows

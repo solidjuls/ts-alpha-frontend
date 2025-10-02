@@ -7,7 +7,7 @@ import CsvUploadButton from './CsvButtonUpload';
 import { TournamentsType } from 'types/game.types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from 'redux/store';
-import { setAdminView } from "../../redux/scheduleSlice";
+import { setAdminView, setPlayerFilter } from "../../redux/scheduleSlice";
 import UserTypeahead from 'pages/submitform/UserTypeahead';
 import { DropdownItemType } from 'types/types';
 import useFetchInitialData from 'hooks/useFetchInitialData';
@@ -25,7 +25,7 @@ interface ScheduleFilterProps {
   userAdminTournaments: TournamentsType | null
 }
 
-const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule }) => {
+const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule, tournament }) => {
   const [checked, setChecked] = React.useState(true);
   const dispatch = useDispatch<AppDispatch>();
   const { filters } = useSelector(
@@ -34,14 +34,15 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
   const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<
     UserType[]
   >({
-    url: "/api/game/user",
+    url: `/api/user?t=${tournament}`,
     cacheId: "tournaments-list",
   });
 
-    const usersFilter: DropdownItemType[] = users?.data?.map((item: UserType) => ({
-      value: item.id.toString(),
-      text: item.name,
-    })) || []
+  const usersFilter: DropdownItemType[] = users?.map((item: UserType) => ({
+    value: item.id,
+    text: item.name,
+  })) || []
+
   return (
     <div>
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
@@ -49,7 +50,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
           <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />
-          {/* <UserTypeahead
+          <UserTypeahead
             labelText="players"
             selectedItem={filters.playerToDelete}
             // error={form.admins.error}
@@ -59,11 +60,11 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
             onBlur={() => {
               // onInputValueChange("admins", "");
             }}
-            onSelect={(value: DropdownItemType) =>
-              dispatch(deletePlayerFromSchedule({isSuperAdmin, tournaments: [value], userId, playerToDelete}))
+            onSelect={(item: DropdownItemType) =>
+              dispatch(setPlayerFilter(item.value))
             }
           />
-          {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
+          {/* {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
           {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />} */}
         </Panel>
       )}

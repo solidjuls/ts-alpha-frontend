@@ -10,6 +10,7 @@ interface ScheduleState {
   filters: {
     tournamentSelected: string;
     adminView: boolean;
+    byPlayer: string;
     invalidateCache: boolean
   };
   modeUI: 'ADMIN' | 'SUPER_ADMIN' | 'PLAYER_VIEW';
@@ -26,6 +27,7 @@ const initialState: ScheduleState = {
   filters: {
     tournamentSelected: "",
     adminView: false,
+    byPlayer: "",
     invalidateCache: false
   },
   currentPage: 1,
@@ -68,6 +70,7 @@ export const fetchScheduleList = createAsyncThunk(
     URLparams.append("pso", "20");
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
     if (filters.adminView) URLparams.append("a", filters.adminView ? '1' : '0');
+    if (filters.byPlayer) URLparams.append("u", filters.byPlayer);
 
     await clearAllCache("schedule-list");
     // isSuperAdmin & tournament filter selected
@@ -96,6 +99,10 @@ const listSlice = createSlice({
       state.filters.invalidateCache = state.filters.adminView !== action.payload;
       state.filters.adminView = action.payload;
     },
+    setPlayerFilter: (state, action) => {
+      state.filters.invalidateCache = state.filters.byPlayer !== action.payload;
+      state.filters.byPlayer = action.payload;
+    },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
@@ -120,6 +127,7 @@ const listSlice = createSlice({
 export const {
   setTournamentFilter,
   setAdminView,
+  setPlayerFilter,
   setCurrentPage
 } = listSlice.actions;
 
