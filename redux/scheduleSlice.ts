@@ -40,13 +40,19 @@ interface FetchScheduleParams {
   userFilter: string
   userId: string
 }
+interface DeletePlayerParams {
+  userId: string;
+  tournamentId: string;
+}
 
 export const deletePlayerFromSchedule = createAsyncThunk(
   "list/deletePlayerFromSchedule",
-  async (params: FetchScheduleParams, { getState }) => {
-    const { isSuperAdmin, userFilter, userId } = params
+  async (params: DeletePlayerParams, { getState }) => {
+    const { userId, tournamentId = "303" } = params
     const URLparams = new URLSearchParams();
-    if (userFilter) URLparams.append("u", userFilter);
+    if (userId) URLparams.append("u", userId);
+    if (tournamentId) URLparams.append("t", tournamentId);
+    
     const response = await getAxiosInstance().patch(
       `/api/schedule?${URLparams.toString()}`,
     );

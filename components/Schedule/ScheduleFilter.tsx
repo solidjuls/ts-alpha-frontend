@@ -7,11 +7,12 @@ import CsvUploadButton from './CsvButtonUpload';
 import { TournamentsType } from 'types/game.types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from 'redux/store';
-import { setAdminView, setPlayerFilter } from "../../redux/scheduleSlice";
+import { deletePlayerFromSchedule, setAdminView, setPlayerFilter } from "../../redux/scheduleSlice";
 import UserTypeahead from 'pages/submitform/UserTypeahead';
 import { DropdownItemType } from 'types/types';
 import useFetchInitialData from 'hooks/useFetchInitialData';
 import { UserType } from 'types/user.types';
+import { Flex } from 'components/Atoms';
 
 const Panel = styled('div', {
   padding: '16px',
@@ -50,20 +51,38 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
         <Panel>
           <CsvUploadButton tournament={userAdminTournaments} />
           <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />
-          <UserTypeahead
-            labelText="players"
-            selectedItem={filters.playerToDelete}
-            // error={form.admins.error}
-            users={usersFilter}
-            placeholder="Type the player name..."
-            css={{ width: '320px' }}
-            onBlur={() => {
-              // onInputValueChange("admins", "");
-            }}
-            onSelect={(item: DropdownItemType) =>
-              dispatch(setPlayerFilter(item.value))
-            }
-          />
+          <Flex>
+            <>
+              <UserTypeahead
+                labelText="players"
+                // selectedItem={filters.playerToDelete}
+                // error={form.admins.error}
+                users={usersFilter}
+                placeholder="Type the player name..."
+                css={{ width: '320px', marginRight: "8px" }}
+                onBlur={() => {
+                  // onInputValueChange("admins", "");
+                }}
+                onSelect={(item: DropdownItemType) =>
+                  dispatch(setPlayerFilter(item.value))
+                }
+              />
+              <UserTypeahead
+                labelText="removePlayer"
+                // selectedItem={filters.playerToDelete}
+                // error={form.admins.error}
+                users={usersFilter}
+                placeholder="Type the player name..."
+                css={{ width: '320px' }}
+                onBlur={() => {
+                  // onInputValueChange("admins", "");
+                }}
+                onSelect={(item: DropdownItemType) =>
+                  dispatch(deletePlayerFromSchedule(item.value))
+                }
+              />
+            </>
+          </Flex>
           {/* {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
           {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />} */}
         </Panel>
