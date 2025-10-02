@@ -208,6 +208,17 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
       submit = false;
     }
 
+    if (form.endMode.value === "Cuban Missile Crisis" && ["1", "2", "3"].includes(form.endTurn.value)) {
+      setForm((prevState: any) => ({
+        ...prevState,
+        ["endTurn"]: {
+          ...prevState["endTurn"],
+          error: true,
+        },
+      }));
+      submit = false;
+    }
+
     return submit;
   };
 
