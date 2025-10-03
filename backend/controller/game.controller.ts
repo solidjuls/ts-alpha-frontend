@@ -383,9 +383,9 @@ export const getStandings = async (tournamentId: string, secondaryName: string) 
 
     const players: Record<
       string,
-      { userId: string; name: string; gamesWon: number; gamesLost: number; gamesTied: number; standingName: string; secondaryName: string | null }
+      { userId: string; tldCode: string | undefined; name: string; gamesWon: number; gamesLost: number; gamesTied: number; standingName: string; secondaryName: string | null }
     > = {};
-let counter = 0
+    let counter = 0
     standingPlayers?.forEach(userByStanding => {
       userByStanding.standing_players.forEach(user => {
         const id = user.user_id.toString()
@@ -397,6 +397,8 @@ let counter = 0
           gamesWon: 0,
           gamesLost: 0,
           gamesTied: 0,
+          tldCode: undefined,
+          name: "",
         }
       })
     })
@@ -410,6 +412,11 @@ let counter = 0
       id: true,
       first_name: true,
       last_name: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
     },
     where: {
       id: {
@@ -423,6 +430,7 @@ Object.keys(players).forEach(id => {
   
   if (name) {
     players[id].name = `${name.first_name} ${name.last_name}`
+    players[id].tldCode = name.countries?.tld_code
   }
 })
 
@@ -434,7 +442,7 @@ Object.keys(players).forEach(id => {
     // Build user stats
     const userStats: Record<
       string,
-      { userId: string; gamesWon: number; gamesLost: number; gamesTied: number }
+      { userId: string; tld_code: string; gamesWon: number; gamesLost: number; gamesTied: number }
     > = {};
 
     for (const game of games) {
@@ -460,6 +468,6 @@ Object.keys(players).forEach(id => {
           break;
       }
     }
-    
+
     return players
 }
