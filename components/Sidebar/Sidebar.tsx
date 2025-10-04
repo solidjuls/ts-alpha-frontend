@@ -152,6 +152,11 @@ const Items = ({ styles, role }: any) => {
           </Text>
         </UnstyledLink>
       )} */}
+      <UnstyledLink href="/hall-of-fame" passHref>
+        <Text strong="bold" css={styles}>
+          Hall of Fame
+        </Text>
+      </UnstyledLink>
       <UnstyledLink href="/about" passHref>
         <Text strong="bold" css={styles}>
           About Us
