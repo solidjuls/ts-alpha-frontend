@@ -1,0 +1,712 @@
+import React from "react";
+import { Flex } from "components/Atoms";
+import Text from "components/Text";
+import { FlagIcon } from "components/FlagIcon";
+import { styled } from "stitches.config";
+
+const WIDTH = 24;
+const HEIGHT = 16;
+
+const StyledCardRow = styled("div", {
+  display: "grid",
+  gap: "1rem",
+  margin: "4px",
+  gridTemplateColumns: "repeat(6, 1fr)",
+  paddingInlineStart: "8px",
+  paddingInlineEnd: "8px",
+  paddingTop: "4px",
+  paddingBottom: "4px",
+  borderWidth: "1px",
+  borderRadius: "6px",
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+ 
+  variants: {
+    header: {
+      true: {
+        backgroundColor: "#365f65",
+        color: "#fff",
+      },
+      false: {
+        backgroundColor: "transparent",
+      },
+    },
+  },
+
+  defaultVariants: {
+    header: false,
+  },
+});
+
+type CardColumnProps = {
+  season: number | string;
+  players: number | string;
+  winner: string;
+  second: string;
+  third?: string;
+  flag1?: string;
+  winnerID?: number;
+  flag2?: string;
+  secondID?: number;
+  flag3?: string;
+  thirdID?: number;
+  link?: string;
+};
+
+const CardColumn = ({ season, link, players, flag1, winner, winnerID, flag2, second, secondID, flag3, third, thirdID }: CardColumnProps) => {
+  return (
+    <>
+        <Text>
+          {link ? (
+            <Link href={`${link}`}>{season}</Link>
+          ) : (
+            season
+          )}
+        </Text>
+        <Text>{players}</Text>
+        <Flex css={{ alignItems: "center" }}>
+          {flag1 && <FlagIcon code={flag1} />}
+          <Text>
+          {winnerID ? (
+            <Link href={`/userprofile/${winnerID}`}>{winner}</Link>
+          ) : (
+            winner
+          )}
+        </Text>
+        </Flex>
+        <Flex css={{ alignItems: "center" }}>
+          {flag2 && <FlagIcon code={flag2} />}
+          <Text>
+          {secondID ? (
+            <Link href={`/userprofile/${secondID}`}>{second}</Link>
+          ) : (
+            second
+          )}
+        </Text>
+        </Flex>
+        <Flex css={{ alignItems: "center" }}>
+          {flag3 && <FlagIcon code={flag3} />}
+          <Text>
+          {thirdID ? (
+            <Link href={`/userprofile/${thirdID}`}>{third}</Link>
+          ) : (
+            third
+          )}
+        </Text>
+        </Flex>
+    </>
+  );
+};
+
+const Link = styled("a", {
+  color: "$link",
+  textDecoration: "none",
+  fontWeight: "bold",
+
+  "&:hover": {
+    textDecoration: "underline",
+    color: "$linkHover",
+  },
+});
+
+const PageContainer = styled("div", {
+  fontFamily: "$body",
+  lineHeight: 1.6,
+  margin: 0,
+  padding: 0,
+  backgroundColor: "var(--surface-ground)",
+  color: "$text",
+});
+
+const Header = styled("header", {
+  backgroundColor: "$headerBg",
+  color: "$headerText",
+  padding: "$small",
+  textAlign: "center",
+});
+
+const Main = styled("main", {
+  margin: "$medium auto",
+  padding: "$small",
+  backgroundColor: "var(--surface-ground)",
+  borderRadius: "$default",
+  boxShadow: "$default",
+});
+
+const Title = styled("h1", {
+  color: "$text",
+});
+
+const Subtitle = styled("h2", {
+  color: "$text",
+});
+
+const Section = styled("section", {
+  marginBottom: "$medium",
+});
+
+const HallOfFamePage = () => (
+  <PageContainer>
+    <Header>
+      <Title>ITS Community Hall of Fame</Title>
+    </Header>
+
+    <Main>
+      <Section>
+        <Subtitle>ITSL</Subtitle>
+        <StyledCardRow header>
+              <CardColumn
+                season="Season"
+                players="Players"
+                winner="Winner"
+                second="Second Place"
+                third="Third Place"
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2006}
+                link="http://www.wargameroom.com/itsl06.htm"
+                players={20}
+                flag1="DE"
+                winner="Michael Loth"
+                winnerID={2427}
+                flag2="US"
+                second="Rick Young"
+                secondID={2605}
+                flag3="US"
+                third="Bruce Wigdor"
+                thirdID={1707}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2007}
+                link="http://www.wargameroom.com/itsl07.htm"
+                players={48}
+                flag1="US"
+                winner="Steven Bauer"
+                winnerID={2729}
+                flag2="US"
+                second="Rob March"
+                secondID={2611}
+                flag3="DE"
+                third="Michael Loth"
+                thirdID={2427}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2008}
+                link="http://www.wargameroom.com/itsl08.htm"
+                players={49}
+                flag1="DE"
+                winner="Charles Féaux de la Croix"
+                winnerID={1730}
+                flag2="FI"
+                second="Sakari Lahti"
+                secondID={2647}
+                flag3="FI"
+                third="Riku Riekkinen"
+                thirdID={2607}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2010}
+                link="http://www.wargameroom.com/itsl10.htm"
+                players={49}
+                flag1="CN"
+                winner="Wu Haifu"
+                winnerID={2831}
+                flag2="CA"
+                second="Randy Pippus"
+                secondID={2588}
+                flag3="US"
+                third="Bruce Wigdor"
+                thirdID={1707}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2012}
+                link="http://www.wargameroom.com/itsl12.htm"
+                players={44}
+                flag1="HU"
+                winner="Gábor Földes"
+                winnerID={1943}
+                flag2="FI"
+                second="Riku Riekkinen"
+                secondID={2607}
+                flag3="CA"
+                third="Mathieu Paré-Paquin"
+                thirdID={2396}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2013}
+                link="http://www.wargameroom.com/itsl13.htm"
+                players={53}
+                flag1="FI"
+                winner="Riku Riekkinen"
+                winnerID={2607}
+                flag2="CA"
+                second="Charles Robinson"
+                secondID={1732}
+                flag3="PL"
+                third="Jędrzej Gąsiorowski"
+                thirdID={2110}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2014}
+                link="http://www.wargameroom.com/itsl14.htm"
+                players={62}
+                flag1="FI"
+                winner="Riku Riekkinen"
+                winnerID={2607}
+                flag2="PL"
+                second="Jędrzej Gąsiorowski"
+                secondID={2110}
+                flag3="CA"
+                third="Charles Robinson"
+                thirdID={1732}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2015}
+                link="http://www.wargameroom.com/itsl.htm"
+                players={61}
+                flag1="PL"
+                winner="Jędrzej Gąsiorowski"
+                winnerID={2110}
+                flag2="PL"
+                second="Ziemowit Pazderski"
+                secondID={2878}
+                flag3="FR"
+                third="Kik Ribail"
+                thirdID={2277}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2020}
+                link="https://docs.google.com/spreadsheets/d/1iTs9MIX1K_aBYEmLXSGdirj79KXzw9i1o7Y6_zo1jlI/edit?usp=sharing"
+                players={107}
+                flag1="CN"
+                winner="Kaiyan Fan"
+                winnerID={2241}
+                flag2="CN"
+                second="Kris Wei"
+                secondID={2287}
+                flag3="CZ"
+                third="Tomas Tvaroh"
+                thirdID={2780}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2021}
+                link="https://docs.google.com/spreadsheets/d/1J7CFa3oRxULQSevShKXrGA3dyrIk99PFsheRORUEfkc/edit?usp=sharing"
+                players={204}
+                flag1="CN"
+                winner="Min Cao"
+                winnerID={2465}
+                flag2="LI"
+                second="Janusz Szulc"
+                secondID={2079}
+                flag3="PL"
+                third="Ziemowit Pazderski"
+                thirdID={2878}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2022}
+                link="https://docs.google.com/spreadsheets/d/1eF9a0Uv5RhJ9Ktea86VCYjUBRgr5gO6_zq9Bxc5zNpU/edit?usp=sharing"
+                players={288}
+                flag1="PL"
+                winner="Ziemowit Pazderski"
+                winnerID={2878}
+                flag2="CN"
+                second="Zerun He"
+                secondID={2867}
+                flag3="US"
+                third="Scott Senen"
+                thirdID={2664}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2023}
+                link="https://docs.google.com/spreadsheets/d/1lY9N0ICtoGO__3cB5zWBjxyv35kgCqBO3mC8f__EnW8/edit?usp=sharing"
+                players={288}
+                flag1="US"
+                winner="Michael Patnik"
+                winnerID={2432}
+                flag2="SE"
+                second="Henrik Pettersson"
+                secondID={2005}
+                flag3="CA"
+                third="Félix Lapan"
+                thirdID={1913}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2024}
+                link="https://docs.google.com/spreadsheets/d/1KiBaw2ijj6HeNYVJdlELmybFmmplYFte0j4KZ-2hmDc/edit?usp=sharing"
+                players={213}
+                flag1="CZ"
+                winner="Tomas Tvaroh"
+                winnerID={2780}
+                flag2="ES"
+                second="Jarib Flores"
+                secondID={2084}
+                flag3="PL"
+                third="Ziemowit Pazderski"
+                thirdID={2878}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2025}
+                link="https://docs.google.com/spreadsheets/d/1Li5u8nJXp3JZVdM1TSODUm-Rs0kxCsq39pAsveJ0d4E/edit?usp=sharing"
+                players={192}
+                flag1="PL"
+                winner="Ziemowit Pazderski"
+                winnerID={2878}
+                flag2="CZ"
+                second="Tomas Tvaroh"
+                secondID={2780}
+                flag3="GR"
+                third="Makis Bahtsevanis"
+                thirdID={2344}
+              />
+        </StyledCardRow>
+        </Section>
+
+        <Section>
+        <Subtitle>OTSL</Subtitle>
+        <StyledCardRow header>
+              <CardColumn
+                season="Season"
+                players="Players"
+                winner="Winner"
+                second="Second Place"
+                third="Third Place"
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2019}
+                players={50}
+                flag1="AU"
+                winner="Jesse Seeberg-Gordon"
+                winnerID={2130}
+                flag2="CA"
+                second="Hasan Jamil"
+                secondID={2000}
+                flag3="PL"
+                third="Tomasz Styczek"
+                thirdID={2786}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2020}
+                players={96}
+                flag1="CZ"
+                winner="Tomas Tvaroh"
+                winnerID={2780}
+                flag2="PL"
+                second="Tomasz Styczek"
+                secondID={2786}
+                flag3="UK"
+                third="Ricki McLaughlin"
+                thirdID={2606}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2021}
+                link="https://docs.google.com/spreadsheets/d/1GSvfZEx9QNXUsP6goMAcsvn-8hDPrSsRtXW0RTkEXfc/edit?gid=136890452#gid=136890452"
+                players={160}
+                flag1="US"
+                winner="Justin Abramson"
+                winnerID={2232}
+                flag2="RU"
+                second="Pavel Meshkov"
+                secondID={2536}
+                flag3="AU"
+                third="Aidan Archer"
+                thirdID={1543}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2022}
+                link="https://docs.google.com/spreadsheets/d/1o_QUK_vYNHTKiHRMTTzOdtNK3DO0YJdatdXPAQHAfs0/edit?gid=136890452#gid=136890452"
+                players={170}
+                flag1="US"
+                winner="Ryan Pindulic"
+                winnerID={2645}
+                flag2="ES"
+                second="Jarib Flores"
+                secondID={2084}
+                flag3="US"
+                third="Justin Abramson"
+                thirdID={2232}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2023}
+                link="https://docs.google.com/spreadsheets/d/1RIaPr8hFMDsMClnfYgJGo0GyqUEXcth6EoYzM7UsUo8/edit?gid=136890452#gid=136890452"
+                players={160}
+                flag1="CZ"
+                winner="Tomas Tvaroh"
+                winnerID={2780}
+                flag2="TR"
+                second="Firat Guncu"
+                secondID={1921}
+                flag3="PL"
+                third="Bartosz Wróbel"
+                thirdID={1658}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2024}
+                link="https://docs.google.com/spreadsheets/d/16MVPndQQErMV-HFlz-lCD5woEf8dnXDypa1Zp8K5hKw/edit?gid=136890452#gid=136890452"
+                players={140}
+                flag1="US"
+                winner="Justin Abramson"
+                winnerID={2232}
+                flag2="GR"
+                second="Tasos Manolopoulos"
+                secondID={2743}
+                flag3="SE"
+                third="Anton Skott"
+                thirdID={1630}
+              />
+        </StyledCardRow>
+       </Section>
+
+       <Section>
+        <Subtitle>RTSL</Subtitle>
+        <StyledCardRow header>
+              <CardColumn
+                season="Season"
+                players="Players"
+                winner="Winner"
+                second="Second Place"
+                third="Third Place"
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season={2018}
+                players={44}
+                flag1="US"
+                winner="Michael Shackleton"
+                winnerID={2435}
+                flag2="US"
+                second="Ackbleh"
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2019-A"
+                players={72}
+                flag1="LI"
+                winner="Janusz Szulc"
+                winnerID={2079}
+                flag2="US"
+                second="Michael Shackleton"
+                secondID={2435}
+                flag3="US"
+                third="Siddhartha"
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2019-B"
+                players={88}
+                flag1="LI"
+                winner="Janusz Szulc"
+                winnerID={2079}
+                flag2="US"
+                second="Michael Shackleton"
+                secondID={2435}
+                flag3="US"
+                third="Patrick Coate"
+                thirdID={2523}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2020-A"
+                players={88}
+                flag1="LI"
+                winner="Janusz Szulc"
+                winnerID={2079}
+                flag2="US"
+                second="Michael Shackleton"
+                secondID={2435}
+                flag3="PL"
+                third="Ziemowit Pazderski"
+                thirdID={2878}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2020-B"
+                players={46}
+                flag1="CA"
+                winner="Mathieu Latendresse"
+                winnerID={2395}
+                flag2="CA"
+                second="Félix Lapan"
+                secondID={1913}
+                flag3="US"
+                third="David DiCarlo"
+                thirdID={1815}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2021-A"
+                players={110}
+                flag1="KR"
+                winner="Youngbae Park"
+                winnerID={2853}
+                flag2="US"
+                second="Michael Shackleton"
+                secondID={2435}
+                flag3="PE"
+                third="Cesar Peña"
+                thirdID={1725}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2021-B"
+                link="https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vQMZY1sPbX_uFyxPJS9ugmwBuddDnmBhCTEhzAF-tlM0kSl0sqP7HjvgNthM1vsKwGKJWii5VLGFWXJ/pubhtml"
+                players={121}
+                flag1="CZ"
+                winner="Tomas Tvaroh"
+                winnerID={2780}
+                flag2="US"
+                second="Michael Shackleton"
+                secondID={2435}
+                flag3="NZ"
+                third="Ken C"
+                thirdID={2263}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2022-A"
+                link="https://docs.google.com/spreadsheets/d/1FOASZjMVlwkLVu0NtfvbTeQig56TnhZWD9LzvtC8hr4/edit?usp=sharing"
+                players={121}
+                flag1="PL"
+                winner="Ziemowit Pazderski"
+                winnerID={2878}
+                flag2="CA"
+                second="Félix Lapan"
+                secondID={1913}
+                flag3="US"
+                third="Michael Shackleton"
+                thirdID={2435}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2022-B"
+                link="https://docs.google.com/spreadsheets/d/13H85QOIGpZMe0rwrubOrk-dLXtpsrgNEJbhXcUJ9iBE/edit?usp=drive_link"
+                players={78}
+                flag1="CN"
+                winner="Sheng Wei Qin"
+                winnerID={2688}
+                flag2="CZ"
+                second="Tomas Tvaroh"
+                secondID={2780}
+                flag3="US"
+                third="Michael Shackleton"
+                thirdID={2435}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2023-A"
+                link="https://docs.google.com/spreadsheets/d/1JlrVkBSWfHe82xhHLl5ot2q0jYtGv-MMW18sW1rkiZs/"
+                players={84}
+                flag1="PL"
+                winner="Ziemowit Pazderski"
+                winnerID={2878}
+                flag2="US"
+                second="Michael Stryker"
+                secondID={2438}
+                flag3="HK"
+                third="Tin Sum Cheng"
+                thirdID={2769}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2023-B"
+                link="https://docs.google.com/spreadsheets/d/1Lu2UvdK_ZxxjnAXZj3XyrIp2U-lz4TMO_y18Hwkoljk/edit#gid=171371583"
+                players={90}
+                flag1="ES"
+                winner="Jarib Flores"
+                winnerID={2084}
+                flag2="KR"
+                second="B H Ju"
+                secondID={1652}
+                flag3="US"
+                third="Michael Stryker"
+                thirdID={2438}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2024-A"
+                link="https://docs.google.com/spreadsheets/d/10xuhjVHEU3l6I2Vbf3q8LqgsFpb0T0jyHpHKXZOh3bc/edit?gid=171371583#gid=171371583"
+                players={89}
+                flag1="ES"
+                winner="Jarib Flores"
+                winnerID={2084}
+                flag2="CN"
+                second="Patrick Gong"
+                secondID={2525}
+                flag3="US"
+                third="Michael Stryker"
+                thirdID={2438}
+              />
+        </StyledCardRow>
+        <StyledCardRow>
+              <CardColumn
+                season="2024-B"
+                link="https://docs.google.com/spreadsheets/d/1fYoRB5Oujb-K0Dl0Kl92uhrLN5-PrftlPyCaaRgfRY0/edit?usp=drive_link"
+                players={99}
+                flag1="PL"
+                winner="Bartosz Wróbel"
+                winnerID={1658}
+                flag2="PL"
+                second="Ziemowit Pazderski"
+                secondID={2878}
+                flag3="US"
+                third="Justin Abramson"
+                thirdID={2232}
+              />
+        </StyledCardRow>
+        </Section>
+    </Main>
+  </PageContainer>
+);
+
+export default HallOfFamePage;
