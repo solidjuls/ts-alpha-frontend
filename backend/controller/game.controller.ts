@@ -361,3 +361,113 @@ export const submit = async (data: GameAPI) => {
     throw e;
   }
 };
+
+export const getStandings = async (tournamentId: string, secondaryName: string) => {
+  // Get standings entry for filtering
+  console.log("tournamentId, secondaryName", tournamentId, secondaryName);
+    const standingPlayers = await prisma.standings.findMany({
+      where: {
+        tournaments_id: Number(tournamentId),
+        secondary_name: String(secondaryName),
+      },
+      select: {
+        standing_players: {
+          select: {
+            user_id: true,
+          },
+        },
+        standing_name: true,
+        secondary_name: true,
+      }
+    });
+
+    const players: Record<
+      string,
+      { userId: string; tldCode: string | undefined; name: string; gamesWon: number; gamesLost: number; gamesTied: number; standingName: string; secondaryName: string | null }
+    > = {};
+    let counter = 0
+    standingPlayers?.forEach(userByStanding => {
+      userByStanding.standing_players.forEach(user => {
+        const id = user.user_id.toString()
+        counter++
+        players[id]= {
+          userId: id,
+          standingName: userByStanding.standing_name,
+          secondaryName: userByStanding.secondary_name,
+          gamesWon: 0,
+          gamesLost: 0,
+          gamesTied: 0,
+          tldCode: undefined,
+          name: "",
+        }
+      })
+    })
+
+    if (!standingPlayers || standingPlayers.length === 0) {
+      return // res.status(404).json({ error: "No standings found" });
+    }
+
+  const standingPlayersNames = await prisma.users.findMany({
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
+    },
+    where: {
+      id: {
+        in: Object.keys(players).map(Number),
+      },
+    },
+  });
+
+Object.keys(players).forEach(id => {
+  const name = standingPlayersNames.find(user => user.id.toString() === id)
+  
+  if (name) {
+    players[id].name = `${name.first_name} ${name.last_name}`
+    players[id].tldCode = name.countries?.tld_code
+  }
+})
+
+    // Retrieve all game results for the given tournament
+    const games = await prisma.game_results.findMany({
+      where: { game_type: Number(tournamentId) },
+    });
+
+    // Build user stats
+    const userStats: Record<
+      string,
+      { userId: string; tld_code: string; gamesWon: number; gamesLost: number; gamesTied: number }
+    > = {};
+
+    for (const game of games) {
+      const usaId = game.usa_player_id.toString();
+      const ussrId = game.ussr_player_id.toString();
+
+      if (!players[usaId] || !players[ussrId]) {
+        continue;
+      }
+      
+      switch (game.game_winner) {
+        case "1": // USA wins
+          players[usaId].gamesWon++;
+          players[ussrId].gamesLost++;
+          break;
+        case "2": // USSR wins
+          players[ussrId].gamesWon++;
+          players[usaId].gamesLost++;
+          break;
+        case "3": // Tie
+          players[usaId].gamesTied++;
+          players[ussrId].gamesTied++;
+          break;
+      }
+    }
+
+    return players
+}

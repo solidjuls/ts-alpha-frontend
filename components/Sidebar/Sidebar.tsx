@@ -51,7 +51,7 @@ const horizontalItemStyles = {
   backgroundColor: "var(--gray-200)",
   cursor: "pointer",
   color: "black",
-  padding: "8px 16px",
+  padding: "8px 12px",
   margin: 0,
 };
 
@@ -106,24 +106,29 @@ const Items = ({ styles, role }: any) => {
   return (
     <>
       <UnstyledLink href="/" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           Game Results
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/players" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           Player List
         </Text>
       </UnstyledLink>
-      {/* <Text css={styles}>Federations</Text> */}
+      {/* <Text css={horizontalItemStyles}>Federations</Text> */}
       <UnstyledLink href="/submitform" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           Submit Form
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/schedule" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           My Schedule
+        </Text>
+      </UnstyledLink>
+      <UnstyledLink href="/standings" passHref>
+        <Text strong="bold" css={horizontalItemStyles}>
+          Standings
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
@@ -153,12 +158,12 @@ const Items = ({ styles, role }: any) => {
         </UnstyledLink>
       )} */}
       <UnstyledLink href="/hall-of-fame" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           Hall of Fame
         </Text>
       </UnstyledLink>
       <UnstyledLink href="/about" passHref>
-        <Text strong="bold" css={styles}>
+        <Text strong="bold" css={horizontalItemStyles}>
           About Us
         </Text>
       </UnstyledLink>
@@ -268,6 +273,11 @@ const VerticalSidebar = () => {
                 My Schedule
               </Text>
             </UnstyledLink>
+            <UnstyledLink href="/standings" passHref>
+              <Text strong="bold" css={horizontalItemStyles}>
+                Standings
+              </Text>
+            </UnstyledLink>
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
@@ -301,7 +311,7 @@ const VerticalSidebar = () => {
               </UnstyledLink>
             )} */}
             <UnstyledLink href="/hall-of-fame" passHref>
-              <Text strong="bold">
+              <Text strong="bold" css={horizontalItemStyles}>
                 Hall of Fame
               </Text>
             </UnstyledLink>

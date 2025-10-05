@@ -29,7 +29,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
     setInput(input);
   };
   const userSuggestions = users?.filter((user) => {
-    if (user.text.toLowerCase().includes(input.toLowerCase())) {
+    if (user?.text?.toLowerCase().includes(input.toLowerCase())) {
       return true;
     }
   });
