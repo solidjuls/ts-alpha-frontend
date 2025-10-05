@@ -126,6 +126,11 @@ const Items = ({ styles, role }: any) => {
           My Schedule
         </Text>
       </UnstyledLink>
+      <UnstyledLink href="/standings" passHref>
+        <Text strong="bold" css={styles}>
+          Standings
+        </Text>
+      </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
         <Text strong="bold" css={horizontalItemStyles}>
           <FormattedMessage id="profileText" />
@@ -268,6 +273,11 @@ const VerticalSidebar = () => {
                 My Schedule
               </Text>
             </UnstyledLink>
+            <UnstyledLink href="/standings" passHref>
+              <Text strong="bold" css={horizontalItemStyles}>
+                Standings
+              </Text>
+            </UnstyledLink>
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
@@ -301,7 +311,7 @@ const VerticalSidebar = () => {
               </UnstyledLink>
             )} */}
             <UnstyledLink href="/hall-of-fame" passHref>
-              <Text strong="bold">
+              <Text strong="bold" css={horizontalItemStyles}>
                 Hall of Fame
               </Text>
             </UnstyledLink>
