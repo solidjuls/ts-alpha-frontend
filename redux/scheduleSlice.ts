@@ -37,7 +37,7 @@ const initialState: ScheduleState = {
 interface FetchScheduleParams {
   isSuperAdmin: boolean;
   tournaments: string[];
-  userFilter: string
+  userFilter?: string
   userId: string
 }
 interface DeletePlayerParams {

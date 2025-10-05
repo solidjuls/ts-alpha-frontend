@@ -699,9 +699,9 @@ const HallOfFamePage = () => (
                 flag2="PL"
                 second="Ziemowit Pazderski"
                 secondID={2878}
-                flag3="US"
-                third="Justin Abramson"
-                thirdID={2232}
+                flag3="CN"
+                third="Patrick Gong"
+                thirdID={2525}
               />
         </StyledCardRow>
         </Section>

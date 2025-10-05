@@ -38,17 +38,30 @@ import { Pagination } from "components/Pagination";
 import { setCurrentPage } from "../../redux/scheduleSlice";
 import { getTournamentsRegistered } from "backend/controller/user.controller";
 
+const Link = styled("a", {
+  color: "$link",
+  textDecoration: "none",
+  fontWeight: "bold",
+
+  "&:hover": {
+    textDecoration: "underline",
+    color: "$linkHover",
+  },
+});
+
 interface ScheduleProps {
   isSuperAdmin: boolean;
   tournamentsAdmin: DropdownItemType[];
   tournamentsRegistered: DropdownItemType[];
   isAdmin: boolean;
   userId: string;
+  accountCompromised: string;
 }
 
 type SchedulePanelProps = {
   data: ScheduleType[] | null;
   isLoading: boolean;
+  isAdmin: boolean;
 };
 
 const ResponsiveContainer = styled("div", {
@@ -111,9 +124,12 @@ const PlayerInfoBox = ({
   countryUsa,
   countryUssr,
   gameWinner,
-}: Pick<ScheduleType, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
+  idUsa,
+  idUssr,
+  css
+}: Pick<ScheduleType, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "idUsa" | "idUssr"> & { css?: any }) => {
   return (
-    <Flex css={{ display: "flex", flexDirection: "row" }}>
+    <Flex css={{ display: "flex", flexDirection: "row", paddingLeft: "20px" }}>
       <Box
         css={{
           display: "flex",
@@ -124,12 +140,14 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={countryUsa} />
+        <Link href={`/userprofile/${idUsa}`}>
         <Text
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
         >
           {nameUsa}
         </Text>
+        </Link>
       </Box>
       <span>vs</span>
       <Box
@@ -143,12 +161,14 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={countryUssr} />
+        <Link href={`/userprofile/${idUssr}`}>
         <Text
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
         >
           {nameUssr}
         </Text>
+        </Link>
       </Box>
     </Flex>
   );
@@ -187,17 +207,7 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
   return (
     <Flex>
       <PlayerInfo status={getVariant(schedule)}>
-        <UnstyledLink
-          href={resolveLink({
-            gameResultsId: schedule.gameResultsId,
-            id: schedule.id,
-            idUsa: schedule.idUsa,
-            idUssr: schedule.idUssr,
-            tournamentId: schedule.tournamentId,
-            gameCode: schedule.gameCode,
-          })}
-          css={{ display: "flex", flexDirection: "column" }}
-        >
+        
           <Flex
             css={{
               display: "flex",
@@ -206,7 +216,7 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
               margin: "0 0 0 8px",
             }}
           >
-            <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
+            <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4, marginBottom: 10 }}>
               {schedule.tournamentName}
             </Text>
           </Flex>
@@ -217,8 +227,10 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
             countryUssr={schedule.countryUssr}
             nameUsa={schedule.nameUsa}
             nameUssr={schedule.nameUssr}
+            idUsa={schedule.idUsa}
+            idUssr={schedule.idUssr}
+            css={{ paddingLeft: "250px" }}
           />
-        </UnstyledLink>
       </PlayerInfo>
       <DueDateCell>
         <DueDateDisplay
@@ -228,6 +240,19 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
           admin={isAdmin}
           gamePlayed={false}
         />
+        <Link
+          href={resolveLink({
+            gameResultsId: schedule.gameResultsId,
+            id: schedule.id,
+            idUsa: schedule.idUsa,
+            idUssr: schedule.idUssr,
+            tournamentId: schedule.tournamentId,
+            gameCode: schedule.gameCode,
+          })}
+          css={{ display: "flex", flexDirection: "column" }}
+        >
+          <Text>Report Game</Text>
+        </Link>
       </DueDateCell>
     </Flex>
   );

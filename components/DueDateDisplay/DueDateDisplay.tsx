@@ -11,7 +11,7 @@ import { Spinner } from "@radix-ui/themes";
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
-  gameDate: string | Date;
+  gameDate: string | Date | null;
   admin: boolean;
   gamePlayed: boolean;
   scheduleId: string;
