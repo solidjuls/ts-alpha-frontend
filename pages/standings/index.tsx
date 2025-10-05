@@ -52,7 +52,7 @@ const Standings = () => {
   } = useFetchInitialData<Player[]>({ url: "/api/standings?id=313&division=TORUN" });
   if (!standings) return null;
 
-  console.log("standings", standings);
+
   const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
@@ -86,7 +86,7 @@ const Standings = () => {
                 <tr key={player.userId}>
                   <StyledCell>
                     <Flex css={{ alignItems: "center", gap: "4px" }}>
-                      <FlagIcon code={player.tldCode} />
+                      {player.tldCode && <FlagIcon code={player.tldCode} />}
                       <Text fontSize="small">{player.name}</Text>
                     </Flex>
                   </StyledCell>
