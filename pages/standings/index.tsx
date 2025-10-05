@@ -97,7 +97,7 @@ const Standings = () => {
     error,
     refetch,
   } = useFetchInitialData<Player[]>({
-    url: `/api/standings?id=313&division=${selectedDivision}`
+    url: `/api/standings?id=318&division=${selectedDivision}`
   });
 
   const handleDivisionChange = (division: Division) => {
