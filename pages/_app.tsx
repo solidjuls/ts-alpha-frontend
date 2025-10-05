@@ -14,6 +14,12 @@ import "@radix-ui/themes/styles.css";
 import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
+import { styled } from "stitches.config";
+
+const Footer = styled("footer", {
+  textAlign: "center",
+  margin: "$medium 0",
+});
 
 function App({ Component, pageProps, name, id, email, role, tournaments }: AppProps) {
   return (
@@ -25,6 +31,9 @@ function App({ Component, pageProps, name, id, email, role, tournaments }: AppPr
             <Layout>
               <Component {...pageProps} />
             </Layout>
+            <Footer>
+              <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
+            </Footer>
           </Theme>
         </IntlContextProvider>
       </Provider>

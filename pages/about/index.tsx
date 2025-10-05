@@ -83,11 +83,6 @@ const Link = styled("a", {
 
 });
 
-const Footer = styled("footer", {
-  textAlign: "center",
-  margin: "$medium 0",
-});
-
 const AboutPage = () => (
   <PageContainer>
     <Header>
@@ -474,10 +469,6 @@ const AboutPage = () => (
         </List>
       </Section>
     </Main>
-
-    <Footer>
-      <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
-    </Footer>
   </PageContainer>
 );
 

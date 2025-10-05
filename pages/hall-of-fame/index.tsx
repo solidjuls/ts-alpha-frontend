@@ -145,11 +145,6 @@ const Section = styled("section", {
   marginBottom: "$medium",
 });
 
-const Footer = styled("footer", {
-  textAlign: "center",
-  margin: "$medium 0",
-});
-
 const HallOfFamePage = () => (
   <PageContainer>
     <Header>
@@ -711,10 +706,6 @@ const HallOfFamePage = () => (
         </StyledCardRow>
         </Section>
     </Main>
-
-    <Footer>
-      <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
-    </Footer>
   </PageContainer>
 );
 

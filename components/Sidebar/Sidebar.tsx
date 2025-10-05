@@ -300,6 +300,11 @@ const VerticalSidebar = () => {
                 </Text>
               </UnstyledLink>
             )} */}
+            <UnstyledLink href="/hall-of-fame" passHref>
+              <Text strong="bold">
+                Hall of Fame
+              </Text>
+            </UnstyledLink>
             <UnstyledLink href="/about" passHref>
               <Item>
                 <Text strong="bold" css={horizontalItemStyles}>
