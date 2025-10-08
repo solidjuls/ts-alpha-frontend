@@ -231,6 +231,26 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
             idUssr={schedule.idUssr}
             css={{ paddingLeft: "250px" }}
           />
+          <Flex
+            css={{
+              display: "flex",
+              justifyContent: "flex-end", 
+              paddingRight: "20px", 
+            }}
+          >
+            <Link
+            href={resolveLink({
+              gameResultsId: schedule.gameResultsId,
+              id: schedule.id,
+              idUsa: schedule.idUsa,
+              idUssr: schedule.idUssr,
+              tournamentId: schedule.tournamentId,
+              gameCode: schedule.gameCode,
+            })}
+            >
+              <Text>Report Game</Text>
+            </Link>
+        </Flex>
       </PlayerInfo>
       <DueDateCell>
         <DueDateDisplay
@@ -240,19 +260,6 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
           admin={isAdmin}
           gamePlayed={false}
         />
-        <Link
-          href={resolveLink({
-            gameResultsId: schedule.gameResultsId,
-            id: schedule.id,
-            idUsa: schedule.idUsa,
-            idUssr: schedule.idUssr,
-            tournamentId: schedule.tournamentId,
-            gameCode: schedule.gameCode,
-          })}
-          css={{ display: "flex", flexDirection: "column" }}
-        >
-          <Text>Report Game</Text>
-        </Link>
       </DueDateCell>
     </Flex>
   );

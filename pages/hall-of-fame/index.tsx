@@ -20,6 +20,7 @@ const StyledCardRow = styled("div", {
   borderRadius: "6px",
   border: "solid 1px $greyLight",
   boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  
  
   variants: {
     header: {
@@ -116,6 +117,8 @@ const PageContainer = styled("div", {
   padding: 0,
   backgroundColor: "var(--surface-ground)",
   color: "$text",
+  maxWidth: "100vw",
+  overflowX: "hidden",
 });
 
 const Header = styled("header", {
