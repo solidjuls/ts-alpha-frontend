@@ -383,7 +383,7 @@ export const getStandings = async (tournamentId: string, secondaryName: string) 
 
     const players: Record<
       string,
-      { userId: string; tldCode: string | undefined; name: string; gamesWon: number; gamesLost: number; gamesTied: number; standingName: string; secondaryName: string | null }
+      { userId: string; tldCode: string | undefined; opponents: string[]; name: string; gamesWon: number; gamesLost: number; gamesTied: number; winRate: number; sos: number; standingName: string; secondaryName: string | null }
     > = {};
     let counter = 0
     standingPlayers?.forEach(userByStanding => {
@@ -397,8 +397,11 @@ export const getStandings = async (tournamentId: string, secondaryName: string) 
           gamesWon: 0,
           gamesLost: 0,
           gamesTied: 0,
+          winRate: 0,
+          sos: 0,
           tldCode: undefined,
           name: "",
+          opponents: [],
         }
       })
     })
@@ -439,12 +442,6 @@ Object.keys(players).forEach(id => {
       where: { game_type: Number(tournamentId) },
     });
 
-    // Build user stats
-    const userStats: Record<
-      string,
-      { userId: string; tld_code: string; gamesWon: number; gamesLost: number; gamesTied: number }
-    > = {};
-
     for (const game of games) {
       const usaId = game.usa_player_id.toString();
       const ussrId = game.ussr_player_id.toString();
@@ -453,21 +450,47 @@ Object.keys(players).forEach(id => {
         continue;
       }
       
+      // We keep track of all player's opponents for a later use
+      players[usaId].opponents.push(ussrId);
+      players[ussrId].opponents.push(usaId);
+
+
       switch (game.game_winner) {
-        case "1": // USA wins
+        case "1":
           players[usaId].gamesWon++;
           players[ussrId].gamesLost++;
           break;
-        case "2": // USSR wins
+        case "2":
           players[ussrId].gamesWon++;
           players[usaId].gamesLost++;
           break;
-        case "3": // Tie
+        case "3":
           players[usaId].gamesTied++;
           players[ussrId].gamesTied++;
           break;
       }
     }
 
+    // Win%
+    Object.keys(players).forEach(id => {
+      const gamesWon = players[id].gamesWon;
+      const gamesLost = players[id].gamesLost;
+      const gamesTied = players[id].gamesTied;
+      if (gamesWon + gamesLost + gamesTied === 0) {
+        return
+      }
+      players[id].winRate = (gamesWon + (0.5 * gamesTied))/(gamesWon + gamesLost + gamesTied)
+      // console.log("players[id].opponents", players[id].opponents)
+    })
+
+    // SoS
+    Object.keys(players).forEach(id => {
+      const opponents = players[id].opponents
+      if (opponents.length === 0) {
+        return
+      }
+      players[id].sos = opponents.reduce((acc, opponent) => acc + players[opponent].winRate, 0) / opponents.length
+      // console.log("Win sos", players[id].name, players[id].winRate, players[id].sos);
+    })
     return players
 }
