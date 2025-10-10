@@ -141,7 +141,7 @@ const Items = ({ styles, role }: any) => {
       {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/usercreate" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
-            Register user
+            Register User
           </Text>
         </UnstyledLink>
       )}
