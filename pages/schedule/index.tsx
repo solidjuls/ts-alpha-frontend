@@ -224,9 +224,9 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleType; us
         </UnstyledLink>
       </PlayerInfo>
       <CheckOpponentProfileCell>
-        <Link href={`/userprofile/${opponentId}`}>
+        <UnstyledLink href={`/userprofile/${opponentId}`}>
           <Text fontSize="small">Opponent profile</Text>
-        </Link>
+        </UnstyledLink>
       </CheckOpponentProfileCell>
       <DueDateCell>
         <DueDateDisplay

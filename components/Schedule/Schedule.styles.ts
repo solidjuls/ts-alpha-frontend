@@ -53,6 +53,8 @@ export const CheckOpponentProfileCell = styled("div", {
   flexDirection: "column",
   justifyContent: 'center',
   backgroundColor: "white",
+  color: 'red',
+  fontWeight: 600,
   padding: "4px",
   margin: "4px",
   borderWidth: "1px",
