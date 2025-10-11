@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const userStats = await getStandings(id, division);
-console.log("userStats", userStats);
+
     return res.status(200).json(Object.values(userStats));
   } catch (error) {
     console.error(error);

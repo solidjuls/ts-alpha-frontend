@@ -6,6 +6,7 @@ import {
   ResultsStyleWrapper,
   DueDateCell,
   UnstyledLink,
+  CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
@@ -37,6 +38,7 @@ import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { setCurrentPage } from "../../redux/scheduleSlice";
 import { getTournamentsRegistered } from "backend/controller/user.controller";
+import Link from "next/link";
 
 interface ScheduleProps {
   isSuperAdmin: boolean;
@@ -183,7 +185,8 @@ const getVariant: VariantType = (schedule) => {
   return "default";
 };
 
-const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: boolean }) => {
+const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleType; userId: string; isAdmin: boolean }) => {
+  const opponentId = schedule.idUsa === userId ? schedule.idUssr : schedule.idUsa;
   return (
     <Flex>
       <PlayerInfo status={getVariant(schedule)}>
@@ -220,6 +223,11 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
           />
         </UnstyledLink>
       </PlayerInfo>
+      <CheckOpponentProfileCell>
+        <UnstyledLink href={`/userprofile/${opponentId}`}>
+          <Text fontSize="small">Opponent profile</Text>
+        </UnstyledLink>
+      </CheckOpponentProfileCell>
       <DueDateCell>
         <DueDateDisplay
           dueDate={schedule.dueDate}
@@ -233,7 +241,7 @@ const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: b
   );
 };
 
-const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading }) => {
+const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -258,7 +266,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading 
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-        <ScheduleRow key={index} schedule={schedule} isAdmin={isAdmin} />
+        <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />
       ))}
     </ResultsStyleWrapper>
   );
@@ -319,7 +327,7 @@ const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, t
               tournament={tournamentsRegistered?.[0]}
             />
           )}
-          <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0} isLoading={status === "loading"} />
+          <SchedulePanel data={items} userId={userId} isAdmin={tournamentsAdmin.length > 0} isLoading={status === "loading"} />
 
           <Pagination
             currentPage={currentPage}

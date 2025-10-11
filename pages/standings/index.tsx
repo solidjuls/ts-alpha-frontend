@@ -19,16 +19,16 @@ type Player = {
   gamesWon: number;
   gamesLost: number;
   gamesTied: number;
+  winRate: number;
+  sos: number;
 };
 
 const PageHeader = styled('h1', {
   textAlign: "center", borderBottom: "solid 1px $greyLight" 
 })
 const StyledTable = styled("table", {
-  width: "260px",
   borderCollapse: "collapse",
   marginBottom: "8px",
-  //border: "solid 1px black",
 });
 
 const StyledHeading = styled("thead", {
@@ -118,6 +118,15 @@ const Standings = () => {
     return acc;
   }, {});
 
+  for (const key in grouped) {
+    grouped[key].sort((a, b) => {
+      if (b.winRate !== a.winRate) {
+        return b.winRate - a.winRate;
+      }
+      return b.sos - a.sos;
+    });
+  }
+
   return (
     <Flex css={{ flexDirection: "column", padding: "8px" }}>
       {/* Division Filter Tabs */}
@@ -155,13 +164,21 @@ const Standings = () => {
           <StyledTable>
             <StyledHeading>
               <tr>
-                <StyledHeaderCell css={{ paddingLeft: '40px'}}>Player Name</StyledHeaderCell>
+                <StyledHeaderCell css={{ width: '40px' }}>Rank</StyledHeaderCell>
+                <StyledHeaderCell css={{ paddingLeft: '40px', width: '200px'}}>Player Name</StyledHeaderCell>
                 <StyledHeaderCell>W-L-T</StyledHeaderCell>
+                <StyledHeaderCell>Win%</StyledHeaderCell>
+                <StyledHeaderCell>SoS</StyledHeaderCell>
               </tr>
             </StyledHeading>
             <tbody>
-              {players.map((player) => (
+              {players.map((player, index) => (
                 <tr key={player.userId}>
+                  <StyledCell css={{ borderLeft: "solid 1px black" }}>
+                    <Text fontSize="small" css={{ textAlign: "center" }}>
+                      {index+1}
+                    </Text>
+                  </StyledCell>
                   <StyledCell>
                     <Flex css={{ alignItems: "center", gap: "4px" }}>
                       {player.tldCode && <FlagIcon code={player.tldCode} />}
@@ -171,6 +188,16 @@ const Standings = () => {
                   <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
                     <Text fontSize="small">
                       {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                    </Text>
+                  </StyledCell>
+                  <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+                    <Text fontSize="small" css={{ textAlign: "center" }}>
+                      {`${(player.winRate*100).toFixed(0)}%`}
+                    </Text>
+                  </StyledCell>
+                  <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+                    <Text fontSize="small" css={{ textAlign: "center" }}>
+                      {`${(player.sos*100).toFixed(0)}%`}
                     </Text>
                   </StyledCell>
                 </tr>

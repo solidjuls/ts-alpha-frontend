@@ -48,6 +48,24 @@ export const PlayerInfo = styled("div", {
   },
 });
 
+export const CheckOpponentProfileCell = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: 'center',
+  backgroundColor: "white",
+  color: 'red',
+  fontWeight: 600,
+  padding: "4px",
+  margin: "4px",
+  borderWidth: "1px",
+  borderRadius: "6px",
+  border: "solid 1px $greyLight",
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  '@media (max-width: 600px)': {
+    display: 'none'
+  },
+})
+
 export const DueDateCell = styled("div", {
   display: "flex",
   flexDirection: "column",
