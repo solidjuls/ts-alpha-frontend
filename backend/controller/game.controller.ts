@@ -363,8 +363,6 @@ export const submit = async (data: GameAPI) => {
 };
 
 export const getStandings = async (tournamentId: string, secondaryName: string) => {
-  // Get standings entry for filtering
-  console.log("tournamentId, secondaryName", tournamentId, secondaryName);
     const standingPlayers = await prisma.standings.findMany({
       where: {
         tournaments_id: Number(tournamentId),
