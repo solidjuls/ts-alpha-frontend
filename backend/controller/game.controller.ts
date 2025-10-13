@@ -366,7 +366,6 @@ export const getStandings = async (tournamentId: string, secondaryName: string) 
     const standingPlayers = await prisma.standings.findMany({
       where: {
         tournaments_id: Number(tournamentId),
-        secondary_name: String(secondaryName),
       },
       select: {
         standing_players: {
@@ -452,7 +451,6 @@ Object.keys(players).forEach(id => {
       players[usaId].opponents.push(ussrId);
       players[ussrId].opponents.push(usaId);
 
-
       switch (game.game_winner) {
         case "1":
           players[usaId].gamesWon++;
@@ -490,5 +488,9 @@ Object.keys(players).forEach(id => {
       players[id].sos = opponents.reduce((acc, opponent) => acc + players[opponent].winRate, 0) / opponents.length
       // console.log("Win sos", players[id].name, players[id].winRate, players[id].sos);
     })
-    return players
+
+    // Return only players on the current standing
+    const filteredPlayers = Object.values(players).filter(player => player.secondaryName === secondaryName)
+
+    return filteredPlayers
 }
