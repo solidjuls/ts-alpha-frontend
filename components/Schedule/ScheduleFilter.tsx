@@ -83,14 +83,13 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
               />
             </>
           </Flex>
-          {/* {!noSchedule && <ReplacePlayers tournament={userAdminTournaments} />}
-          {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />} */}
+          <ReplacePlayers tournament={tournament} users={usersFilter} /> 
         </Panel>
       )}
     </div>
   );
 };
-
+// {!noSchedule && <AddNewSchedule tournament={userAdminTournaments} />}
 // SUPER ADMIN 
 // all tournaments with a schedule
 // upload csv. I can see the option if I'm admin of the tournament (or super admin), and the tournament is still "registering"

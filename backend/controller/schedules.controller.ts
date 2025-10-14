@@ -146,21 +146,44 @@ export const updateSchedule = async ({ gameResultId, scheduleId, dueDate } : { g
 }
 
 export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: string, tournamentId: number) => {
-  const updated = await prisma.schedule.updateMany({
+  const updatedUSA = await prisma.schedule.updateMany({
     data: {
       usa_player_id: newPlayer,
-      ussr_player_id: newPlayer,
+      // ussr_player_id: newPlayer,
     },
     where: {
       OR: [
         { usa_player_id: oldPlayer },
-        { ussr_player_id: oldPlayer }
+        // { ussr_player_id: oldPlayer }
       ],
       tournaments_id: tournamentId,
       game_results_id: null
     }
   })
-  return updated
+  const updatedUSSR = await prisma.schedule.updateMany({
+    data: {
+      ussr_player_id: newPlayer,
+    },
+    where: {
+      ussr_player_id: oldPlayer,
+      tournaments_id: tournamentId,
+      game_results_id: null
+    }
+  })
+
+  const updatedStandings = await prisma.standing_players.updateMany({
+    data: {
+      user_id: BigInt(newPlayer),
+    },
+    where: {
+      user_id: BigInt(oldPlayer),
+      standings: {
+        tournaments_id: tournamentId,
+      },
+    },
+  });
+  console.log("updated", updatedUSSR, updatedUSA, updatedStandings)
+  return updatedStandings
 }
 
 export const deleteSchedulePlayer = async (playerId: number, tournamentId: number) => {
