@@ -1,8 +1,9 @@
 import { Spinner } from "@radix-ui/themes";
-import { Box } from "components/Atoms";
+import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
+import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { useParams } from "next/navigation";
 import { TournamentsType } from "types/game.types";
@@ -72,9 +73,13 @@ const tournament = data[0]
           <>
             <DisplayInfo label="Status" infoText={getTournamentStatusNames(tournament.status_id)} />
             <DisplayInfo label="Name" infoText={tournament.tournament_name} />
-            <DisplayInfo label="Admin" infoText={tournament.tournament_admins[0].users.first_name} />
+            <DisplayInfo label="Admin" infoText={tournament.tournament_admins?.[0].users.first_name} />
             <DisplayInfo label="Starting Date" infoText={tournament.starting_date} />
-            <DisplayInfo label="Description" infoText={tournament.description} />
+            <Flex css={{ flexDirection: "column", minWidth: "400px" }}>
+                <StyledLabel htmlFor="userName">Description</StyledLabel>
+                <div dangerouslySetInnerHTML={{ __html: tournament.description }} />
+              </Flex>
+            
           </>
         )}
       </Box>

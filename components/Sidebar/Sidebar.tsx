@@ -150,13 +150,13 @@ const Items = ({ styles, role }: any) => {
           </Text>
         </UnstyledLink>
       )}
-      {/* {role === userRoles.SUPERADMIN && (
+      {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/tournaments" passHref>
           <Text strong="bold" css={horizontalItemStyles}>
             Tournaments
           </Text>
         </UnstyledLink>
-      )} */}
+      )}
       <UnstyledLink href="/hall-of-fame" passHref>
         <Text strong="bold" css={horizontalItemStyles}>
           Hall of Fame
@@ -303,13 +303,13 @@ const VerticalSidebar = () => {
                 </Text>
               </Item>
             </UnstyledLink>
-            {/* {role === userRoles.SUPERADMIN && (
+            {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/tournaments" passHref>
                 <Text strong="bold" css={horizontalItemStyles}>
                   Tournaments
                 </Text>
               </UnstyledLink>
-            )} */}
+            )}
             <UnstyledLink href="/hall-of-fame" passHref>
               <Text strong="bold" css={horizontalItemStyles}>
                 Hall of Fame

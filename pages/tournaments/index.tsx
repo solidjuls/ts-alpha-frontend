@@ -3,7 +3,6 @@ import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
-import {  ResultsStyleWrapper, UnstyledLink } from "components/Schedule/Schedule.styles";
 import { ServerType } from "types/types";
 import Text from "components/Text";
 import { Box, Flex, Form, Span } from "components/Atoms";
@@ -14,6 +13,13 @@ import { styled } from "stitches.config";
 import getAxiosInstance, { clearAllCache } from "utils/axios";
 import { Checkbox } from "components/Checkbox";
 import Legend from "./Legend";
+import {
+  PlayerInfo,
+  ResultsStyleWrapper,
+  DueDateCell,
+  UnstyledLink,
+  CheckOpponentProfileCell,
+} from "components/Schedule/Schedule.styles";
 
 const formStyles = {
   alignItems: "center",
@@ -50,6 +56,24 @@ const TournamentNameRow = styled("div", {
       },
       upcoming: {
         backgroundColor: "$blueAlpha",
+      },
+    },
+  },
+});
+
+
+const ResponsiveContainer = styled("div", {
+  display: "flex",
+  flexDirection: "row",
+  width: "100%",
+  maxWidth: "1100px",
+  variants: {
+    direction: {
+      row: {
+        flexDirection: "row",
+      },
+      column: {
+        flexDirection: "column",
       },
     },
   },
@@ -109,6 +133,52 @@ const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (sta
     .find((key) => tournamentStatus[key] === statusId) || "closed";
 };
 
+
+export const Cell = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: 'center',
+  backgroundColor: "white",
+  padding: "4px",
+  margin: "4px",
+  borderWidth: "1px",
+  borderRadius: "6px",
+  border: "solid 1px $greyLight",
+  minWidth: "150px",
+  variants: {
+    width: {
+      full: {
+        width: "100%",
+      },
+      open: {
+        backgroundColor: "$greenAlpha",
+      },
+      registrationOpen: {
+        backgroundColor: "$yellowAlpha",
+      },
+      upcoming: {
+        backgroundColor: "$blueAlpha",
+      },
+    },
+  },
+  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  '@media (max-width: 600px)': {
+    display: 'none'
+  },
+})
+
+const RowCell = ({ description, text }) => {
+  return (
+      <>
+        <Text fontSize="small" css={{ marginBottom: 4 }}>
+          {description}
+        </Text>
+        <Text fontSize="medium">
+          {text}
+        </Text>
+      </>
+  );
+};
 const PlayerInfoBox = ({
   tournamentName,
   tournamentId,
@@ -116,24 +186,20 @@ const PlayerInfoBox = ({
 }) => {
   return (
     <UnstyledLink href={`/tournaments/${tournamentId}`} css={{ display: "flex", flexDirection: "row" }}>
-      <Box
-        css={{
-          display: "flex",
-          margin: "8px",
-          flexDirection: "row",
-          lineHeight: 1,
-          alignItems: "center",
-          width: '100%',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Text fontSize="medium">
-          {tournamentName}
-        </Text>
-        <Text fontSize="medium">
-          {status}
-        </Text>
-      </Box>
+      <Flex css={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <Cell width="full">
+          <RowCell description="Tournament name" text={tournamentName} />
+        </Cell>
+        <Cell>
+          <RowCell description="Admin" text='Juli Arnalot' />
+        </Cell>
+        <Cell>
+        <RowCell  description="Starting date" text='03/10/2025' />
+        </Cell>
+        <Cell>
+          <RowCell description="Status" text={status} />
+        </Cell>
+      </Flex>
     </UnstyledLink>
   );
 };
@@ -158,7 +224,7 @@ const Tournaments = () => {
   };
 
   return (
-    <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+     <>
       <Flex css={{ flexDirection: "row", width: "100%" }}>
         <EditTextComponent
           labelText="newTournament"
@@ -179,18 +245,24 @@ const Tournaments = () => {
         <Checkbox text="Closed" onCheckedChange={() => setClosed(!closed)} checked={closed} />
         <Checkbox text="Open" onCheckedChange={() => setOpen(!open)} checked={open} />
       </Flex>
+       <ResponsiveContainer
+        direction={{
+          "@initial": "column",
+          "@sm": "column",
+        }}
+      >
       <ResultsStyleWrapper>
         {data?.map((item) => {
           return (
-            <TournamentNameRow key={item.id} status={getVariant(item.status_id)}>
+            <div key={item.id} >
               <PlayerInfoBox tournamentId={item.id} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)}/>
-            </TournamentNameRow>
+            </div>
           )})}
       </ResultsStyleWrapper>
-    </Form>
+    </ResponsiveContainer></>
   );
 };
-
+//status={getVariant(item.status_id)}
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
