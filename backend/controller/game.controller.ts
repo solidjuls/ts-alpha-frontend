@@ -171,31 +171,56 @@ export const getGameByGameId = async (id: string) =>
     },
   });
 
-export const getTournamentsByStatus = async (status: TournamentStatusType | undefined) => {
+export const getTournamentsByStatus = async (status: TournamentStatusType[] | undefined) => {
   const filter = status
     ? {
         where: {
-          status_id: Number(status),
+          status_id: {
+            in: status.map(Number)
+          }
         },
       }
     : undefined;
 
-  return await prisma.tournaments.findMany({
+    
+  const tournaments =  await prisma.tournaments.findMany({
     select: {
       id: true,
       tournament_name: true,
       status_id: true,
-      created_at: true,
+      starting_date: true,
+      tournament_admins: {
+        select: {
+          users: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true
+            }
+          }
+        }
+      }
     },
     ...filter,
     orderBy: {
       created_at: "desc",
     },
   });
+
+  return tournaments.map(item => {
+    return {
+      id: item.id.toString(),
+      tournament_name: item.tournament_name,
+      status_id: item.status_id,
+      starting_date: item.starting_date,
+      adminId: item.tournament_admins?.map(admin => admin.users.id.toString()),
+      adminName: item.tournament_admins?.map(admin => admin.users.first_name + " " + admin.users.last_name)
+    }
+  })
 };
 
 export const getTournamentsById = async (ids: string[]) => {
-  return await prisma.tournaments.findMany({
+  const tournaments = await prisma.tournaments.findMany({
     select: {
       id: true,
       tournament_name: true,
@@ -224,6 +249,18 @@ export const getTournamentsById = async (ids: string[]) => {
       created_at: "desc",
     },
   });
+
+  return tournaments?.map(item => {
+    return {
+      id: item.id.toString(),
+      tournament_name: item.tournament_name,
+      description: item.description,
+      status_id: item.status_id,
+      starting_date: item.starting_date,
+      adminId: item.tournament_admins?.map(admin => admin.users.id.toString()),
+      adminName: item.tournament_admins?.map(admin => admin.users.first_name + " " + admin.users.last_name)
+    }
+  })
 };
 
 export const removeTournament = async (id: string) => {

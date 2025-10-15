@@ -8,6 +8,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { useParams } from "next/navigation";
 import { TournamentsType } from "types/game.types";
 import { getTournamentStatusNames } from "utils/constants";
+import { dateFormat } from "utils/dates";
 
 const TournamentRegistration = () => {
   // I call for tournament detail api
@@ -15,7 +16,6 @@ const TournamentRegistration = () => {
   let { id } = useParams();
   const { data, setData, isLoading, refetch } = useFetchInitialData<TournamentsType>({
     url: `/api/game/tournaments?id=${id}`,
-    cacheId: "tournaments",
   });
 
   const onRegisterClick = async () => {
@@ -44,8 +44,10 @@ const TournamentRegistration = () => {
   }
 
   if (isLoading) return;
-console.log("data", data)
-const tournament = data[0]
+  const tournament = data?.[0]
+  const adminsFormatted = tournament?.adminName?.length > 0 ? tournament?.adminName.join(", ") : '-'
+  const dateFormatted = tournament?.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-'
+  console.log(tournament)
   return (
     <DetailContainer>
       <Box css={{
@@ -67,17 +69,17 @@ const tournament = data[0]
           width: "100%",
         }}
       >
-        {isLoading || !tournament ? (
+        {isLoading ? (
           <Spinner size="3" />
         ) : (
           <>
-            <DisplayInfo label="Status" infoText={getTournamentStatusNames(tournament.status_id)} />
-            <DisplayInfo label="Name" infoText={tournament.tournament_name} />
-            <DisplayInfo label="Admin" infoText={tournament.tournament_admins?.[0].users.first_name} />
-            <DisplayInfo label="Starting Date" infoText={tournament.starting_date} />
+            <DisplayInfo label="Status" infoText={getTournamentStatusNames(tournament?.status_id)} />
+            <DisplayInfo label="Name" infoText={tournament?.tournament_name || '-'} />
+            <DisplayInfo label="Admin" infoText={adminsFormatted} />
+            <DisplayInfo label="Starting Date" infoText={dateFormatted} />
             <Flex css={{ flexDirection: "column", minWidth: "400px" }}>
                 <StyledLabel htmlFor="userName">Description</StyledLabel>
-                <div dangerouslySetInnerHTML={{ __html: tournament.description }} />
+                <div dangerouslySetInnerHTML={{ __html: tournament?.description }} />
               </Flex>
             
           </>

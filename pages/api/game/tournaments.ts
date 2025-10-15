@@ -17,14 +17,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (typeof id === "string") {
           console.log("(userId, tournamentId) ", id)
           const tournament = await getTournamentsById(id.split(','));
-          const tournamentWithIdParsed = JSON.stringify(tournament, (key, value) =>
-            typeof value === "bigint" ? value.toString() : value,
-          );
-          return res.status(200).json(JSON.parse(tournamentWithIdParsed));
+
+          return res.status(200).json(tournament);
         }
 
-        const tournaments = await getTournamentsByStatus(status);
-        return res.status(200).json(tournaments);
+        if (typeof status === "string") {
+          const tournaments = await getTournamentsByStatus(status.split(','));
+          return res.status(200).json(tournaments);
+        }
       }
 
       case "POST": {

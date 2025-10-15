@@ -20,6 +20,7 @@ import {
   UnstyledLink,
   CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styles";
+import { dateFormat } from "utils/dates";
 
 const formStyles = {
   alignItems: "center",
@@ -79,54 +80,6 @@ const ResponsiveContainer = styled("div", {
   },
 });
 
-const useTournamentState = () => {
-  const { data, setData, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments`,
-    cacheId: "tournaments",
-  });
-  const [all, setAll] = useState(false);
-  const [closed, setClosed] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  let localData: TournamentsType[] = [];
-  if (data && closed) {
-    localData = [
-      ...localData,
-      ...data.filter((item) => item.status_id === tournamentStatus.closed),
-    ];
-  }
-  if (data && open) {
-    localData = [...localData, ...data.filter((item) => item.status_id === tournamentStatus.open)];
-  }
-
-  if ((data && all) || (data && !all && !closed && !open)) {
-    localData = data;
-  }
-
-  const sortTournamentsByStatus = (a: TournamentsType, b: TournamentsType) => {
-    const priority = (status: TournamentStatusType) => {
-      if (status === 5) return 0;
-      if (status === 1) return 1;
-      return 2;
-    };
-
-    return priority(a.status_id) - priority(b.status_id);
-  };
-
-  return {
-    data: localData.sort(sortTournamentsByStatus),
-    setData,
-    isLoading,
-    refetch,
-    all,
-    setAll,
-    closed,
-    setClosed,
-    open,
-    setOpen,
-  };
-};
-
 type TournamentStatusKey = keyof typeof tournamentStatus;
 const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (statusId) => {
   return (Object.keys(tournamentStatus) as TournamentStatusKey[])
@@ -182,8 +135,12 @@ const RowCell = ({ description, text }) => {
 const PlayerInfoBox = ({
   tournamentName,
   tournamentId,
-  status
+  status,
+  admins,
+  starting_date
 }) => {
+  const adminsFormatted = admins.length > 0 ? admins.join(", ") : '-'
+  const dateFormatted = starting_date ? dateFormat(new Date(starting_date)) : '-'
   return (
     <UnstyledLink href={`/tournaments/${tournamentId}`} css={{ display: "flex", flexDirection: "row" }}>
       <Flex css={{ display: "flex", flexDirection: "row", width: "100%" }}>
@@ -191,10 +148,10 @@ const PlayerInfoBox = ({
           <RowCell description="Tournament name" text={tournamentName} />
         </Cell>
         <Cell>
-          <RowCell description="Admin" text='Juli Arnalot' />
+          <RowCell description="Admin" text={adminsFormatted} />
         </Cell>
         <Cell>
-        <RowCell  description="Starting date" text='03/10/2025' />
+        <RowCell  description="Starting date" text={dateFormatted} />
         </Cell>
         <Cell>
           <RowCell description="Status" text={status} />
@@ -205,34 +162,15 @@ const PlayerInfoBox = ({
 };
 
 const Tournaments = () => {
-  const { data, setData, isLoading, all, setAll, closed, setClosed, open, setOpen, refetch } =
-    useTournamentState();
-  const [tournamentName, setTournamentName] = useState<string>("");
+  const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["upcoming"]}`,
+  });
 
-  // if (isLoading) return <Spinner size="3" />;
-
-  const addNewTournament = async () => {
-    if (tournamentName) {
-      const resp = await getAxiosInstance().patch("/api/game/tournaments", {
-        name: tournamentName,
-        status: 4,
-      });
-      if (resp.status === 200) {
-        setData((prevState) => [...prevState, resp.data]);
-      }
-    }
-  };
+  if (isLoading) return <Spinner size="3" />;
 
   return (
      <>
       <Flex css={{ flexDirection: "row", width: "100%" }}>
-        <EditTextComponent
-          labelText="newTournament"
-          inputValue={tournamentName}
-          maxLength={50}
-          onInputValueChange={(value) => setTournamentName(value)}
-          css={{ width: "300px" }}
-        />
         <Button css={{ width: "150px", margin: "8px" }}>
           <UnstyledLink href="/tournament-create">
             Create new tournament
@@ -240,11 +178,11 @@ const Tournaments = () => {
         </Button>
       </Flex>
       <Legend />
-      <Flex css={{ flexDirection: "row", width: "100%" }}>
+      {/* <Flex css={{ flexDirection: "row", width: "100%" }}>
         <Checkbox text="All" onCheckedChange={() => setAll(!all)} checked={all} />
         <Checkbox text="Closed" onCheckedChange={() => setClosed(!closed)} checked={closed} />
         <Checkbox text="Open" onCheckedChange={() => setOpen(!open)} checked={open} />
-      </Flex>
+      </Flex> */}
        <ResponsiveContainer
         direction={{
           "@initial": "column",
@@ -255,7 +193,7 @@ const Tournaments = () => {
         {data?.map((item) => {
           return (
             <div key={item.id} >
-              <PlayerInfoBox tournamentId={item.id} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)}/>
+              <PlayerInfoBox tournamentId={item.id} starting_date={item.starting_date} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)} admins={item.adminName} />
             </div>
           )})}
       </ResultsStyleWrapper>
