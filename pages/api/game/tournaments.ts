@@ -8,10 +8,14 @@ import {
   registerTournament,
   unregisterTournament,
 <<<<<<< HEAD
+<<<<<<< HEAD
   getRegisteredPlayers,
   getAllTournaments,
 =======
 >>>>>>> 14c87051 (added register/unregister)
+=======
+  getRegisteredPlayers,
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -19,7 +23,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case "GET": {
+<<<<<<< HEAD
         const { id, status, players, u } = req.query;
+=======
+        const { id, status, players } = req.query;
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 
         if (typeof id === "string" && players === "true") {
           // Get registered players for a tournament
@@ -29,7 +37,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (typeof id === "string") {
           console.log("(userId, tournamentId) ", id)
+<<<<<<< HEAD
           const tournament = await getTournamentsById(id.split(','), u);
+=======
+          const tournament = await getTournamentsById(id.split(','));
+>>>>>>> 22ee18cd (added admin mode on tournaments)
           return res.status(200).json(tournament);
         }
 

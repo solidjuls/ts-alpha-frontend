@@ -379,6 +379,9 @@ export const updateTournament = async (id: number, status: TournamentStatusType)
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 interface TournamentUpdateType {
   tournamentName?: string;
   status?: TournamentStatusType;
@@ -400,8 +403,11 @@ export const updateTournamentFull = async (id: number, updateData: TournamentUpd
   });
 };
 
+<<<<<<< HEAD
 =======
 >>>>>>> 14c87051 (added register/unregister)
+=======
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 export const registerTournament = async (id: number, userEmail: string) => {
   return await prisma.tournament_registration.create({
     data: {
@@ -422,6 +428,9 @@ export const unregisterTournament = async (tournamentId: number, userEmail: stri
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 export const getRegisteredPlayers = async (tournamentId: number) => {
   const registrations = await prisma.tournament_registration.findMany({
     where: {
@@ -446,10 +455,15 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
     select: {
       id: true,
       email: true,
+<<<<<<< HEAD
       name: true,
       first_name: true,
       last_name: true,
       phone_number: true,
+=======
+      first_name: true,
+      last_name: true,
+>>>>>>> 22ee18cd (added admin mode on tournaments)
       countries: {
         select: {
           tld_code: true,
@@ -457,6 +471,7 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
       },
     },
   });
+<<<<<<< HEAD
   const ratings = await Promise.all(
     users.map(async (user) => {
       const rating = await getRatingByPlayer({ playerId: user.id });
@@ -480,14 +495,29 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
       userId: user?.id?.toString(),
       playdeckName: user?.name,
       phoneNumber: user?.phone_number,
+=======
+
+  // Combine registration data with user data
+  return registrations.map(registration => {
+    const user = users.find(u => u.email === registration.player_email);
+    return {
+      registrationId: registration.id,
+      email: registration.player_email,
+      status: registration.status,
+      registeredAt: registration.created_at,
+      userId: user?.id?.toString(),
+>>>>>>> 22ee18cd (added admin mode on tournaments)
       name: user ? `${user.first_name} ${user.last_name}` : 'Unknown User',
       countryCode: user?.countries?.tld_code,
     };
   });
 };
 
+<<<<<<< HEAD
 =======
 >>>>>>> 14c87051 (added register/unregister)
+=======
+>>>>>>> 22ee18cd (added admin mode on tournaments)
 const submitGame = async (data: GameAPI) => {
   const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
     usaPlayerId: BigInt(data.usaPlayerId),
