@@ -193,7 +193,7 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
 
 const Tournaments = () => {
   const { data, isLoading } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["upcoming"]}`,
+    url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["registrationOpen"]}`,
   });
 
   if (isLoading) return <Spinner size="3" />;
@@ -254,14 +254,14 @@ const Tournaments = () => {
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
-  if (!payload || payload?.role !== userRoles.SUPERADMIN) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
+  // if (!payload || payload?.role !== userRoles.SUPERADMIN) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
   return { props: { role: payload.role || null } };
 }
 

@@ -315,13 +315,22 @@ export const updateTournament = async (id: number, status: TournamentStatusType)
   });
 };
 
-export const registerTournament = async (id: number, userId: number) => {
+export const registerTournament = async (id: number, userEmail: string) => {
   return await prisma.tournament_registration.create({
     data: {
       tournamentId: id,
-      playerId: userId,
-      status: "pending",
-    },
+      player_email: userEmail,
+      status: 'pending'
+    }
+  });
+};
+
+export const unregisterTournament = async (tournamentId: number, userEmail: string) => {
+  return await prisma.tournament_registration.deleteMany({
+    where: {
+      tournamentId: tournamentId,
+      player_email: userEmail,
+    }
   });
 };
 

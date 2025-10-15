@@ -5,6 +5,7 @@ import {
   removeTournament,
   updateTournament,
   registerTournament,
+  unregisterTournament,
 } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -28,10 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case "POST": {
-        const { id, status, uId } = req.body;
+        const { id, status, uId, userEmail } = req.body;
 
-        if (id && uId) {
-          const registered = await registerTournament(Number(id), Number(uId))
+        if (id && userEmail) {
+          const registered = await registerTournament(Number(id), userEmail)
           return res.status(200).json(registered);
         }
         const updated = await updateTournament(id, status);
