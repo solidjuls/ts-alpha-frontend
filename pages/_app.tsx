@@ -15,6 +15,8 @@ import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
 import { styled } from "stitches.config";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 
 const Footer = styled("footer", {
   textAlign: "center",
@@ -22,22 +24,33 @@ const Footer = styled("footer", {
 });
 
 function App({ Component, pageProps, name, id, email, role, tournaments }: AppProps) {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        retry: 1,
+      },
+    },
+  }));
+
   return (
-    <AuthProvider name={name} email={email} id={id} role={role} tournaments={tournaments}>
-      <Provider store={store}>
-        <IntlContextProvider>
-          {/* @ts-ignore */}
-          <Theme>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-            <Footer>
-              <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
-            </Footer>
-          </Theme>
-        </IntlContextProvider>
-      </Provider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider name={name} email={email} id={id} role={role} tournaments={tournaments}>
+        <Provider store={store}>
+          <IntlContextProvider>
+            {/* @ts-ignore */}
+            <Theme>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+              <Footer>
+                <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
+              </Footer>
+            </Theme>
+          </IntlContextProvider>
+        </Provider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
