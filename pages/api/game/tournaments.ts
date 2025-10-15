@@ -4,8 +4,10 @@ import {
   getTournamentsById,
   removeTournament,
   updateTournament,
+  updateTournamentFull,
   registerTournament,
   unregisterTournament,
+  getRegisteredPlayers,
 } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -13,17 +15,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case "GET": {
-        const { id, status } = req.query;
+        const { id, status, players } = req.query;
+
+        if (typeof id === "string" && players === "true") {
+          // Get registered players for a tournament
+          const registeredPlayers = await getRegisteredPlayers(Number(id));
+          return res.status(200).json(registeredPlayers);
+        }
 
         if (typeof id === "string") {
           console.log("(userId, tournamentId) ", id)
           const tournament = await getTournamentsById(id.split(','));
-
           return res.status(200).json(tournament);
         }
 
         if (typeof status === "string") {
-          const tournaments = await getTournamentsByStatus(status.split(','));
+          const tournaments = await getTournamentsByStatus(status.split(',') as any);
           return res.status(200).json(tournaments);
         }
       }
@@ -39,9 +46,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(200).json(updated);
       }
 
+      case "PUT": {
+        const { id, tournamentName, status, startingDate, description } = req.body;
+
+        if (!id) {
+          return res.status(400).json({ error: "Missing tournament ID" });
+        }
+
+        const updateData: any = {};
+        if (tournamentName) updateData.tournamentName = tournamentName;
+        if (status) updateData.status = status;
+        if (startingDate) updateData.startingDate = new Date(startingDate);
+        if (description !== undefined) updateData.description = description;
+
+        const updated = await updateTournamentFull(Number(id), updateData);
+        return res.status(200).json(updated);
+      }
+
       case "PATCH": {
         const { name, status, admins, startingDate, description } = req.body;
-        
+
         if (!name || !status) {
           return res.status(400).json({ error: "Missing name or status in request body" });
         }

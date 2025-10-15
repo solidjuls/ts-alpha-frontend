@@ -315,6 +315,27 @@ export const updateTournament = async (id: number, status: TournamentStatusType)
   });
 };
 
+interface TournamentUpdateType {
+  tournamentName?: string;
+  status?: TournamentStatusType;
+  startingDate?: Date;
+  description?: string;
+}
+
+export const updateTournamentFull = async (id: number, updateData: TournamentUpdateType) => {
+  return await prisma.tournaments.update({
+    where: {
+      id: id,
+    },
+    data: {
+      ...(updateData.tournamentName && { tournament_name: updateData.tournamentName }),
+      ...(updateData.status && { status_id: Number(updateData.status) }),
+      ...(updateData.startingDate && { starting_date: updateData.startingDate }),
+      ...(updateData.description !== undefined && { description: updateData.description }),
+    },
+  });
+};
+
 export const registerTournament = async (id: number, userEmail: string) => {
   return await prisma.tournament_registration.create({
     data: {
@@ -331,6 +352,55 @@ export const unregisterTournament = async (tournamentId: number, userEmail: stri
       tournamentId: tournamentId,
       player_email: userEmail,
     }
+  });
+};
+
+export const getRegisteredPlayers = async (tournamentId: number) => {
+  const registrations = await prisma.tournament_registration.findMany({
+    where: {
+      tournamentId: tournamentId,
+    },
+    select: {
+      id: true,
+      player_email: true,
+      status: true,
+      created_at: true,
+    }
+  });
+
+  // Get user details for each registered email
+  const userEmails = registrations.map(reg => reg.player_email).filter((email): email is string => email !== null);
+  const users = await prisma.users.findMany({
+    where: {
+      email: {
+        in: userEmails,
+      },
+    },
+    select: {
+      id: true,
+      email: true,
+      first_name: true,
+      last_name: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
+    },
+  });
+
+  // Combine registration data with user data
+  return registrations.map(registration => {
+    const user = users.find(u => u.email === registration.player_email);
+    return {
+      registrationId: registration.id,
+      email: registration.player_email,
+      status: registration.status,
+      registeredAt: registration.created_at,
+      userId: user?.id?.toString(),
+      name: user ? `${user.first_name} ${user.last_name}` : 'Unknown User',
+      countryCode: user?.countries?.tld_code,
+    };
   });
 };
 

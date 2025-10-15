@@ -15,6 +15,8 @@ import getAxiosInstance from "utils/axios";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
 import { styled } from "stitches.config";
+import TournamentEditForm from "components/TournamentEditForm";
+import TournamentPlayersList from "components/TournamentPlayersList";
 
 const DescriptionBox = styled("div", {
   marginTop: "8px",
@@ -51,6 +53,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const { id: userId, email } = useSession();
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('loading');
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments?id=${id}`,
@@ -233,15 +236,33 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           </StatusText>
 
           <Flex css={{ gap: "12px" }}>
-            <Button css={{ backgroundColor: "#3b82f6" }}>
-              Edit Tournament
-            </Button>
-            <Button css={{ backgroundColor: "#8b5cf6" }}>
-              Manage Registrations
+            <Button
+              css={{ backgroundColor: "#3b82f6" }}
+              onClick={() => setIsEditing(!isEditing)}
+            >
+              {isEditing ? "Cancel Edit" : "Edit Tournament"}
             </Button>
           </Flex>
         </Box>
       </Box>
+
+      {/* Edit Form */}
+      {isEditing && (
+        <TournamentEditForm
+          tournament={tournament}
+          onSave={() => {
+            setIsEditing(false);
+            refetch();
+          }}
+          onCancel={() => setIsEditing(false)}
+        />
+      )}
+
+      {/* Registered Players List */}
+      <TournamentPlayersList
+        tournamentId={tournament.id}
+        onPlayerRemoved={() => refetch()}
+      />
     </DetailContainer>
   );
 };

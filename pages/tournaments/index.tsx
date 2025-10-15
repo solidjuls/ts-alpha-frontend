@@ -262,7 +262,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
   //     },
   //   };
   // }
-  return { props: { role: payload.role || null } };
+  return { props: { role: payload?.role || null } };
 }
 
 export default Tournaments;

@@ -9,6 +9,7 @@ export type TournamentsType = {
   starting_date: string | null;
   adminId: string[];
   adminName: string[];
+  description?: string;
   created_at?: Date | null;
   updated_at?: Date | null;
 };
