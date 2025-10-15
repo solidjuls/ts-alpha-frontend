@@ -40,10 +40,32 @@ The server will start on `http://localhost:4000`
 
 ## API Endpoints
 
-### Base URL: `http://localhost:4000/api`
+### Base URL: `http://localhost:4001/api`
 
+#### General Endpoints
 - `GET /` - Hello World endpoint
 - `GET /health` - Health check endpoint
+
+#### Tournaments Module
+- `GET /tournaments` - Get tournaments with optional filters
+- `GET /tournaments/health` - Tournaments module health check
+
+### Tournament API Examples
+
+**Get tournaments by status:**
+```bash
+curl "http://localhost:4001/api/tournaments?status=1,2,3,4"
+```
+
+**Get tournament by ID:**
+```bash
+curl "http://localhost:4001/api/tournaments?id=322"
+```
+
+**Get registered players for a tournament:**
+```bash
+curl "http://localhost:4001/api/tournaments?id=322&players=true"
+```
 
 ### Example Responses
 
@@ -67,10 +89,19 @@ The server will start on `http://localhost:4000`
 
 ```
 src/
-├── app.controller.ts    # Main application controller
-├── app.module.ts        # Root application module
-├── app.service.ts       # Main application service
-└── main.ts             # Application entry point
+├── app.controller.ts           # Main application controller
+├── app.module.ts              # Root application module
+├── app.service.ts             # Main application service
+├── main.ts                    # Application entry point
+├── database/
+│   ├── database.module.ts     # Database module (Prisma)
+│   └── database.service.ts    # Database service
+└── tournaments/
+    ├── dto/
+    │   └── tournament.dto.ts   # Data Transfer Objects
+    ├── tournaments.controller.ts # Tournaments controller
+    ├── tournaments.module.ts    # Tournaments module
+    └── tournaments.service.ts   # Tournaments service
 ```
 
 ## Environment Variables
