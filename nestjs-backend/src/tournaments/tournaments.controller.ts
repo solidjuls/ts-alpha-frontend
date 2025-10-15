@@ -1,6 +1,7 @@
 import { Controller, Get, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { GetTournamentsQueryDto, TournamentDto, RegisteredPlayerDto } from './dto/tournament.dto';
+import { Public } from '../auth/decorators/auth.decorators';
 
 @Controller('tournaments')
 export class TournamentsController {
@@ -42,6 +43,7 @@ export class TournamentsController {
     }
   }
 
+  @Public()
   @Get('health')
   getHealth() {
     return {
