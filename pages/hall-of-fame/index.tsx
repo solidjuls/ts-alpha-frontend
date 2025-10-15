@@ -145,7 +145,7 @@ const rtslData = [
   { season: "2023-B", link: "https://docs.google.com/spreadsheets/d/1Lu2UvdK_ZxxjnAXZj3XyrIp2U-lz4TMO_y18Hwkoljk", players: 90, flag1: "ES", winner: "Jarib Flores", winnerID: 2084, flag2: "KR", second: "B H Ju", secondID: 1652, flag3: "US", third: "Michael Stryker", thirdID: 2438 },
   { season: "2024-A", link: "https://docs.google.com/spreadsheets/d/10xuhjVHEU3l6I2Vbf3q8LqgsFpb0T0jyHpHKXZOh3bc", players: 89, flag1: "ES", winner: "Jarib Flores", winnerID: 2084, flag2: "CN", second: "Patrick Gong", secondID: 2525, flag3: "US", third: "Michael Stryker", thirdID: 2438 },
   { season: "2024-B", link: "https://docs.google.com/spreadsheets/d/1fYoRB5Oujb-K0Dl0Kl92uhrLN5-PrftlPyCaaRgfRY0", players: 99, flag1: "PL", winner: "Bartosz Wróbel", winnerID: 1658, flag2: "PL", second: "Ziemowit Pazderski", secondID: 2878, flag3: "CN", third: "Patrick Gong", thirdID: 2525 },
-  { season: "2025", link: "https://docs.google.com/spreadsheets/d/1HCvjrfka5zP8EAGgzAgskIKpXxEgfqpYYiSpu7Z4UAc", players: 91, flag1: "PL", winner: "Ziemowit Pazderski", winnerID: 2878, flag2: "US", second: "Justin Abramson", secondID: 2232 },
+  { season: "2025", link: "https://docs.google.com/spreadsheets/d/1aJCCk4sGkTTB0caYjvz0-coSHyKVz4UI5RNo6MF-0OY", players: 91, flag1: "PL", winner: "Ziemowit Pazderski", winnerID: 2878, flag2: "US", second: "Justin Abramson", secondID: 2232 },
 ];
 
 export default function HallOfFamePage() {
