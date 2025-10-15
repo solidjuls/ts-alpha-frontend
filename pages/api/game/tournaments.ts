@@ -7,8 +7,11 @@ import {
   updateTournamentFull,
   registerTournament,
   unregisterTournament,
+<<<<<<< HEAD
   getRegisteredPlayers,
   getAllTournaments,
+=======
+>>>>>>> 14c87051 (added register/unregister)
 } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 

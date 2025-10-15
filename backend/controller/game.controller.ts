@@ -378,6 +378,7 @@ export const updateTournament = async (id: number, status: TournamentStatusType)
   });
 };
 
+<<<<<<< HEAD
 interface TournamentUpdateType {
   tournamentName?: string;
   status?: TournamentStatusType;
@@ -399,6 +400,8 @@ export const updateTournamentFull = async (id: number, updateData: TournamentUpd
   });
 };
 
+=======
+>>>>>>> 14c87051 (added register/unregister)
 export const registerTournament = async (id: number, userEmail: string) => {
   return await prisma.tournament_registration.create({
     data: {
@@ -418,6 +421,7 @@ export const unregisterTournament = async (tournamentId: number, userEmail: stri
   });
 };
 
+<<<<<<< HEAD
 export const getRegisteredPlayers = async (tournamentId: number) => {
   const registrations = await prisma.tournament_registration.findMany({
     where: {
@@ -482,6 +486,8 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
   });
 };
 
+=======
+>>>>>>> 14c87051 (added register/unregister)
 const submitGame = async (data: GameAPI) => {
   const { newUsaRating, newUssrRating, usaRating, ussrRating } = await calculateRating({
     usaPlayerId: BigInt(data.usaPlayerId),
