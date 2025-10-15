@@ -92,8 +92,7 @@ export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tourna
 export const tournamentStatus = {
   open: 1,
   closed: 2,
-  registrationOpen: 3,
-  upcoming: 4,
+  registrationOpen: 4,
 } as const;
 
 export const gameWinningOptions: Array<DropdownItemType> = [

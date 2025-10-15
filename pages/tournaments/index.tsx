@@ -1,82 +1,159 @@
-import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 import Text from "components/Text";
-import { Box, Flex, Form, Span } from "components/Atoms";
-import { EditTextComponent } from "components/EditFormComponents";
+import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { TournamentsType } from "types/game.types";
 import { styled } from "stitches.config";
-import getAxiosInstance, { clearAllCache } from "utils/axios";
-import { Checkbox } from "components/Checkbox";
 import Legend from "./Legend";
-import {
-  PlayerInfo,
-  ResultsStyleWrapper,
-  DueDateCell,
-  UnstyledLink,
-  CheckOpponentProfileCell,
-} from "components/Schedule/Schedule.styles";
+import { UnstyledLink } from "components/Schedule/Schedule.styles";
 import { dateFormat } from "utils/dates";
 
-const formStyles = {
-  alignItems: "center",
-  backgroundColor: "White",
-  width: "640px",
-  padding: "12px",
-  alignSelf: "center",
-  // boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-  "@sm": {
-    width: "100%",
-  },
-};
+// Tournament Table Styles
+const TournamentTable = styled("table", {
+  width: "100%",
+  maxWidth: "1200px",
+  borderCollapse: "collapse",
+  backgroundColor: "white",
+  borderRadius: "12px",
+  overflow: "hidden",
+  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  margin: "16px",
+});
 
-const TournamentNameRow = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  width: '100%',
-  padding: "4px",
-  margin: "4px",
-  borderWidth: "1px",
-  borderRadius: "6px",
-  border: "solid 1px $greyLight",
-  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+const TableHeader = styled("thead", {
+  backgroundColor: "$gray500",
+  color: "white",
+});
+
+const TableHeaderCell = styled("th", {
+  padding: "16px 12px",
+  textAlign: "left",
+  fontWeight: "600",
+  fontSize: "14px",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  borderBottom: "1px solid $greyLight",
+
+  "&:first-child": {
+    paddingLeft: "20px",
+  },
+  "&:last-child": {
+    paddingRight: "20px",
+  },
+
+  "@sm": {
+    padding: "12px 8px",
+    fontSize: "12px",
+    "&:first-child": {
+      paddingLeft: "12px",
+    },
+    "&:last-child": {
+      paddingRight: "12px",
+    },
+  },
+});
+
+const TableBody = styled("tbody", {});
+
+const TableRow = styled("tr", {
+  borderBottom: "1px solid $greyLight",
+  transition: "background-color 0.2s ease",
+  cursor: "pointer",
+
+  "&:hover": {
+    backgroundColor: "#f8f9fa",
+  },
+
+  "&:last-child": {
+    borderBottom: "none",
+  },
+
   variants: {
     status: {
       closed: {
         backgroundColor: "$redAlpha",
+        "&:hover": {
+          backgroundColor: "rgba(255, 0, 0, 0.5)",
+        },
       },
       open: {
         backgroundColor: "$greenAlpha",
+        "&:hover": {
+          backgroundColor: "rgba(0, 128, 0, 0.5)",
+        },
       },
       registrationOpen: {
-        backgroundColor: "$yellowAlpha",
-      },
-      upcoming: {
         backgroundColor: "$blueAlpha",
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 255, 0.5)",
+        },
       },
     },
   },
 });
 
+const TableCell = styled("td", {
+  padding: "16px 12px",
+  verticalAlign: "middle",
+  fontSize: "14px",
 
-const ResponsiveContainer = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  maxWidth: "1100px",
+  "&:first-child": {
+    paddingLeft: "20px",
+    fontWeight: "500",
+  },
+  "&:last-child": {
+    paddingRight: "20px",
+  },
+
+  "@sm": {
+    padding: "12px 8px",
+    fontSize: "13px",
+    "&:first-child": {
+      paddingLeft: "12px",
+    },
+    "&:last-child": {
+      paddingRight: "12px",
+    },
+  },
+});
+
+const StatusBadge = styled("span", {
+  display: "inline-flex",
+  alignItems: "center",
+  padding: "4px 12px",
+  borderRadius: "20px",
+  fontSize: "12px",
+  fontWeight: "500",
+  textTransform: "capitalize",
+
   variants: {
-    direction: {
-      row: {
-        flexDirection: "row",
+    status: {
+      closed: {
+        backgroundColor: "#fee2e2",
+        color: "#dc2626",
       },
-      column: {
-        flexDirection: "column",
+      open: {
+        backgroundColor: "#dcfce7",
+        color: "#16a34a",
+      },
+      registrationOpen: {
+        backgroundColor: "#dbeafe",
+        color: "#2563eb",
       },
     },
+  },
+});
+
+const ResponsiveContainer = styled("div", {
+  width: "100%",
+  overflowX: "auto",
+
+  "@sm": {
+    overflowX: "scroll",
   },
 });
 
@@ -86,118 +163,91 @@ const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (sta
     .find((key) => tournamentStatus[key] === statusId) || "closed";
 };
 
+interface TournamentRowProps {
+  tournament: TournamentsType;
+}
 
-export const Cell = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: 'center',
-  backgroundColor: "white",
-  padding: "4px",
-  margin: "4px",
-  borderWidth: "1px",
-  borderRadius: "6px",
-  border: "solid 1px $greyLight",
-  minWidth: "150px",
-  variants: {
-    width: {
-      full: {
-        width: "100%",
-      },
-      open: {
-        backgroundColor: "$greenAlpha",
-      },
-      registrationOpen: {
-        backgroundColor: "$yellowAlpha",
-      },
-      upcoming: {
-        backgroundColor: "$blueAlpha",
-      },
-    },
-  },
-  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  '@media (max-width: 600px)': {
-    display: 'none'
-  },
-})
+const TournamentRow = ({ tournament }: TournamentRowProps) => {
+  const adminsFormatted = tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : '-';
+  const dateFormatted = tournament.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-';
+  const statusName = getTournamentStatusNames(tournament.status_id);
+  const statusVariant = getVariant(tournament.status_id);
 
-const RowCell = ({ description, text }) => {
   return (
-      <>
-        <Text fontSize="small" css={{ marginBottom: 4 }}>
-          {description}
-        </Text>
-        <Text fontSize="medium">
-          {text}
-        </Text>
-      </>
-  );
-};
-const PlayerInfoBox = ({
-  tournamentName,
-  tournamentId,
-  status,
-  admins,
-  starting_date
-}) => {
-  const adminsFormatted = admins.length > 0 ? admins.join(", ") : '-'
-  const dateFormatted = starting_date ? dateFormat(new Date(starting_date)) : '-'
-  return (
-    <UnstyledLink href={`/tournaments/${tournamentId}`} css={{ display: "flex", flexDirection: "row" }}>
-      <Flex css={{ display: "flex", flexDirection: "row", width: "100%" }}>
-        <Cell width="full">
-          <RowCell description="Tournament name" text={tournamentName} />
-        </Cell>
-        <Cell>
-          <RowCell description="Admin" text={adminsFormatted} />
-        </Cell>
-        <Cell>
-        <RowCell  description="Starting date" text={dateFormatted} />
-        </Cell>
-        <Cell>
-          <RowCell description="Status" text={status} />
-        </Cell>
-      </Flex>
-    </UnstyledLink>
+    <TableRow status={statusVariant}>
+      <TableCell>
+        <UnstyledLink href={`/tournaments/${tournament.id}`}>
+          {tournament.tournament_name}
+        </UnstyledLink>
+      </TableCell>
+      <TableCell>
+        <StatusBadge status={statusVariant}>
+          {statusName}
+        </StatusBadge>
+      </TableCell>
+      <TableCell>{adminsFormatted}</TableCell>
+      <TableCell>{dateFormatted}</TableCell>
+    </TableRow>
   );
 };
 
 const Tournaments = () => {
-  const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
+  const { data, isLoading } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["upcoming"]}`,
   });
 
   if (isLoading) return <Spinner size="3" />;
 
   return (
-     <>
-      <Flex css={{ flexDirection: "row", width: "100%" }}>
-        <Button css={{ width: "150px", margin: "8px" }}>
+    <>
+      <Flex css={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>Tournaments</h1>
+        <Button css={{ width: "180px" }}>
           <UnstyledLink href="/tournament-create">
-            Create new tournament
+            Create New Tournament
           </UnstyledLink>
         </Button>
       </Flex>
+
       <Legend />
-      {/* <Flex css={{ flexDirection: "row", width: "100%" }}>
-        <Checkbox text="All" onCheckedChange={() => setAll(!all)} checked={all} />
-        <Checkbox text="Closed" onCheckedChange={() => setClosed(!closed)} checked={closed} />
-        <Checkbox text="Open" onCheckedChange={() => setOpen(!open)} checked={open} />
-      </Flex> */}
-       <ResponsiveContainer
-        direction={{
-          "@initial": "column",
-          "@sm": "column",
-        }}
-      >
-      <ResultsStyleWrapper>
-        {data?.map((item) => {
-          return (
-            <div key={item.id} >
-              <PlayerInfoBox tournamentId={item.id} starting_date={item.starting_date} tournamentName={item.tournament_name} status={getTournamentStatusNames(item.status_id)} admins={item.adminName} />
-            </div>
-          )})}
-      </ResultsStyleWrapper>
-    </ResponsiveContainer></>
+
+      <ResponsiveContainer>
+        <TournamentTable>
+          <TableHeader>
+            <tr>
+              <TableHeaderCell>Tournament Name</TableHeaderCell>
+              <TableHeaderCell>Status</TableHeaderCell>
+              <TableHeaderCell>Administrators</TableHeaderCell>
+              <TableHeaderCell>Starting Date</TableHeaderCell>
+            </tr>
+          </TableHeader>
+          <TableBody>
+            {data?.map((tournament) => (
+              <TournamentRow
+                key={tournament.id}
+                tournament={tournament}
+              />
+            ))}
+          </TableBody>
+        </TournamentTable>
+
+        {(!data || data.length === 0) && (
+          <Box css={{
+            textAlign: "center",
+            padding: "40px",
+            color: "$gray500",
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+          }}>
+            <Text fontSize="big">No tournaments found</Text>
+            <Text fontSize="medium" css={{ marginTop: "8px" }}>
+              Create a new tournament to get started.
+            </Text>
+          </Box>
+        )}
+      </ResponsiveContainer>
+    </>
   );
 };
 //status={getVariant(item.status_id)}

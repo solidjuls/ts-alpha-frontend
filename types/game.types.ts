@@ -3,11 +3,14 @@ import { TournamentStatusType } from "utils/constants";
 import { z } from "zod";
 
 export type TournamentsType = {
-  id: number;
+  id: string;
   tournament_name: string;
   status_id: TournamentStatusType;
-  created_at: Date | null;
-  updated_at: Date | null;
+  starting_date: string | null;
+  adminId: string[];
+  adminName: string[];
+  created_at?: Date | null;
+  updated_at?: Date | null;
 };
 
 export type SubmitFormValue<T> = {
