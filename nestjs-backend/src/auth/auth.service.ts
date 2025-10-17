@@ -21,7 +21,7 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException(
-        "User doesn't exist. Contact Junta so we can register you as a valid user by sending an email to ITS Junta its.junta@gmail.com"
+        "User doesn't exist."
       );
     }
 
