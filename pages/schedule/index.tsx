@@ -363,7 +363,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
 
   const leagueTypesAdmin: DropdownItemType[] =
     tournaments?.data
-      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id))
+      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(Number(item.id)))
       .map((item: TournamentsType) => ({
         value: item.id.toString(),
         text: item.tournament_name,

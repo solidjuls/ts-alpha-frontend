@@ -152,10 +152,7 @@ export const replaceSchedulePlayers = async (oldPlayer: string, newPlayer: strin
       // ussr_player_id: newPlayer,
     },
     where: {
-      OR: [
-        { usa_player_id: oldPlayer },
-        // { ussr_player_id: oldPlayer }
-      ],
+      usa_player_id: oldPlayer,
       tournaments_id: tournamentId,
       game_results_id: null
     }
