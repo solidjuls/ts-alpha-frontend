@@ -26,7 +26,8 @@ module.exports = {
     greeting: "Hi",
 
     oldPlayer: "Player to be replaced",
-    players: "Players",
+    players: "Filter by player",
+    removePlayer: "Remove player",
     newPlayer: "New Player",
     usaPlayer: "USA Player:",
     ussrPlayer: "USSR Player:",

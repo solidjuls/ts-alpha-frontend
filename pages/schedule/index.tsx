@@ -1,7 +1,13 @@
 import "react-day-picker/lib/style.css";
 import { Box, Flex } from "components/Atoms";
-import useFetchInitialData from "hooks/useFetchInitialData"
-import { PlayerInfo, ResultsStyleWrapper, DueDateCell, UnstyledLink } from "components/Schedule/Schedule.styles";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import {
+  PlayerInfo,
+  ResultsStyleWrapper,
+  DueDateCell,
+  UnstyledLink,
+  CheckOpponentProfileCell,
+} from "components/Schedule/Schedule.styles";
 import { Spinner } from "@radix-ui/themes";
 import { dateFormat } from "utils/dates";
 import Text from "components/Text";
@@ -32,19 +38,20 @@ import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { setCurrentPage } from "../../redux/scheduleSlice";
 import { getTournamentsRegistered } from "backend/controller/user.controller";
+import Link from "next/link";
 
 interface ScheduleProps {
-  isSuperAdmin: boolean
-  tournamentsAdmin: DropdownItemType[]
-  tournamentsRegistered: DropdownItemType[]
-  isAdmin: boolean
-  userId: string
+  isSuperAdmin: boolean;
+  tournamentsAdmin: DropdownItemType[];
+  tournamentsRegistered: DropdownItemType[];
+  isAdmin: boolean;
+  userId: string;
 }
 
 type SchedulePanelProps = {
-  data: ScheduleType[] | null
-  isLoading: boolean
-}
+  data: ScheduleType[] | null;
+  isLoading: boolean;
+};
 
 const ResponsiveContainer = styled("div", {
   display: "flex",
@@ -63,15 +70,42 @@ const ResponsiveContainer = styled("div", {
   },
 });
 
-const generateQueryParams = ({ id,idUsa,idUssr,tournamentId, gameCode }:{id: string; idUsa: string; idUssr: string; tournamentId: string; gameCode: string}) => {
-  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`
-}
+const generateQueryParams = ({
+  id,
+  idUsa,
+  idUssr,
+  tournamentId,
+  gameCode,
+}: {
+  id: string;
+  idUsa: string;
+  idUssr: string;
+  tournamentId: string;
+  gameCode: string;
+}) => {
+  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`;
+};
 
-const resolveLink = ({gameResultsId, id,idUsa,idUssr,tournamentId,gameCode}: {gameResultsId: string | null; id: string; idUsa: string; idUssr: string; tournamentId: string; gameCode: string}) => {
-  if (!gameResultsId) return `/submit-schedule${generateQueryParams({id,idUsa,idUssr,tournamentId,gameCode})}`
+const resolveLink = ({
+  gameResultsId,
+  id,
+  idUsa,
+  idUssr,
+  tournamentId,
+  gameCode,
+}: {
+  gameResultsId: string | null;
+  id: string;
+  idUsa: string;
+  idUssr: string;
+  tournamentId: string;
+  gameCode: string;
+}) => {
+  if (!gameResultsId)
+    return `/submit-schedule${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode })}`;
 
-  return `/games/${gameResultsId}`
-}
+  return `/games/${gameResultsId}`;
+};
 
 const PlayerInfoBox = ({
   nameUsa,
@@ -79,10 +113,7 @@ const PlayerInfoBox = ({
   countryUsa,
   countryUssr,
   gameWinner,
-}: Pick<
-  ScheduleType,
-  "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner"
->) => {
+}: Pick<ScheduleType, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
   return (
     <Flex css={{ display: "flex", flexDirection: "row" }}>
       <Box
@@ -95,7 +126,10 @@ const PlayerInfoBox = ({
         }}
       >
         <FlagIcon code={countryUsa} />
-        <Text fontSize="medium" strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}>
+        <Text
+          fontSize="medium"
+          strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
+        >
           {nameUsa}
         </Text>
       </Box>
@@ -107,11 +141,14 @@ const PlayerInfoBox = ({
           flexDirection: "row",
           lineHeight: 1,
           alignItems: "center",
-          justifyContent: "space-between"
+          justifyContent: "space-between",
         }}
       >
         <FlagIcon code={countryUssr} />
-        <Text fontSize="medium" strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}>
+        <Text
+          fontSize="medium"
+          strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
+        >
           {nameUssr}
         </Text>
       </Box>
@@ -126,8 +163,9 @@ const isDueInDays = (date: string): number => {
   return Math.ceil((target - now) / (1000 * 60 * 60 * 24));
 };
 
-type VariantType = (schedule: ScheduleType) => 
-  "played" | "duedate" | "default" | "firstAlert" | "secondAlert";
+type VariantType = (
+  schedule: ScheduleType,
+) => "played" | "duedate" | "default" | "firstAlert" | "secondAlert";
 
 const getVariant: VariantType = (schedule) => {
   if (schedule.gameWinner && schedule.gameDate) {
@@ -147,43 +185,63 @@ const getVariant: VariantType = (schedule) => {
   return "default";
 };
 
-const ScheduleRow = ({ schedule, isAdmin }: { schedule: ScheduleType; isAdmin: boolean }) => {
+const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleType; userId: string; isAdmin: boolean }) => {
+  const opponentId = schedule.idUsa === userId ? schedule.idUssr : schedule.idUsa;
   return (
     <Flex>
-    <PlayerInfo status={getVariant(schedule)}>
-      <UnstyledLink href={resolveLink({gameResultsId: schedule.gameResultsId, id: schedule.id, idUsa: schedule.idUsa, idUssr: schedule.idUssr, tournamentId: schedule.tournamentId, gameCode: schedule.gameCode})} css={{ display: "flex", flexDirection: "column" }}>
-      <Flex
-        css={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          margin: "0 0 0 8px",
-        }}
-      >
-        <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
-          {schedule.tournamentName}
-        </Text>
-      </Flex>
+      <PlayerInfo status={getVariant(schedule)}>
+        <UnstyledLink
+          href={resolveLink({
+            gameResultsId: schedule.gameResultsId,
+            id: schedule.id,
+            idUsa: schedule.idUsa,
+            idUssr: schedule.idUssr,
+            tournamentId: schedule.tournamentId,
+            gameCode: schedule.gameCode,
+          })}
+          css={{ display: "flex", flexDirection: "column" }}
+        >
+          <Flex
+            css={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              margin: "0 0 0 8px",
+            }}
+          >
+            <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
+              {schedule.tournamentName}
+            </Text>
+          </Flex>
 
-      <PlayerInfoBox
-        gameWinner={schedule.gameWinner}
-        countryUsa={schedule.countryUsa}
-        countryUssr={schedule.countryUssr}
-        nameUsa={schedule.nameUsa}
-        nameUssr={schedule.nameUssr}
-      />
-      </UnstyledLink>
-    </PlayerInfo>
-    <DueDateCell>
-      <DueDateDisplay dueDate={schedule.dueDate} scheduleId={schedule.id} gameDate={schedule.gameDate}
-        admin={false}
-        gamePlayed={false} />
-    </DueDateCell>
+          <PlayerInfoBox
+            gameWinner={schedule.gameWinner}
+            countryUsa={schedule.countryUsa}
+            countryUssr={schedule.countryUssr}
+            nameUsa={schedule.nameUsa}
+            nameUssr={schedule.nameUssr}
+          />
+        </UnstyledLink>
+      </PlayerInfo>
+      <CheckOpponentProfileCell>
+        <UnstyledLink href={`/userprofile/${opponentId}`}>
+          <Text fontSize="small">Opponent profile</Text>
+        </UnstyledLink>
+      </CheckOpponentProfileCell>
+      <DueDateCell>
+        <DueDateDisplay
+          dueDate={schedule.dueDate}
+          scheduleId={schedule.id}
+          gameDate={schedule.gameDate}
+          admin={isAdmin}
+          gamePlayed={false}
+        />
+      </DueDateCell>
     </Flex>
   );
 };
 
-const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading }) => {
+const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, isLoading }) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -208,7 +266,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, isLoading 
   return (
     <ResultsStyleWrapper>
       {data?.map((schedule, index) => (
-        <ScheduleRow key={index} schedule={schedule} isAdmin={isAdmin} />
+        <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />
       ))}
     </ResultsStyleWrapper>
   );
@@ -223,25 +281,31 @@ const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, t
   useEffect(() => {
     if (tournamentsRegistered?.length > 0 && accountCompromised !== "2224") {
       // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
-      dispatch(fetchScheduleList({isSuperAdmin, tournaments: [tournamentsRegistered?.[0] as string], userId}))
+      dispatch(
+        fetchScheduleList({
+          isSuperAdmin,
+          tournaments: [tournamentsRegistered?.[0] as string],
+          userId,
+        }),
+      );
     }
   }, [filters, currentPage, dispatch]);
 
-  if (status === "loading") return null;
+  const onPageChange = async (page: string) => {
+    dispatch(setCurrentPage(page));
+  };
 
-    const onPageChange = async (page: string) => {
-      dispatch(setCurrentPage(page));
-    };
-
-  return <>
-          <h1>My Schedule</h1>
-          <ResponsiveContainer
-            direction={{
-              "@initial": "row",
-              "@sm": "column",
-            }}>
-            <Flex css={{ flexDirection: 'column', width: "100%", gap: "4px", marginTop: '16px' }}>
-              {/* <Flex css={{ flexDirection: 'row', width: "100%", gap: "4px" }}>
+  return (
+    <>
+      <h1>My Schedule</h1>
+      <ResponsiveContainer
+        direction={{
+          "@initial": "row",
+          "@sm": "column",
+        }}
+      >
+        <Flex css={{ flexDirection: "column", width: "100%", gap: "4px", marginTop: "16px" }}>
+          {/* <Flex css={{ flexDirection: 'row', width: "100%", gap: "4px" }}>
                 <DropdownWithLabel
                   labelText="typeOfGame"
                   key="gameType"
@@ -255,24 +319,32 @@ const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, t
                   }}
                 />
               </Flex> */}
-              
-              {/* {tournamentsAdmin.length > 0 && <ScheduleFilter userAdminTournaments={tournamentsAdmin.length > 0} noSchedule={items?.length === 0} />} */}
-              <SchedulePanel data={items} isAdmin={tournamentsAdmin.length > 0}/>
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-              />
-            </Flex>
-          </ResponsiveContainer>
-        </>
-}
+
+          {tournamentsAdmin.length > 0 && (
+            <ScheduleFilter
+              userAdminTournaments={tournamentsAdmin.length > 0}
+              noSchedule={items?.length === 0}
+              tournament={tournamentsRegistered?.[0]}
+            />
+          )}
+          <SchedulePanel data={items} userId={userId} isAdmin={tournamentsAdmin.length > 0} isLoading={status === "loading"} />
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </Flex>
+      </ResponsiveContainer>
+    </>
+  );
+};
 
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
-  const protocol = req.headers['x-forwarded-proto'] || 'http'
-  const host = req.headers['host']
-  const baseUrl = `${protocol}://${host}`
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const host = req.headers["host"];
+  const baseUrl = `${protocol}://${host}`;
 
   if (!payload) {
     return {
@@ -283,18 +355,21 @@ export async function getServerSideProps({ req, res }: ServerType) {
     };
   }
 
-  const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered)
+  const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered);
   // payload?.tournamentsRegistered
-  const tournaments = payload?.tournamentsAdmin ? await axios.get(
-    `${baseUrl}/api/game/tournaments?id=${tournamentsConcatArray?.join(',')}`
-  ) : []
+  const tournaments = payload?.tournamentsAdmin
+    ? await axios.get(`${baseUrl}/api/game/tournaments?id=${tournamentsConcatArray?.join(",")}`)
+    : [];
 
-  const leagueTypesAdmin: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id)).map((item: TournamentsType) => ({
-    value: item.id.toString(),
-    text: item.tournament_name,
-  })) || []
+  const leagueTypesAdmin: DropdownItemType[] =
+    tournaments?.data
+      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id))
+      .map((item: TournamentsType) => ({
+        value: item.id.toString(),
+        text: item.tournament_name,
+      })) || [];
 
-  const tournamentsRegistered = await getTournamentsRegistered(payload?.mail)
+  const tournamentsRegistered = await getTournamentsRegistered(payload?.mail);
   // const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
   //   value: item.id.toString(),
   //   text: item.tournament_name,
@@ -304,4 +379,4 @@ export async function getServerSideProps({ req, res }: ServerType) {
   return { props: { accountCompromised: payload?.id, isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
-export default Schedule
+export default Schedule;

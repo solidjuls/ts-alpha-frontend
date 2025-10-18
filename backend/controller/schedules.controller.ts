@@ -1,14 +1,14 @@
 import { prisma } from "backend/utils/prisma";
 import { ScheduleDBType } from "types/types";
 
-export const getSchedules = async ({ userId, tournament, user, page, pageSize, adminView } : { userId: number, tournament: string[] | undefined, user: string | undefined, page: number, pageSize: number, adminView: boolean }) => {
+export const getSchedules = async ({ userId, tournament, userFilter, page, pageSize, adminView } : { userId: number, tournament: string[] | undefined, userFilter: number | undefined, page: number, pageSize: number, adminView: boolean }) => {
     pageSize = pageSize || 20;
 
   const skip = (page - 1) * pageSize;
+  const userToFilter = userFilter || userId
   const where: any = {
-    OR: [
-        { usa_player_id: userId },
-        { ussr_player_id: userId },
+    AND: [
+        { tournaments_id: Number(tournament) },
       ]
   };
   const orderBy: any = [];
@@ -21,14 +21,14 @@ export const getSchedules = async ({ userId, tournament, user, page, pageSize, a
     due_date: 'asc',
   });
 
-  // if (!adminView) {
-  //   where.AND.push({
-  //     OR: [
-  //       { usa_player_id: userId },
-  //       { ussr_player_id: userId },
-  //     ],
-  //   });
-  // }
+  if (!adminView) {
+    where.AND.push({
+      OR: [
+        { usa_player_id: userToFilter },
+        { ussr_player_id: userToFilter },
+      ],
+    });
+  }
 
  const totalRows = await prisma.schedule.count({
     where,
@@ -121,7 +121,7 @@ export const validateScheduleIntegrity = async ({ usaPlayerId, id, ussrPlayerId,
 }
 
 export const updateScheduleByResultId = async ({ gameResultId } : { gameResultId: number }) => {
-  const updated = await prisma.schedule.update({
+  const updated = await prisma.schedule.updateMany({
     data: {
       game_results_id: null,
     },

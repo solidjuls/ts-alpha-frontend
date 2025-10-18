@@ -361,3 +361,136 @@ export const submit = async (data: GameAPI) => {
     throw e;
   }
 };
+
+export const getStandings = async (tournamentId: string, secondaryName: string) => {
+    const standingPlayers = await prisma.standings.findMany({
+      where: {
+        tournaments_id: Number(tournamentId),
+      },
+      select: {
+        standing_players: {
+          select: {
+            user_id: true,
+          },
+        },
+        standing_name: true,
+        secondary_name: true,
+      }
+    });
+
+    const players: Record<
+      string,
+      { userId: string; tldCode: string | undefined; opponents: string[]; name: string; gamesWon: number; gamesLost: number; gamesTied: number; winRate: number; sos: number; standingName: string; secondaryName: string | null }
+    > = {};
+    let counter = 0
+    standingPlayers?.forEach(userByStanding => {
+      userByStanding.standing_players.forEach(user => {
+        const id = user.user_id.toString()
+        counter++
+        players[id]= {
+          userId: id,
+          standingName: userByStanding.standing_name,
+          secondaryName: userByStanding.secondary_name,
+          gamesWon: 0,
+          gamesLost: 0,
+          gamesTied: 0,
+          winRate: 0,
+          sos: 0,
+          tldCode: undefined,
+          name: "",
+          opponents: [],
+        }
+      })
+    })
+
+    if (!standingPlayers || standingPlayers.length === 0) {
+      return // res.status(404).json({ error: "No standings found" });
+    }
+
+  const standingPlayersNames = await prisma.users.findMany({
+    select: {
+      id: true,
+      first_name: true,
+      last_name: true,
+      countries: {
+        select: {
+          tld_code: true,
+        },
+      },
+    },
+    where: {
+      id: {
+        in: Object.keys(players).map(Number),
+      },
+    },
+  });
+
+Object.keys(players).forEach(id => {
+  const name = standingPlayersNames.find(user => user.id.toString() === id)
+  
+  if (name) {
+    players[id].name = `${name.first_name} ${name.last_name}`
+    players[id].tldCode = name.countries?.tld_code
+  }
+})
+
+    // Retrieve all game results for the given tournament
+    const games = await prisma.game_results.findMany({
+      where: { game_type: Number(tournamentId) },
+    });
+
+    for (const game of games) {
+      const usaId = game.usa_player_id.toString();
+      const ussrId = game.ussr_player_id.toString();
+
+      if (!players[usaId] || !players[ussrId]) {
+        continue;
+      }
+      
+      // We keep track of all player's opponents for a later use
+      players[usaId].opponents.push(ussrId);
+      players[ussrId].opponents.push(usaId);
+
+      switch (game.game_winner) {
+        case "1":
+          players[usaId].gamesWon++;
+          players[ussrId].gamesLost++;
+          break;
+        case "2":
+          players[ussrId].gamesWon++;
+          players[usaId].gamesLost++;
+          break;
+        case "3":
+          players[usaId].gamesTied++;
+          players[ussrId].gamesTied++;
+          break;
+      }
+    }
+
+    // Win%
+    Object.keys(players).forEach(id => {
+      const gamesWon = players[id].gamesWon;
+      const gamesLost = players[id].gamesLost;
+      const gamesTied = players[id].gamesTied;
+      if (gamesWon + gamesLost + gamesTied === 0) {
+        return
+      }
+      players[id].winRate = (gamesWon + (0.5 * gamesTied))/(gamesWon + gamesLost + gamesTied)
+      // console.log("players[id].opponents", players[id].opponents)
+    })
+
+    // SoS
+    Object.keys(players).forEach(id => {
+      const opponents = players[id].opponents
+      if (opponents.length === 0) {
+        return
+      }
+      players[id].sos = opponents.reduce((acc, opponent) => acc + players[opponent].winRate, 0) / opponents.length
+      // console.log("Win sos", players[id].name, players[id].winRate, players[id].sos);
+    })
+
+    // Return only players on the current standing
+    const filteredPlayers = Object.values(players).filter(player => player.secondaryName === secondaryName)
+
+    return filteredPlayers
+}

@@ -75,6 +75,67 @@ const Link = styled("a", {
   "&:hover": { textDecoration: "underline", color: "$linkHover" },
 });
 
+
+  "th, td": {
+    padding: "0.75rem",
+    textAlign: "left",
+  },
+
+  th: {
+    backgroundColor: "#365f65",
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+  tr: {
+    borderBottom: "1px solid $greyLight",
+  },
+
+  "tr:nth-child(even)": {
+    backgroundColor: "$greyLight",
+  },
+
+  // ----- MOBILE CARD STYLE -----
+  "@media (max-width: 700px)": {
+    border: "0",
+    display: "block",
+    "thead": {
+      display: "none",
+    },
+    "tbody, tr, td": {
+      display: "block",
+      width: "100%",
+    },
+    "tr": {
+      marginBottom: "1rem",
+      background: "#fff",
+      border: "1px solid $greyLight",
+      borderRadius: "10px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      overflow: "hidden",
+    },
+    "td": {
+      textAlign: "left",
+      padding: "0.75rem 1rem",
+      position: "relative",
+      "&::before": {
+        content: "attr(data-label)",
+        display: "block",
+        fontWeight: "bold",
+        color: "#365f65",
+        marginBottom: "0.25rem",
+      },
+    },
+  },
+});
+
+const Link = styled("a", {
+  color: "$link",
+  textDecoration: "none",
+  fontWeight: "bold",
+  "&:hover": { textDecoration: "underline", color: "$linkHover" },
+});
+
 const PlayerCell = ({ flag, name, id }: { flag?: string; name: string; id?: number }) => (
   <Flex css={{ alignItems: "center", gap: "6px" }}>
     {flag && <FlagIcon code={flag} />}
@@ -168,6 +229,7 @@ export default function HallOfFamePage() {
         Placing in the top three of one of these leagues puts players amongst the best in the world.
       </p>
 
+      <p>The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestiguous Twilight Struggle leagues.<br/>Placing in the top three of one of these leagues puts players amongst the best in the world.</p>
       <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
       <TableContainer>{renderTable(itslData)}</TableContainer>
 

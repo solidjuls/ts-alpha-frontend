@@ -10,6 +10,7 @@ interface ScheduleState {
   filters: {
     tournamentSelected: string;
     adminView: boolean;
+    byPlayer: string;
     invalidateCache: boolean
   };
   modeUI: 'ADMIN' | 'SUPER_ADMIN' | 'PLAYER_VIEW';
@@ -26,6 +27,7 @@ const initialState: ScheduleState = {
   filters: {
     tournamentSelected: "",
     adminView: false,
+    byPlayer: "",
     invalidateCache: false
   },
   currentPage: 1,
@@ -38,13 +40,19 @@ interface FetchScheduleParams {
   userFilter: string
   userId: string
 }
+interface DeletePlayerParams {
+  userId: string;
+  tournamentId: string;
+}
 
 export const deletePlayerFromSchedule = createAsyncThunk(
   "list/deletePlayerFromSchedule",
-  async (params: FetchScheduleParams, { getState }) => {
-    const { isSuperAdmin, userFilter, userId } = params
+  async (params: DeletePlayerParams, { getState }) => {
+    const { userId, tournamentId = "303" } = params
     const URLparams = new URLSearchParams();
-    if (userFilter) URLparams.append("u", userFilter);
+    if (userId) URLparams.append("u", userId);
+    if (tournamentId) URLparams.append("t", tournamentId);
+    
     const response = await getAxiosInstance().patch(
       `/api/schedule?${URLparams.toString()}`,
     );
@@ -68,6 +76,7 @@ export const fetchScheduleList = createAsyncThunk(
     URLparams.append("pso", "20");
     if (tournaments && tournaments.length > 0) URLparams.append("t", tournaments.join(","));
     if (filters.adminView) URLparams.append("a", filters.adminView ? '1' : '0');
+    if (filters.byPlayer) URLparams.append("u", filters.byPlayer);
 
     await clearAllCache("schedule-list");
     // isSuperAdmin & tournament filter selected
@@ -96,6 +105,10 @@ const listSlice = createSlice({
       state.filters.invalidateCache = state.filters.adminView !== action.payload;
       state.filters.adminView = action.payload;
     },
+    setPlayerFilter: (state, action) => {
+      state.filters.invalidateCache = state.filters.byPlayer !== action.payload;
+      state.filters.byPlayer = action.payload;
+    },
     setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
@@ -120,6 +133,7 @@ const listSlice = createSlice({
 export const {
   setTournamentFilter,
   setAdminView,
+  setPlayerFilter,
   setCurrentPage
 } = listSlice.actions;
 
