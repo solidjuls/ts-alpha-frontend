@@ -18,10 +18,10 @@ function convertBigIntToString(obj: any): any {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { season, league } = req.query;
-    const seasonNum = season ? Number(season) : undefined;
+    const seasonStr = season ? String(season) : undefined;
     const leagueStr = league ? String(league) : undefined;
 
-    const data = await getHallOfFame(seasonNum, leagueStr);
+    const data = await getHallOfFame(seasonStr, leagueStr);
 
     // Convert all BigInts to strings
     const safeData = convertBigIntToString(data);

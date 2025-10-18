@@ -147,7 +147,7 @@ export default function HallOfFamePage() {
               <PlayerCell flag={s.flag1} name={s.winner.name} id={s.winner.id} />
             </td>
             <td data-label="Second">
-              <PlayerCell flag={s.flag2} name={s.second.name} id={s.second.id} />
+              {s.second && <PlayerCell flag={s.flag2} name={s.second.name} id={s.second.id} />}
             </td>
             <td data-label="Third">
               {s.third && <PlayerCell flag={s.flag3} name={s.third.name} id={s.third.id} />}

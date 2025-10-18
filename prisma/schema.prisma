@@ -76,7 +76,7 @@ model game_results {
 
 model HallOfFame {
   id         Int       @id @default(autoincrement())
-  season     Int
+  season     String
   league_type String
   link       String?  
   players    Int?
@@ -85,11 +85,11 @@ model HallOfFame {
   flag3      String?   @db.Char(2)
 
   winner_id   BigInt
-  second_id   BigInt
+  second_id   BigInt?
   third_id    BigInt?
 
   winner     users   @relation("WinnerRelation", fields: [winner_id], references: [id])
-  second     users   @relation("SecondRelation", fields: [second_id], references: [id])
+  second     users?   @relation("SecondRelation", fields: [second_id], references: [id])
   third      users?  @relation("ThirdRelation", fields: [third_id], references: [id])
 
   created_at  DateTime  @default(now())
