@@ -9,7 +9,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { useParams } from "next/navigation";
 import { TournamentsType } from "types/game.types";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
-import { dateFormat } from "utils/dates";
+import { dateFormat, dateIntlFormatter } from "utils/dates";
 import { useSession } from "contexts/AuthProvider";
 import getAxiosInstance from "utils/axios";
 import { getInfoFromCookies } from "utils/cookies";
@@ -48,6 +48,70 @@ interface TournamentDetailProps {
   userRole?: number;
 }
 
+const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering }) => {
+  return <Box css={{
+            padding: "20px 24px",
+            borderTop: "1px solid #e9ecef",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}>
+            <Box>
+              {registrationStatus === 'registered' && (
+                <StatusText type="registered">
+                  ✓ You are registered for this tournament
+                </StatusText>
+              )}
+              {registrationStatus === 'not_registered' && (
+                <StatusText type="default">
+                  Click to register for this tournament
+                </StatusText>
+              )}
+            </Box>
+
+            <Button
+              onClick={onRegisterClick}
+              disabled={isRegistering}
+              css={{
+                backgroundColor: registrationStatus === 'registered' ? "#dc2626" : "#16a34a",
+                "&:hover": {
+                  backgroundColor: registrationStatus === 'registered' ? "#b91c1c" : "#15803d",
+                }
+              }}
+            >
+              {isRegistering ? (
+                <Spinner size="1" />
+              ) : registrationStatus === 'registered' ? (
+                "Unregister"
+              ) : (
+                "Register"
+              )}
+            </Button>
+          </Box>
+}
+const TournamentInfo = ({ tournament_name, statusName, adminName, starting_date, description }: TournamentsType) => {
+  return <Box css={{
+            display: "grid",
+            gap: "0.25rem",
+            maxWidth: "48rem",
+            gridTemplateColumns: "1fr 2fr",
+            padding: "24px 0 24px 24px",
+            alignItems: "left",
+            width: "100%",
+          }}>
+            <DisplayInfo label="Tournament Name" infoText={tournament_name || '-'} />
+            <DisplayInfo label="Status" infoText={statusName} />
+            <DisplayInfo label="Administrators" infoText={adminName} />
+            <DisplayInfo label="Starting Date" infoText={starting_date} />
+
+            {description && (
+              <Flex css={{ flexDirection: "column", minWidth: "400px", gridColumn: "1 / -1" }}>
+                <StyledLabel>Description</StyledLabel>
+                <DescriptionBox dangerouslySetInnerHTML={{ __html: description }} />
+              </Flex>
+            )}
+          </Box>
+}
 const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const { id } = useParams();
   const { id: userId, email } = useSession();
@@ -114,7 +178,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   }
 
   const adminsFormatted = tournament?.adminName?.length > 0 ? tournament?.adminName.join(", ") : '-';
-  const dateFormatted = tournament?.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-';
+  const dateFormatted = tournament?.starting_date ? dateIntlFormatter(new Date(tournament.starting_date)) : '-';
   const statusName = getTournamentStatusNames(tournament?.status_id);
 
   // Player Mode - Show tournament info and registration button
@@ -127,67 +191,9 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           borderRadius: "8px",
           backgroundColor: "white",
         }}>
-          <Box css={{
-            display: "grid",
-            gap: "0.25rem",
-            maxWidth: "48rem",
-            gridTemplateColumns: "1fr 2fr",
-            padding: "24px 0 24px 24px",
-            alignItems: "left",
-            width: "100%",
-          }}>
-            <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
-            <DisplayInfo label="Status" infoText={statusName} />
-            <DisplayInfo label="Administrators" infoText={adminsFormatted} />
-            <DisplayInfo label="Starting Date" infoText={dateFormatted} />
+          <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
 
-            {tournament.description && (
-              <Flex css={{ flexDirection: "column", minWidth: "400px", gridColumn: "1 / -1" }}>
-                <StyledLabel>Description</StyledLabel>
-                <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
-              </Flex>
-            )}
-          </Box>
-
-          <Box css={{
-            padding: "20px 24px",
-            borderTop: "1px solid #e9ecef",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
-            <Box>
-              {registrationStatus === 'registered' && (
-                <StatusText type="registered">
-                  ✓ You are registered for this tournament
-                </StatusText>
-              )}
-              {registrationStatus === 'not_registered' && (
-                <StatusText type="default">
-                  Click to register for this tournament
-                </StatusText>
-              )}
-            </Box>
-
-            <Button
-              onClick={onRegisterClick}
-              disabled={isRegistering}
-              css={{
-                backgroundColor: registrationStatus === 'registered' ? "#dc2626" : "#16a34a",
-                "&:hover": {
-                  backgroundColor: registrationStatus === 'registered' ? "#b91c1c" : "#15803d",
-                }
-              }}
-            >
-              {isRegistering ? (
-                <Spinner size="1" />
-              ) : registrationStatus === 'registered' ? (
-                "Unregister"
-              ) : (
-                "Register"
-              )}
-            </Button>
-          </Box>
+          <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />
         </Box>
       </DetailContainer>
     );
@@ -202,27 +208,8 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
         borderRadius: "8px",
         backgroundColor: "white",
       }}>
-        <Box css={{
-          display: "grid",
-          gap: "0.25rem",
-          maxWidth: "48rem",
-          gridTemplateColumns: "1fr 2fr",
-          padding: "24px 0 24px 24px",
-          alignItems: "left",
-          width: "100%",
-        }}>
-          <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
-          <DisplayInfo label="Status" infoText={statusName} />
-          <DisplayInfo label="Administrators" infoText={adminsFormatted} />
-          <DisplayInfo label="Starting Date" infoText={dateFormatted} />
-
-          {tournament.description && (
-            <Flex css={{ flexDirection: "column", minWidth: "400px", gridColumn: "1 / -1" }}>
-              <StyledLabel>Description</StyledLabel>
-              <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
-            </Flex>
-          )}
-        </Box>
+        <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
+        <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />
 
         <Box css={{
           padding: "20px 24px",
