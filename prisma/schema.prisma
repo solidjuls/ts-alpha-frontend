@@ -75,29 +75,28 @@ model game_results {
 }
 
 model HallOfFame {
-  id         Int       @id @default(autoincrement())
-  season     String
-  league_type String
-  link       String?  
-  players    Int?
-  flag1      String?   @db.Char(2)
-  flag2      String?   @db.Char(2)
-  flag3      String?   @db.Char(2)
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  season      String    @db.VarChar(20)
+  league_type String    @db.VarChar(50)
+  link        String?   @db.VarChar(255)
+  players     Int?
+  winner_id   BigInt    @db.UnsignedBigInt
+  second_id   BigInt?   @db.UnsignedBigInt
+  third_id    BigInt?   @db.UnsignedBigInt
+  flag1       String?   @db.Char(2)
+  flag2       String?   @db.Char(2)
+  flag3       String?   @db.Char(2)
+  created_at  DateTime? @default(now()) @db.DateTime(0)
+  updated_at  DateTime? @default(now()) @updatedAt @db.DateTime(0)
+  winner      users     @relation("WinnerRelation", fields: [winner_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "hall_of_fame_ibfk_1")
+  second      users?    @relation("SecondRelation", fields: [second_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "hall_of_fame_ibfk_2")
+  third       users?    @relation("ThirdRelation", fields: [third_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "hall_of_fame_ibfk_3")
 
-  winner_id   BigInt
-  second_id   BigInt?
-  third_id    BigInt?
-
-  winner     users   @relation("WinnerRelation", fields: [winner_id], references: [id])
-  second     users?   @relation("SecondRelation", fields: [second_id], references: [id])
-  third      users?  @relation("ThirdRelation", fields: [third_id], references: [id])
-
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-
+  @@index([second_id], map: "hall_of_fame_ibfk_2")
+  @@index([third_id], map: "hall_of_fame_ibfk_3")
+  @@index([winner_id], map: "winner_id")
   @@map("hall_of_fame")
 }
-
 
 model ratings_history {
   id             BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
@@ -152,6 +151,9 @@ model users {
   game_results_game_results_reporter_idTousers    game_results[]      @relation("game_results_reporter_idTousers")
   game_results_game_results_usa_player_idTousers  game_results[]      @relation("game_results_usa_player_idTousers")
   game_results_game_results_ussr_player_idTousers game_results[]      @relation("game_results_ussr_player_idTousers")
+  won                                             HallOfFame[]        @relation("WinnerRelation")
+  cameSecond                                      HallOfFame[]        @relation("SecondRelation")
+  cameThird                                       HallOfFame[]        @relation("ThirdRelation")
   ratings_history                                 ratings_history[]
   schedule_schedule_usa_player_idTousers          schedule[]          @relation("schedule_usa_player_idTousers")
   schedule_schedule_ussr_player_idTousers         schedule[]          @relation("schedule_ussr_player_idTousers")
@@ -164,12 +166,6 @@ model users {
   @@index([country_id], map: "users_country_id_foreign")
   @@index([first_name], map: "users_first_name_index")
   @@index([last_name], map: "users_last_name_index")
-
-
-  won        HallOfFame[] @relation("WinnerRelation")
-  cameSecond HallOfFame[] @relation("SecondRelation")
-  cameThird  HallOfFame[] @relation("ThirdRelation") 
-
 }
 
 model TournamentStatus {
@@ -237,7 +233,7 @@ model tournaments {
   status_id               Int
   created_at              DateTime?                 @default(now()) @db.Timestamp(0)
   updated_at              DateTime?                 @default(now()) @db.Timestamp(0)
-  description             String?                   @db.VarChar(100)
+  description             String?                   @db.VarChar(250)
   starting_date           DateTime?                 @db.Date
   game_results            game_results[]
   schedule                schedule[]
