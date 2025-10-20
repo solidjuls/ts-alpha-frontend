@@ -1,7 +1,12 @@
 import { Spinner } from "@radix-ui/themes";
 import { getInfoFromCookies } from "utils/cookies";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
+import {
+  getTournamentStatusNames,
+  tournamentStatus,
+  TournamentStatusType,
+  userRoles,
+} from "utils/constants";
 import { ServerType } from "types/types";
 import Text from "components/Text";
 import { Box, Flex } from "components/Atoms";
@@ -11,6 +16,7 @@ import { styled } from "stitches.config";
 import Legend from "./Legend";
 import { UnstyledLink } from "components/Schedule/Schedule.styles";
 import { dateFormat } from "utils/dates";
+import { useRouter } from "next/router";
 
 // Tournament Table Styles
 const TournamentTable = styled("table", {
@@ -159,8 +165,11 @@ const ResponsiveContainer = styled("div", {
 
 type TournamentStatusKey = keyof typeof tournamentStatus;
 const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (statusId) => {
-  return (Object.keys(tournamentStatus) as TournamentStatusKey[])
-    .find((key) => tournamentStatus[key] === statusId) || "closed";
+  return (
+    (Object.keys(tournamentStatus) as TournamentStatusKey[]).find(
+      (key) => tournamentStatus[key] === statusId,
+    ) || "closed"
+  );
 };
 
 interface TournamentRowProps {
@@ -168,22 +177,23 @@ interface TournamentRowProps {
 }
 
 const TournamentRow = ({ tournament }: TournamentRowProps) => {
-  const adminsFormatted = tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : '-';
-  const dateFormatted = tournament.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-';
+  const router = useRouter();
+  const adminsFormatted = tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : "-";
+  const dateFormatted = tournament.starting_date
+    ? dateFormat(new Date(tournament.starting_date))
+    : "-";
   const statusName = getTournamentStatusNames(tournament.status_id);
   const statusVariant = getVariant(tournament.status_id);
 
   return (
-    <TableRow status={statusVariant}>
+    <TableRow status={statusVariant} onClick={() => router.push(`/tournaments/${tournament.id}`)}>
       <TableCell>
         <UnstyledLink href={`/tournaments/${tournament.id}`}>
           {tournament.tournament_name}
         </UnstyledLink>
       </TableCell>
       <TableCell>
-        <StatusBadge status={statusVariant}>
-          {statusName}
-        </StatusBadge>
+        <StatusBadge status={statusVariant}>{statusName}</StatusBadge>
       </TableCell>
       <TableCell>{adminsFormatted}</TableCell>
       <TableCell>{dateFormatted}</TableCell>
@@ -200,12 +210,18 @@ const Tournaments = () => {
 
   return (
     <>
-      <Flex css={{ flexDirection: "row", width: "100%", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+      <Flex
+        css={{
+          flexDirection: "row",
+          width: "100%",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "16px",
+        }}
+      >
         <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>Tournaments</h1>
         <Button css={{ width: "180px" }}>
-          <UnstyledLink href="/tournament-create">
-            Create New Tournament
-          </UnstyledLink>
+          <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
         </Button>
       </Flex>
 
@@ -223,23 +239,22 @@ const Tournaments = () => {
           </TableHeader>
           <TableBody>
             {data?.map((tournament) => (
-              <TournamentRow
-                key={tournament.id}
-                tournament={tournament}
-              />
+              <TournamentRow key={tournament.id} tournament={tournament} />
             ))}
           </TableBody>
         </TournamentTable>
 
         {(!data || data.length === 0) && (
-          <Box css={{
-            textAlign: "center",
-            padding: "40px",
-            color: "$gray500",
-            backgroundColor: "white",
-            borderRadius: "12px",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
-          }}>
+          <Box
+            css={{
+              textAlign: "center",
+              padding: "40px",
+              color: "$gray500",
+              backgroundColor: "white",
+              borderRadius: "12px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            }}
+          >
             <Text fontSize="big">No tournaments found</Text>
             <Text fontSize="medium" css={{ marginTop: "8px" }}>
               Create a new tournament to get started.
