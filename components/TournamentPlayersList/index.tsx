@@ -161,7 +161,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved }: TournamentPlay
             <PlayerRow key={player.registrationId}>
               <PlayerInfo>
                 <PlayerName>{player.name}</PlayerName>
-                <PlayerEmail>{player.email}</PlayerEmail>
+                {/* <PlayerEmail>{player.email}</PlayerEmail> */}
               </PlayerInfo>
               
               <Flex css={{ alignItems: "center", gap: "12px" }}>
