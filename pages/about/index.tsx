@@ -99,7 +99,7 @@ const AboutPage = () => (
           Published by GMT Games in 2005, Twilight Struggle is regarded by many as one of the best
           competitive board games of all time. This website is run and maintained by the{" "}
           <strong>ITS Junta</strong>, a group of enthusiasts who organize online and live
-          tournaments.
+          tournaments. You can check out our <Link href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/">community rules</Link> to learn more.
         </p>
       </Section>
 
@@ -294,7 +294,7 @@ const AboutPage = () => (
             <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
           </dt>
           <dd>
-            A synopsis of the more current strategy used by top-level Twilight Struggle players, developed by members of the Chinese Twilight Struggle community and compiled by ITS member <Link href="https://twilight-struggle.com/userprofile/2287">Kris Wei</Link>.
+            A synopsis of the more current strategy used by top-level Twilight Struggle players, developed by members of the Chinese Twilight Struggle community and compiled by ITS community member <Link href="https://twilight-struggle.com/userprofile/2287">Kris Wei</Link>.
           </dd>
         </dl>
       </Section>
