@@ -6,9 +6,14 @@ import { FlagIcon } from "components/FlagIcon";
 import { useState, useEffect } from "react";
 
 const headerColor = {
-    backgroundColor: 'rgb(28, 69, 135)',
-    color: 'white'
-}
+  backgroundColor: "rgb(28, 69, 135)",
+  color: "white",
+};
+
+const headerForfeitColor = {
+  backgroundColor: "red",
+  color: "white",
+};
 
 type Player = {
   userId: string;
@@ -23,9 +28,10 @@ type Player = {
   sos: number;
 };
 
-const PageHeader = styled('h1', {
-  textAlign: "center", borderBottom: "solid 1px $greyLight" 
-})
+const PageHeader = styled("h1", {
+  textAlign: "center",
+  borderBottom: "solid 1px $greyLight",
+});
 const StyledTable = styled("table", {
   borderCollapse: "collapse",
   marginBottom: "8px",
@@ -33,7 +39,7 @@ const StyledTable = styled("table", {
 
 const StyledHeading = styled("thead", {
   fontWeight: "bold",
-  ...headerColor
+  ...headerColor,
 });
 
 const StyledHeaderCell = styled("th", {
@@ -88,6 +94,61 @@ const TabButton = styled("button", {
 
 type Division = "TORUN" | "SEATTLE";
 
+const ForfeitTable = ({ players }) => (
+  <Flex css={{ flexDirection: "column", width: "400px", borderRadius: "8px", padding: "8px", marginTop: "20px" }}>
+    <Text
+      strong="bold"
+      css={{
+        ...headerForfeitColor,
+        // borderLeft: "1px solid black",
+        margin: 0,
+        textAlign: "center",
+      }}
+    >
+      FORFEITS
+    </Text>
+    <StyledTable>
+      <StyledHeading>
+        <tr>
+          <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
+            Player Name
+          </StyledHeaderCell>
+          <StyledHeaderCell>W-L-T</StyledHeaderCell>
+          <StyledHeaderCell>Win%</StyledHeaderCell>
+          <StyledHeaderCell>SoS</StyledHeaderCell>
+        </tr>
+      </StyledHeading>
+      <tbody>
+        {players.map((player) => (
+          <tr key={player.userId}>
+            <StyledCell>
+              <Flex css={{ alignItems: "center", gap: "4px" }}>
+                {player.tldCode && <FlagIcon code={player.tldCode} />}
+                <Text fontSize="small">{player.name}</Text>
+              </Flex>
+            </StyledCell>
+            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+              <Text fontSize="small">
+                {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+              </Text>
+            </StyledCell>
+            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+              <Text fontSize="small" css={{ textAlign: "center" }}>
+                {`${(player.winRate * 100).toFixed(0)}%`}
+              </Text>
+            </StyledCell>
+            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+              <Text fontSize="small" css={{ textAlign: "center" }}>
+                {`${(player.sos * 100).toFixed(0)}%`}
+              </Text>
+            </StyledCell>
+          </tr>
+        ))}
+      </tbody>
+    </StyledTable>
+  </Flex>
+);
+
 const Standings = () => {
   const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
 
@@ -97,7 +158,7 @@ const Standings = () => {
     error,
     refetch,
   } = useFetchInitialData<Player[]>({
-    url: `/api/standings?id=318&division=${selectedDivision}`
+    url: `/api/standings?id=318&division=${selectedDivision}`,
   });
 
   const handleDivisionChange = (division: Division) => {
@@ -107,10 +168,9 @@ const Standings = () => {
   // Refetch data when division changes
   useEffect(() => {
     refetch();
-  }, [selectedDivision, refetch]);
+  }, [selectedDivision]);
 
   if (!standings) return null;
-
 
   const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
@@ -126,6 +186,7 @@ const Standings = () => {
       return b.sos - a.sos;
     });
   }
+  const forfeitsTable = grouped["Forfeit"];
 
   return (
     <Flex css={{ flexDirection: "column", padding: "8px" }}>
@@ -148,65 +209,75 @@ const Standings = () => {
 
       {/* Standings Tables */}
       <Flex css={{ flexDirection: "row", flexWrap: "wrap", gap: "16px" }}>
-        {Object.entries(grouped).map(([standingName, players]) => (
-        <Flex key={standingName} css={{ flexDirection: "column", borderRadius: "8px", padding: "8px" }}>
-          <Text
-            strong="bold"
-            css={{
-                ...headerColor,
-              // borderLeft: "1px solid black",
-              margin: 0,
-              textAlign: "center"
-            }}
-          >
-            {standingName}
-          </Text>
-          <StyledTable>
-            <StyledHeading>
-              <tr>
-                <StyledHeaderCell css={{ width: '40px' }}>Rank</StyledHeaderCell>
-                <StyledHeaderCell css={{ paddingLeft: '40px', width: '200px'}}>Player Name</StyledHeaderCell>
-                <StyledHeaderCell>W-L-T</StyledHeaderCell>
-                <StyledHeaderCell>Win%</StyledHeaderCell>
-                <StyledHeaderCell>SoS</StyledHeaderCell>
-              </tr>
-            </StyledHeading>
-            <tbody>
-              {players.map((player, index) => (
-                <tr key={player.userId}>
-                  <StyledCell css={{ borderLeft: "solid 1px black" }}>
-                    <Text fontSize="small" css={{ textAlign: "center" }}>
-                      {index+1}
-                    </Text>
-                  </StyledCell>
-                  <StyledCell>
-                    <Flex css={{ alignItems: "center", gap: "4px" }}>
-                      {player.tldCode && <FlagIcon code={player.tldCode} />}
-                      <Text fontSize="small">{player.name}</Text>
-                    </Flex>
-                  </StyledCell>
-                  <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                    <Text fontSize="small">
-                      {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                    </Text>
-                  </StyledCell>
-                  <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                    <Text fontSize="small" css={{ textAlign: "center" }}>
-                      {`${(player.winRate*100).toFixed(0)}%`}
-                    </Text>
-                  </StyledCell>
-                  <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                    <Text fontSize="small" css={{ textAlign: "center" }}>
-                      {`${(player.sos*100).toFixed(0)}%`}
-                    </Text>
-                  </StyledCell>
-                </tr>
-              ))}
-            </tbody>
-          </StyledTable>
-        </Flex>
-      ))}
+        {Object.entries(grouped).map(([standingName, players]) => {
+          if (standingName === "Forfeit") return null;
+
+          return (
+            <Flex
+              key={standingName}
+              css={{ flexDirection: "column", borderRadius: "8px", padding: "8px" }}
+            >
+              <Text
+                strong="bold"
+                css={{
+                  ...headerColor,
+                  // borderLeft: "1px solid black",
+                  margin: 0,
+                  textAlign: "center",
+                }}
+              >
+                {standingName}
+              </Text>
+              <StyledTable>
+                <StyledHeading>
+                  <tr>
+                    <StyledHeaderCell css={{ width: "40px" }}>Rank</StyledHeaderCell>
+                    <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
+                      Player Name
+                    </StyledHeaderCell>
+                    <StyledHeaderCell>W-L-T</StyledHeaderCell>
+                    <StyledHeaderCell>Win%</StyledHeaderCell>
+                    <StyledHeaderCell>SoS</StyledHeaderCell>
+                  </tr>
+                </StyledHeading>
+                <tbody>
+                  {players.map((player, index) => (
+                    <tr key={player.userId}>
+                      <StyledCell css={{ borderLeft: "solid 1px black" }}>
+                        <Text fontSize="small" css={{ textAlign: "center" }}>
+                          {index + 1}
+                        </Text>
+                      </StyledCell>
+                      <StyledCell>
+                        <Flex css={{ alignItems: "center", gap: "4px" }}>
+                          {player.tldCode && <FlagIcon code={player.tldCode} />}
+                          <Text fontSize="small">{player.name}</Text>
+                        </Flex>
+                      </StyledCell>
+                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+                        <Text fontSize="small">
+                          {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                        </Text>
+                      </StyledCell>
+                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+                        <Text fontSize="small" css={{ textAlign: "center" }}>
+                          {`${(player.winRate * 100).toFixed(0)}%`}
+                        </Text>
+                      </StyledCell>
+                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
+                        <Text fontSize="small" css={{ textAlign: "center" }}>
+                          {`${(player.sos * 100).toFixed(0)}%`}
+                        </Text>
+                      </StyledCell>
+                    </tr>
+                  ))}
+                </tbody>
+              </StyledTable>
+            </Flex>
+          );
+        })}
       </Flex>
+      <ForfeitTable players={forfeitsTable} />
     </Flex>
   );
 };

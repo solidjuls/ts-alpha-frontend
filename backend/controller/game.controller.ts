@@ -208,10 +208,10 @@ export const getTournamentsById = async (ids: string[]) => {
             select: {
               id: true,
               first_name: true,
-              last_name: true
-            }
-          }
-        }
+              last_name: true,
+            },
+          },
+        },
       },
       created_at: true,
     },
@@ -235,14 +235,20 @@ export const removeTournament = async (id: string) => {
 };
 
 interface TournamentDBType {
-  tournamentName: string
-  status: TournamentStatusType
-  admins: number
-  startingDate: Date
-  description: string
+  tournamentName: string;
+  status: TournamentStatusType;
+  admins: number;
+  startingDate: Date;
+  description: string;
 }
 
-export const addTournament = async ({ tournamentName, status, admins, startingDate, description }: TournamentDBType) => {
+export const addTournament = async ({
+  tournamentName,
+  status,
+  admins,
+  startingDate,
+  description,
+}: TournamentDBType) => {
   const newTournament = await prisma.tournaments.create({
     data: {
       tournament_name: tournamentName,
@@ -251,14 +257,14 @@ export const addTournament = async ({ tournamentName, status, admins, startingDa
       description: description,
     },
   });
-  console.log("newTournament", newTournament)
-  
+  console.log("newTournament", newTournament);
+
   await prisma.tournament_admins.create({
     data: {
       tournamentId: newTournament.id,
-      userId: admins
-    }
-  })
+      userId: admins,
+    },
+  });
 };
 
 export const updateTournament = async (id: number, status: TournamentStatusType) => {
@@ -277,8 +283,8 @@ export const registerTournament = async (id: number, userId: number) => {
     data: {
       tournamentId: id,
       playerId: userId,
-      status: 'pending'
-    }
+      status: "pending",
+    },
   });
 };
 
@@ -363,49 +369,61 @@ export const submit = async (data: GameAPI) => {
 };
 
 export const getStandings = async (tournamentId: string, secondaryName: string) => {
-    const standingPlayers = await prisma.standings.findMany({
-      where: {
-        tournaments_id: Number(tournamentId),
-      },
-      select: {
-        standing_players: {
-          select: {
-            user_id: true,
-          },
+  const standingPlayers = await prisma.standings.findMany({
+    where: {
+      tournaments_id: Number(tournamentId),
+    },
+    select: {
+      standing_players: {
+        select: {
+          user_id: true,
         },
-        standing_name: true,
-        secondary_name: true,
-      }
-    });
+      },
+      standing_name: true,
+      secondary_name: true,
+    },
+  });
 
-    const players: Record<
-      string,
-      { userId: string; tldCode: string | undefined; opponents: string[]; name: string; gamesWon: number; gamesLost: number; gamesTied: number; winRate: number; sos: number; standingName: string; secondaryName: string | null }
-    > = {};
-    let counter = 0
-    standingPlayers?.forEach(userByStanding => {
-      userByStanding.standing_players.forEach(user => {
-        const id = user.user_id.toString()
-        counter++
-        players[id]= {
-          userId: id,
-          standingName: userByStanding.standing_name,
-          secondaryName: userByStanding.secondary_name,
-          gamesWon: 0,
-          gamesLost: 0,
-          gamesTied: 0,
-          winRate: 0,
-          sos: 0,
-          tldCode: undefined,
-          name: "",
-          opponents: [],
-        }
-      })
-    })
-
-    if (!standingPlayers || standingPlayers.length === 0) {
-      return // res.status(404).json({ error: "No standings found" });
+  const players: Record<
+    string,
+    {
+      userId: string;
+      tldCode: string | undefined;
+      opponents: string[];
+      name: string;
+      gamesWon: number;
+      gamesLost: number;
+      gamesTied: number;
+      winRate: number;
+      sos: number;
+      standingName: string;
+      secondaryName: string | null;
     }
+  > = {};
+  let counter = 0;
+  standingPlayers?.forEach((userByStanding) => {
+    userByStanding.standing_players.forEach((user) => {
+      const id = user.user_id.toString();
+      counter++;
+      players[id] = {
+        userId: id,
+        standingName: userByStanding.standing_name,
+        secondaryName: userByStanding.secondary_name,
+        gamesWon: 0,
+        gamesLost: 0,
+        gamesTied: 0,
+        winRate: 0,
+        sos: 0,
+        tldCode: undefined,
+        name: "",
+        opponents: [],
+      };
+    });
+  });
+
+  if (!standingPlayers || standingPlayers.length === 0) {
+    return; // res.status(404).json({ error: "No standings found" });
+  }
 
   const standingPlayersNames = await prisma.users.findMany({
     select: {
@@ -425,72 +443,130 @@ export const getStandings = async (tournamentId: string, secondaryName: string) 
     },
   });
 
-Object.keys(players).forEach(id => {
-  const name = standingPlayersNames.find(user => user.id.toString() === id)
-  
-  if (name) {
-    players[id].name = `${name.first_name} ${name.last_name}`
-    players[id].tldCode = name.countries?.tld_code
-  }
-})
+  Object.keys(players).forEach((id) => {
+    const name = standingPlayersNames.find((user) => user.id.toString() === id);
 
-    // Retrieve all game results for the given tournament
-    const games = await prisma.game_results.findMany({
-      where: { game_type: Number(tournamentId) },
-    });
+    if (name) {
+      players[id].name = `${name.first_name} ${name.last_name}`;
+      players[id].tldCode = name.countries?.tld_code;
+    }
+  });
 
-    for (const game of games) {
-      const usaId = game.usa_player_id.toString();
-      const ussrId = game.ussr_player_id.toString();
+  // Retrieve all game results for the given tournament
+  const games = await prisma.game_results.findMany({
+    where: { game_type: Number(tournamentId) },
+  });
 
-      if (!players[usaId] || !players[ussrId]) {
-        continue;
-      }
-      
-      // We keep track of all player's opponents for a later use
-      players[usaId].opponents.push(ussrId);
-      players[ussrId].opponents.push(usaId);
+  for (const game of games) {
+    const usaId = game.usa_player_id.toString();
+    const ussrId = game.ussr_player_id.toString();
 
-      switch (game.game_winner) {
-        case "1":
-          players[usaId].gamesWon++;
-          players[ussrId].gamesLost++;
-          break;
-        case "2":
-          players[ussrId].gamesWon++;
-          players[usaId].gamesLost++;
-          break;
-        case "3":
-          players[usaId].gamesTied++;
-          players[ussrId].gamesTied++;
-          break;
-      }
+    if (!players[usaId]) {
+      const forfeitUser = await prisma.users.findFirst({
+        select: {
+          first_name: true,
+          last_name: true,
+          countries: {
+            select: {
+              tld_code: true,
+            },
+          },
+        },
+        where: {
+          id: Number(usaId),
+        },
+      });
+      players[usaId] = {
+        userId: usaId,
+        standingName: "Forfeit",
+        secondaryName: "Forfeit",
+        gamesWon: 0,
+        gamesLost: 0,
+        gamesTied: 0,
+        winRate: 0,
+        sos: 0,
+        tldCode: forfeitUser?.countries?.tld_code,
+        name: `${forfeitUser?.first_name} ${forfeitUser?.last_name}`,
+        opponents: [],
+      };
+    }
+    if (!players[ussrId]) {
+      const forfeitUser = await prisma.users.findFirst({
+        select: {
+          first_name: true,
+          last_name: true,
+          countries: {
+            select: {
+              tld_code: true,
+            },
+          },
+        },
+        where: {
+          id: Number(usaId),
+        },
+      });
+      players[ussrId] = {
+        userId: ussrId,
+        standingName: "Forfeit",
+        secondaryName: "Forfeit",
+        gamesWon: 0,
+        gamesLost: 0,
+        gamesTied: 0,
+        winRate: 0,
+        sos: 0,
+        tldCode: forfeitUser?.countries?.tld_code,
+        name: `${forfeitUser?.first_name} ${forfeitUser?.last_name}`,
+        opponents: [],
+      };
     }
 
-    // Win%
-    Object.keys(players).forEach(id => {
-      const gamesWon = players[id].gamesWon;
-      const gamesLost = players[id].gamesLost;
-      const gamesTied = players[id].gamesTied;
-      if (gamesWon + gamesLost + gamesTied === 0) {
-        return
-      }
-      players[id].winRate = (gamesWon + (0.5 * gamesTied))/(gamesWon + gamesLost + gamesTied)
-      // console.log("players[id].opponents", players[id].opponents)
-    })
+    // We keep track of all player's opponents for a later use
+    players[usaId].opponents.push(ussrId);
+    players[ussrId].opponents.push(usaId);
 
-    // SoS
-    Object.keys(players).forEach(id => {
-      const opponents = players[id].opponents
-      if (opponents.length === 0) {
-        return
-      }
-      players[id].sos = opponents.reduce((acc, opponent) => acc + players[opponent].winRate, 0) / opponents.length
-      // console.log("Win sos", players[id].name, players[id].winRate, players[id].sos);
-    })
+    switch (game.game_winner) {
+      case "1":
+        players[usaId].gamesWon++;
+        players[ussrId].gamesLost++;
+        break;
+      case "2":
+        players[ussrId].gamesWon++;
+        players[usaId].gamesLost++;
+        break;
+      case "3":
+        players[usaId].gamesTied++;
+        players[ussrId].gamesTied++;
+        break;
+    }
+  }
 
-    // Return only players on the current standing
-    const filteredPlayers = Object.values(players).filter(player => player.secondaryName === secondaryName)
+  // Win%
+  Object.keys(players).forEach((id) => {
+    const gamesWon = players[id].gamesWon;
+    const gamesLost = players[id].gamesLost;
+    const gamesTied = players[id].gamesTied;
+    if (gamesWon + gamesLost + gamesTied === 0) {
+      return;
+    }
+    players[id].winRate = (gamesWon + 0.5 * gamesTied) / (gamesWon + gamesLost + gamesTied);
+    // console.log("players[id].opponents", players[id].opponents)
+  });
 
-    return filteredPlayers
-}
+  // SoS
+  Object.keys(players).forEach((id) => {
+    const opponents = players[id].opponents;
+    if (opponents.length === 0) {
+      return;
+    }
+    players[id].sos =
+      opponents.reduce((acc, opponent) => acc + players[opponent].winRate, 0) / opponents.length;
+    // console.log("Win sos", players[id].name, players[id].winRate, players[id].sos);
+  });
+
+  // Return only players on the current standing
+  const filteredPlayers = Object.values(players).filter(
+    (player) => player.secondaryName === secondaryName || player.secondaryName === "Forfeit",
+  );
+
+  return filteredPlayers;
+};
