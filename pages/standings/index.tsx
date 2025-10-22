@@ -277,7 +277,7 @@ const Standings = () => {
           );
         })}
       </Flex>
-      <ForfeitTable players={forfeitsTable} />
+      {forfeitsTable && <ForfeitTable players={forfeitsTable} />}
     </Flex>
   );
 };
