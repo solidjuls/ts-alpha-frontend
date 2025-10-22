@@ -163,10 +163,6 @@ export default function HallOfFamePage() {
       <Header>
         <Title>Hall of Fame</Title>
       </Header>
-      <p>
-        The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestigious Twilight Struggle leagues.
-        Placing in the top three of one of these leagues puts players amongst the best in the world.
-      </p>
 
       <p>The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestigious Twilight Struggle leagues.<br/>Placing in the top three of one of these leagues puts players amongst the best in the world.</p>
       <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
