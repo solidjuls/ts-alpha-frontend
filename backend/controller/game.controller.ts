@@ -219,6 +219,45 @@ export const getTournamentsByStatus = async (status: TournamentStatusType[] | un
   })
 };
 
+export const getAllTournaments = async () => {
+  const tournaments = await prisma.tournaments.findMany({
+    select: {
+      id: true,
+      tournament_name: true,
+      status_id: true,
+      description: true,
+      starting_date: true,
+      tournament_admins: {
+        select: {
+          users: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+            },
+          },
+        },
+      },
+      created_at: true,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+
+  return tournaments?.map(item => {
+    return {
+      id: item.id.toString(),
+      tournament_name: item.tournament_name,
+      description: item.description,
+      status_id: item.status_id,
+      starting_date: item.starting_date,
+      adminId: item.tournament_admins?.map(admin => admin.users.id.toString()),
+      adminName: item.tournament_admins?.map(admin => admin.users.first_name + " " + admin.users.last_name)
+    }
+  })
+};
+
 export const getTournamentsById = async (ids: string[]) => {
   const tournaments = await prisma.tournaments.findMany({
     select: {

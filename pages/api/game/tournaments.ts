@@ -8,6 +8,7 @@ import {
   registerTournament,
   unregisterTournament,
   getRegisteredPlayers,
+  getAllTournaments,
 } from "backend/controller/game.controller";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -33,6 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const tournaments = await getTournamentsByStatus(status.split(',') as any);
           return res.status(200).json(tournaments);
         }
+        const tournaments = await getAllTournaments()
+        return res.status(200).json(tournaments);
       }
 
       case "POST": {
