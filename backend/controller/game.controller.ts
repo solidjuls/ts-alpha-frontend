@@ -258,7 +258,30 @@ export const getAllTournaments = async () => {
   })
 };
 
-export const getTournamentsById = async (ids: string[]) => {
+export const getTournamentsById = async (ids: string[], userId: string | undefined) => {
+  let userEmail = '';
+  let userRegistered: boolean = false;
+  if (userId) {
+    const user = await prisma.users.findFirst({
+      select: {
+        email: true,
+      },
+      where: {
+        id: Number(userId),
+      },
+    });
+    userEmail = user?.email || '';
+    const registerCheck = await prisma.tournament_registration.findFirst({
+      select: {
+        player_email: true,
+      },
+      where: {
+        player_email: userEmail,
+        tournamentId: Number(ids[0]),
+      },
+    });
+    userRegistered = registerCheck?.player_email ? true : false;
+  }
   const tournaments = await prisma.tournaments.findMany({
     select: {
       id: true,
@@ -296,6 +319,7 @@ export const getTournamentsById = async (ids: string[]) => {
       description: item.description,
       status_id: item.status_id,
       starting_date: item.starting_date,
+      registered: userRegistered,
       adminId: item.tournament_admins?.map(admin => admin.users.id.toString()),
       adminName: item.tournament_admins?.map(admin => admin.users.first_name + " " + admin.users.last_name)
     }

@@ -6,7 +6,7 @@ import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { TournamentsType } from "types/game.types";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
 import { dateFormat, dateIntlFormatter } from "utils/dates";
@@ -114,26 +114,27 @@ const TournamentInfo = ({ tournament_name, statusName, adminName, starting_date,
 }
 const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const { id } = useParams();
+  const router = useRouter();
   const { id: userId, email } = useSession();
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('loading');
   const [isEditing, setIsEditing] = useState(false);
 
   const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?id=${id}`,
+    url: `/api/game/tournaments?id=${id}&u=${userId}`,
   });
 
   const tournament = data?.[0];
 
-  // Check if user is registered for this tournament
+  // // Check if user is registered for this tournament
   useEffect(() => {
     if (tournament && userId && email) {
       // Check if user is already registered by checking tournament registrations
       // This would typically be done by checking the user's registered tournaments
       // For now, we'll assume not registered - this should be implemented with proper API call
-      setRegistrationStatus('not_registered');
+      setRegistrationStatus(tournament?.registered ? 'registered' : 'not_registered');
     }
-  }, [tournament, userId, email]);
+  }, [tournament]);
 
   const isUserAdmin = userRole === userRoles.SUPERADMIN ||
     (tournament?.adminId && userId && tournament.adminId.includes(userId));
@@ -157,7 +158,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
         });
         setRegistrationStatus('registered');
       }
-      refetch();
+      router.refresh()
     } catch (e) {
       console.error("Registration error:", e);
     } finally {
@@ -239,7 +240,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           tournament={tournament}
           onSave={() => {
             setIsEditing(false);
-            refetch();
+            router.refresh()
           }}
           onCancel={() => setIsEditing(false)}
         />

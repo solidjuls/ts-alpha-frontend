@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case "GET": {
-        const { id, status, players } = req.query;
+        const { id, status, players, u } = req.query;
 
         if (typeof id === "string" && players === "true") {
           // Get registered players for a tournament
@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (typeof id === "string") {
           console.log("(userId, tournamentId) ", id)
-          const tournament = await getTournamentsById(id.split(','));
+          const tournament = await getTournamentsById(id.split(','), u);
           return res.status(200).json(tournament);
         }
 

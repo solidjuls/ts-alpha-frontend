@@ -210,24 +210,22 @@ const Tournaments = () => {
 
   return (
     <>
-      <Flex
-        css={{
-          flexDirection: "row",
-          width: "100%",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "24px", fontWeight: "600" }}>Tournaments</h1>
-        <Button css={{ width: "180px" }}>
-          <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
-        </Button>
-      </Flex>
-
-      <Legend />
+      {/* <Legend /> */}
 
       <ResponsiveContainer>
+        <Flex
+          css={{
+            flexDirection: "column",
+            width: "100%",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
+      </Flex>
+        <Button css={{ marginLeft: "16px",width: "180px" }}>
+            <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
+        </Button>
         <TournamentTable>
           <TableHeader>
             <tr>
