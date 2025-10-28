@@ -22,6 +22,7 @@ const DescriptionBox = styled("div", {
   marginTop: "8px",
   padding: "12px",
   backgroundColor: "#f8f9fa",
+  whiteSpace: 'pre-line',
   borderRadius: "6px",
   border: "1px solid #e9ecef"
 });
@@ -107,7 +108,7 @@ const TournamentInfo = ({ tournament_name, statusName, adminName, starting_date,
             {description && (
               <Flex css={{ flexDirection: "column", minWidth: "400px", gridColumn: "1 / -1" }}>
                 <StyledLabel>Description</StyledLabel>
-                <DescriptionBox dangerouslySetInnerHTML={{ __html: description }} />
+                <DescriptionBox>{description}</DescriptionBox>
               </Flex>
             )}
           </Box>

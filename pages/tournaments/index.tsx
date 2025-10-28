@@ -186,7 +186,7 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   const statusVariant = getVariant(tournament.status_id);
 
   return (
-    <TableRow status={statusVariant} onClick={() => router.push(`/tournaments/${tournament.id}`)}>
+    <TableRow onClick={() => router.push(`/tournaments/${tournament.id}`)}>
       <TableCell>
         <UnstyledLink href={`/tournaments/${tournament.id}`}>
           {tournament.tournament_name}
