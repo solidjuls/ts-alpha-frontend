@@ -201,7 +201,7 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   );
 };
 
-const Tournaments = () => {
+const Tournaments = ({ role } : { role: number }) => {
   const { data, isLoading } = useFetchInitialData<TournamentsType[]>({
     url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["registrationOpen"]}`,
   });
@@ -223,9 +223,10 @@ const Tournaments = () => {
         >
           <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
       </Flex>
-        <Button css={{ marginLeft: "16px",width: "180px" }}>
+        {role === userRoles.SUPERADMIN && (
+          <Button css={{ marginLeft: "16px",width: "180px" }}>
             <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
-        </Button>
+        </Button>)}
         <TournamentTable>
           <TableHeader>
             <tr>

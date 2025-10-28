@@ -9,7 +9,7 @@ import useFetchInitialData from "hooks/useFetchInitialData";
 import { useParams, useRouter } from "next/navigation";
 import { TournamentsType } from "types/game.types";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
-import { dateFormat, dateIntlFormatter } from "utils/dates";
+import { dateIntlFormatter } from "utils/dates";
 import { useSession } from "contexts/AuthProvider";
 import getAxiosInstance from "utils/axios";
 import { getInfoFromCookies } from "utils/cookies";
@@ -137,8 +137,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
     }
   }, [tournament]);
 
-  const isUserAdmin = userRole === userRoles.SUPERADMIN ||
-    (tournament?.adminId && userId && tournament.adminId.includes(userId));
+  const isUserAdmin = userRole === userRoles.SUPERADMIN //||(tournament?.adminId && userId && tournament.adminId.includes(userId));
 
   const onRegisterClick = async () => {
     if (!tournament || !userId || !email) return;
@@ -260,18 +259,18 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
-  if (!payload) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
+  // if (!payload) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
 
   return {
     props: {
-      userRole: payload.role || null
+      userRole: payload?.role || null
     }
   };
 }
