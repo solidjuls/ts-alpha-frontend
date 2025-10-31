@@ -1,6 +1,6 @@
 import { prisma } from "backend/utils/prisma";
 import { Game, GameAPI } from "types/game.types";
-import { calculateRating } from "./rating.controller";
+import { calculateRating, getRatingByPlayer } from "./rating.controller";
 import { Prisma } from "@prisma/client";
 import { TournamentStatusType } from "utils/constants";
 
@@ -451,13 +451,24 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
       },
     },
   });
+  const ratings = await Promise.all(
+    users.map(async (user) => {
+      const rating = await getRatingByPlayer({ playerId: user.id });
 
-  // Combine registration data with user data
+      return { 
+        userId: user.id, 
+        ...rating 
+      };
+    })
+  );
+
   return registrations.map(registration => {
     const user = users.find(u => u.email === registration.player_email);
+    const rating = ratings.find(r => r.userId === user?.id);
     return {
       registrationId: registration.id,
       email: registration.player_email,
+      rating: rating?.rating || 0,
       status: registration.status,
       registeredAt: registration.created_at,
       userId: user?.id?.toString(),
