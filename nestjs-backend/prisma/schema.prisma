@@ -131,6 +131,7 @@ model users {
   schedule_schedule_usa_player_idTousers          schedule[]          @relation("schedule_usa_player_idTousers")
   schedule_schedule_ussr_player_idTousers         schedule[]          @relation("schedule_ussr_player_idTousers")
   tournament_admins                               tournament_admins[]
+  tournament_registration                         tournament_registration[]
   user_game_stats                                 user_game_stats?
   cities                                          cities?             @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_city_id_foreign")
   countries                                       countries?          @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
@@ -190,14 +191,15 @@ model personal_access_tokens {
 model tournament_registration {
   id           Int                             @id @default(autoincrement())
   tournamentId Int
-  player_email String?                         @db.VarChar(255)
+  userId       BigInt                          @db.UnsignedBigInt
   status       tournament_registration_status? @default(pending)
   created_at   DateTime?                       @default(now()) @db.Timestamp(0)
   updated_at   DateTime?                       @default(now()) @db.Timestamp(0)
   tournaments  tournaments                     @relation(fields: [tournamentId], references: [id], onDelete: Cascade, map: "fk_tournament")
+  users        users                           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_tournament_registration_user")
 
   @@index([tournamentId], map: "fk_tournament")
-  @@index([player_email], map: "fk_users_id")
+  @@index([userId], map: "fk_tournament_registration_user")
 }
 
 model tournaments {

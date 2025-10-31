@@ -71,13 +71,14 @@ export class TournamentsController {
 
   // POST /api/tournaments - Update tournament status or register user
   @Post()
-  async updateTournamentOrRegister(@Body() body: any) {
+  async updateTournamentOrRegister(@Body() body: any, @CurrentUser() user: JwtPayloadDto) {
     try {
       const { id, status, userEmail } = body;
 
-      if (id && userEmail) {
-        // Register user for tournament
-        const registered = await this.tournamentsService.registerForTournament(Number(id), userEmail);
+      if (id && (userEmail || user.id)) {
+        // Register user for tournament - use current user's ID if userEmail not provided
+        const userId = user.id; // Use authenticated user's ID
+        const registered = await this.tournamentsService.registerForTournament(Number(id), userId);
         return registered;
       }
 

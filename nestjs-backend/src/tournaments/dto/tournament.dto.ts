@@ -53,5 +53,5 @@ export interface UpdateTournamentDto {
 
 export interface RegisterTournamentDto {
   id: number;
-  userEmail: string;
+  userId: string;
 }
