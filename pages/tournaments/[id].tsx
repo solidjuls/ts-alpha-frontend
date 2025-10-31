@@ -118,11 +118,15 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const router = useRouter();
   const { id: userId, email } = useSession();
   const [isRegistering, setIsRegistering] = useState(false);
-  const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('loading');
+  const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('not_registered');
   const [isEditing, setIsEditing] = useState(false);
 
+  const URLparams = new URLSearchParams();
+  if (userId) URLparams.append("u", userId);
+  if (id) URLparams.append("id", id);
+
   const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?id=${id}&u=${userId}`,
+    url: `/api/game/tournaments?${URLparams.toString()}`,
   });
 
   const tournament = data?.[0];
@@ -138,7 +142,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   }, [tournament]);
 
   const isUserAdmin = userRole === userRoles.SUPERADMIN //||(tournament?.adminId && userId && tournament.adminId.includes(userId));
-
+console.log("isUserAdmin", isUserAdmin);
   const onRegisterClick = async () => {
     if (!tournament || !userId || !email) return;
 
@@ -183,22 +187,22 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const statusName = getTournamentStatusNames(tournament?.status_id);
 
   // Player Mode - Show tournament info and registration button
-  if (!isUserAdmin) {
-    return (
-      <DetailContainer>
-        <Box css={{
-          border: "solid 1px lightgray",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-          borderRadius: "8px",
-          backgroundColor: "white",
-        }}>
-          <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
+  // if (!isUserAdmin) {
+  //   return (
+  //     <DetailContainer>
+  //       <Box css={{
+  //         border: "solid 1px lightgray",
+  //         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+  //         borderRadius: "8px",
+  //         backgroundColor: "white",
+  //       }}>
+  //         <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
 
-          <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />
-        </Box>
-      </DetailContainer>
-    );
-  }
+  //         {userId && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
+  //       </Box>
+  //     </DetailContainer>
+  //   );
+  // }
 
   // Admin Mode - Show tournament info with admin controls (to be implemented)
   return (
@@ -210,9 +214,10 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
         backgroundColor: "white",
       }}>
         <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
-        <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />
+        {userId && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
 
-        <Box css={{
+        {isUserAdmin && (
+          <Box css={{
           padding: "20px 24px",
           borderTop: "1px solid #e9ecef",
           display: "flex",
@@ -231,8 +236,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
               {isEditing ? "Cancel Edit" : "Edit Tournament"}
             </Button>
           </Flex>
-        </Box>
-      </Box>
+        </Box>)}
 
       {/* Edit Form */}
       {isEditing && (
@@ -245,12 +249,14 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           onCancel={() => setIsEditing(false)}
         />
       )}
-
+      </Box>
       {/* Registered Players List */}
       <TournamentPlayersList
         tournamentId={tournament.id}
         onPlayerRemoved={() => refetch()}
+        isUserAdmin={isUserAdmin}
       />
+      
     </DetailContainer>
   );
 };

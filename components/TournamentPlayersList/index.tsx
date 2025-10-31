@@ -5,6 +5,7 @@ import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import getAxiosInstance from "utils/axios";
 import { styled } from "stitches.config";
+import { UnstyledLink } from "pages/players";
 
 const PlayersContainer = styled("div", {
   marginTop: "24px",
@@ -31,9 +32,9 @@ const PlayerRow = styled("div", {
     borderBottom: "none",
   },
   
-  "&:hover": {
-    backgroundColor: "#f8f9fa",
-  },
+  // "&:hover": {
+  //   backgroundColor: "#f8f9fa",
+  // },
 });
 
 const PlayerInfo = styled("div", {
@@ -98,9 +99,10 @@ interface RegisteredPlayer {
 interface TournamentPlayersListProps {
   tournamentId: string;
   onPlayerRemoved?: () => void;
+  isUserAdmin: boolean
 }
 
-const TournamentPlayersList = ({ tournamentId, onPlayerRemoved }: TournamentPlayersListProps) => {
+const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: TournamentPlayersListProps) => {
   const [removingPlayerId, setRemovingPlayerId] = useState<number | null>(null);
 
   const { data: players, isLoading, refetch } = useFetchInitialData<RegisteredPlayer[]>({
@@ -160,15 +162,12 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved }: TournamentPlay
           {players.map((player) => (
             <PlayerRow key={player.registrationId}>
               <PlayerInfo>
-                <PlayerName>{player.name}</PlayerName>
-                {/* <PlayerEmail>{player.email}</PlayerEmail> */}
+                <PlayerName><UnstyledLink href={`/userprofile/${player.userId}`}>{player.name}</UnstyledLink></PlayerName>
+                {isUserAdmin && <PlayerEmail>{player.email}</PlayerEmail>}
               </PlayerInfo>
               
-              <Flex css={{ alignItems: "center", gap: "12px" }}>
-                <StatusBadge status={player.status as any}>
-                  {player.status}
-                </StatusBadge>
-                
+              {isUserAdmin && (
+                <Flex css={{ alignItems: "center", gap: "12px" }}>
                 <Button
                   css={{ 
                     backgroundColor: "#dc2626", 
@@ -181,7 +180,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved }: TournamentPlay
                 >
                   {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
                 </Button>
-              </Flex>
+              </Flex>)}
             </PlayerRow>
           ))}
         </Box>
