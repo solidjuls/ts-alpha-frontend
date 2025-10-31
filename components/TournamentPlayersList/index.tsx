@@ -163,7 +163,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
           {players.map((player) => (
             <PlayerRow key={player.registrationId}>
               <PlayerInfo>
-                <Flex css={{ gap: 4}}>
+                <Flex css={{ gap: 4 }}>
                   <PlayerName><UnstyledLink href={`/userprofile/${player.userId}`}>{player.name}</UnstyledLink></PlayerName>
                   <PlayerName>{player.rating}</PlayerName>
                 </Flex>

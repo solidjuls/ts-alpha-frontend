@@ -131,7 +131,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
 
   const tournament = data?.[0];
 
-  // // Check if user is registered for this tournament
+  // Check if user is registered for this tournament
   useEffect(() => {
     if (tournament && userId && email) {
       // Check if user is already registered by checking tournament registrations
@@ -186,24 +186,6 @@ console.log("isUserAdmin", isUserAdmin);
   const dateFormatted = tournament?.starting_date ? dateIntlFormatter(new Date(tournament.starting_date)) : '-';
   const statusName = getTournamentStatusNames(tournament?.status_id);
 
-  // Player Mode - Show tournament info and registration button
-  // if (!isUserAdmin) {
-  //   return (
-  //     <DetailContainer>
-  //       <Box css={{
-  //         border: "solid 1px lightgray",
-  //         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-  //         borderRadius: "8px",
-  //         backgroundColor: "white",
-  //       }}>
-  //         <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
-
-  //         {userId && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
-  //       </Box>
-  //     </DetailContainer>
-  //   );
-  // }
-
   // Admin Mode - Show tournament info with admin controls (to be implemented)
   return (
     <DetailContainer>
@@ -214,7 +196,7 @@ console.log("isUserAdmin", isUserAdmin);
         backgroundColor: "white",
       }}>
         <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
-        {userId && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
+        {userId && tournament?.status_id === 4 && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
 
         {isUserAdmin && (
           <Box css={{
