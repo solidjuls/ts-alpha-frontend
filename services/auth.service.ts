@@ -42,6 +42,26 @@ export interface CreateUserResponse {
   };
 }
 
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  user: {
+    name: string;
+    email: string;
+    id: string;
+    role: number;
+    tournaments: number[];
+  };
+}
+
 export interface ResetPasswordRequest {
   mail: string;
 }
@@ -64,6 +84,12 @@ export const authService = {
   // Login user
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     const response = await authApi.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  // Register new user
+  register: async (userData: RegisterRequest): Promise<RegisterResponse> => {
+    const response = await authApi.post('/auth/register', userData);
     return response.data;
   },
 

@@ -250,9 +250,13 @@ const LoginFormComponent: React.FC = () => {
       </Button>
 
       <ForgotPasswordLink>
-        <Link href="/reset-password">
+        <Link href="/reset-password-new">
           Forgot your password?
         </Link>
+      </ForgotPasswordLink>
+
+      <ForgotPasswordLink>
+        Don't have an account? <Link href="/register">Create one here</Link>
       </ForgotPasswordLink>
     </LoginForm>
   );

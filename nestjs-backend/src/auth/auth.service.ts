@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { DatabaseService } from '../database/database.service';
-import { LoginDto, AuthResponseDto, JwtPayloadDto, ResetPasswordDto, CreateUserDto } from './dto/auth.dto';
+import { LoginDto, AuthResponseDto, JwtPayloadDto, ResetPasswordDto, CreateUserDto, RegisterUserDto, RegisterUserResponse } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +12,7 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<{ user: AuthResponseDto; token: string }> {
+
     const { mail, pwd } = loginDto;
 
     // Find user by email
@@ -171,5 +172,69 @@ export class AuthService {
     };
 
     return { success: true, user: userResponse };
+  }
+
+  async registerUser(registerDto: RegisterUserDto): Promise<RegisterUserResponse> {
+    const { email, password, confirmPassword, firstName, lastName } = registerDto;
+
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    // Check if user already exists
+    const existingUser = await this.databaseService.users.findFirst({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new BadRequestException('User with this email already exists');
+    }
+
+    // Hash password
+    const hashedPassword = await hash(password, 12);
+
+    // Create full name
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    // Create user with hardcoded defaults for missing required fields
+    const newUser = await this.databaseService.users.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name: fullName,
+        first_name: firstName,
+        last_name: lastName,
+        role_id: 3, // Default to player role
+        created_at: new Date(),
+        updated_at: new Date(),
+        // Hardcoded defaults for potentially required fields
+        country_id: null, // Will be set to null, can be updated later
+        regional_federation_id: null,
+        city_id: null,
+        phone_number: null,
+        preferred_gaming_platform: null,
+        preferred_game_duration: null,
+        timezone_id: null,
+        email_verified_at: null,
+        remember_token: null,
+        last_login_at: null,
+      },
+    });
+
+    // Prepare response
+    const userResponse: AuthResponseDto = {
+      name: newUser.name!,
+      email: newUser.email!,
+      id: newUser.id.toString(),
+      role: newUser.role_id || 3,
+      tournaments: [],
+    };
+
+    return {
+      success: true,
+      message: 'User registered successfully',
+      user: userResponse
+    };
   }
 }

@@ -1,12 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { JwtPayloadDto } from '../dto/auth.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: (req: Request) => {
         // Extract JWT from HTTP-only cookie
@@ -17,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         return token;
       },
       ignoreExpiration: false,
-      secretOrKey: process.env.TOKEN_SECRET,
+      secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }
 

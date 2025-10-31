@@ -45,3 +45,23 @@ export interface CreateUserDto {
   last_name?: string;
   role_id?: number;
 }
+
+export interface RegisterUserDto {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface RegisterUserResponse {
+  success: boolean;
+  message: string;
+  user: {
+    name: string;
+    email: string;
+    id: string;
+    role: number;
+    tournaments: number[];
+  };
+}

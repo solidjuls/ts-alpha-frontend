@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, HttpCode, HttpStatus, Get, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, ResetPasswordDto, CreateUserDto } from './dto/auth.dto';
+import { LoginDto, ResetPasswordDto, CreateUserDto, RegisterUserDto } from './dto/auth.dto';
 import { Public, CurrentUser } from './decorators/auth.decorators';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -41,6 +41,13 @@ export class AuthController {
     });
 
     return { success: true };
+  }
+
+  @Public()
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() registerDto: RegisterUserDto) {
+    return await this.authService.registerUser(registerDto);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
-import authService, { 
-  LoginRequest, 
-  LoginResponse, 
+import authService, {
+  LoginRequest,
+  LoginResponse,
   ResetPasswordRequest,
-  CreateUserRequest 
+  CreateUserRequest,
+  RegisterRequest
 } from '../services/auth.service';
 
 // Query keys
@@ -41,12 +42,39 @@ export const useLogin = () => {
         tournamentsAdmin: [],
         tournamentsRegistered: data.tournaments || [],
       });
-      
+
       // Redirect to home page
       router.push('/');
     },
     onError: (error: any) => {
       console.error('Login failed:', error);
+    },
+  });
+};
+
+// Hook for registration mutation
+export const useRegister = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (userData: RegisterRequest) => authService.register(userData),
+    onSuccess: (data) => {
+      // Update the profile cache with the registration response
+      queryClient.setQueryData(authKeys.profile(), {
+        id: data.user.id,
+        email: data.user.email,
+        name: data.user.name,
+        role: data.user.role,
+        tournamentsAdmin: [],
+        tournamentsRegistered: data.user.tournaments || [],
+      });
+
+      // Redirect to home page
+      router.push('/');
+    },
+    onError: (error: any) => {
+      console.error('Registration failed:', error);
     },
   });
 };
