@@ -102,7 +102,11 @@ export class TournamentsService {
     }));
   }
 
-  async getRegisteredPlayers(tournamentId: number): Promise<RegisteredPlayerDto[]> {
+  async getRegisteredPlayers(
+    tournamentId: number,
+    userRole?: number,
+    userEmail?: string
+  ): Promise<RegisteredPlayerDto[]> {
     const registrations = await this.databaseService.tournament_registration.findMany({
       where: {
         tournamentId: tournamentId,
@@ -136,12 +140,15 @@ export class TournamentsService {
       },
     });
 
+    // Check if user is admin (global admin or tournament admin)
+    const isAdmin = await this.isUserAdminForTournament(userRole, userEmail, tournamentId);
+
     // Combine registration data with user data
     return registrations.map(registration => {
       const user = users.find(u => u.email === registration.player_email);
       return {
         registrationId: registration.id,
-        email: registration.player_email || '',
+        email: isAdmin ? (registration.player_email || '') : '', // Only include email for admins
         status: registration.status || '',
         registeredAt: registration.created_at || new Date(),
         userId: user?.id?.toString(),
@@ -151,28 +158,128 @@ export class TournamentsService {
     });
   }
 
-  async createTournament(tournamentData: any): Promise<TournamentDto> {
-    // This will be implemented to call the existing addTournament function
-    return {} as TournamentDto;
+  private async isUserAdminForTournament(userRole?: number, userEmail?: string, tournamentId?: number): Promise<boolean> {
+    // Check if user is global admin (SUPERADMIN = 1 or ADMIN = 2)
+    if (userRole === 1 || userRole === 2) {
+      return true;
+    }
+
+    // Check if user is tournament-specific admin
+    if (userEmail && tournamentId) {
+      try {
+        const user = await this.databaseService.users.findFirst({
+          where: { email: userEmail },
+          select: { id: true },
+        });
+
+        if (!user) {
+          return false;
+        }
+
+        const adminRecord = await this.databaseService.tournament_admins.findFirst({
+          where: {
+            userId: user.id,
+            tournamentId: tournamentId,
+          },
+        });
+
+        return !!adminRecord;
+      } catch (error) {
+        console.error('Error checking tournament admin:', error);
+        return false;
+      }
+    }
+
+    return false;
   }
 
-  async updateTournament(id: number, status: number): Promise<TournamentDto> {
-    // This will be implemented to call the existing updateTournament function
-    return {} as TournamentDto;
+  async createTournament(tournamentData: {
+    tournamentName: string;
+    status: number;
+    admins?: number;
+    startingDate?: Date;
+    description?: string;
+  }): Promise<any> {
+    const { tournamentName, status, admins, startingDate, description } = tournamentData;
+
+    // Create the tournament
+    const newTournament = await this.databaseService.tournaments.create({
+      data: {
+        tournament_name: tournamentName,
+        status_id: Number(status),
+        starting_date: startingDate || null,
+        description: description || null,
+      },
+    });
+
+    // Add admin if provided
+    if (admins) {
+      await this.databaseService.tournament_admins.create({
+        data: {
+          tournamentId: newTournament.id,
+          userId: admins
+        }
+      });
+    }
+
+    return newTournament;
   }
 
-  async updateTournamentFull(id: number, updateData: any): Promise<TournamentDto> {
-    // This will be implemented to call the existing updateTournamentFull function
-    return {} as TournamentDto;
+  async updateTournament(id: number, status: number): Promise<any> {
+    return await this.databaseService.tournaments.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status_id: Number(status),
+      },
+    });
+  }
+
+  async updateTournamentFull(id: number, updateData: {
+    tournamentName?: string;
+    status?: number;
+    startingDate?: Date;
+    description?: string;
+  }): Promise<any> {
+    return await this.databaseService.tournaments.update({
+      where: {
+        id: id,
+      },
+      data: {
+        ...(updateData.tournamentName && { tournament_name: updateData.tournamentName }),
+        ...(updateData.status && { status_id: Number(updateData.status) }),
+        ...(updateData.startingDate && { starting_date: updateData.startingDate }),
+        ...(updateData.description !== undefined && { description: updateData.description }),
+      },
+    });
   }
 
   async registerForTournament(tournamentId: number, userEmail: string): Promise<any> {
-    // This will be implemented to call the existing registerTournament function
-    return {};
+    return await this.databaseService.tournament_registration.create({
+      data: {
+        tournamentId: tournamentId,
+        player_email: userEmail,
+        status: 'pending'
+      }
+    });
   }
 
-  async deleteTournament(id: string): Promise<{ id: string }> {
-    // This will be implemented to call the existing removeTournament function
-    return { id };
+  async deleteTournament(id: string): Promise<{ id: number }> {
+    const deleted = await this.databaseService.tournaments.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+    return { id: deleted.id };
+  }
+
+  async unregisterFromTournament(tournamentId: number, userEmail: string): Promise<any> {
+    return await this.databaseService.tournament_registration.deleteMany({
+      where: {
+        tournamentId: tournamentId,
+        player_email: userEmail,
+      }
+    });
   }
 }

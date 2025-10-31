@@ -20,6 +20,15 @@ export interface RegisteredPlayerDto {
   countryCode?: string;
 }
 
+export interface RegisteredPlayerPublicDto {
+  registrationId: number;
+  status: string;
+  registeredAt: Date;
+  userId?: string;
+  name: string;
+  countryCode?: string;
+}
+
 export interface GetTournamentsQueryDto {
   id?: string;
   status?: string;
