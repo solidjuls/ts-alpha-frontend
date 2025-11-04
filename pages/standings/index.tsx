@@ -95,7 +95,7 @@ const TabButton = styled("button", {
 type Division = "TORUN" | "SEATTLE";
 
 const ForfeitTable = ({ players }) => (
-  <Flex css={{ flexDirection: "column", width: "400px", borderRadius: "8px", padding: "8px", marginTop: "20px" }}>
+  <Flex css={{ flexDirection: "column", width: "200px", borderRadius: "8px", padding: "8px", marginTop: "20px" }}>
     <Text
       strong="bold"
       css={{
@@ -113,9 +113,6 @@ const ForfeitTable = ({ players }) => (
           <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
             Player Name
           </StyledHeaderCell>
-          <StyledHeaderCell>W-L-T</StyledHeaderCell>
-          <StyledHeaderCell>Win%</StyledHeaderCell>
-          <StyledHeaderCell>SoS</StyledHeaderCell>
         </tr>
       </StyledHeading>
       <tbody>
@@ -127,21 +124,6 @@ const ForfeitTable = ({ players }) => (
                 <Text fontSize="small">{player.name}</Text>
               </Flex>
             </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small">
-                {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-              </Text>
-            </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small" css={{ textAlign: "center" }}>
-                {`${(player.winRate * 100).toFixed(0)}%`}
-              </Text>
-            </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small" css={{ textAlign: "center" }}>
-                {`${(player.sos * 100).toFixed(0)}%`}
-              </Text>
-            </StyledCell>
           </tr>
         ))}
       </tbody>
@@ -150,7 +132,7 @@ const ForfeitTable = ({ players }) => (
 );
 
 const Standings = () => {
-  const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
+  const [selectedDivision, setSelectedDivision] = useState<Division>("SEATTLE");
 
   const {
     data: standings,
@@ -160,7 +142,11 @@ const Standings = () => {
   } = useFetchInitialData<Player[]>({
     url: `/api/standings?id=318&division=${selectedDivision}`,
   });
-
+  const {
+    data: forfeits,
+  } = useFetchInitialData<Player[]>({
+    url: `/api/standings?id=318&division=forfeits`,
+  });
   const handleDivisionChange = (division: Division) => {
     setSelectedDivision(division);
   };
@@ -170,7 +156,7 @@ const Standings = () => {
     refetch();
   }, [selectedDivision]);
 
-  if (!standings) return null;
+  if (!standings || !forfeits) return null;
 
   const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
@@ -186,7 +172,7 @@ const Standings = () => {
       return b.sos - a.sos;
     });
   }
-  const forfeitsTable = grouped["Forfeit"];
+// grouped["Forfeit"];
 
   return (
     <Flex css={{ flexDirection: "column", padding: "8px" }}>
@@ -277,7 +263,7 @@ const Standings = () => {
           );
         })}
       </Flex>
-      {forfeitsTable && <ForfeitTable players={forfeitsTable} />}
+      {forfeits && <ForfeitTable players={forfeits} />}
     </Flex>
   );
 };
