@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
 import { AuthModule } from './auth/auth.module';
+import { ScheduleModule } from './schedule/schedule.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -15,7 +16,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     }),
     DatabaseModule,
     AuthModule,
-    TournamentsModule
+    TournamentsModule,
+    ScheduleModule
   ],
   controllers: [AppController],
   providers: [

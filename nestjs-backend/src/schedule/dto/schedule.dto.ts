@@ -1,0 +1,84 @@
+export interface ScheduleDto {
+  id: string;
+  gameWinner: string | null;
+  gameDate: string | null;
+  dueDate: string;
+  gameCode: string;
+  gameResultsId: string | null;
+  nameUsa: string;
+  nameUssr: string;
+  idUsa: string;
+  idUssr: string;
+  countryUsa: string | null;
+  countryUssr: string | null;
+  tournamentName: string;
+  tournamentId: string;
+}
+
+export interface GetSchedulesQueryDto {
+  uid?: string; // userId
+  t?: string; // tournament IDs (comma-separated)
+  u?: string; // userFilter
+  p?: string; // page
+  pso?: string; // pageSize
+  a?: string; // adminView (1 or 0)
+}
+
+export interface CreateScheduleDto {
+  usa: string; // USA player ID
+  ussr: string; // USSR player ID
+  t: number; // tournament ID
+  d: Date; // due date
+  gc: string; // game code
+}
+
+export interface UpdateScheduleDto {
+  tournaments_id: number;
+  game_code: string;
+  usa_player_id: bigint;
+  ussr_player_id: bigint;
+  due_date: string;
+  game_results_id?: bigint | null;
+  id: number;
+}
+
+export interface ReplacePlayersDto {
+  pold: string; // old player ID
+  pnew: string; // new player ID
+  t: number; // tournament ID
+}
+
+export interface DeletePlayerDto {
+  u: number; // user ID to delete
+  t: number; // tournament ID
+}
+
+export interface ValidateScheduleDto {
+  usaPlayerId: number;
+  id: number;
+  ussrPlayerId: number;
+  gameCode: string;
+  gameType: number;
+}
+
+export interface ScheduleValidationResult {
+  game_results_id: bigint | null;
+  id: number;
+}
+
+export interface ScheduleUpdateResult {
+  id: number;
+  tournaments_id: number;
+  game_code: string;
+  usa_player_id: bigint | null;
+  ussr_player_id: bigint | null;
+  due_date: Date;
+  game_results_id: bigint | null;
+  created_at: Date | null;
+  updated_at: Date | null;
+}
+
+export interface ScheduleListResponse {
+  results: ScheduleDto[];
+  totalRows: number;
+}
