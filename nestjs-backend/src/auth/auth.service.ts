@@ -45,7 +45,7 @@ export class AuthService {
     // Get tournaments registered
     const tournamentsRegistered = await this.databaseService.tournament_registration.findMany({
       select: { tournamentId: true },
-      where: { player_email: mail },
+      where: { userId: BigInt(user.id) },
     });
 
     // Create JWT payload

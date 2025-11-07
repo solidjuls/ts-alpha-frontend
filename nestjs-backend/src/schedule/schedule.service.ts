@@ -214,11 +214,11 @@ export class ScheduleService {
   ): Promise<any> {
     const updatedUSA = await this.databaseService.schedule.updateMany({
       data: {
-        usa_player_id: newPlayer,
+        usa_player_id: BigInt(newPlayer),
       },
       where: {
         OR: [
-          { usa_player_id: oldPlayer },
+          { usa_player_id: BigInt(oldPlayer) },
         ],
         tournaments_id: tournamentId,
         game_results_id: null
@@ -227,10 +227,10 @@ export class ScheduleService {
 
     const updatedUSSR = await this.databaseService.schedule.updateMany({
       data: {
-        ussr_player_id: newPlayer,
+        ussr_player_id: BigInt(newPlayer),
       },
       where: {
-        ussr_player_id: oldPlayer,
+        ussr_player_id: BigInt(oldPlayer),
         tournaments_id: tournamentId,
         game_results_id: null
       }

@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { GamesModule } from './games/games.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -17,7 +18,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     DatabaseModule,
     AuthModule,
     TournamentsModule,
-    ScheduleModule
+    ScheduleModule,
+    GamesModule
   ],
   controllers: [AppController],
   providers: [
