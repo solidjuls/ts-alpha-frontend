@@ -256,7 +256,7 @@ const LoginFormComponent: React.FC = () => {
       </ForgotPasswordLink>
 
       <ForgotPasswordLink>
-        Don't have an account? <Link href="/register">Create one here</Link>
+        Don`&apos;t have an account? <Link href="/register">Create one here</Link>
       </ForgotPasswordLink>
     </LoginForm>
   );

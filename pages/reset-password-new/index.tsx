@@ -132,7 +132,7 @@ const ResetPasswordFormComponent: React.FC = () => {
         </SuccessMessage>
         <InfoText>
           Please check your email and follow the instructions to create a new password.
-          If you don't see the email, please check your spam folder.
+          If you don`&apos;t see the email, please check your spam folder.
         </InfoText>
       </ResetForm>
     );

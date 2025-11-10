@@ -76,7 +76,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return fallback || (
       <ErrorContainer>
         <ErrorTitle>Access Denied</ErrorTitle>
-        <ErrorMessage>You don't have permission to access this page.</ErrorMessage>
+        <ErrorMessage>You don`&apos;t have permission to access this page.</ErrorMessage>
       </ErrorContainer>
     );
   }
