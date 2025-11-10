@@ -45,6 +45,28 @@ const StatusText = styled("span", {
   }
 });
 
+const ManualRegistrationInput = styled("input", {
+  padding: "8px 12px",
+  border: "1px solid #d1d5db",
+  borderRadius: "6px",
+  fontSize: "14px",
+  width: "250px",
+  "&:focus": {
+    outline: "none",
+    borderColor: "#3b82f6",
+    boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)"
+  }
+});
+
+const ManualRegistrationBox = styled("div", {
+  padding: "20px 24px",
+  borderTop: "1px solid #e9ecef",
+  backgroundColor: "#f8f9fa",
+  display: "flex",
+  flexDirection: "column",
+  gap: "12px"
+});
+
 interface TournamentDetailProps {
   userRole?: number;
 }
@@ -120,6 +142,9 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('not_registered');
   const [isEditing, setIsEditing] = useState(false);
+  const [manualRegistrationEmail, setManualRegistrationEmail] = useState("");
+  const [isManualRegistering, setIsManualRegistering] = useState(false);
+  const [isExportingCSV, setIsExportingCSV] = useState(false);
 
   const URLparams = new URLSearchParams();
   if (userId) URLparams.append("u", userId);
@@ -142,20 +167,21 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   }, [tournament]);
 
   const isUserAdmin = userRole === userRoles.SUPERADMIN //||(tournament?.adminId && userId && tournament.adminId.includes(userId));
-console.log("isUserAdmin", isUserAdmin);
+
   const onRegisterClick = async () => {
-    if (!tournament || !userId || !email) return;
+    if (!tournament || !userId || !email) {
+      router.push("/login");
+      return;
+    }
 
     setIsRegistering(true);
     try {
       if (registrationStatus === 'registered') {
-        // Unregister logic
         await getAxiosInstance().delete(`/api/game/tournaments/registration`, {
           data: { tournamentId: tournament.id, userEmail: email }
         });
         setRegistrationStatus('not_registered');
       } else {
-        // Register logic
         await getAxiosInstance().post('/api/game/tournaments', {
           id: tournament.id,
           userEmail: email
@@ -167,6 +193,77 @@ console.log("isUserAdmin", isUserAdmin);
       console.error("Registration error:", e);
     } finally {
       setIsRegistering(false);
+    }
+  };
+
+  const onManualRegisterClick = async () => {
+    if (!tournament || !manualRegistrationEmail.trim()) {
+      return;
+    }
+
+    setIsManualRegistering(true);
+    try {
+      await getAxiosInstance().post('/api/game/tournaments', {
+        id: tournament.id,
+        userEmail: manualRegistrationEmail.trim()
+      });
+      setManualRegistrationEmail("");
+      alert(`Successfully registered ${manualRegistrationEmail} for the tournament!`);
+      router.refresh()
+    } catch (e) {
+      console.error("Manual registration error:", e);
+      alert(`Failed to register ${manualRegistrationEmail}. Please check if the email is valid and the user exists.`);
+    } finally {
+      setIsManualRegistering(false);
+    }
+  };
+
+  const onExportCSV = async () => {
+    if (!tournament) {
+      return;
+    }
+
+    setIsExportingCSV(true);
+    try {
+      // Fetch registered players with detailed information
+      const response = await getAxiosInstance().get(`/api/game/tournaments?id=${tournament.id}&players=true`);
+      const registeredPlayers = response.data || [];
+
+      if (registeredPlayers.length === 0) {
+        alert("No registered players found for this tournament.");
+        return;
+      }
+
+      // Create CSV content
+      const csvHeaders = ["Name", "Email", "User ID"];
+      const csvRows = registeredPlayers.map(player => [
+        player.name || "",
+        player.email || "",
+        player.userId || ""
+      ]);
+
+      // Combine headers and rows
+      const csvContent = [csvHeaders, ...csvRows]
+        .map(row => row.map(field => `"${field}"`).join(","))
+        .join("\n");
+
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `tournament_${tournament.id}_registered_players.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert(`Successfully exported ${registeredPlayers.length} registered players to CSV!`);
+    } catch (e) {
+      console.error("CSV export error:", e);
+      alert("Failed to export registered players. Please try again.");
+    } finally {
+      setIsExportingCSV(false);
     }
   };
 
@@ -196,29 +293,80 @@ console.log("isUserAdmin", isUserAdmin);
         backgroundColor: "white",
       }}>
         <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
-        {userId && tournament?.status_id === 4 && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
+        {tournament?.status_id === 4 && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
 
         {isUserAdmin && (
-          <Box css={{
-          padding: "20px 24px",
-          borderTop: "1px solid #e9ecef",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
-        }}>
-          <StatusText type="admin">
-            Admin Mode - Tournament Management
-          </StatusText>
+          <>
+            <Box css={{
+            padding: "20px 24px",
+            borderTop: "1px solid #e9ecef",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+          }}>
+            <StatusText type="admin">
+              Admin Mode - Tournament Management
+            </StatusText>
 
-          <Flex css={{ gap: "12px" }}>
-            <Button
-              css={{ backgroundColor: "#3b82f6" }}
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? "Cancel Edit" : "Edit Tournament"}
-            </Button>
-          </Flex>
-        </Box>)}
+            <Flex css={{ gap: "12px" }}>
+              <Button
+                css={{ backgroundColor: "#3b82f6" }}
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                {isEditing ? "Cancel Edit" : "Edit Tournament"}
+              </Button>
+              <Button
+                css={{
+                  backgroundColor: "#059669",
+                  "&:hover": {
+                    backgroundColor: "#047857"
+                  }
+                }}
+                onClick={onExportCSV}
+                disabled={isExportingCSV}
+              >
+                {isExportingCSV ? (
+                  <Spinner size="1" />
+                ) : (
+                  "Export CSV"
+                )}
+              </Button>
+            </Flex>
+          </Box>
+
+          {/* Manual Registration Section */}
+          <ManualRegistrationBox>
+            <StatusText type="admin">
+              Manual Player Registration
+            </StatusText>
+            <Flex css={{ gap: "12px", alignItems: "center" }}>
+              <ManualRegistrationInput
+                type="email"
+                placeholder="Enter player email address"
+                value={manualRegistrationEmail}
+                onChange={(e) => setManualRegistrationEmail(e.target.value)}
+                disabled={isManualRegistering}
+              />
+              <Button
+                css={{
+                  backgroundColor: "#16a34a",
+                  "&:hover": {
+                    backgroundColor: "#15803d"
+                  }
+                }}
+                onClick={onManualRegisterClick}
+                disabled={isManualRegistering || !manualRegistrationEmail.trim()}
+              >
+                {isManualRegistering ? (
+                  <Spinner size="1" />
+                ) : (
+                  "Register Player"
+                )}
+              </Button>
+            </Flex>
+          </ManualRegistrationBox>
+          </>
+        )}
 
       {/* Edit Form */}
       {isEditing && (
