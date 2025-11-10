@@ -185,8 +185,14 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   const statusName = getTournamentStatusNames(tournament.status_id);
   const statusVariant = getVariant(tournament.status_id);
 
+  const onClick = () => {
+    if (tournament.status_id !== tournamentStatus.registrationOpen) {
+      return undefined
+    }
+    router.push(`/tournaments/${tournament.id}`);
+  };
   return (
-    <TableRow onClick={() => router.push(`/tournaments/${tournament.id}`)}>
+    <TableRow onClick={onClick}>
       <TableCell>
         <UnstyledLink href={`/tournaments/${tournament.id}`}>
           {tournament.tournament_name}
