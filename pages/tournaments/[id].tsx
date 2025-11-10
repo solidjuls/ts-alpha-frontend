@@ -235,11 +235,16 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
       }
 
       // Create CSV content
-      const csvHeaders = ["Name", "Email", "User ID"];
+      const csvHeaders = ["Name", "Email", "User ID", "Rating", "Phone Number", "Country Code", "Registered At", "Playdeck Name"];
       const csvRows = registeredPlayers.map(player => [
         player.name || "",
         player.email || "",
-        player.userId || ""
+        player.userId || "",
+        player.rating || "",
+        player.phoneNumber || "",
+        player.countryCode || "",
+        player.registeredAt || "",
+        player.playdeckName || "",
       ]);
 
       // Combine headers and rows

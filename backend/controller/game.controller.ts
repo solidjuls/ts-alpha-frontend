@@ -442,8 +442,10 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
     select: {
       id: true,
       email: true,
+      name: true,
       first_name: true,
       last_name: true,
+      phone_number: true,
       countries: {
         select: {
           tld_code: true,
@@ -456,7 +458,7 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
       const rating = await getRatingByPlayer({ playerId: user.id });
 
       return { 
-        userId: user.id, 
+        userId: user.id,
         ...rating 
       };
     })
@@ -472,6 +474,8 @@ export const getRegisteredPlayers = async (tournamentId: number) => {
       status: registration.status,
       registeredAt: registration.created_at,
       userId: user?.id?.toString(),
+      playdeckName: user?.name,
+      phoneNumber: user?.phone_number,
       name: user ? `${user.first_name} ${user.last_name}` : 'Unknown User',
       countryCode: user?.countries?.tld_code,
     };
