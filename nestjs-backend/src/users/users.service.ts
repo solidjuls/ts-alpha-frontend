@@ -1,0 +1,293 @@
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
+import {
+  UserDto,
+  UserDetailDto,
+  UsersListResponse,
+  CreateUserDto,
+  UpdateUserDto,
+} from './dto/users.dto';
+
+@Injectable()
+export class UsersService {
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async getUserById(id: string): Promise<UserDetailDto | null> {
+    const user = await this.databaseService.users.findFirst({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        name: true,
+        email: true,
+        phone_number: true,
+        last_login_at: true,
+        preferred_gaming_platform: true,
+        preferred_game_duration: true,
+        timezone_id: true,
+        cities: {
+          select: {
+            id: true,
+            name: true,
+            timeZoneId: true,
+          },
+        },
+        countries: {
+          select: {
+            id: true,
+            country_name: true,
+          },
+        },
+      },
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!user) return null;
+
+    // Get user rating
+    const rating = await this.getUserRating(user.id);
+
+    return {
+      id: user.id.toString(),
+      first_name: user.first_name,
+      last_name: user.last_name,
+      name: user.name,
+      email: user.email,
+      phone_number: user.phone_number,
+      last_login_at: user.last_login_at?.toISOString(),
+      preferred_gaming_platform: user.preferred_gaming_platform,
+      preferred_game_duration: user.preferred_game_duration,
+      timezone_id: user.timezone_id,
+      cities: user.cities ? {
+        id: user.cities.id.toString(),
+        name: `${user.cities.name} - ${user.cities.timeZoneId}`,
+      } : undefined,
+      countries: user.countries ? {
+        id: user.countries.id.toString(),
+        country_name: user.countries.country_name,
+      } : undefined,
+      rating: rating,
+    };
+  }
+
+  async getUsersByTournament(tournamentId: string): Promise<UserDto[]> {
+    // CHANGE player_email by userId
+
+    // Get user emails registered for the tournament
+    // const userEmails = await this.databaseService.tournament_registration.findMany({
+    //   select: {
+    //     player_email: true,
+    //   },
+    //   where: {
+    //     tournamentId: Number(tournamentId),
+    //   },
+    // });
+
+    // if (userEmails.length === 0) {
+    //   return [];
+    // }
+
+    // // Get users by emails
+    // const users = await this.databaseService.users.findMany({
+    //   where: {
+    //     email: {
+    //       in: userEmails.map(item => item.player_email),
+    //     },
+    //   },
+    //   select: {
+    //     id: true,
+    //     first_name: true,
+    //     last_name: true,
+    //     countries: {
+    //       select: {
+    //         tld_code: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // // Get ratings for all users
+    // const usersWithRatings = await Promise.all(
+    //   users.map(async (user) => {
+    //     const rating = await this.getUserRating(user.id);
+    //     return {
+    //       id: user.id.toString(),
+    //       name: `${user.first_name} ${user.last_name}`,
+    //       countryCode: user.countries?.tld_code,
+    //       rating: rating,
+    //     };
+    //   })
+    // );
+
+    return null//usersWithRatings;
+  }
+
+  async getAllUsers({
+    page = 1,
+    pageSize = 50,
+    search,
+  }: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+  } = {}): Promise<UsersListResponse> {
+    const skip = (page - 1) * pageSize;
+
+    const where: any = {};
+
+    // Add search filter if provided
+    if (search) {
+      where.OR = [
+        {
+          first_name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          last_name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          email: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    // Get total count
+    const totalRows = await this.databaseService.users.count({
+      where,
+    });
+
+    // Get users
+    const users = await this.databaseService.users.findMany({
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        countries: {
+          select: {
+            tld_code: true,
+          },
+        },
+      },
+      where,
+      skip,
+      take: pageSize,
+      orderBy: [
+        { first_name: 'asc' },
+        { last_name: 'asc' },
+      ],
+    });
+
+    // Get ratings for all users
+    const usersWithRatings = await Promise.all(
+      users.map(async (user) => {
+        const rating = await this.getUserRating(user.id);
+        return {
+          id: user.id.toString(),
+          name: `${user.first_name} ${user.last_name}`,
+          countryCode: user.countries?.tld_code,
+          rating: rating,
+        };
+      })
+    );
+
+    const totalPages = Math.ceil(totalRows / pageSize);
+
+    return {
+      results: usersWithRatings,
+      totalRows,
+      currentPage: page,
+      totalPages,
+    };
+  }
+
+  private async getUserRating(userId: bigint): Promise<number | undefined> {
+    try {
+      // Get the latest rating for the user
+      const rating = await this.databaseService.ratings_history.findFirst({
+        select: {
+          rating: true,
+        },
+        where: {
+          player_id: userId,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      return rating?.rating ? Number(rating.rating) : undefined;
+    } catch (error) {
+      console.error('Error fetching user rating:', error);
+      return undefined;
+    }
+  }
+
+  async createUser(userData: CreateUserDto): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Check if user already exists
+      const existingUser = await this.databaseService.users.findUnique({
+        where: { email: userData.email },
+      });
+
+      if (existingUser) {
+        return { success: false, error: `User with email ${userData.email} already exists` };
+      }
+
+      // Create new user
+      await this.databaseService.users.create({
+        data: {
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          name: userData.name,
+          email: userData.email,
+          phone_number: userData.phone_number,
+          preferred_gaming_platform: userData.preferredGamingPlatform,
+          preferred_game_duration: userData.preferredGameDuration,
+          city_id: userData.city,
+          country_id: userData.country,
+        },
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error creating user:', error);
+      return { success: false, error: 'Failed to create user' };
+    }
+  }
+
+  async updateUser(userData: UpdateUserDto): Promise<{ success: boolean; error?: string }> {
+    try {
+      await this.databaseService.users.update({
+        where: {
+          email: userData.email,
+        },
+        data: {
+          first_name: userData.firstName,
+          last_name: userData.lastName,
+          name: userData.name,
+          phone_number: userData.phone,
+          last_login_at: new Date(),
+          preferred_gaming_platform: userData.preferredGamingPlatform,
+          preferred_game_duration: userData.preferredGameDuration,
+          city_id: userData.city,
+          country_id: userData.country,
+        },
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating user:', error);
+      return { success: false, error: 'Failed to update user' };
+    }
+  }
+}

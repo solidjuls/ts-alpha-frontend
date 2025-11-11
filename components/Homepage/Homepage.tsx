@@ -27,6 +27,7 @@ import {
 import { Checkbox } from "components/Checkbox";
 import { UserType } from "types/user.types";
 import { MultiSelectItemType } from "types/types";
+import { useUsers } from "hooks/useUsers";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -199,10 +200,12 @@ const Filter = () => {
     url: "/api/game/tournaments",
     cacheId: "tournaments-list",
   });
-  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({
-    url: "/api/user",
-    cacheId: "user-list",
-  });
+  // const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({
+  //   url: "/api/user",
+  //   cacheId: "user-list",
+  // });
+  const { data: users, isLoading: isLoadingUsers } = useUsers()
+
   const { filters } = useSelector((state: RootState) => state.gameList);
   const { playersSelected, tournamentSelected, videoSelected } = filters;
 
