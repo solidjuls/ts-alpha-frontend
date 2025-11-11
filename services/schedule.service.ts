@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api';
+import axios, { AxiosInstance } from 'axios';
 
 export interface ScheduleItem {
   id: string;
@@ -59,11 +57,11 @@ export interface ReplacePlayerParams {
 }
 
 class ScheduleService {
-  private axiosInstance;
+  private axiosInstance: AxiosInstance;
 
   constructor() {
     this.axiosInstance = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
       withCredentials: true,
       headers: {
         'Content-Type': 'application/json',
@@ -94,27 +92,27 @@ class ScheduleService {
     return this.getSchedules({ userId, page, pageSize });
   }
 
-  async addSchedule(params: AddScheduleParams) {
+  async addSchedule(params: AddScheduleParams): Promise<{ message: string }> {
     const response = await this.axiosInstance.patch('/schedule', params);
     return response.data;
   }
 
-  async updateSchedule(params: UpdateScheduleParams) {
+  async updateSchedule(params: UpdateScheduleParams): Promise<{ message: string }> {
     const response = await this.axiosInstance.put('/schedule', params);
     return response.data;
   }
 
-  async replacePlayer(params: ReplacePlayerParams) {
+  async replacePlayer(params: ReplacePlayerParams): Promise<{ message: string }> {
     const response = await this.axiosInstance.post('/schedule', params);
     return response.data;
   }
 
-  async deleteSchedule(id: string) {
+  async deleteSchedule(id: string): Promise<{ message: string }> {
     const response = await this.axiosInstance.delete(`/schedule/${id}`);
     return response.data;
   }
 
-  async getScheduleHealth() {
+  async getScheduleHealth(): Promise<{ status: string }> {
     const response = await this.axiosInstance.get('/schedule/health');
     return response.data;
   }

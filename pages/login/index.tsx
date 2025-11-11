@@ -1,61 +1,145 @@
-import { useEffect, useState } from "react";
-import Head from "next/head";
-import { FormattedMessage } from "react-intl";
+import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import styled from 'styled-components';
+import { FormattedMessage } from 'react-intl';
+import { Spinner } from '@radix-ui/themes';
 
-import { styled } from "stitches.config";
+import { useLogin, useLogout, useIsAuthenticated } from '../../hooks/useAuth';
+import { Button } from 'components/Button';
+import Text from 'components/Text';
+import { Input, PasswordInput } from 'components/Input';
+import { Label } from 'components/Label';
+import { Checkbox } from 'components/Checkbox';
 
-import { Button } from "components/Button";
-import Text from "components/Text";
-import { Input, PasswordInput } from "components/Input";
-import { Label } from "components/Label";
-import { useSession } from "contexts/AuthProvider";
-import { useRouter } from "next/router";
-import Link from "next/link";
-import { Box, Form } from "components/Atoms";
-import { Spinner } from "@radix-ui/themes";
-import { Checkbox } from "components/Checkbox";
+// Styled Components
+const LoginContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+`;
 
-const formStyles = {
-  display: "flex",
-  flexDirection: "column",
-  justifyItems: "center",
-  justifyContent: "center",
-  alignItems: "center",
-  alignSelf: "center",
-  backgroundColor: "White",
-  width: "100%",
-  height: "400px",
-  boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-};
+const LoginForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  width: 100%;
+  max-width: 400px;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+`;
 
-const ErrorInfo = styled("span", {
-  color: "red",
-  margin: "8px",
-});
+const FormTitle = styled.h1`
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+`;
 
+const FormField = styled.div`
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
+const StyledInput = styled(Input)`
+  width: 100%;
+  margin-top: 5px;
+`;
+
+const StyledPasswordInput = styled(PasswordInput)`
+  width: 100%;
+  margin-top: 5px;
+`;
+
+const ErrorMessage = styled.div`
+  color: #e74c3c;
+  margin: 10px 0;
+  text-align: center;
+  font-size: 14px;
+`;
+
+const SuccessMessage = styled.div`
+  color: #27ae60;
+  margin: 10px 0;
+  text-align: center;
+  font-size: 14px;
+`;
+
+const InfoText = styled(Text)`
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #666;
+`;
+
+const CheckboxContainer = styled.div`
+  width: 100%;
+  margin: 15px 0;
+`;
+
+const ForgotPasswordLink = styled.div`
+  margin-top: 15px;
+  text-align: center;
+  
+  a {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 14px;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
+
+const LogoutContainer = styled.div`
+  text-align: center;
+`;
+
+const WelcomeText = styled.h2`
+  color: #333;
+  margin-bottom: 20px;
+`;
+
+// Helper functions for localStorage
 const saveCredentials = (mail: string, password: string) => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("mail", mail);
-    localStorage.setItem("password", password);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('mail', mail);
+    localStorage.setItem('password', password);
   }
 };
 
 const getCredentials = (): { mail: string | null; password: string | null } => {
-  if (typeof window !== "undefined") {
-    const mail = localStorage.getItem("mail");
-    const password = localStorage.getItem("password");
+  if (typeof window !== 'undefined') {
+    const mail = localStorage.getItem('mail');
+    const password = localStorage.getItem('password');
     return { mail, password };
   }
   return { mail: null, password: null };
 };
 
-const LoginForm: React.FC = () => {
-  const { login, errorMsg } = useSession();
-  const [mail, setMail] = useState<string>("");
-  const [pwd, setPwd] = useState<string>("");
+const clearCredentials = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('mail');
+    localStorage.removeItem('password');
+  }
+};
+
+// Login Form Component
+const LoginFormComponent: React.FC = () => {
+  const [mail, setMail] = useState<string>('');
+  const [pwd, setPwd] = useState<string>('');
   const [saveCred, setSaveCred] = useState<boolean>(true);
-  const [validationErrorMsg, setValidationErrorMsg] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [validationError, setValidationError] = useState<string>('');
+  
+  const loginMutation = useLogin();
 
   useEffect(() => {
     loadSavedCredentials();
@@ -69,131 +153,138 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  function validate() {
-    if (!mail) {
-      setValidationErrorMsg("Email is empty");
+  const validate = (): boolean => {
+    if (!mail.trim()) {
+      setValidationError('Email is required');
       return false;
     }
-    if (!pwd) {
-      setValidationErrorMsg("Password is empty");
+    if (!pwd.trim()) {
+      setValidationError('Password is required');
       return false;
     }
+    setValidationError('');
     return true;
-  }
+  };
 
-  const onClick = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validate()) return;
+
     try {
-      if (login && validate()) {
-        setIsLoading(true);
-        await login(mail, pwd);
-        if (saveCred) {
-          saveCredentials(mail, pwd);
-        }
+      await loginMutation.mutateAsync({ mail: mail.trim(), pwd });
+      
+      if (saveCred) {
+        saveCredentials(mail, pwd);
+      } else {
+        clearCredentials();
       }
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
-  const onCheckedChange = (value) => {
-    if (saveCred && !value) {
-      localStorage.removeItem("mail");
-      localStorage.removeItem("password");
+  const handleRememberMeChange = (checked: boolean) => {
+    setSaveCred(checked);
+    if (!checked) {
+      clearCredentials();
     }
-    setSaveCred(value);
   };
+
+  const errorMessage = validationError || loginMutation.error?.response?.data?.message || loginMutation.error?.message;
 
   return (
-    <>
-      <h1>Login</h1>
-      <Text>
+    <LoginForm onSubmit={handleSubmit}>
+      <FormTitle>Login</FormTitle>
+      
+      <InfoText>
         <b>
-          If this is your first time using the website, click in the <i>Forgot your password?</i>{" "}
+          If this is your first time using the website, click the <i>Forgot your password?</i>{' '}
           link to create a new password
         </b>
-      </Text>
-      <Label htmlFor="mail">
-        <FormattedMessage id="mail" />
-      </Label>
-      <Input
-        type="text"
-        id="mail"
-        margin="login"
-        defaultValue={mail}
-        value={mail}
-        onChange={(event) => setMail(event.target.value)}
-        css={{ width: "300px" }}
-      />
-      <Label htmlFor="pwd">
-        <FormattedMessage id="password" />
-      </Label>
-      <PasswordInput
-        id="pwd"
-        margin="login"
-        autocomplete="on"
-        value={pwd}
-        defaultValue={pwd}
-        onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPwd(event.target.value)}
-        css={{ width: "300px" }}
-      />
-      <Checkbox text="Remember Me" onCheckedChange={onCheckedChange} checked={saveCred} />
-      {validationErrorMsg && <Text css={{ color: "red" }}>{validationErrorMsg}</Text>}
-      <Button disabled={isLoading} onClick={onClick}>
-        {isLoading ? <Spinner size="3" /> : <b>Login</b>}
+      </InfoText>
+
+      <FormField>
+        <Label htmlFor="mail">
+          <FormattedMessage id="mail" defaultMessage="Email" />
+        </Label>
+        <StyledInput
+          type="email"
+          id="mail"
+          value={mail}
+          onChange={(e) => setMail(e.target.value)}
+          disabled={loginMutation.isPending}
+          required
+        />
+      </FormField>
+
+      <FormField>
+        <Label htmlFor="pwd">
+          <FormattedMessage id="password" defaultMessage="Password" />
+        </Label>
+        <StyledPasswordInput
+          id="pwd"
+          value={pwd}
+          onChange={(e) => setPwd(e.target.value)}
+          disabled={loginMutation.isPending}
+          required
+        />
+      </FormField>
+
+      <CheckboxContainer>
+        <Checkbox 
+          text="Remember Me" 
+          onCheckedChange={handleRememberMeChange} 
+          checked={saveCred} 
+        />
+      </CheckboxContainer>
+
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+
+      <Button 
+        type="submit" 
+        disabled={loginMutation.isPending}
+        style={{ width: '100%', marginBottom: '15px' }}
+      >
+        {loginMutation.isPending ? <Spinner size="3" /> : <b>Login</b>}
       </Button>
-      <Link href="/reset-password" passHref>
-        <Text css={{ cursor: "pointer" }}>Forgot your password?</Text>
-      </Link>
-      {errorMsg && <Text type="error">{errorMsg}</Text>}
-    </>
+
+      <ForgotPasswordLink>
+        <Link href="/reset-password-new">
+          Forgot your password?
+        </Link>
+      </ForgotPasswordLink>
+
+      <ForgotPasswordLink>
+        Don`&apos;t have an account? <Link href="/register">Create one here</Link>
+      </ForgotPasswordLink>
+    </LoginForm>
   );
 };
 
-const LoggedOutForm = () => {
-  const { logout, name, id } = useSession();
+// Logout Component
+const LogoutComponent: React.FC<{ userName: string }> = ({ userName }) => {
+  const logoutMutation = useLogout();
 
   return (
     <>
       <Head>
-        <title>Sign Out</title>
+        <title>{isAuthenticated ? 'Sign Out' : 'Login'} - Twilight Struggle</title>
       </Head>
-      <h2>Hi {`${name}`}</h2>
-      <Button
-        onClick={async (e) => {
-          e.preventDefault();
-          if (logout) await logout();
-        }}
-      >
-        Sign out
-      </Button>
+      
+      <LoginContainer>
+        {isAuthenticated && user ? (
+          <LogoutComponent userName={user.name} />
+        ) : (
+          <LoginFormComponent />
+        )}
+        
+        {router?.query?.error && (
+          <ErrorMessage>Could not sign in</ErrorMessage>
+        )}
+      </LoginContainer>
     </>
   );
 };
 
-const Login = () => {
-  const router = useRouter();
-
-  const { email } = useSession();
-
-  return (
-    <>
-      <Form css={formStyles}>
-        <Box
-          css={{
-            display: "flex",
-            flexDirection: "column",
-            justifyItems: "center",
-            alignItems: "center",
-          }}
-        >
-          {!email && <LoginForm />}
-          {email && <LoggedOutForm />}
-          {router?.query?.error && <ErrorInfo>Could not sign in</ErrorInfo>}
-        </Box>
-      </Form>
-    </>
-  );
-};
-
-export default Login;
+export default LoginPage;

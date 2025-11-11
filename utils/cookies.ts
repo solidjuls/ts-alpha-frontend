@@ -15,11 +15,12 @@ type CookiesReturn = (
 
 export const getInfoFromCookies: CookiesReturn = (req, res) => {
   const token = req?.cookies["token"];
-
   if (!token) return null;
-
+  
   try {
-    const payload = jwt.verify(token, process.env.TOKEN_SECRET);
+    console.log("process.env.TOKEN_SECRET", process.env.JWT_SECRET)
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("payload", payload)
 
     if (!payload) return null;
 
@@ -32,6 +33,7 @@ export const getInfoFromCookies: CookiesReturn = (req, res) => {
       tournamentsRegistered: payload.tournamentsRegistered
     };
   } catch (error) {
+    console.log("error", error)
     return null;
   }
 };

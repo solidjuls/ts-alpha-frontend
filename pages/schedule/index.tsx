@@ -1,6 +1,23 @@
 import "react-day-picker/lib/style.css";
+import { useState } from "react";
 import { Box, Flex } from "components/Atoms";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { Spinner } from "@radix-ui/themes";
+import { dateFormat } from "utils/dates";
+import Text from "components/Text";
+import { FlagIcon } from "components/FlagIcon";
+import { getInfoFromCookies } from "utils/cookies";
+import { DropdownItemType, ServerType } from "types/types";
+import { Button } from "components/Button";
+import { DueDateDisplay } from "components/DueDateDisplay";
+import { userRoles } from "utils/constants";
+import { GameWinner } from "types/game.types";
+import { styled } from "stitches.config";
+import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
+import { getWinnerText } from "utils/games";
+import { Pagination } from "components/Pagination";
+import Link from "next/link";
+import { useSchedules } from "hooks/useSchedule";
+import { ScheduleItem } from "services/schedule.service";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -8,50 +25,14 @@ import {
   UnstyledLink,
   CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styles";
-import { Spinner } from "@radix-ui/themes";
-import { dateFormat } from "utils/dates";
-import Text from "components/Text";
-import { FlagIcon } from "components/FlagIcon";
-import { getInfoFromCookies } from "utils/cookies";
-import { DropdownItemType, ScheduleType, ServerType } from "types/types";
-import DayPickerInput from "react-day-picker/DayPickerInput";
-import { Button } from "components/Button";
-import { DueDateDisplay } from "components/DueDateDisplay";
-import CsvUploadButton from "../../components/Schedule/CsvButtonUpload";
-import { tournamentStatus, userRoles } from "utils/constants";
-import ReplacePlayers from "../../components/Schedule/ReplacePlayers";
-import AddNewSchedule from "../../components/Schedule/AddNewSchedule";
-import { GameWinner, TournamentsType } from "types/game.types";
-import { DropdownWithLabel } from "components/EditFormComponents";
-import { useEffect, useState } from "react";
-import { fetchScheduleList, setTournamentFilter } from "../../redux/scheduleSlice";
-import { AppDispatch, RootState } from "redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import { styled } from "stitches.config";
-import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
-import axios from "axios";
-import UserTypeahead from "pages/submitform/UserTypeahead";
-import { UserType } from "types/user.types";
-import { Input } from "components/Input";
-import TextComponent from "pages/submitform/TextComponent";
-import { getWinnerText } from "utils/games";
-import { Pagination } from "components/Pagination";
-import { setCurrentPage } from "../../redux/scheduleSlice";
-import { getTournamentsRegistered } from "backend/controller/user.controller";
-import Link from "next/link";
 
 interface ScheduleProps {
   isSuperAdmin: boolean;
   tournamentsAdmin: DropdownItemType[];
-  tournamentsRegistered: DropdownItemType[];
+  tournamentsRegistered: string[];
   isAdmin: boolean;
   userId: string;
 }
-
-type SchedulePanelProps = {
-  data: ScheduleType[] | null;
-  isLoading: boolean;
-};
 
 const ResponsiveContainer = styled("div", {
   display: "flex",
@@ -113,7 +94,7 @@ const PlayerInfoBox = ({
   countryUsa,
   countryUssr,
   gameWinner,
-}: Pick<ScheduleType, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
   return (
     <Flex css={{ display: "flex", flexDirection: "row" }}>
       <Box
@@ -164,7 +145,7 @@ const isDueInDays = (date: string): number => {
 };
 
 type VariantType = (
-  schedule: ScheduleType,
+  schedule: ScheduleItem,
 ) => "played" | "duedate" | "default" | "firstAlert" | "secondAlert";
 
 const getVariant: VariantType = (schedule) => {
@@ -185,7 +166,7 @@ const getVariant: VariantType = (schedule) => {
   return "default";
 };
 
-const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleType; userId: string; isAdmin: boolean }) => {
+const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; userId: string; isAdmin: boolean }) => {
   const opponentId = schedule.idUsa === userId ? schedule.idUssr : schedule.idUsa;
   return (
     <Flex>
@@ -241,7 +222,17 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleType; us
   );
 };
 
-const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, isLoading }) => {
+const SchedulePanel = ({ 
+  data, 
+  isAdmin, 
+  userId, 
+  isLoading 
+}: { 
+  data: ScheduleItem[] | undefined; 
+  userId: string; 
+  isAdmin: boolean; 
+  isLoading: boolean;
+}) => {
   if (isLoading) {
     return (
       <Flex css={{ width: "100%" }}>
@@ -252,7 +243,7 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, is
     );
   }
 
-  if (data?.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Flex css={{ width: "100%" }}>
         <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
@@ -262,10 +253,9 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, is
     );
   }
 
-
   return (
     <ResultsStyleWrapper>
-      {data?.map((schedule, index) => (
+      {data.map((schedule, index) => (
         <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />
       ))}
     </ResultsStyleWrapper>
@@ -295,6 +285,34 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
     dispatch(setCurrentPage(page));
   };
 
+  const handlePlayerRemove = (playerId: string) => {
+    // Handle player removal logic here
+    console.log("Remove player:", playerId);
+  };
+
+  const handleShowFullScheduleChange = (showFull: boolean) => {
+    setShowFullSchedule(showFull);
+    setCurrentPage(1); // Reset to first page when changing view
+  };
+
+  const handleShowOnlyPendingChange = (showPending: boolean) => {
+    setShowOnlyPending(showPending);
+    setCurrentPage(1); // Reset to first page when changing filter
+  };
+
+  const onPageChange = (page: string) => {
+    setCurrentPage(parseInt(page));
+  };
+
+  if (error) {
+    return (
+      <div>
+        <h1>My Schedule</h1>
+        <div>Error loading schedule: {error.message}</div>
+      </div>
+    );
+  }
+
   return (
     <>
       <h1>My Schedule</h1>
@@ -322,18 +340,31 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
 
           {isSuperAdmin && (
             <ScheduleFilter
-              userAdminTournaments={tournamentsAdmin.length > 0}
-              noSchedule={items?.length === 0}
-              tournament={tournamentsRegistered?.[0]}
+              noSchedule={!data?.results || data.results.length === 0}
+              tournament={selectedTournament}
+              onPlayerSelect={handlePlayerSelect}
+              onPlayerRemove={handlePlayerRemove}
+              onShowFullScheduleChange={handleShowFullScheduleChange}
+              onShowOnlyPendingChange={handleShowOnlyPendingChange}
+              showFullSchedule={showFullSchedule}
+              showOnlyPending={showOnlyPending}
             />
           )}
-          <SchedulePanel data={items} userId={userId} isAdmin={tournamentsAdmin.length > 0} isLoading={status === "loading"} />
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
+          
+          <SchedulePanel 
+            data={data?.results} 
+            userId={userId} 
+            isAdmin={tournamentsAdmin.length > 0} 
+            isLoading={isLoading} 
           />
+
+          {data && data.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage.toString()}
+              totalPages={data.totalPages.toString()}
+              onPageChange={onPageChange}
+            />
+          )}
         </Flex>
       </ResponsiveContainer>
     </>
@@ -342,9 +373,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
 
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
-  const protocol = req.headers["x-forwarded-proto"] || "http";
-  const host = req.headers["host"];
-  const baseUrl = `${protocol}://${host}`;
 
   if (!payload) {
     return {
@@ -355,11 +383,12 @@ export async function getServerSideProps({ req, res }: ServerType) {
     };
   }
 
-  const tournamentsConcatArray = payload?.tournamentsAdmin?.concat(payload?.tournamentsRegistered);
-  // payload?.tournamentsRegistered
-  const tournaments = payload?.tournamentsAdmin
-    ? await axios.get(`${baseUrl}/api/game/tournaments?id=${tournamentsConcatArray?.join(",")}`)
-    : [];
+  // For now, we'll use mock data for tournaments
+  // In a real implementation, you'd fetch this from your NestJS API
+  const leagueTypesAdmin: DropdownItemType[] = payload?.tournamentsAdmin?.map((id: any) => ({
+    value: id.toString(),
+    text: `Tournament ${id}`,
+  })) || [];
 
   const leagueTypesAdmin: DropdownItemType[] =
     tournaments?.data
