@@ -91,7 +91,7 @@ class UsersService {
     if (params.search) queryParams.append('search', params.search);
 
     const response = await this.axiosInstance.get(`/users?${queryParams.toString()}`);
-    return response.data;
+    return response.data?.results;
   }
 
   // Get users by tournament (returns simple User[] array)

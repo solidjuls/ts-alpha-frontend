@@ -25,14 +25,14 @@ import {
 } from './dto/users.dto';
 
 @Controller('users')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Public()
   async getUsers(
     @Query() query: GetUsersQueryDto,
-    @CurrentUser() user: JwtPayloadDto,
   ): Promise<UsersListResponse | UserDto[]> {
     try {
       const {
@@ -78,9 +78,9 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Public()
   async getUserById(
     @Param('id') id: string,
-    @CurrentUser() user: JwtPayloadDto,
   ): Promise<UserDetailDto> {
     try {
       const userData = await this.usersService.getUserById(id);
