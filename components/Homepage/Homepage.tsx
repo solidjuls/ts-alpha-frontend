@@ -28,6 +28,7 @@ import { Checkbox } from "components/Checkbox";
 import { UserType } from "types/user.types";
 import { MultiSelectItemType } from "types/types";
 import { useUsers } from "hooks/useUsers";
+import { useTournaments } from "hooks/useTournaments";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -194,21 +195,12 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
 
 const Filter = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData<
-    TournamentsType[]
-  >({
-    url: "/api/game/tournaments",
-    cacheId: "tournaments-list",
-  });
-  // const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({
-  //   url: "/api/user",
-  //   cacheId: "user-list",
-  // });
+  const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "1,2,3,4" });
   const { data: users, isLoading: isLoadingUsers } = useUsers()
 
   const { filters } = useSelector((state: RootState) => state.gameList);
   const { playersSelected, tournamentSelected, videoSelected } = filters;
-
+console.log("tournaments", tournaments)
   const onClear = () => {
     dispatch(setClearFilter());
   };

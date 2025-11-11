@@ -138,6 +138,8 @@ export const useTournaments = (params?: {
   return useQuery({
     queryKey: tournamentKeys.list(params || {}),
     queryFn: () => tournamentsService.getTournaments(params),
-    enabled: !!params,
+    // Always enabled - when no params provided, it fetches all tournaments
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 };

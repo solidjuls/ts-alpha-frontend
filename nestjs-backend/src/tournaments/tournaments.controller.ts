@@ -30,6 +30,7 @@ export class TournamentsController {
   constructor(private readonly tournamentsService: TournamentsService) {}
 
   @Get()
+  @Public()
   async getTournaments(@Query() query: GetTournamentsQueryDto, @CurrentUser() user: JwtPayloadDto) {
     try {
       const { id, status, players } = query;

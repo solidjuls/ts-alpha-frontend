@@ -1,15 +1,4 @@
-import axios from 'axios';
-
-// Create axios instance for tournaments API
-const tournamentsApi = axios.create({
-  baseURL: process.env.NODE_ENV === 'production' 
-    ? 'https://your-backend.vercel.app/api' 
-    : 'http://localhost:4002/api',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import axios, { AxiosInstance } from 'axios';
 
 // Tournament interfaces
 export interface Tournament {
@@ -60,71 +49,84 @@ export interface UpdateTournamentStatusRequest {
   status: number;
 }
 
-// Tournament service
-export const tournamentsService = {
+class TournamentsService {
+  private axiosInstance: AxiosInstance;
+
+  constructor() {
+    this.axiosInstance = axios.create({
+      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   // GET /api/tournaments - Get tournaments by status or ID
-  getTournaments: async (params?: {
+  async getTournaments(params?: {
     id?: string;
     status?: string;
     players?: string;
-  }): Promise<Tournament[] | RegisteredPlayer[]> => {
-    const response = await tournamentsApi.get('/tournaments', { params });
+  }): Promise<Tournament[] | RegisteredPlayer[]> {
+    const response = await this.axiosInstance.get('/tournaments', { params });
     return response.data;
-  },
+  }
 
   // GET /api/tournaments?id=123&players=true - Get registered players
-  getRegisteredPlayers: async (tournamentId: number): Promise<RegisteredPlayer[]> => {
-    const response = await tournamentsApi.get('/tournaments', {
+  async getRegisteredPlayers(tournamentId: number): Promise<RegisteredPlayer[]> {
+    const response = await this.axiosInstance.get('/tournaments', {
       params: { id: tournamentId.toString(), players: 'true' }
     });
     return response.data;
-  },
+  }
 
   // GET /api/tournaments?status=1,2,3 - Get tournaments by status
-  getTournamentsByStatus: async (statusArray: number[]): Promise<Tournament[]> => {
-    const response = await tournamentsApi.get('/tournaments', {
+  async getTournamentsByStatus(statusArray: number[]): Promise<Tournament[]> {
+    const response = await this.axiosInstance.get('/tournaments', {
       params: { status: statusArray.join(',') }
     });
     return response.data;
-  },
+  }
 
   // GET /api/tournaments?id=1,2,3 - Get tournaments by IDs
-  getTournamentsById: async (ids: string[]): Promise<Tournament[]> => {
-    const response = await tournamentsApi.get('/tournaments', {
+  async getTournamentsById(ids: string[]): Promise<Tournament[]> {
+    const response = await this.axiosInstance.get('/tournaments', {
       params: { id: ids.join(',') }
     });
     return response.data;
-  },
+  }
 
   // POST /api/tournaments - Register user or update status
-  registerForTournament: async (data: RegisterTournamentRequest): Promise<any> => {
-    const response = await tournamentsApi.post('/tournaments', data);
+  async registerForTournament(data: RegisterTournamentRequest): Promise<any> {
+    const response = await this.axiosInstance.post('/tournaments', data);
     return response.data;
-  },
+  }
 
   // POST /api/tournaments - Update tournament status
-  updateTournamentStatus: async (data: UpdateTournamentStatusRequest): Promise<any> => {
-    const response = await tournamentsApi.post('/tournaments', data);
+  async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<any> {
+    const response = await this.axiosInstance.post('/tournaments', data);
     return response.data;
-  },
+  }
 
   // PUT /api/tournaments - Update tournament details
-  updateTournament: async (data: UpdateTournamentRequest): Promise<any> => {
-    const response = await tournamentsApi.put('/tournaments', data);
+  async updateTournament(data: UpdateTournamentRequest): Promise<any> {
+    const response = await this.axiosInstance.put('/tournaments', data);
     return response.data;
-  },
+  }
 
   // PATCH /api/tournaments - Create new tournament
-  createTournament: async (data: CreateTournamentRequest): Promise<any> => {
-    const response = await tournamentsApi.patch('/tournaments', data);
+  async createTournament(data: CreateTournamentRequest): Promise<any> {
+    const response = await this.axiosInstance.patch('/tournaments', data);
     return response.data;
-  },
+  }
 
   // DELETE /api/tournaments/:id - Delete tournament
-  deleteTournament: async (id: string): Promise<{ id: string }> => {
-    const response = await tournamentsApi.delete(`/tournaments/${id}`);
+  async deleteTournament(id: string): Promise<{ id: string }> {
+    const response = await this.axiosInstance.delete(`/tournaments/${id}`);
     return response.data;
-  },
-};
+  }
+}
 
+// Export singleton instance
+export const tournamentsService = new TournamentsService();
 export default tournamentsService;
