@@ -22,36 +22,38 @@ export class ScheduleService {
     userFilter,
     page,
     pageSize,
-    adminView
+    adminView,
+    onlyPending,
+    orderBy,
+    orderDirection
   }: {
-    userId: number;
-    tournament: string[] | undefined;
-    userFilter: number | undefined;
+    userId?: number;
+    tournament?: string[] | undefined;
+    userFilter?: number | undefined;
     page: number;
     pageSize: number;
     adminView: boolean;
+    onlyPending?: boolean;
+    orderBy?: string;
+    orderDirection?: string;
   }): Promise<ScheduleListResponse> {
     pageSize = pageSize || 20;
     const skip = (page - 1) * pageSize;
     const userToFilter = userFilter || userId;
 
     const where: any = {
-      AND: [
-        { tournaments_id: Number(tournament) },
-      ]
+      AND: []
     };
 
-    const orderBy: any = [];
-    if (!adminView) {
-      orderBy.push({
-        game_results_id: 'asc',
+    // Add tournament filter if provided
+    if (tournament && tournament.length > 0) {
+      where.AND.push({
+        tournaments_id: { in: tournament.map(t => Number(t)) }
       });
     }
-    orderBy.push({
-      due_date: 'asc',
-    });
 
-    if (!adminView) {
+    // Add user filter if not admin view or if specific user is requested
+    if (userToFilter && (!adminView || userFilter)) {
       where.AND.push({
         OR: [
           { usa_player_id: userToFilter },
@@ -60,8 +62,45 @@ export class ScheduleService {
       });
     }
 
+    // Add pending games filter (games without results)
+    if (onlyPending) {
+      where.AND.push({
+        game_results_id: null
+      });
+    }
+
+    // Build dynamic orderBy based on parameters
+    const prismaOrderBy: any = [];
+
+    // Map orderBy field to database field
+    const orderByFieldMap = {
+      'dueDate': 'due_date',
+      'gameDate': { game_results: { game_date: orderDirection || 'asc' } },
+      'tournamentName': { tournaments: { tournament_name: orderDirection || 'asc' } }
+    };
+
+    if (orderBy && orderByFieldMap[orderBy]) {
+      if (orderBy === 'dueDate') {
+        prismaOrderBy.push({
+          [orderByFieldMap[orderBy]]: orderDirection || 'asc'
+        });
+      } else {
+        prismaOrderBy.push(orderByFieldMap[orderBy]);
+      }
+    } else {
+      // Default ordering
+      if (!adminView) {
+        prismaOrderBy.push({
+          game_results_id: 'asc',
+        });
+      }
+      prismaOrderBy.push({
+        due_date: 'asc',
+      });
+    }
+
     const totalRows = await this.databaseService.schedule.count({
-      where,
+      where: where.AND.length > 0 ? where : undefined,
     });
 
     const scheduleResults = await this.databaseService.schedule.findMany({
@@ -107,8 +146,8 @@ export class ScheduleService {
           },
         },
       },
-      orderBy,
-      where,
+      orderBy: prismaOrderBy,
+      where: where.AND.length > 0 ? where : undefined,
       skip,
       take: pageSize,
     });
@@ -130,9 +169,13 @@ export class ScheduleService {
       tournamentId: result.tournaments.id.toString()
     }));
 
+    const totalPages = Math.ceil(totalRows / pageSize);
+
     return {
       results,
-      totalRows
+      totalRows,
+      currentPage: page,
+      totalPages
     };
   }
 

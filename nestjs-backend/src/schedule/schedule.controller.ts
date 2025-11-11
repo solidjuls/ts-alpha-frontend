@@ -37,29 +37,57 @@ export class ScheduleController {
     @CurrentUser() user: JwtPayloadDto,
   ): Promise<ScheduleListResponse> {
     try {
+      // Handle new parameter format
       const {
+        userId,
+        tournamentId,
+        page = '1',
+        pageSize = '20',
+        onlyPending,
+        orderBy = 'dueDate',
+        orderDirection = 'asc',
+        // Legacy parameters for backward compatibility
         uid,
         t: tournament,
         u: userFilter,
-        p = '1',
-        pso = '20',
-        a = '0',
+        p,
+        pso,
+        a,
       } = query;
 
-      const userId = uid ? Number(uid) : Number(user.id);
-      const tournamentIds = tournament ? tournament.split(',') : undefined;
-      const userFilterId = userFilter ? Number(userFilter) : undefined;
-      const page = Number(p);
-      const pageSize = Number(pso);
+      // Use new parameters if available, otherwise fall back to legacy
+      const finalUserId = userId || uid;
+      const finalTournamentId = tournamentId || tournament;
+      const finalPage = page || p || '1';
+      const finalPageSize = pageSize || pso || '20';
+
+      // Parse parameters
+      const parsedUserId = finalUserId ? Number(finalUserId) : undefined;
+      const parsedTournamentIds = finalTournamentId ? finalTournamentId.split(',') : undefined;
+      const parsedUserFilter = userFilter ? Number(userFilter) : undefined;
+      const parsedPage = Number(finalPage);
+      const parsedPageSize = Number(finalPageSize);
+      const parsedOnlyPending = onlyPending === 'true';
       const adminView = a === '1';
 
+      // Validate orderBy parameter
+      const validOrderBy = ['dueDate', 'gameDate', 'tournamentName'];
+      const finalOrderBy = validOrderBy.includes(orderBy) ? orderBy : 'dueDate';
+
+      // Validate orderDirection parameter
+      const validOrderDirection = ['asc', 'desc'];
+      const finalOrderDirection = validOrderDirection.includes(orderDirection) ? orderDirection : 'asc';
+
       const result = await this.scheduleService.getSchedules({
-        userId,
-        tournament: tournamentIds,
-        userFilter: userFilterId,
-        page,
-        pageSize,
+        userId: parsedUserId,
+        tournament: parsedTournamentIds,
+        userFilter: parsedUserFilter,
+        page: parsedPage,
+        pageSize: parsedPageSize,
         adminView,
+        onlyPending: parsedOnlyPending,
+        orderBy: finalOrderBy,
+        orderDirection: finalOrderDirection,
       });
 
       return result;

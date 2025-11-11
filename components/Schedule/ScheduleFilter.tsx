@@ -5,14 +5,12 @@ import ReplacePlayers from './ReplacePlayers';
 import AddNewSchedule from './AddNewSchedule';
 import CsvUploadButton from './CsvButtonUpload';
 import { TournamentsType } from 'types/game.types';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from 'redux/store';
-import { deletePlayerFromSchedule, setAdminView, setPlayerFilter } from "../../redux/scheduleSlice";
 import UserTypeahead from 'pages/submitform/UserTypeahead';
 import { DropdownItemType } from 'types/types';
-import useFetchInitialData from 'hooks/useFetchInitialData';
 import { UserType } from 'types/user.types';
 import { Flex } from 'components/Atoms';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 const Panel = styled('div', {
   padding: '16px',
@@ -23,20 +21,40 @@ const Panel = styled('div', {
 });
 
 interface ScheduleFilterProps {
-  userAdminTournaments: TournamentsType | null
+  noSchedule: boolean;
+  tournament: string;
+  onPlayerSelect?: (playerId: string) => void;
+  onPlayerRemove?: (playerId: string) => void;
+  onShowFullScheduleChange?: (showFull: boolean) => void;
+  onShowOnlyPendingChange?: (showPending: boolean) => void;
+  showFullSchedule?: boolean;
+  showOnlyPending?: boolean;
 }
 
-const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, noSchedule, tournament }) => {
+const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
+  tournament,
+  onPlayerSelect,
+  onPlayerRemove,
+  onShowFullScheduleChange,
+  onShowOnlyPendingChange,
+  showFullSchedule = false,
+  showOnlyPending = false
+}) => {
   const [checked, setChecked] = React.useState(true);
-  const dispatch = useDispatch<AppDispatch>();
-  const { filters } = useSelector(
-    (state: RootState) => state.scheduleList,
-  );
-  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<
-    UserType[]
-  >({
-    url: `/api/user?t=${tournament}`,
-    cacheId: "tournaments-list",
+  const [selectedPlayer, setSelectedPlayer] = React.useState("");
+  const [selectedPlayerToRemove, setSelectedPlayerToRemove] = React.useState("");
+
+  // Fetch users for the tournament using React Query
+  const { data: users, isLoading: isLoadingUsers } = useQuery({
+    queryKey: ['users', tournament],
+    queryFn: async () => {
+      const response = await axios.get(`/api/user?t=${tournament}`, {
+        withCredentials: true
+      });
+      return response.data as UserType[];
+    },
+    enabled: !!tournament,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const usersFilter: DropdownItemType[] = users?.map((item: UserType) => ({
@@ -49,41 +67,50 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ userAdminTournaments, n
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
       {checked && (
         <Panel>
-          <CsvUploadButton tournament={userAdminTournaments} />
-          <Checkbox text="Show full schedule" checked={filters.adminView} onCheckedChange={() => dispatch(setAdminView(!filters.adminView))} />
+          <CsvUploadButton tournament={tournament} />
+          <Checkbox
+            text="Show full schedule"
+            checked={showFullSchedule}
+            onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
+          />
+          <Checkbox
+            text="Show only pending games (without results)"
+            checked={showOnlyPending}
+            onCheckedChange={(checked) => onShowOnlyPendingChange?.(checked)}
+          />
           <Flex>
             <>
               <UserTypeahead
-                labelText="players"
-                // selectedItem={filters.playerToDelete}
-                // error={form.admins.error}
+                labelText="Filter by Player"
                 users={usersFilter}
-                placeholder="Type the player name..."
+                selectedItem={selectedPlayer}
+                placeholder="Type the player name to filter schedule..."
                 css={{ width: '320px', marginRight: "8px" }}
                 onBlur={() => {
-                  // onInputValueChange("admins", "");
+                  // Handle blur if needed
                 }}
-                onSelect={(item: DropdownItemType) =>
-                  dispatch(setPlayerFilter(item.value))
-                }
+                onSelect={(item: DropdownItemType) => {
+                  setSelectedPlayer(item.value || "");
+                  onPlayerSelect?.(item.value || "");
+                }}
               />
               <UserTypeahead
-                labelText="removePlayer"
-                // selectedItem={filters.playerToDelete}
-                // error={form.admins.error}
+                labelText="Remove Player"
                 users={usersFilter}
-                placeholder="Type the player name..."
+                selectedItem={selectedPlayerToRemove}
+                placeholder="Type the player name to remove..."
                 css={{ width: '320px' }}
                 onBlur={() => {
-                  // onInputValueChange("admins", "");
+                  // Handle blur if needed
                 }}
-                onSelect={(item: DropdownItemType) =>
-                  dispatch(deletePlayerFromSchedule(item.value))
-                }
+                onSelect={(item: DropdownItemType) => {
+                  setSelectedPlayerToRemove(item.value || "");
+                  onPlayerRemove?.(item.value || "");
+                }}
               />
             </>
           </Flex>
-          <ReplacePlayers tournament={tournament} users={usersFilter} /> 
+          <ReplacePlayers tournament={tournament} />
         </Panel>
       )}
     </div>

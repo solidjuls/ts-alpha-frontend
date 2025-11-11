@@ -16,12 +16,21 @@ export interface ScheduleDto {
 }
 
 export interface GetSchedulesQueryDto {
-  uid?: string; // userId
-  t?: string; // tournament IDs (comma-separated)
-  u?: string; // userFilter
-  p?: string; // page
-  pso?: string; // pageSize
-  a?: string; // adminView (1 or 0)
+  userId?: string; // User ID to filter schedules
+  tournamentId?: string; // Tournament ID to filter schedules
+  page?: string; // Page number for pagination
+  pageSize?: string; // Number of items per page
+  onlyPending?: string; // Filter only pending games (without results) - 'true' or 'false'
+  orderBy?: 'dueDate' | 'gameDate' | 'tournamentName'; // Field to order by
+  orderDirection?: 'asc' | 'desc'; // Order direction
+
+  // Legacy parameters for backward compatibility
+  uid?: string; // userId (legacy)
+  t?: string; // tournament IDs (comma-separated) (legacy)
+  u?: string; // userFilter (legacy)
+  p?: string; // page (legacy)
+  pso?: string; // pageSize (legacy)
+  a?: string; // adminView (1 or 0) (legacy)
 }
 
 export interface CreateScheduleDto {
@@ -81,4 +90,6 @@ export interface ScheduleUpdateResult {
 export interface ScheduleListResponse {
   results: ScheduleDto[];
   totalRows: number;
+  currentPage: number;
+  totalPages: number;
 }
