@@ -287,7 +287,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     })) || [];
 
   const leagueTypes: DropdownItemType[] =
-    tournaments?.map((item) => ({
+    tournaments?.filter((item) => item.id !== "318").map((item) => ({
       value: item.id.toString(),
       text: item.tournament_name,
     })) || [];
