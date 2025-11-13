@@ -128,7 +128,7 @@ const TournamentInfo = ({ tournament_name, statusName, adminName, starting_date,
             <DisplayInfo label="Starting Date" infoText={starting_date} />
 
             {description && (
-              <Flex css={{ flexDirection: "column", minWidth: "400px", gridColumn: "1 / -1" }}>
+              <Flex css={{ flexDirection: "column", gridColumn: "1 / -1" }}>
                 <StyledLabel>Description</StyledLabel>
                 <DescriptionBox>{description}</DescriptionBox>
               </Flex>

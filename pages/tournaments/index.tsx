@@ -21,7 +21,7 @@ import { useRouter } from "next/router";
 // Tournament Table Styles
 const TournamentTable = styled("table", {
   width: "100%",
-  maxWidth: "1200px",
+  maxWidth: "1460px",
   borderCollapse: "collapse",
   backgroundColor: "white",
   borderRadius: "12px",
