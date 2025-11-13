@@ -274,4 +274,15 @@ export class TournamentsService {
       }
     });
   }
+
+  async getUserByEmail(email: string): Promise<{ id: bigint } | null> {
+    return await this.databaseService.users.findFirst({
+      where: {
+        email: email,
+      },
+      select: {
+        id: true,
+      }
+    });
+  }
 }

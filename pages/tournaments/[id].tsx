@@ -11,7 +11,6 @@ import { TournamentsType } from "types/game.types";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
 import { dateIntlFormatter } from "utils/dates";
 import { useSession } from "contexts/AuthProvider";
-import getAxiosInstance from "utils/axios";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
 import { styled } from "stitches.config";
@@ -376,7 +375,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
       {/* Edit Form */}
       {isEditing && (
         <TournamentEditForm
-          tournament={tournament}
+          tournament={tournament as any}
           onSave={() => {
             setIsEditing(false);
             router.refresh()

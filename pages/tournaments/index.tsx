@@ -11,7 +11,7 @@ import { ServerType } from "types/types";
 import Text from "components/Text";
 import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
-import { TournamentsType } from "types/game.types";
+import { Tournament } from "services/tournaments.service";
 import { styled } from "stitches.config";
 import Legend from "./Legend";
 import { UnstyledLink } from "components/Schedule/Schedule.styles";
@@ -173,7 +173,7 @@ const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (sta
 };
 
 interface TournamentRowProps {
-  tournament: TournamentsType;
+  tournament: Tournament;
 }
 
 const TournamentRow = ({ tournament }: TournamentRowProps) => {

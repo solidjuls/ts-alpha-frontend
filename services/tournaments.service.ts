@@ -102,6 +102,14 @@ class TournamentsService {
     return response.data;
   }
 
+  // DELETE /api/tournaments/:id/unregister - Unregister user from tournament
+  async unregisterFromTournament(tournamentId: number, userEmail: string): Promise<{ message: string }> {
+    const response = await this.axiosInstance.delete(`/tournaments/${tournamentId}/unregister`, {
+      data: { userEmail }
+    });
+    return response.data;
+  }
+
   // POST /api/tournaments - Update tournament status
   async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<any> {
     const response = await this.axiosInstance.post('/tournaments', data);

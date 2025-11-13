@@ -113,6 +113,25 @@ export const useRegisterForTournament = () => {
   });
 };
 
+// Unregister from tournament mutation
+export const useUnregisterFromTournament = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ tournamentId, userEmail }: { tournamentId: number; userEmail: string }) =>
+      tournamentsService.unregisterFromTournament(tournamentId, userEmail),
+    onSuccess: (_, variables) => {
+      // Invalidate registered players for this tournament
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.players(variables.tournamentId) });
+      // Also invalidate tournament lists in case registration affects display
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.lists() });
+    },
+    onError: (error: any) => {
+      console.error('Tournament unregistration failed:', error);
+    },
+  });
+};
+
 // Delete tournament mutation
 export const useDeleteTournament = () => {
   const queryClient = useQueryClient();

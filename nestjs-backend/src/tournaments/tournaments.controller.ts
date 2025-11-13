@@ -173,6 +173,42 @@ export class TournamentsController {
     }
   }
 
+  // DELETE /api/tournaments/:id/unregister - Unregister user from tournament
+  @Delete(':id/unregister')
+  async unregisterFromTournament(
+    @Param('id') tournamentId: string,
+    @Body() body: { userEmail: string },
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      if (!tournamentId || !body.userEmail) {
+        throw new HttpException('Tournament ID and user email are required', HttpStatus.BAD_REQUEST);
+      }
+
+      // Convert email to userId - we need to find the user by email first
+      const userRecord = await this.tournamentsService.getUserByEmail(body.userEmail);
+      if (!userRecord) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const result = await this.tournamentsService.unregisterFromTournament(
+        parseInt(tournamentId),
+        userRecord.id.toString()
+      );
+
+      return {
+        message: 'Successfully unregistered from tournament',
+        result
+      };
+    } catch (error) {
+      console.error("TOURNAMENT UNREGISTER API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Public()
   @Get('health')
   getHealth() {
