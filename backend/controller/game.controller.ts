@@ -561,44 +561,6 @@ export const submit = async (data: GameAPI) => {
     throw e;
   }
 };
- export const getForfeits = async (tournamentId: string) => {
-  const forfeits = await prisma.tournament_registration.findMany({
-    where: {
-      tournamentId: Number(tournamentId),
-      status: "forfeited",
-    },
-    select: {
-      player_email: true,
-    },
-  });
-
-    // Get user details for each registered email
-  const userEmails = forfeits.map(reg => reg.player_email).filter((email): email is string => email !== null);
-  const users = await prisma.users.findMany({
-    where: {
-      email: {
-        in: userEmails,
-      },
-    },
-    select: {
-      id: true,
-      email: true,
-      first_name: true,
-      last_name: true,
-      countries: {
-        select: {
-          tld_code: true,
-        },
-      },
-    },
-  });
-
-  return users.map(user => ({
-    id: user.id.toString(),
-    name: `${user.first_name} ${user.last_name}`,
-    countryCode: user.countries?.tld_code,
-  }));
- }
 
 export const getStandings = async (tournamentId: string, secondaryName: string) => {
   const standingPlayers = await prisma.standings.findMany({

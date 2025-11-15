@@ -94,43 +94,6 @@ const TabButton = styled("button", {
 
 type Division = "TORUN" | "SEATTLE";
 
-const ForfeitTable = ({ players }) => (
-  <Flex css={{ flexDirection: "column", width: "200px", borderRadius: "8px", padding: "8px", marginTop: "20px" }}>
-    <Text
-      strong="bold"
-      css={{
-        ...headerForfeitColor,
-        // borderLeft: "1px solid black",
-        margin: 0,
-        textAlign: "center",
-      }}
-    >
-      FORFEITS
-    </Text>
-    <StyledTable>
-      <StyledHeading>
-        <tr>
-          <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
-            Player Name
-          </StyledHeaderCell>
-        </tr>
-      </StyledHeading>
-      <tbody>
-        {players.map((player) => (
-          <tr key={player.userId}>
-            <StyledCell>
-              <Flex css={{ alignItems: "center", gap: "4px" }}>
-                {player.tldCode && <FlagIcon code={player.tldCode} />}
-                <Text fontSize="small">{player.name}</Text>
-              </Flex>
-            </StyledCell>
-          </tr>
-        ))}
-      </tbody>
-    </StyledTable>
-  </Flex>
-);
-
 const Standings = () => {
   const [selectedDivision, setSelectedDivision] = useState<Division>("SEATTLE");
 
@@ -142,11 +105,6 @@ const Standings = () => {
   } = useFetchInitialData<Player[]>({
     url: `/api/standings?id=318&division=${selectedDivision}`,
   });
-  const {
-    data: forfeits,
-  } = useFetchInitialData<Player[]>({
-    url: `/api/standings?id=318&division=forfeits`,
-  });
   const handleDivisionChange = (division: Division) => {
     setSelectedDivision(division);
   };
@@ -156,7 +114,7 @@ const Standings = () => {
     refetch();
   }, [selectedDivision]);
 
-  if (!standings || !forfeits) return null;
+  if (!standings) return null;
 
   const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
@@ -263,7 +221,6 @@ const Standings = () => {
           );
         })}
       </Flex>
-      {forfeits && <ForfeitTable players={forfeits} />}
     </Flex>
   );
 };
