@@ -53,6 +53,17 @@ export const useAllUsers = (page: number = 1, pageSize: number = 50, search?: st
   });
 };
 
+// Hook to get all users with email (admin only)
+export const useAllUsersWithEmail = (page: number = 1, pageSize: number = 50, search?: string) => {
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEYS.allUsers(page, pageSize, search), 'withEmail'],
+    queryFn: () => usersService.getAllUsersWithEmail(page, pageSize, search),
+    keepPreviousData: true, // Keep previous data while loading new page
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // Hook to get user by ID
 export const useUserById = (id: string) => {
   return useQuery({

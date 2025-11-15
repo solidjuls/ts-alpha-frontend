@@ -128,10 +128,12 @@ export class UsersService {
     page = 1,
     pageSize = 50,
     search,
+    includeEmail = false,
   }: {
     page?: number;
     pageSize?: number;
     search?: string;
+    includeEmail?: boolean;
   } = {}): Promise<UsersListResponse> {
     const skip = (page - 1) * pageSize;
 
@@ -172,6 +174,7 @@ export class UsersService {
         id: true,
         first_name: true,
         last_name: true,
+        email: includeEmail,
         countries: {
           select: {
             tld_code: true,
@@ -191,12 +194,19 @@ export class UsersService {
     const usersWithRatings = await Promise.all(
       users.map(async (user) => {
         const rating = await this.getUserRating(user.id);
-        return {
+        const result: any = {
           id: user.id.toString(),
           name: `${user.first_name} ${user.last_name}`,
           countryCode: user.countries?.tld_code,
           rating: rating,
         };
+
+        // Include email if requested and available
+        if (includeEmail && user.email) {
+          result.email = user.email;
+        }
+
+        return result;
       })
     );
 

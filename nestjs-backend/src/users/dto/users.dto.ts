@@ -5,6 +5,10 @@ export interface UserDto {
   rating?: number;
 }
 
+export interface UserWithEmailDto extends UserDto {
+  email: string;
+}
+
 export interface UserDetailDto {
   id: string;
   first_name: string;
@@ -32,7 +36,8 @@ export interface GetUsersQueryDto {
   page?: string; // Page number for pagination
   pageSize?: string; // Number of items per page
   search?: string; // Search term for user names
-  
+  includeEmail?: string; // Include email in response (admin only)
+
   // Legacy parameters for backward compatibility
   t?: string; // tournament ID (legacy)
   p?: string; // page (legacy)

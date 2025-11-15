@@ -113,6 +113,25 @@ export const useRegisterForTournament = () => {
   });
 };
 
+// Manual register user for tournament mutation (admin only)
+export const useManualRegisterForTournament = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { tournamentId: number; userId: string }) =>
+      tournamentsService.registerUserForTournament(data.tournamentId, data.userId),
+    onSuccess: (_, variables) => {
+      // Invalidate registered players for this tournament
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.players(variables.tournamentId) });
+      // Also invalidate tournament lists in case registration affects display
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.lists() });
+    },
+    onError: (error: any) => {
+      console.error('Manual tournament registration failed:', error);
+    },
+  });
+};
+
 // Unregister from tournament mutation
 export const useUnregisterFromTournament = () => {
   const queryClient = useQueryClient();

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import getAxiosInstance from "utils/axios";
+import { useRegisteredPlayers, useUnregisterFromTournament } from "hooks/useTournaments";
+import { RegisteredPlayer } from "services/tournaments.service";
 import { styled } from "stitches.config";
 import { UnstyledLink } from "pages/players";
 
@@ -106,11 +106,8 @@ interface TournamentPlayersListProps {
 const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: TournamentPlayersListProps) => {
   const [removingPlayerId, setRemovingPlayerId] = useState<number | null>(null);
 
-  const { data: players, isLoading, refetch } = useFetchInitialData<RegisteredPlayer[]>({
-    url: `/api/game/tournaments?id=${tournamentId}&players=true`,
-    key: `tournament-players-${tournamentId}`,
-    enabled: !!tournamentId,
-  });
+  const { data: players, isLoading, refetch } = useRegisteredPlayers(parseInt(tournamentId));
+  const unregisterMutation = useUnregisterFromTournament();
 
   const handleRemovePlayer = async (playerEmail: string, registrationId: number) => {
     if (!confirm(`Are you sure you want to remove this player from the tournament?`)) {
@@ -119,10 +116,11 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
 
     setRemovingPlayerId(registrationId);
     try {
-      await getAxiosInstance().delete('/api/game/tournaments/registration', {
-        data: { tournamentId: Number(tournamentId), userEmail: playerEmail }
+      await unregisterMutation.mutateAsync({
+        tournamentId: parseInt(tournamentId),
+        userEmail: playerEmail
       });
-      
+
       refetch();
       onPlayerRemoved?.();
     } catch (error) {

@@ -33,6 +33,7 @@ export class UsersController {
   @Public()
   async getUsers(
     @Query() query: GetUsersQueryDto,
+    @CurrentUser() user?: JwtPayloadDto,
   ): Promise<UsersListResponse | UserDto[]> {
     try {
       const {
@@ -40,6 +41,7 @@ export class UsersController {
         page = '1',
         pageSize = '50',
         search,
+        includeEmail,
         // Legacy parameters for backward compatibility
         t: tournament,
         p,
@@ -61,10 +63,14 @@ export class UsersController {
       const parsedPage = Number(finalPage);
       const parsedPageSize = Number(finalPageSize);
 
+      // Check if user is admin and wants to include email
+      const shouldIncludeEmail = includeEmail === 'true' && user && (user.role === 1 || user.role === 2);
+
       const result = await this.usersService.getAllUsers({
         page: parsedPage,
         pageSize: parsedPageSize,
         search,
+        includeEmail: shouldIncludeEmail,
       });
 
       return result;

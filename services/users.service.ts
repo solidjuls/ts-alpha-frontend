@@ -111,6 +111,18 @@ class UsersService {
     return response.data;
   }
 
+  // Get all users with email (admin only)
+  async getAllUsersWithEmail(page: number = 1, pageSize: number = 50, search?: string): Promise<UsersListResponse> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('page', page.toString());
+    queryParams.append('pageSize', pageSize.toString());
+    queryParams.append('includeEmail', 'true');
+    if (search) queryParams.append('search', search);
+
+    const response = await this.axiosInstance.get(`/users?${queryParams.toString()}`);
+    return response.data;
+  }
+
   // Get user by ID
   async getUserById(id: string): Promise<UserDetail> {
     const response = await this.axiosInstance.get(`/users/${id}`);

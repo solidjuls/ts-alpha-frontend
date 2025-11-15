@@ -372,6 +372,57 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           </>
         )}
 
+      {/* Manual Registration Form */}
+      {showManualRegistration && (
+        <Box css={{
+          backgroundColor: "white",
+          borderRadius: "8px",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          marginBottom: "24px",
+          padding: "24px"
+        }}>
+          <Box css={{ marginBottom: "16px" }}>
+            <h3 style={{ margin: 0, color: "#1f2937", fontSize: "18px", fontWeight: "600" }}>
+              Register User Manually
+            </h3>
+            <p style={{ margin: "8px 0 0 0", color: "#6b7280", fontSize: "14px" }}>
+              Search and select a user to register for this tournament
+            </p>
+          </Box>
+
+          <Flex css={{ gap: "16px", alignItems: "flex-end" }}>
+            <Box css={{ flex: 1 }}>
+              <UserTypeahead
+                labelText=""
+                users={usersForDropdown}
+                selectedItem={selectedUser}
+                onSelect={(item: DropdownItemType) => setSelectedUser(item?.value || "")}
+                onBlur={() => {}}
+                placeholder="Type user name or email..."
+                css={{ width: "100%" }}
+                error={false}
+              />
+            </Box>
+            <Button
+              onClick={onManualRegisterClick}
+              disabled={!selectedUser || isManualRegistering}
+              css={{
+                backgroundColor: "#10b981",
+                "&:hover": {
+                  backgroundColor: "#059669",
+                },
+                "&:disabled": {
+                  backgroundColor: "#d1d5db",
+                  cursor: "not-allowed"
+                }
+              }}
+            >
+              {isManualRegistering ? <Spinner size="1" /> : "Register"}
+            </Button>
+          </Flex>
+        </Box>
+      )}
+
       {/* Edit Form */}
       {isEditing && (
         <TournamentEditForm

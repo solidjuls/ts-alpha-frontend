@@ -129,24 +129,24 @@ model regional_federations {
 }
 
 model users {
-  id                                              BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
-  name                                            String?             @db.VarChar(255)
-  email                                           String?             @unique(map: "users_email_unique") @db.VarChar(255)
-  email_verified_at                               DateTime?           @db.Timestamp(0)
-  password                                        String?             @db.VarChar(255)
-  remember_token                                  String?             @db.VarChar(100)
-  created_at                                      DateTime?           @db.Timestamp(0)
-  updated_at                                      DateTime?           @db.Timestamp(0)
-  country_id                                      BigInt?             @db.UnsignedBigInt
-  first_name                                      String?             @db.VarChar(255)
-  last_name                                       String?             @db.VarChar(255)
-  last_login_at                                   DateTime?           @db.Timestamp(0)
-  regional_federation_id                          String?             @db.VarChar(8)
-  city_id                                         BigInt?             @db.UnsignedBigInt
-  phone_number                                    String?             @db.VarChar(20)
-  preferred_gaming_platform                       String?             @db.VarChar(50)
-  preferred_game_duration                         String?             @db.VarChar(50)
-  timezone_id                                     String?             @db.VarChar(40)
+  id                                              BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  name                                            String?                   @db.VarChar(255)
+  email                                           String?                   @unique(map: "users_email_unique") @db.VarChar(255)
+  email_verified_at                               DateTime?                 @db.Timestamp(0)
+  password                                        String?                   @db.VarChar(255)
+  remember_token                                  String?                   @db.VarChar(100)
+  created_at                                      DateTime?                 @db.Timestamp(0)
+  updated_at                                      DateTime?                 @db.Timestamp(0)
+  country_id                                      BigInt?                   @db.UnsignedBigInt
+  first_name                                      String?                   @db.VarChar(255)
+  last_name                                       String?                   @db.VarChar(255)
+  last_login_at                                   DateTime?                 @db.Timestamp(0)
+  regional_federation_id                          String?                   @db.VarChar(8)
+  city_id                                         BigInt?                   @db.UnsignedBigInt
+  phone_number                                    String?                   @db.VarChar(20)
+  preferred_gaming_platform                       String?                   @db.VarChar(50)
+  preferred_game_duration                         String?                   @db.VarChar(50)
+  timezone_id                                     String?                   @db.VarChar(40)
   role_id                                         Int?
   game_results_game_results_reporter_idTousers    game_results[]      @relation("game_results_reporter_idTousers")
   game_results_game_results_usa_player_idTousers  game_results[]      @relation("game_results_usa_player_idTousers")
@@ -155,12 +155,13 @@ model users {
   cameSecond                                      HallOfFame[]        @relation("SecondRelation")
   cameThird                                       HallOfFame[]        @relation("ThirdRelation")
   ratings_history                                 ratings_history[]
-  schedule_schedule_usa_player_idTousers          schedule[]          @relation("schedule_usa_player_idTousers")
-  schedule_schedule_ussr_player_idTousers         schedule[]          @relation("schedule_ussr_player_idTousers")
+  schedule_schedule_usa_player_idTousers          schedule[]                @relation("schedule_usa_player_idTousers")
+  schedule_schedule_ussr_player_idTousers         schedule[]                @relation("schedule_ussr_player_idTousers")
   tournament_admins                               tournament_admins[]
+  tournament_registration                         tournament_registration[]
   user_game_stats                                 user_game_stats?
-  cities                                          cities?             @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_city_id_foreign")
-  countries                                       countries?          @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
+  cities                                          cities?                   @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_city_id_foreign")
+  countries                                       countries?                @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
 
   @@index([city_id], map: "users_city_id_foreign")
   @@index([country_id], map: "users_country_id_foreign")
@@ -217,14 +218,15 @@ model personal_access_tokens {
 model tournament_registration {
   id           Int                             @id @default(autoincrement())
   tournamentId Int
-  player_email String?                         @db.VarChar(255)
+  userId       BigInt                          @db.UnsignedBigInt
   status       tournament_registration_status? @default(pending)
   created_at   DateTime?                       @default(now()) @db.Timestamp(0)
   updated_at   DateTime?                       @default(now()) @db.Timestamp(0)
   tournaments  tournaments                     @relation(fields: [tournamentId], references: [id], onDelete: Cascade, map: "fk_tournament")
+  users        users                           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_tournament_registration_user")
 
   @@index([tournamentId], map: "fk_tournament")
-  @@index([player_email], map: "fk_users_id")
+  @@index([userId], map: "fk_tournament_registration_user")
 }
 
 model tournaments {

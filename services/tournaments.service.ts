@@ -41,7 +41,8 @@ export interface UpdateTournamentRequest {
 
 export interface RegisterTournamentRequest {
   id: number;
-  userEmail: string;
+  userEmail?: string; // For legacy support
+  userId?: string;    // For manual registration by admin
 }
 
 export interface UpdateTournamentStatusRequest {
@@ -99,6 +100,15 @@ class TournamentsService {
   // POST /api/tournaments - Register user or update status
   async registerForTournament(data: RegisterTournamentRequest): Promise<any> {
     const response = await this.axiosInstance.post('/tournaments', data);
+    return response.data;
+  }
+
+  // POST /api/tournaments - Register user by userId (for manual registration)
+  async registerUserForTournament(tournamentId: number, userId: string): Promise<any> {
+    const response = await this.axiosInstance.post('/tournaments', {
+      id: tournamentId,
+      userId: userId
+    });
     return response.data;
   }
 
