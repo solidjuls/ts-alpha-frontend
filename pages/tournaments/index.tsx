@@ -194,9 +194,7 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   return (
     <TableRow onClick={onClick}>
       <TableCell>
-        <UnstyledLink href={`/tournaments/${tournament.id}`}>
-          {tournament.tournament_name}
-        </UnstyledLink>
+        {tournament.tournament_name}
       </TableCell>
       <TableCell>
         <StatusBadge status={statusVariant}>{statusName}</StatusBadge>
