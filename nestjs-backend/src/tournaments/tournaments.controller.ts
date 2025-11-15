@@ -79,25 +79,8 @@ export class TournamentsController {
       const { id, status, userEmail, userId } = body;
 
       if (id && (userEmail || userId || user.id)) {
-        // Register user for tournament
-        let targetUserId: string;
 
-        if (userId) {
-          // Manual registration by admin - use provided userId
-          targetUserId = userId.toString();
-        } else if (userEmail) {
-          // Registration by email - convert to userId (legacy support)
-          const userRecord = await this.tournamentsService.getUserByEmail(userEmail);
-          if (!userRecord) {
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-          }
-          targetUserId = userRecord.id.toString();
-        } else {
-          // Self-registration - use authenticated user's ID
-          targetUserId = user.id.toString();
-        }
-
-        const registered = await this.tournamentsService.registerForTournament(Number(id), targetUserId);
+        const registered = await this.tournamentsService.registerForTournament(Number(id), id);
         console.log("registered", registered);
         return {
           ...registered,
