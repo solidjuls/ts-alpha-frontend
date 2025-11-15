@@ -42,13 +42,8 @@ const Legend = () => {
       </LegendItem>
 
       <LegendItem>
-        <ColorBox css={{ backgroundColor: "$yellowAlpha", marginRight: "4px" }} />
-        <Label>Registration Open</Label>
-      </LegendItem>
-
-      <LegendItem>
         <ColorBox css={{ backgroundColor: "$blueAlpha", marginRight: "4px" }} />
-        <Label>Registration Closed</Label>
+        <Label>Registration Open</Label>
       </LegendItem>
     </LegendContainer>
   );

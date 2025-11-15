@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
-import { getStandings } from "backend/controller/game.controller";
+import { getForfeits, getStandings } from "backend/controller/game.controller";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!id) {
       return res.status(400).json({ error: "tournamentId is required" });
     }
-
+    
     const userStats = await getStandings(id, division);
 
     return res.status(200).json(Object.values(userStats));

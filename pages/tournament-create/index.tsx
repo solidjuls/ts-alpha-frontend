@@ -13,6 +13,7 @@ import { TournamentCreateState } from "types/game.types";
 import { DropdownItemType } from "types/types";
 import { UserType } from "types/user.types";
 import { tournamentStatus } from "utils/constants";
+import { useRouter } from "next/router";
 
 const inputWidth = "370px";
 const dropdownWidth = "370px";
@@ -54,6 +55,7 @@ const getInitialState = () => {
 };
 
 const TournamentCreate = () => {
+  const router = useRouter();
   const [form, setForm] = useState<TournamentCreateState>(() => getInitialState());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
@@ -169,6 +171,7 @@ const TournamentCreate = () => {
                   description: form?.description.value
                 });
                 setConfirmationMsg("Tournament created correctly");
+                router.push("/tournaments");
               } catch (e) {
                 setErrorMsg(e?.response?.data);
               } finally {

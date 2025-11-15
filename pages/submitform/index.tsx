@@ -287,7 +287,7 @@ const SubmitFormContainer = ({ role }: SubmitFormProps) => {
     })) || [];
 
   const leagueTypes: DropdownItemType[] =
-    tournaments?.map((item) => ({
+    tournaments?.filter((item) => item.id !== "318").map((item) => ({
       value: item.id.toString(),
       text: item.tournament_name,
     })) || [];
@@ -317,14 +317,6 @@ export async function getServerSideProps({ req, res }: ServerType) {
     };
   }
 
-  if (payload?.id === "2224") {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
   return { props: { role: payload.role || null } };
 }
 

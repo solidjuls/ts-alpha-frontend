@@ -94,63 +94,8 @@ const TabButton = styled("button", {
 
 type Division = "TORUN" | "SEATTLE";
 
-const ForfeitTable = ({ players }) => (
-  <Flex css={{ flexDirection: "column", width: "400px", borderRadius: "8px", padding: "8px", marginTop: "20px" }}>
-    <Text
-      strong="bold"
-      css={{
-        ...headerForfeitColor,
-        // borderLeft: "1px solid black",
-        margin: 0,
-        textAlign: "center",
-      }}
-    >
-      FORFEITS
-    </Text>
-    <StyledTable>
-      <StyledHeading>
-        <tr>
-          <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
-            Player Name
-          </StyledHeaderCell>
-          <StyledHeaderCell>W-L-T</StyledHeaderCell>
-          <StyledHeaderCell>Win%</StyledHeaderCell>
-          <StyledHeaderCell>SoS</StyledHeaderCell>
-        </tr>
-      </StyledHeading>
-      <tbody>
-        {players.map((player) => (
-          <tr key={player.userId}>
-            <StyledCell>
-              <Flex css={{ alignItems: "center", gap: "4px" }}>
-                {player.tldCode && <FlagIcon code={player.tldCode} />}
-                <Text fontSize="small">{player.name}</Text>
-              </Flex>
-            </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small">
-                {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-              </Text>
-            </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small" css={{ textAlign: "center" }}>
-                {`${(player.winRate * 100).toFixed(0)}%`}
-              </Text>
-            </StyledCell>
-            <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-              <Text fontSize="small" css={{ textAlign: "center" }}>
-                {`${(player.sos * 100).toFixed(0)}%`}
-              </Text>
-            </StyledCell>
-          </tr>
-        ))}
-      </tbody>
-    </StyledTable>
-  </Flex>
-);
-
 const Standings = () => {
-  const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
+  const [selectedDivision, setSelectedDivision] = useState<Division>("SEATTLE");
 
   const {
     data: standings,
@@ -160,7 +105,6 @@ const Standings = () => {
   } = useFetchInitialData<Player[]>({
     url: `/api/standings?id=318&division=${selectedDivision}`,
   });
-
   const handleDivisionChange = (division: Division) => {
     setSelectedDivision(division);
   };
@@ -186,7 +130,7 @@ const Standings = () => {
       return b.sos - a.sos;
     });
   }
-  const forfeitsTable = grouped["Forfeit"];
+// grouped["Forfeit"];
 
   return (
     <Flex css={{ flexDirection: "column", padding: "8px" }}>
@@ -277,7 +221,6 @@ const Standings = () => {
           );
         })}
       </Flex>
-      {forfeitsTable && <ForfeitTable players={forfeitsTable} />}
     </Flex>
   );
 };

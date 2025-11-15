@@ -272,14 +272,14 @@ const SchedulePanel: React.FC<SchedulePanelProps> = ({ data, isAdmin, userId, is
   );
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ accountCompromised, isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
+const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { items, status, filters, currentPage, totalPages } = useSelector(
     (state: RootState) => state.scheduleList,
   );
 
   useEffect(() => {
-    if (tournamentsRegistered?.length > 0 && accountCompromised !== "2224") {
+    if (tournamentsRegistered?.length > 0) {
       // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
       dispatch(
         fetchScheduleList({
@@ -363,7 +363,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
 
   const leagueTypesAdmin: DropdownItemType[] =
     tournaments?.data
-      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(item.id))
+      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(Number(item.id)))
       .map((item: TournamentsType) => ({
         value: item.id.toString(),
         text: item.tournament_name,
@@ -376,7 +376,7 @@ export async function getServerSideProps({ req, res }: ServerType) {
   // })) || []
   console.log("payload", payload);
 
-  return { props: { accountCompromised: payload?.id, isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
+  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
 }
 
 export default Schedule;
