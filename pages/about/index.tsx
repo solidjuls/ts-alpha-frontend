@@ -111,7 +111,7 @@ const AboutPage = () => (
         </p>
         <List>
           <li>
-            <Link href="https://bit.ly/ITSLSeason15" target="_blank">ITSL</Link> - The largest yearly international league with geographic
+            <Link href="/standings">ITSL</Link> - The largest yearly international league with geographic
             divisions (~200 players, 20-game regular season + playoffs).
           </li>
           <li>
@@ -317,16 +317,16 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/1627">Antoine Danel</Link> (tonio76): <Link href="https://www.youtube.com/@tonio76ts4" target="_blank">YouTube</Link> <Image src="/flags/FR.png"  width={WIDTH} height={HEIGHT} alt="French Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link> (stenskott): <Link href="https://www.twitch.tv/thegoddessashlee" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ashleefreeman1219" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/1630">Anton Skott</Link> (stenskott): <Link href="https://www.twitch.tv/stenskott_" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/asprayofrocks" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1634">Aran Warszawski</Link> (aranwar): <Link href="https://www.youtube.com/@aranwar" target="_blank">YouTube</Link> <Image src="/flags/IL.png"  width={WIDTH} height={HEIGHT} alt="Hebrew Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1645">Ashlee Freeman</Link> (TheGoddessAshlee): <Link href="https://www.twitch.tv/stenskott_" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/asprayofrocks" target="_blank">YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/1645">Ashlee Freeman</Link> (TheGoddessAshlee): <Link href="https://www.twitch.tv/thegoddessashlee" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/@ashleefreeman1219" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/1658">Bartosz Wróbel</Link> (Sparrov): <Link href="https://www.youtube.com/@SparrovTS/featured" target="_blank" inactive>YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/1658">Bartosz Wróbel</Link> (Sparrov): <Link href="https://www.youtube.com/@SparrovTS/featured" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1780">Craig Richards</Link> (Caecius): <Link href="https://www.twitch.tv/caecius" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/c/CaeciusG" target="_blank" inactive>YouTube</Link>
@@ -392,13 +392,13 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2137">Jie Huang</Link> (MDZZ): <Link href="https://space.bilibili.com/1626326/lists/976714?type=series" target="_blank" inactive>Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2271">Kevin Gute</Link> (gute321): <Link href="https://www.twitch.tv/gute321" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/user/gute321" target="_blank" inactive>YouTube</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2271">Kevin Gute</Link> (gute321): <Link href="https://www.twitch.tv/gute321" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/user/gute321" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2356">Marc Nuño</Link> (AlfaMayor): <Link href="https://www.youtube.com/@AlfaMayor" target="_blank">Twitch</Link> <Image src="/flags/CAT.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link> (gute321): <Link href="https://www.twitch.tv/maxgolds12" target="_blank">Twitch</Link>
+            <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link> (maxgolds): <Link href="https://www.twitch.tv/maxgolds12" target="_blank">Twitch</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2431">Michael Panettieri</Link> (meta11ic): <Link href="https://www.twitch.tv/yaymeta11ic" target="_blank">Twitch</Link>
