@@ -3,7 +3,6 @@ import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
 import { useRegisteredPlayers, useUnregisterFromTournament } from "hooks/useTournaments";
-import { RegisteredPlayer } from "services/tournaments.service";
 import { styled } from "stitches.config";
 import { UnstyledLink } from "pages/players";
 
@@ -109,7 +108,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
   const { data: players, isLoading, refetch } = useRegisteredPlayers(parseInt(tournamentId));
   const unregisterMutation = useUnregisterFromTournament();
 
-  const handleRemovePlayer = async (playerEmail: string, registrationId: number) => {
+  const handleRemovePlayer = async (registrationId: number, tournamentId: string) => {
     if (!confirm(`Are you sure you want to remove this player from the tournament?`)) {
       return;
     }
@@ -117,8 +116,8 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
     setRemovingPlayerId(registrationId);
     try {
       await unregisterMutation.mutateAsync({
-        tournamentId: parseInt(tournamentId),
-        userEmail: playerEmail
+        tournamentId: Number(tournamentId),
+        registrationId: registrationId
       });
 
       refetch();
@@ -143,7 +142,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
       </PlayersContainer>
     );
   }
-
+console.log("players", tournamentId)
   return (
     <PlayersContainer>
       <PlayersHeader>
@@ -178,7 +177,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
                     "&:hover": { backgroundColor: "#b91c1c" }
                   }}
                   disabled={removingPlayerId === player.registrationId}
-                  onClick={() => handleRemovePlayer(player.email, player.registrationId)}
+                  onClick={() => handleRemovePlayer(player.registrationId, tournamentId)}
                 >
                   {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
                 </Button>

@@ -1,7 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import tournamentsService, {
-  Tournament,
-  RegisteredPlayer,
   CreateTournamentRequest,
   UpdateTournamentRequest,
   RegisterTournamentRequest,
@@ -137,8 +135,8 @@ export const useUnregisterFromTournament = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ tournamentId, userEmail }: { tournamentId: number; userEmail: string }) =>
-      tournamentsService.unregisterFromTournament(tournamentId, userEmail),
+    mutationFn: ({ tournamentId, registrationId, userId }: { tournamentId: number; registrationId?: number; userId?: string }) =>
+      tournamentsService.unregisterFromTournament(tournamentId, registrationId, userId),
     onSuccess: (_, variables) => {
       // Invalidate registered players for this tournament
       queryClient.invalidateQueries({ queryKey: tournamentKeys.players(variables.tournamentId) });

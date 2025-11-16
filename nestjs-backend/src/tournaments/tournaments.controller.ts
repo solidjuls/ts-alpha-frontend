@@ -42,7 +42,7 @@ export class TournamentsController {
         const registeredPlayers: RegisteredPlayerDto[] = await this.tournamentsService.getRegisteredPlayers(
           Number(id),
           user?.role,
-          user?.mail
+          user?.id?.toString()
         );
         return registeredPlayers;
       }
@@ -76,12 +76,14 @@ export class TournamentsController {
   @Post()
   async updateTournamentOrRegister(@Body() body: any, @CurrentUser() user: JwtPayloadDto) {
     try {
-      const { id, status, userEmail, userId } = body;
+      const { id, status, userId } = body;
 
-      if (id && (userEmail || userId || user.id)) {
+      if (id && (userId || user.id)) {
+        // Register user for tournament - use provided userId or current user's id
+        const targetUserId = userId || user.id.toString();
 
-        const registered = await this.tournamentsService.registerForTournament(Number(id), id);
-        console.log("registered", registered);
+        console.log("registered", userId, targetUserId);
+        const registered = await this.tournamentsService.registerForTournament(Number(id), targetUserId);
         return {
           ...registered,
           userId: registered.userId.toString()
@@ -182,24 +184,29 @@ export class TournamentsController {
   @Delete(':id/unregister')
   async unregisterFromTournament(
     @Param('id') tournamentId: string,
-    @Body() body: { userEmail: string },
+    @Body() body: { regId?: string; userId?: string },
     @CurrentUser() user: JwtPayloadDto,
   ) {
     try {
-      if (!tournamentId || !body.userEmail) {
-        throw new HttpException('Tournament ID and user email are required', HttpStatus.BAD_REQUEST);
+      if (!tournamentId) {
+        throw new HttpException('Tournament ID is required', HttpStatus.BAD_REQUEST);
       }
 
-      // Convert email to userId - we need to find the user by email first
-      const userRecord = await this.tournamentsService.getUserByEmail(body.userEmail);
-      if (!userRecord) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      let result: any;
+      if (body.regId) {
+        // Admin removing a specific registration by registrationId
+        result = await this.tournamentsService.unregisterByRegistrationId(
+          parseInt(tournamentId),
+          body.regId
+        );
+      } else {
+        // Self-unregistration or admin unregistering by userId
+        const targetUserId = body.userId || user.id.toString();
+        result = await this.tournamentsService.unregisterByUserId(
+          parseInt(tournamentId),
+          targetUserId
+        );
       }
-
-      const result = await this.tournamentsService.unregisterFromTournament(
-        parseInt(tournamentId),
-        userRecord.id.toString()
-      );
 
       return {
         message: 'Successfully unregistered from tournament',

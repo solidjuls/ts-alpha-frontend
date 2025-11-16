@@ -105,7 +105,7 @@ export class TournamentsService {
   async getRegisteredPlayers(
     tournamentId: number,
     userRole?: number,
-    userEmail?: string
+    userId?: string
   ): Promise<RegisteredPlayerDto[]> {
     const registrations = await this.databaseService.tournament_registration.findMany({
       where: {
@@ -133,7 +133,7 @@ export class TournamentsService {
     });
 
     // Check if user is admin (global admin or tournament admin)
-    const isAdmin = await this.isUserAdminForTournament(userRole, userEmail, tournamentId);
+    const isAdmin = await this.isUserAdminForTournament(userRole, userId, tournamentId);
 
     // Map registration data with user data
     return registrations.map(registration => {
@@ -150,27 +150,18 @@ export class TournamentsService {
     });
   }
 
-  private async isUserAdminForTournament(userRole?: number, userEmail?: string, tournamentId?: number): Promise<boolean> {
+  private async isUserAdminForTournament(userRole?: number, userId?: string, tournamentId?: number): Promise<boolean> {
     // Check if user is global admin (SUPERADMIN = 1 or ADMIN = 2)
     if (userRole === 1 || userRole === 2) {
       return true;
     }
 
     // Check if user is tournament-specific admin
-    if (userEmail && tournamentId) {
+    if (userId && tournamentId) {
       try {
-        const user = await this.databaseService.users.findFirst({
-          where: { email: userEmail },
-          select: { id: true },
-        });
-
-        if (!user) {
-          return false;
-        }
-
         const adminRecord = await this.databaseService.tournament_admins.findFirst({
           where: {
-            userId: user.id,
+            userId: BigInt(userId),
             tournamentId: tournamentId,
           },
         });
@@ -266,7 +257,16 @@ export class TournamentsService {
     return { id: deleted.id };
   }
 
-  async unregisterFromTournament(tournamentId: number, userId: string): Promise<any> {
+  async unregisterByRegistrationId(tournamentId: number, registrationId: string): Promise<any> {
+    return await this.databaseService.tournament_registration.deleteMany({
+      where: {
+        tournamentId: tournamentId,
+        id: Number(registrationId),
+      }
+    });
+  }
+
+  async unregisterByUserId(tournamentId: number, userId: string): Promise<any> {
     return await this.databaseService.tournament_registration.deleteMany({
       where: {
         tournamentId: tournamentId,
@@ -275,14 +275,5 @@ export class TournamentsService {
     });
   }
 
-  async getUserByEmail(email: string): Promise<{ id: bigint } | null> {
-    return await this.databaseService.users.findFirst({
-      where: {
-        email: email,
-      },
-      select: {
-        id: true,
-      }
-    });
-  }
+
 }

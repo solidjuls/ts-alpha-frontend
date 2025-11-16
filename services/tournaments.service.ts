@@ -41,8 +41,7 @@ export interface UpdateTournamentRequest {
 
 export interface RegisterTournamentRequest {
   id: number;
-  userEmail?: string; // For legacy support
-  userId?: string;    // For manual registration by admin
+  userId?: string;    // For registration (self or admin)
 }
 
 export interface UpdateTournamentStatusRequest {
@@ -113,9 +112,16 @@ class TournamentsService {
   }
 
   // DELETE /api/tournaments/:id/unregister - Unregister user from tournament
-  async unregisterFromTournament(tournamentId: number, userEmail: string): Promise<{ message: string }> {
+  async unregisterFromTournament(tournamentId: number, registrationId?: number, userId?: string): Promise<{ message: string }> {
+    const data: any = {};
+    if (registrationId) {
+      data.regId = registrationId;
+    } else if (userId) {
+      data.userId = userId;
+    }
+
     const response = await this.axiosInstance.delete(`/tournaments/${tournamentId}/unregister`, {
-      data: { userEmail }
+      data
     });
     return response.data;
   }
