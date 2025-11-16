@@ -150,7 +150,7 @@ export class TournamentsService {
     });
   }
 
-  private async isUserAdminForTournament(userRole?: number, userId?: string, tournamentId?: number): Promise<boolean> {
+  async isUserAdminForTournament(userRole?: number, userId?: string, tournamentId?: number): Promise<boolean> {
     // Check if user is global admin (SUPERADMIN = 1 or ADMIN = 2)
     if (userRole === 1 || userRole === 2) {
       return true;
@@ -275,5 +275,68 @@ export class TournamentsService {
     });
   }
 
+  // Tournament Admin Management Methods
+  async getTournamentAdmins(tournamentId: number, requestingUserRole?: number): Promise<any[]> {
+    const admins = await this.databaseService.tournament_admins.findMany({
+      where: {
+        tournamentId: tournamentId,
+      },
+      include: {
+        users: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          }
+        }
+      }
+    });
+
+    // Only include email for global admins
+    const includeEmail = requestingUserRole === 1 || requestingUserRole === 2;
+
+    return admins.map(admin => ({
+      userId: admin.users.id.toString(),
+      name: `${admin.users.first_name} ${admin.users.last_name}`,
+      email: includeEmail ? admin.users.email : undefined,
+    }));
+  }
+
+  async addTournamentAdmin(tournamentId: number, userId: string): Promise<any> {
+    // Check if admin relationship already exists
+    const existingAdmin = await this.databaseService.tournament_admins.findFirst({
+      where: {
+        tournamentId: tournamentId,
+        userId: BigInt(userId),
+      }
+    });
+
+    if (existingAdmin) {
+      throw new Error('User is already an admin for this tournament');
+    }
+
+    return await this.databaseService.tournament_admins.create({
+      data: {
+        tournamentId: tournamentId,
+        userId: BigInt(userId),
+      }
+    });
+  }
+
+  async removeTournamentAdmin(tournamentId: number, userId: string): Promise<any> {
+    const result = await this.databaseService.tournament_admins.deleteMany({
+      where: {
+        tournamentId: tournamentId,
+        userId: BigInt(userId),
+      }
+    });
+
+    if (result.count === 0) {
+      throw new Error('Admin relationship not found');
+    }
+
+    return result;
+  }
 
 }

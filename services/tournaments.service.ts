@@ -44,6 +44,22 @@ export interface RegisterTournamentRequest {
   userId?: string;    // For registration (self or admin)
 }
 
+export interface TournamentAdmin {
+  userId: string;
+  name: string;
+  email?: string; // Only for admins viewing
+}
+
+export interface AddTournamentAdminRequest {
+  tournamentId: number;
+  userId: string;
+}
+
+export interface RemoveTournamentAdminRequest {
+  tournamentId: number;
+  userId: string;
+}
+
 export interface UpdateTournamentStatusRequest {
   id: number;
   status: number;
@@ -147,6 +163,30 @@ class TournamentsService {
   // DELETE /api/tournaments/:id - Delete tournament
   async deleteTournament(id: string): Promise<{ id: string }> {
     const response = await this.axiosInstance.delete(`/tournaments/${id}`);
+    return response.data;
+  }
+
+  // Tournament Admin Management Methods
+
+  // GET /api/tournaments/:id/admins - Get tournament admins
+  async getTournamentAdmins(tournamentId: number): Promise<TournamentAdmin[]> {
+    const response = await this.axiosInstance.get(`/tournaments/${tournamentId}/admins`);
+    return response.data;
+  }
+
+  // POST /api/tournaments/:id/admins - Add tournament admin
+  async addTournamentAdmin(data: AddTournamentAdminRequest): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post(`/tournaments/${data.tournamentId}/admins`, {
+      userId: data.userId
+    });
+    return response.data;
+  }
+
+  // DELETE /api/tournaments/:id/admins - Remove tournament admin
+  async removeTournamentAdmin(data: RemoveTournamentAdminRequest): Promise<{ message: string }> {
+    const response = await this.axiosInstance.delete(`/tournaments/${data.tournamentId}/admins`, {
+      data: { userId: data.userId }
+    });
     return response.data;
   }
 }

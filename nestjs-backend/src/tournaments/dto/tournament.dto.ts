@@ -55,3 +55,19 @@ export interface RegisterTournamentDto {
   id: number;
   userId: string;
 }
+
+export interface AddTournamentAdminDto {
+  tournamentId: number;
+  userId: string;
+}
+
+export interface RemoveTournamentAdminDto {
+  tournamentId: number;
+  userId: string;
+}
+
+export interface TournamentAdminDto {
+  userId: string;
+  name: string;
+  email?: string; // Only for admins viewing
+}

@@ -4,6 +4,9 @@ import tournamentsService, {
   UpdateTournamentRequest,
   RegisterTournamentRequest,
   UpdateTournamentStatusRequest,
+  TournamentAdmin,
+  AddTournamentAdminRequest,
+  RemoveTournamentAdminRequest,
 } from '../services/tournaments.service';
 
 // Query keys for tournaments
@@ -177,5 +180,53 @@ export const useTournaments = (params?: {
     // Always enabled - when no params provided, it fetches all tournaments
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Tournament Admin Management Hooks
+
+export const useTournamentAdmins = (tournamentId: number) => {
+  return useQuery({
+    queryKey: [...tournamentKeys.detail(tournamentId.toString()), 'admins'],
+    queryFn: () => tournamentsService.getTournamentAdmins(tournamentId),
+    enabled: !!tournamentId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useAddTournamentAdmin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: AddTournamentAdminRequest) => tournamentsService.addTournamentAdmin(data),
+    onSuccess: (_, variables) => {
+      // Invalidate tournament admins query
+      queryClient.invalidateQueries({
+        queryKey: [...tournamentKeys.detail(variables.tournamentId.toString()), 'admins']
+      });
+      // Invalidate tournament details to refresh adminId/adminName arrays
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(variables.tournamentId.toString())
+      });
+    },
+  });
+};
+
+export const useRemoveTournamentAdmin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: RemoveTournamentAdminRequest) => tournamentsService.removeTournamentAdmin(data),
+    onSuccess: (_, variables) => {
+      // Invalidate tournament admins query
+      queryClient.invalidateQueries({
+        queryKey: [...tournamentKeys.detail(variables.tournamentId.toString()), 'admins']
+      });
+      // Invalidate tournament details to refresh adminId/adminName arrays
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(variables.tournamentId.toString())
+      });
+    },
   });
 };

@@ -18,7 +18,9 @@ import {
   TournamentDto,
   RegisteredPlayerDto,
   CreateTournamentDto,
-  UpdateTournamentDto
+  UpdateTournamentDto,
+  AddTournamentAdminDto,
+  RemoveTournamentAdminDto
 } from './dto/tournament.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { CurrentUser } from '../auth/decorators/auth.decorators';
@@ -214,6 +216,122 @@ export class TournamentsController {
       };
     } catch (error) {
       console.error("TOURNAMENT UNREGISTER API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // GET /api/tournaments/:id/admins - Get tournament admins
+  @Get(':id/admins')
+  async getTournamentAdmins(
+    @Param('id') tournamentId: string,
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      if (!tournamentId) {
+        throw new HttpException('Tournament ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      const admins = await this.tournamentsService.getTournamentAdmins(
+        parseInt(tournamentId),
+        user?.role
+      );
+
+      return admins;
+    } catch (error) {
+      console.error("GET TOURNAMENT ADMINS API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // POST /api/tournaments/:id/admins - Add tournament admin
+  @Post(':id/admins')
+  async addTournamentAdmin(
+    @Param('id') tournamentId: string,
+    @Body() body: AddTournamentAdminDto,
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      if (!tournamentId) {
+        throw new HttpException('Tournament ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      if (!body.userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      // Check if requesting user is admin for this tournament
+      const isAdmin = await this.tournamentsService.isUserAdminForTournament(
+        user?.role,
+        user?.id?.toString(),
+        parseInt(tournamentId)
+      );
+
+      if (!isAdmin) {
+        throw new HttpException('Insufficient permissions', HttpStatus.FORBIDDEN);
+      }
+
+      const result = await this.tournamentsService.addTournamentAdmin(
+        parseInt(tournamentId),
+        body.userId
+      );
+
+      return {
+        message: 'Successfully added tournament admin',
+        result
+      };
+    } catch (error) {
+      console.error("ADD TOURNAMENT ADMIN API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // DELETE /api/tournaments/:id/admins - Remove tournament admin
+  @Delete(':id/admins')
+  async removeTournamentAdmin(
+    @Param('id') tournamentId: string,
+    @Body() body: RemoveTournamentAdminDto,
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      if (!tournamentId) {
+        throw new HttpException('Tournament ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      if (!body.userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      // Check if requesting user is admin for this tournament
+      const isAdmin = await this.tournamentsService.isUserAdminForTournament(
+        user?.role,
+        user?.id?.toString(),
+        parseInt(tournamentId)
+      );
+
+      if (!isAdmin) {
+        throw new HttpException('Insufficient permissions', HttpStatus.FORBIDDEN);
+      }
+
+      const result = await this.tournamentsService.removeTournamentAdmin(
+        parseInt(tournamentId),
+        body.userId
+      );
+
+      return {
+        message: 'Successfully removed tournament admin',
+        result
+      };
+    } catch (error) {
+      console.error("REMOVE TOURNAMENT ADMIN API Error:", error);
       throw new HttpException(
         error.message || 'Internal Server Error',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
