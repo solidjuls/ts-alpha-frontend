@@ -29,6 +29,23 @@ export interface GameDto {
   ratingsUSSR: GameRatingDto;
 }
 
+export type GameWinner = "1" | "2" | "3";
+
+export interface SubmitGameDto {
+  gameWinner: GameWinner;
+  gameCode: string;
+  gameType: string;
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  endTurn: string;
+  endMode: string;
+  video1?: string;
+}
+
+export interface SubmitGameRequestDto {
+  data: SubmitGameDto;
+}
+
 export interface GetGamesQueryDto {
   id?: string;
   p?: string; // page

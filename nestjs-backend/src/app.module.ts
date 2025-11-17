@@ -11,6 +11,7 @@ import { GamesModule } from './games/games.module';
 import { UsersModule } from './users/users.module';
 import { CountriesModule } from './countries/countries.module';
 import { CitiesModule } from './cities/cities.module';
+import { RatingModule } from './rating/rating.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -25,7 +26,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     GamesModule,
     UsersModule,
     CountriesModule,
-    CitiesModule
+    CitiesModule,
+    RatingModule
   ],
   controllers: [AppController],
   providers: [

@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
+import { RatingService } from '../rating/rating.service';
 import { Prisma } from '@prisma/client';
 import {
   GameDto,
   GameListResponse,
   GameFilterDto,
   GameRatingDto,
+  SubmitGameDto,
 } from './dto/game.dto';
 
 @Injectable()
 export class GamesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly ratingService: RatingService,
+  ) {}
 
   private createPrismaFilter(filter: GameFilterDto): Prisma.game_resultsWhereInput {
     const prismaFilter: Prisma.game_resultsWhereInput = {};
@@ -219,5 +224,70 @@ export class GamesService {
       usa_player_id: game.usa_player_id.toString(),
       ussr_player_id: game.ussr_player_id.toString(),
     };
+  }
+
+  async submitGame(data: SubmitGameDto): Promise<any> {
+    try {
+      const { newUsaRating, newUssrRating, usaRating, ussrRating } =
+        await this.ratingService.calculateRating({
+          usaPlayerId: BigInt(data.usaPlayerId),
+          ussrPlayerId: BigInt(data.ussrPlayerId),
+          gameWinner: data.gameWinner,
+          gameType: data.gameType,
+        });
+
+      const dateNow = new Date(Date.now());
+      const newGame = {
+        created_at: dateNow,
+        updated_at: dateNow,
+        usa_player_id: BigInt(data.usaPlayerId),
+        ussr_player_id: BigInt(data.ussrPlayerId),
+        usa_previous_rating: usaRating,
+        ussr_previous_rating: ussrRating,
+        game_type: Number(data.gameType),
+        game_code: data.gameCode,
+        reported_at: dateNow,
+        game_winner: data.gameWinner,
+        end_turn: Number(data.endTurn),
+        end_mode: data.endMode,
+        game_date: dateNow,
+        video1: data.video1 || null,
+        reporter_id: BigInt(data.usaPlayerId),
+      };
+
+      const result = await this.databaseService.game_results.create({
+        data: {
+          ...newGame,
+          ratings_history: {
+            create: [
+              {
+                player_id: BigInt(data.usaPlayerId),
+                rating: newUsaRating,
+                game_code: data.gameCode,
+                created_at: dateNow,
+                updated_at: dateNow,
+              },
+              {
+                player_id: BigInt(data.ussrPlayerId),
+                rating: newUssrRating,
+                game_code: data.gameCode,
+                created_at: dateNow,
+                updated_at: dateNow,
+              },
+            ],
+          },
+        },
+      });
+
+      // Convert BigInt to string for JSON serialization
+      const resultParsed = JSON.stringify(result, (key, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      );
+
+      return JSON.parse(resultParsed);
+    } catch (error) {
+      console.error('Error submitting game:', error);
+      throw error;
+    }
   }
 }

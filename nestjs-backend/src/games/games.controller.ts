@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Post,
+  Body,
   Query,
   Param,
   UseGuards,
@@ -14,6 +16,7 @@ import {
   GetGamesQueryDto,
   GameListResponse,
   GameFilterDto,
+  SubmitGameRequestDto,
 } from './dto/game.dto';
 
 @Controller('games')
@@ -131,12 +134,26 @@ export class GamesController {
     }
   }
 
+  @Post('submit')
+  async submitGame(@Body() submitGameRequest: SubmitGameRequestDto) {
+    try {
+      const result = await this.gamesService.submitGame(submitGameRequest.data);
+      return result;
+    } catch (error) {
+      console.error('[Games POST Submit]', error);
+      throw new HttpException(
+        'Error submitting result',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Get('health')
   @Public()
   getHealth() {
-    return { 
-      status: 'Games API is healthy', 
-      timestamp: new Date().toISOString() 
+    return {
+      status: 'Games API is healthy',
+      timestamp: new Date().toISOString()
     };
   }
 }
