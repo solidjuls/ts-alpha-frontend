@@ -172,7 +172,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 placeholder="Type the player name to filter schedule..."
                 css={{ width: '320px', marginRight: "8px" }}
                 onBlur={() => {
-                  // Handle blur if needed
+                  setSelectedPlayer("");
+                  onPlayerSelect?.("");
                 }}
                 onSelect={(item: DropdownItemType) => {
                   setSelectedPlayer(item.value || "");
