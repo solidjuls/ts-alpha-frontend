@@ -175,7 +175,18 @@ export class AuthService {
   }
 
   async registerUser(registerDto: RegisterUserDto): Promise<RegisterUserResponse> {
-    const { email, password, confirmPassword, firstName, lastName } = registerDto;
+    const {
+      email,
+      password,
+      confirmPassword,
+      firstName,
+      lastName,
+      countryId,
+      cityId,
+      phoneNumber,
+      preferredGamingPlatform,
+      preferredGameDuration
+    } = registerDto;
 
     // Validate password confirmation
     if (password !== confirmPassword) {
@@ -197,7 +208,7 @@ export class AuthService {
     // Create full name
     const fullName = `${firstName} ${lastName}`.trim();
 
-    // Create user with hardcoded defaults for missing required fields
+    // Create user with provided fields and defaults for missing required fields
     const newUser = await this.databaseService.users.create({
       data: {
         email,
@@ -208,13 +219,14 @@ export class AuthService {
         role_id: 3, // Default to player role
         created_at: new Date(),
         updated_at: new Date(),
-        // Hardcoded defaults for potentially required fields
-        country_id: null, // Will be set to null, can be updated later
+        // Use provided fields or defaults
+        country_id: countryId ? BigInt(countryId) : null,
+        city_id: cityId ? BigInt(cityId) : null,
+        phone_number: phoneNumber || null,
+        preferred_gaming_platform: preferredGamingPlatform || null,
+        preferred_game_duration: preferredGameDuration || null,
+        // Defaults for other required fields
         regional_federation_id: null,
-        city_id: null,
-        phone_number: null,
-        preferred_gaming_platform: null,
-        preferred_game_duration: null,
         timezone_id: null,
         email_verified_at: null,
         remember_token: null,

@@ -6,10 +6,17 @@ import { FormattedMessage } from 'react-intl';
 import { Spinner } from '@radix-ui/themes';
 
 import { useRegister } from '../../hooks/useAuth';
+import { useCountries } from '../../hooks/useCountries';
+import { useCities } from '../../hooks/useCities';
 import { Button } from 'components/Button';
 import Text from 'components/Text';
 import { Input, PasswordInput } from 'components/Input';
 import { Label } from 'components/Label';
+import { DropdownWithLabel } from 'components/EditFormComponents';
+import CountriesTypeahead from 'pages/usercreate/CountriesTypeahead';
+import CitiesTypeahead from 'pages/usercreate/CitiesTypeahead';
+import { platforms, gameDurations } from 'utils/constants';
+import { DropdownItemType } from 'types/types';
 
 // Styled Components
 const RegisterContainer = styled.div`
@@ -127,10 +134,17 @@ const RegisterFormComponent: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    countryId: '',
+    cityId: '',
+    phoneNumber: '',
+    preferredGamingPlatform: '',
+    preferredGameDuration: '',
   });
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  
+
   const registerMutation = useRegister();
+  const { data: countries, isLoading: loadingCountries } = useCountries();
+  const { data: cities, isLoading: loadingCities } = useCities();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -146,7 +160,7 @@ const RegisterFormComponent: React.FC = () => {
 
   const validateForm = (): boolean => {
     const errors: string[] = [];
-    
+
     // Required field validation
     if (!formData.firstName.trim()) {
       errors.push('First name is required');
@@ -163,23 +177,32 @@ const RegisterFormComponent: React.FC = () => {
     if (!formData.confirmPassword.trim()) {
       errors.push('Password confirmation is required');
     }
-    
+
+    // New mandatory fields
+    if (!formData.countryId.trim()) {
+      errors.push('Country is required');
+    }
+
+    if (!formData.cityId.trim()) {
+      errors.push('City is required');
+    }
+
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (formData.email.trim() && !emailRegex.test(formData.email.trim())) {
       errors.push('Please enter a valid email address');
     }
-    
+
     // Password validation
     if (formData.password.trim() && formData.password.length < 8) {
       errors.push('Password must be at least 8 characters long');
     }
-    
+
     // Password confirmation validation
     if (formData.password !== formData.confirmPassword) {
       errors.push('Passwords do not match');
     }
-    
+
     setValidationErrors(errors);
     return errors.length === 0;
   };
@@ -196,6 +219,11 @@ const RegisterFormComponent: React.FC = () => {
         email: formData.email.trim(),
         password: formData.password,
         confirmPassword: formData.confirmPassword,
+        countryId: formData.countryId.trim() || undefined,
+        cityId: formData.cityId.trim() || undefined,
+        phoneNumber: formData.phoneNumber.trim() || undefined,
+        preferredGamingPlatform: formData.preferredGamingPlatform.trim() || undefined,
+        preferredGameDuration: formData.preferredGameDuration.trim() || undefined,
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -207,7 +235,7 @@ const RegisterFormComponent: React.FC = () => {
     ...(registerMutation.error?.response?.data?.message ? [registerMutation.error.response.data.message] : []),
     ...(registerMutation.error?.message && !registerMutation.error?.response ? [registerMutation.error.message] : [])
   ];
-
+console.log("countries", countries, cities)
   return (
     <RegisterForm onSubmit={handleSubmit}>
       <FormTitle>Create Account</FormTitle>
@@ -252,7 +280,7 @@ const RegisterFormComponent: React.FC = () => {
         </Label>
         <StyledInput
           type="email"
-          id="email"
+          id="mail"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
           disabled={registerMutation.isPending}
@@ -286,6 +314,95 @@ const RegisterFormComponent: React.FC = () => {
           onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
           disabled={registerMutation.isPending}
           required
+        />
+      </FormField>
+
+      {/* Country Selection - Mandatory */}
+      <FormField>
+        <Label>
+          <FormattedMessage id="country" defaultMessage="Country" /> *
+        </Label>
+        {!loadingCountries && countries && (
+          <CountriesTypeahead
+            labelText=""
+            placeholder="Select your country..."
+            css={{ width: '100%' }}
+            onBlur={() => {}}
+            onSelect={(value: DropdownItemType) => handleInputChange('countryId', value?.value || '')}
+            items={countries.map(country => ({
+              value: country.id,
+              text: country.country_name,
+            }))}
+            error={validationErrors.some(error => error.includes('Country'))}
+            selectedItem={formData.countryId}
+          />
+        )}
+      </FormField>
+
+      {/* City Selection - Mandatory */}
+      <FormField>
+        <Label>
+          <FormattedMessage id="city" defaultMessage="City" /> *
+        </Label>
+        {!loadingCities && cities && (
+          <CitiesTypeahead
+            labelText=""
+            items={cities.map(city => ({
+              value: city.id,
+              text: city.name,
+            }))}
+            selectedItem={formData.cityId}
+            selectedValueProperty="value"
+            selectedInputProperty="text"
+            error={validationErrors.some(error => error.includes('City'))}
+            placeholder="Select your city..."
+            css={{ width: '100%' }}
+            onBlur={() => {}}
+            onSelect={(value: DropdownItemType) => {
+              handleInputChange('cityId', value?.value || '');
+            }}
+          />
+        )}
+      </FormField>
+
+      {/* Phone Number - Optional */}
+      <FormField>
+        <Label htmlFor="phone">
+          <FormattedMessage id="phone" defaultMessage="Phone Number" />
+        </Label>
+        <StyledInput
+          type="tel"
+          id="phone"
+          value={formData.phoneNumber}
+          onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+          disabled={registerMutation.isPending}
+          placeholder="Enter your phone number (optional)"
+        />
+      </FormField>
+
+      {/* Preferred Gaming Platform - Optional */}
+      <FormField>
+        <DropdownWithLabel
+          labelText="preferredGamingPlatform"
+          items={platforms}
+          error={false}
+          css={{ width: '100%' }}
+          selectedItem={formData.preferredGamingPlatform}
+          placeholder="Select preferred gaming platform (optional)"
+          onSelect={(value: string) => handleInputChange('preferredGamingPlatform', value)}
+        />
+      </FormField>
+
+      {/* Preferred Game Duration - Optional */}
+      <FormField>
+        <DropdownWithLabel
+          labelText="preferredGameDuration"
+          items={gameDurations}
+          error={false}
+          css={{ width: '100%' }}
+          selectedItem={formData.preferredGameDuration}
+          placeholder="Select preferred game duration (optional)"
+          onSelect={(value: string) => handleInputChange('preferredGameDuration', value)}
         />
       </FormField>
 

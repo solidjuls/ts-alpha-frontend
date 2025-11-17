@@ -52,6 +52,11 @@ export interface RegisterUserDto {
   confirmPassword: string;
   firstName: string;
   lastName: string;
+  countryId?: string;
+  cityId?: string;
+  phoneNumber?: string;
+  preferredGamingPlatform?: string;
+  preferredGameDuration?: string;
 }
 
 export interface RegisterUserResponse {

@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { GamesModule } from './games/games.module';
 import { UsersModule } from './users/users.module';
+import { CountriesModule } from './countries/countries.module';
+import { CitiesModule } from './cities/cities.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -21,7 +23,9 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     TournamentsModule,
     ScheduleModule,
     GamesModule,
-    UsersModule
+    UsersModule,
+    CountriesModule,
+    CitiesModule
   ],
   controllers: [AppController],
   providers: [
