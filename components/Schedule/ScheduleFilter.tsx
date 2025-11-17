@@ -2,15 +2,19 @@ import * as React from 'react';
 import { Checkbox } from "components/Checkbox";
 import { styled } from '@stitches/react';
 import ReplacePlayers from './ReplacePlayers';
-import AddNewSchedule from './AddNewSchedule';
 import CsvUploadButton from './CsvButtonUpload';
-import { TournamentsType } from 'types/game.types';
 import UserTypeahead from 'pages/submitform/UserTypeahead';
 import { DropdownItemType } from 'types/types';
-import { UserType } from 'types/user.types';
-import { Flex } from 'components/Atoms';
+
+import { Flex, Box } from 'components/Atoms';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import { usersService } from 'services/users.service';
+import DateComponent from 'pages/submitform/DateComponent';
+import { Input } from 'components/Input';
+import { Button } from 'components/Button';
+import { useAddSchedule } from 'hooks/useSchedule';
+import { Spinner } from '@radix-ui/themes';
+import Text from 'components/Text';
 
 const Panel = styled('div', {
   padding: '16px',
@@ -18,6 +22,34 @@ const Panel = styled('div', {
   borderRadius: '8px',
   backgroundColor: '#f9f9f9',
   marginBottom: '8px'
+});
+
+const ManualScheduleSection = styled('div', {
+  marginTop: '16px',
+  padding: '16px',
+  border: '1px solid #ddd',
+  borderRadius: '6px',
+  backgroundColor: '#f8f9fa',
+});
+
+const SectionTitle = styled('h4', {
+  margin: '0 0 12px 0',
+  fontSize: '16px',
+  fontWeight: '500',
+  color: '#374151',
+});
+
+const FormRow = styled('div', {
+  display: 'flex',
+  gap: '12px',
+  alignItems: 'flex-end',
+  marginBottom: '12px',
+  flexWrap: 'wrap',
+});
+
+const GameCodeInput = styled(Input, {
+  width: '80px',
+  height: '35px',
 });
 
 interface ScheduleFilterProps {
@@ -44,23 +76,76 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   const [selectedPlayer, setSelectedPlayer] = React.useState("");
   const [selectedPlayerToRemove, setSelectedPlayerToRemove] = React.useState("");
 
-  // Fetch users for the tournament using React Query
-  const { data: users, isLoading: isLoadingUsers } = useQuery({
+  // Manual schedule creation state
+  const [usaPlayer, setUsaPlayer] = React.useState("");
+  const [ussrPlayer, setUssrPlayer] = React.useState("");
+  const [gameCode, setGameCode] = React.useState("");
+  const [dueDate, setDueDate] = React.useState<Date>(new Date());
+  const [isCreatingSchedule, setIsCreatingSchedule] = React.useState(false);
+  const [scheduleMessage, setScheduleMessage] = React.useState("");
+
+  // Hook for adding schedule
+  const addScheduleMutation = useAddSchedule();
+
+  // Fetch users for the tournament using React Query and NestJS backend
+  const { data: users } = useQuery({
     queryKey: ['users', tournament],
     queryFn: async () => {
-      const response = await axios.get(`/api/user?t=${tournament}`, {
-        withCredentials: true
-      });
-      return response.data as UserType[];
+      if (!tournament) return [];
+      return await usersService.getUsersByTournament(tournament);
     },
     enabled: !!tournament,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const usersFilter: DropdownItemType[] = users?.map((item: UserType) => ({
+  const usersFilter: DropdownItemType[] = users?.map((item) => ({
     value: item.id,
     text: item.name,
   })) || []
+
+  // Handle manual schedule creation
+  const handleCreateSchedule = async () => {
+    if (!usaPlayer || !ussrPlayer || !dueDate) {
+      setScheduleMessage("Please fill in all required fields");
+      return;
+    }
+
+    if (usaPlayer === ussrPlayer) {
+      setScheduleMessage("USA and USSR players must be different");
+      return;
+    }
+
+    setIsCreatingSchedule(true);
+    setScheduleMessage("");
+
+    try {
+      // Hardcoded tournament ID for now (you can change this value)
+      const HARDCODED_TOURNAMENT_ID = "2";
+
+      await addScheduleMutation.mutateAsync({
+        tournamentId: HARDCODED_TOURNAMENT_ID,
+        usaPlayerId: usaPlayer,
+        ussrPlayerId: ussrPlayer,
+        dueDate: dueDate.toISOString(),
+        gameCode: gameCode || "", // Optional field
+      });
+
+      // Reset form on success
+      setUsaPlayer("");
+      setUssrPlayer("");
+      setGameCode("");
+      setDueDate(new Date());
+      setScheduleMessage("Schedule created successfully!");
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setScheduleMessage(""), 3000);
+    } catch (error: any) {
+      console.error("Failed to create schedule:", error);
+      setScheduleMessage(error?.response?.data?.message || "Failed to create schedule");
+    } finally {
+      setIsCreatingSchedule(false);
+    }
+  };
 
   return (
     <div>
@@ -111,6 +196,89 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             </>
           </Flex>
           <ReplacePlayers tournament={tournament} />
+
+          {/* Manual Schedule Creation Section */}
+          <ManualScheduleSection>
+            <SectionTitle>Create New Schedule</SectionTitle>
+
+            <FormRow>
+              <UserTypeahead
+                labelText="USA Player"
+                users={usersFilter}
+                selectedItem={usaPlayer}
+                placeholder="Select USA player..."
+                css={{ width: '200px' }}
+                onBlur={() => {}}
+                onSelect={(item: DropdownItemType) => {
+                  setUsaPlayer(item.value || "");
+                  setScheduleMessage(""); // Clear any error messages
+                }}
+              />
+
+              <UserTypeahead
+                labelText="USSR Player"
+                users={usersFilter}
+                selectedItem={ussrPlayer}
+                placeholder="Select USSR player..."
+                css={{ width: '200px' }}
+                onBlur={() => {}}
+                onSelect={(item: DropdownItemType) => {
+                  setUssrPlayer(item.value || "");
+                  setScheduleMessage(""); // Clear any error messages
+                }}
+              />
+
+              <Box>
+                <Text fontSize="small" css={{ marginBottom: '4px', display: 'block' }}>
+                  Game Code (Optional)
+                </Text>
+                <GameCodeInput
+                  type="text"
+                  placeholder="Code"
+                  value={gameCode}
+                  maxLength={4}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setGameCode(e.target.value);
+                    setScheduleMessage(""); // Clear any error messages
+                  }}
+                />
+              </Box>
+
+              <DateComponent
+                labelText="Due Date"
+                inputValue={dueDate}
+                onInputValueChange={(value: Date) => {
+                  setDueDate(value);
+                  setScheduleMessage(""); // Clear any error messages
+                }}
+              />
+
+              <Button
+                onClick={handleCreateSchedule}
+                disabled={isCreatingSchedule || !usaPlayer || !ussrPlayer || !dueDate}
+                css={{
+                  height: '35px',
+                  backgroundColor: '#10b981',
+                  '&:hover': { backgroundColor: '#059669' },
+                  '&:disabled': { backgroundColor: '#9ca3af' }
+                }}
+              >
+                {isCreatingSchedule ? <Spinner size="2" /> : "Create Schedule"}
+              </Button>
+            </FormRow>
+
+            {scheduleMessage && (
+              <Text
+                fontSize="small"
+                css={{
+                  color: scheduleMessage.includes('success') ? '#10b981' : '#dc2626',
+                  marginTop: '8px'
+                }}
+              >
+                {scheduleMessage}
+              </Text>
+            )}
+          </ManualScheduleSection>
         </Panel>
       )}
     </div>

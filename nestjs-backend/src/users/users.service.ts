@@ -73,55 +73,53 @@ export class UsersService {
   }
 
   async getUsersByTournament(tournamentId: string): Promise<UserDto[]> {
-    // CHANGE player_email by userId
+    // Get user IDs registered for the tournament (using userId instead of player_email)
+    const userIds = await this.databaseService.tournament_registration.findMany({
+      select: {
+        userId: true,
+      },
+      where: {
+        tournamentId: Number(tournamentId),
+      },
+    });
 
-    // Get user emails registered for the tournament
-    // const userEmails = await this.databaseService.tournament_registration.findMany({
-    //   select: {
-    //     player_email: true,
-    //   },
-    //   where: {
-    //     tournamentId: Number(tournamentId),
-    //   },
-    // });
+    if (userIds.length === 0) {
+      return [];
+    }
 
-    // if (userEmails.length === 0) {
-    //   return [];
-    // }
+    // Get users by IDs
+    const users = await this.databaseService.users.findMany({
+      where: {
+        id: {
+          in: userIds.map(item => item.userId),
+        },
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        countries: {
+          select: {
+            tld_code: true,
+          },
+        },
+      },
+    });
 
-    // // Get users by emails
-    // const users = await this.databaseService.users.findMany({
-    //   where: {
-    //     email: {
-    //       in: userEmails.map(item => item.player_email),
-    //     },
-    //   },
-    //   select: {
-    //     id: true,
-    //     first_name: true,
-    //     last_name: true,
-    //     countries: {
-    //       select: {
-    //         tld_code: true,
-    //       },
-    //     },
-    //   },
-    // });
+    // Get ratings for all users
+    const usersWithRatings = await Promise.all(
+      users.map(async (user) => {
+        const rating = await this.getUserRating(user.id);
+        return {
+          id: user.id.toString(),
+          name: `${user.first_name} ${user.last_name}`,
+          countryCode: user.countries?.tld_code,
+          rating: rating,
+        };
+      })
+    );
 
-    // // Get ratings for all users
-    // const usersWithRatings = await Promise.all(
-    //   users.map(async (user) => {
-    //     const rating = await this.getUserRating(user.id);
-    //     return {
-    //       id: user.id.toString(),
-    //       name: `${user.first_name} ${user.last_name}`,
-    //       countryCode: user.countries?.tld_code,
-    //       rating: rating,
-    //     };
-    //   })
-    // );
-
-    return null//usersWithRatings;
+    return usersWithRatings;
   }
 
   async getAllUsers({

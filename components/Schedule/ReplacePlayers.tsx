@@ -1,12 +1,12 @@
 import { Flex, Span } from "components/Atoms";
 import { Button } from "components/Button";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import UserTypeahead from "pages/submitform/UserTypeahead"
 import { useState } from "react";
 import { DropdownItemType } from "types/types";
-import { UserType } from "types/user.types";
 import getAxiosInstance from "utils/axios";
-import { Title, titleStyles } from "./styles";
+import { Title } from "./styles";
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from 'services/users.service';
 
 interface ReplacePlayersProps {
   tournament: string | undefined
@@ -19,9 +19,15 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [newUser, setNewUser] = useState("")
   const [responseMessage, setResponseMessage] = useState("")
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
-    url: `/api/user?t=${tournament}`,
-    cacheId: "user-list",
+  // Fetch users for the tournament using React Query and NestJS backend
+  const { data: users, isLoading: loadingUsers } = useQuery({
+    queryKey: ['users', tournament],
+    queryFn: async () => {
+      if (!tournament) return [];
+      return await usersService.getUsersByTournament(tournament);
+    },
+    enabled: !!tournament,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   if(loadingUsers) return null

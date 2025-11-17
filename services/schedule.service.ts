@@ -93,7 +93,15 @@ class ScheduleService {
   }
 
   async addSchedule(params: AddScheduleParams): Promise<{ message: string }> {
-    const response = await this.axiosInstance.patch('/schedule', params);
+    const response = await this.axiosInstance.put('/schedule', {
+      data: {
+        usa: params.usaPlayerId,
+        ussr: params.ussrPlayerId,
+        t: params.tournamentId,
+        d: params.dueDate,
+        gc: params.gameCode
+      }
+    });
     return response.data;
   }
 

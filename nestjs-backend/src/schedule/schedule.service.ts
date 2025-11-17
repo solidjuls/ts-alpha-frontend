@@ -229,7 +229,11 @@ export class ScheduleService {
       }
     });
 
-    return updated;
+    return {
+      ...updated,
+      usa_player_id: updated.usa_player_id?.toString(),
+      ussr_player_id: updated.ussr_player_id?.toString(),
+    };
   }
 
   async addSchedulePlayers(
@@ -239,7 +243,7 @@ export class ScheduleService {
     d: Date,
     gc: string
   ): Promise<ScheduleUpdateResult> {
-    return await this.databaseService.schedule.create({
+    const schedule = await this.databaseService.schedule.create({
       data: {
         tournaments_id: t,
         game_code: gc,
@@ -248,6 +252,11 @@ export class ScheduleService {
         due_date: d,
       }
     });
+    return {
+      ...schedule,
+      usa_player_id: schedule.usa_player_id?.toString(),
+      ussr_player_id: schedule.ussr_player_id?.toString(),
+    }
   }
 
   async replaceSchedulePlayers(

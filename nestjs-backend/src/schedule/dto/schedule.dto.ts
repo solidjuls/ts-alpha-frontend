@@ -44,8 +44,8 @@ export interface CreateScheduleDto {
 export interface UpdateScheduleDto {
   tournaments_id: number;
   game_code: string;
-  usa_player_id: bigint;
-  ussr_player_id: bigint;
+  usa_player_id: string | null;
+  ussr_player_id: string | null;
   due_date: string;
   game_results_id?: bigint | null;
   id: number;
@@ -79,8 +79,8 @@ export interface ScheduleUpdateResult {
   id: number;
   tournaments_id: number;
   game_code: string;
-  usa_player_id: bigint | null;
-  ussr_player_id: bigint | null;
+  usa_player_id: string | null;
+  ussr_player_id: string | null;
   due_date: Date;
   game_results_id: bigint | null;
   created_at: Date | null;
