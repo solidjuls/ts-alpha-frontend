@@ -20,9 +20,15 @@ class CountriesService {
     });
   }
 
-  async getAllCountries(): Promise<Country[]> {
-    const response = await this.axiosInstance.get('/countries');
+  async getCountries(searchQuery?: string): Promise<Country[]> {
+    const params = searchQuery ? { q: searchQuery } : {};
+    const response = await this.axiosInstance.get('/countries', { params });
     return response.data;
+  }
+
+  // Backward compatibility method
+  async getAllCountries(): Promise<Country[]> {
+    return this.getCountries();
   }
 }
 

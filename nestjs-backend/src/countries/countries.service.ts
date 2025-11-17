@@ -6,16 +6,27 @@ import { CountryDto } from './dto/countries.dto';
 export class CountriesService {
   constructor(private databaseService: DatabaseService) {}
 
-  async getAllCountries(): Promise<CountryDto[]> {
+  async getCountries(searchQuery?: string): Promise<CountryDto[]> {
+    // If no search query or less than 3 characters, return empty array
+    if (!searchQuery || searchQuery.length < 3) {
+      return [];
+    }
+
     const countries = await this.databaseService.countries.findMany({
       select: {
         id: true,
         country_name: true,
         tld_code: true,
       },
+      where: {
+        country_name: {
+          contains: searchQuery,
+        },
+      },
       orderBy: {
         country_name: 'asc',
       },
+      take: 50, // Limit results to prevent too many suggestions
     });
 
     return countries.map(country => ({

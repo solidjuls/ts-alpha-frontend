@@ -1,7 +1,7 @@
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { CountriesService } from './countries.service';
 import { Public } from '../auth/decorators/public.decorator';
-import { CountryDto } from './dto/countries.dto';
+import { CountryDto, GetCountriesQueryDto } from './dto/countries.dto';
 
 @Controller('countries')
 export class CountriesController {
@@ -9,9 +9,10 @@ export class CountriesController {
 
   @Get()
   @Public()
-  async getCountries(): Promise<CountryDto[]> {
+  async getCountries(@Query() query: GetCountriesQueryDto): Promise<CountryDto[]> {
     try {
-      return await this.countriesService.getAllCountries();
+      const { q: searchQuery } = query;
+      return await this.countriesService.getCountries(searchQuery);
     } catch (error) {
       console.error('[Countries GET]', error);
       throw new HttpException(

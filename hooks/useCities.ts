@@ -13,7 +13,7 @@ export const useCities = (searchQuery?: string) => {
   return useQuery({
     queryKey: citiesKeys.search(searchQuery),
     queryFn: () => citiesService.getCities(searchQuery),
-    enabled: true, // Always enabled, but can be empty search
+    enabled: !searchQuery || searchQuery.length >= 3, // Only fetch if no query or query >= 3 chars
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 15 * 60 * 1000, // 15 minutes
   });

@@ -4,5 +4,5 @@ export interface CityDto {
 }
 
 export interface GetCitiesQueryDto {
-  q?: string; // Search query
+  q?: string; // Search query (minimum 3 characters)
 }

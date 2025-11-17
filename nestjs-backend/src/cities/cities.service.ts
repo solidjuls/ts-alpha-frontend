@@ -7,12 +7,10 @@ export class CitiesService {
   constructor(private databaseService: DatabaseService) {}
 
   async getCities(searchQuery?: string): Promise<CityDto[]> {
-    const where = searchQuery ? {
-      name: {
-        startsWith: searchQuery,
-        mode: 'insensitive' as const,
-      },
-    } : {};
+    // If no search query or less than 3 characters, return empty array
+    if (!searchQuery || searchQuery.length < 3) {
+      return [];
+    }
 
     const cities = await this.databaseService.cities.findMany({
       select: {
@@ -20,11 +18,15 @@ export class CitiesService {
         name: true,
         timeZoneId: true,
       },
-      where,
+      where: {
+        name: {
+          contains: searchQuery,
+        },
+      },
       orderBy: {
         name: 'asc',
       },
-      take: 100, // Limit results to prevent too many results
+      take: 50, // Limit results to prevent too many suggestions
     });
 
     return cities.map(city => ({

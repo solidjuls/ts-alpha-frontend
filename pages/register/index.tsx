@@ -6,15 +6,13 @@ import { FormattedMessage } from 'react-intl';
 import { Spinner } from '@radix-ui/themes';
 
 import { useRegister } from '../../hooks/useAuth';
-import { useCountries } from '../../hooks/useCountries';
-import { useCities } from '../../hooks/useCities';
 import { Button } from 'components/Button';
 import Text from 'components/Text';
 import { Input, PasswordInput } from 'components/Input';
 import { Label } from 'components/Label';
 import { DropdownWithLabel } from 'components/EditFormComponents';
-import CountriesTypeahead from 'pages/usercreate/CountriesTypeahead';
-import CitiesTypeahead from 'pages/usercreate/CitiesTypeahead';
+import CountrySearchTypeahead from 'components/Register/CountrySearchTypeahead';
+import CitySearchTypeahead from 'components/Register/CitySearchTypeahead';
 import { platforms, gameDurations } from 'utils/constants';
 import { DropdownItemType } from 'types/types';
 
@@ -143,8 +141,6 @@ const RegisterFormComponent: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
   const registerMutation = useRegister();
-  const { data: countries, isLoading: loadingCountries } = useCountries();
-  const { data: cities, isLoading: loadingCities } = useCities();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -235,7 +231,7 @@ const RegisterFormComponent: React.FC = () => {
     ...(registerMutation.error?.response?.data?.message ? [registerMutation.error.response.data.message] : []),
     ...(registerMutation.error?.message && !registerMutation.error?.response ? [registerMutation.error.message] : [])
   ];
-console.log("countries", countries, cities)
+
   return (
     <RegisterForm onSubmit={handleSubmit}>
       <FormTitle>Create Account</FormTitle>
@@ -295,7 +291,7 @@ console.log("countries", countries, cities)
         <StyledPasswordInput
           id="password"
           value={formData.password}
-          onChange={(e) => handleInputChange('password', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('password', e.target.value)}
           disabled={registerMutation.isPending}
           required
         />
@@ -311,7 +307,7 @@ console.log("countries", countries, cities)
         <StyledPasswordInput
           id="confirmPassword"
           value={formData.confirmPassword}
-          onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('confirmPassword', e.target.value)}
           disabled={registerMutation.isPending}
           required
         />
@@ -322,21 +318,16 @@ console.log("countries", countries, cities)
         <Label>
           <FormattedMessage id="country" defaultMessage="Country" /> *
         </Label>
-        {!loadingCountries && countries && (
-          <CountriesTypeahead
-            labelText=""
-            placeholder="Select your country..."
-            css={{ width: '100%' }}
-            onBlur={() => {}}
-            onSelect={(value: DropdownItemType) => handleInputChange('countryId', value?.value || '')}
-            items={countries.map(country => ({
-              value: country.id,
-              text: country.country_name,
-            }))}
-            error={validationErrors.some(error => error.includes('Country'))}
-            selectedItem={formData.countryId}
-          />
-        )}
+        <CountrySearchTypeahead
+          placeholder="Type at least 3 characters to search countries..."
+          css={{ width: '100%' }}
+          onBlur={() => {}}
+          onSelect={(value: DropdownItemType | null | undefined) => {
+            handleInputChange('countryId', value?.value || '');
+          }}
+          error={validationErrors.some(error => error.includes('Country'))}
+          selectedItem={formData.countryId}
+        />
       </FormField>
 
       {/* City Selection - Mandatory */}
@@ -344,25 +335,16 @@ console.log("countries", countries, cities)
         <Label>
           <FormattedMessage id="city" defaultMessage="City" /> *
         </Label>
-        {!loadingCities && cities && (
-          <CitiesTypeahead
-            labelText=""
-            items={cities.map(city => ({
-              value: city.id,
-              text: city.name,
-            }))}
-            selectedItem={formData.cityId}
-            selectedValueProperty="value"
-            selectedInputProperty="text"
-            error={validationErrors.some(error => error.includes('City'))}
-            placeholder="Select your city..."
-            css={{ width: '100%' }}
-            onBlur={() => {}}
-            onSelect={(value: DropdownItemType) => {
-              handleInputChange('cityId', value?.value || '');
-            }}
-          />
-        )}
+        <CitySearchTypeahead
+          placeholder="Type at least 3 characters to search cities..."
+          css={{ width: '100%' }}
+          onBlur={() => {}}
+          onSelect={(value: DropdownItemType | null | undefined) => {
+            handleInputChange('cityId', value?.value || '');
+          }}
+          error={validationErrors.some(error => error.includes('City'))}
+          selectedItem={formData.cityId}
+        />
       </FormField>
 
       {/* Phone Number - Optional */}
