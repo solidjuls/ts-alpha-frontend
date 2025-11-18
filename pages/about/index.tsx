@@ -242,6 +242,12 @@ const AboutPage = () => (
         </p>
         <dl>
           <dt>
+            <Link href="https://ts-replayer.fly.dev/" target="_blank">Twilight Struggle Replay</Link>
+          </dt>
+          <dd>
+            A page created by <Link href="https://twilight-struggle.com/userprofile/3155">Joris Vandenbroeck</Link> to upload and visualize your game&apos;s log files. Just upload your log files and it will generate a beautiful chart of your game data.
+          </dd>
+          <dt>
             <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
           </dt>
           <dd>
