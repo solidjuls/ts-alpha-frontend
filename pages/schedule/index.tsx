@@ -11,7 +11,7 @@ import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { userRoles } from "utils/constants";
 import { GameWinner } from "types/game.types";
-import { styled } from "stitches.config";
+import styled from "styled-components";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
@@ -34,22 +34,55 @@ interface ScheduleProps {
   userId: string;
 }
 
-const ResponsiveContainer = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  maxWidth: "1100px",
-  variants: {
-    direction: {
-      row: {
-        flexDirection: "row",
-      },
-      column: {
-        flexDirection: "column",
-      },
-    },
-  },
-});
+interface ResponsiveContainerProps {
+  direction?: "row" | "column";
+}
+
+const ResponsiveContainer = styled.div<ResponsiveContainerProps>`
+  display: flex;
+  flex-direction: ${props => props.direction === "column" ? "column" : "row"};
+  width: 100%;
+  max-width: 1100px;
+`;
+
+const FlexRow = styled(Flex)`
+  display: flex;
+  flex-direction: row;
+`;
+
+const PlayerInfoContainer = styled(Box)`
+  display: flex;
+  margin: 0 8px 0 8px;
+  flex-direction: row;
+  line-height: 1;
+  align-items: center;
+`;
+
+const TournamentInfoFlex = styled(Flex)`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 0 0 8px;
+`;
+
+const LoadingContainer = styled(Flex)`
+  width: 100%;
+`;
+
+const CenteredResultsWrapper = styled(ResultsStyleWrapper)`
+  justify-content: center;
+  align-items: center;
+`;
+
+const TournamentText = styled(Text)`
+  align-self: center;
+  margin-left: 4px;
+`;
+
+const ColumnUnstyledLink = styled(UnstyledLink)`
+  display: flex;
+  flex-direction: column;
+`;
 
 const generateQueryParams = ({
   id,
@@ -96,16 +129,8 @@ const PlayerInfoBox = ({
   gameWinner,
 }: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
   return (
-    <Flex css={{ display: "flex", flexDirection: "row" }}>
-      <Box
-        css={{
-          display: "flex",
-          margin: "0 8px 0 8px",
-          flexDirection: "row",
-          lineHeight: 1,
-          alignItems: "center",
-        }}
-      >
+    <FlexRow>
+      <PlayerInfoContainer>
         <FlagIcon code={countryUsa} />
         <Text
           fontSize="medium"
@@ -113,18 +138,9 @@ const PlayerInfoBox = ({
         >
           {nameUsa}
         </Text>
-      </Box>
+      </PlayerInfoContainer>
       <span>vs</span>
-      <Box
-        css={{
-          display: "flex",
-          margin: "0 8px 0 8px",
-          flexDirection: "row",
-          lineHeight: 1,
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <PlayerInfoContainer style={{ justifyContent: "space-between" }}>
         <FlagIcon code={countryUssr} />
         <Text
           fontSize="medium"
@@ -132,8 +148,8 @@ const PlayerInfoBox = ({
         >
           {nameUssr}
         </Text>
-      </Box>
-    </Flex>
+      </PlayerInfoContainer>
+    </FlexRow>
   );
 };
 
@@ -171,7 +187,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
   return (
     <Flex>
       <PlayerInfo status={getVariant(schedule)}>
-        <UnstyledLink
+        <ColumnUnstyledLink
           href={resolveLink({
             gameResultsId: schedule.gameResultsId,
             id: schedule.id,
@@ -180,20 +196,12 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
             tournamentId: schedule.tournamentId,
             gameCode: schedule.gameCode,
           })}
-          css={{ display: "flex", flexDirection: "column" }}
         >
-          <Flex
-            css={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              margin: "0 0 0 8px",
-            }}
-          >
-            <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4 }}>
+          <TournamentInfoFlex>
+            <TournamentText fontSize="small">
               {schedule.tournamentName}
-            </Text>
-          </Flex>
+            </TournamentText>
+          </TournamentInfoFlex>
 
           <PlayerInfoBox
             gameWinner={schedule.gameWinner}
@@ -202,7 +210,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
             nameUsa={schedule.nameUsa}
             nameUssr={schedule.nameUssr}
           />
-        </UnstyledLink>
+        </ColumnUnstyledLink>
       </PlayerInfo>
       <CheckOpponentProfileCell>
         <UnstyledLink href={`/userprofile/${opponentId}`}>
@@ -213,7 +221,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
         <DueDateDisplay
           dueDate={schedule.dueDate}
           scheduleId={schedule.id}
-          gameDate={schedule.gameDate}
+          gameDate={schedule.gameDate || ""}
           admin={isAdmin}
           gamePlayed={false}
         />
@@ -235,21 +243,21 @@ const SchedulePanel = ({
 }) => {
   if (isLoading) {
     return (
-      <Flex css={{ width: "100%" }}>
-        <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
+      <LoadingContainer>
+        <CenteredResultsWrapper>
           <Spinner />
-        </ResultsStyleWrapper>
-      </Flex>
+        </CenteredResultsWrapper>
+      </LoadingContainer>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <Flex css={{ width: "100%" }}>
-        <ResultsStyleWrapper css={{ justifyContent: "center", alignItems: "center" }}>
+      <LoadingContainer>
+        <CenteredResultsWrapper>
           You do not have a schedule available. Report your results using the submit form
-        </ResultsStyleWrapper>
-      </Flex>
+        </CenteredResultsWrapper>
+      </LoadingContainer>
     );
   }
 

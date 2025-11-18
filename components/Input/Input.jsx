@@ -1,45 +1,46 @@
-import { styled } from "stitches.config";
+import styled from "styled-components";
 
-const Input = styled("input", {
-  variants: {
-    margin: {
-      xxl: { margin: 64 },
-      url: { margin: "0 0 24px 0" },
-      login: { margin: "0 0 12px 0" },
-    },
-    border: {
-      dropdown: {
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-      error: {
-        border: "solid 1px red",
-        "&:focus": {
-          boxShadow: `0 0 0 2px red`,
-        },
-        boxShadow: "none",
-      },
-    },
-    filter: {
-      filter: {
-        height: "40px",
-      },
-    },
-  },
-  all: "unset",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 4,
-  padding: "0 10px",
-  height: 35,
-  fontSize: 15,
-  lineHeight: 1,
-  border: "1px solid #ced4da",
-  color: "black",
-  "&:focus": {
-    // boxShadow: `0 0 0 2px #ced4da`,
-  },
-});
+const Input = styled.input`
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 10px;
+  height: ${props => props.filter === "filter" ? "40px" : "35px"};
+  font-size: 15px;
+  line-height: 1;
+  border: ${props => props.border === "error" ? "solid 1px red" : "1px solid #ced4da"};
+  color: black;
+
+  margin: ${props => {
+    switch (props.margin) {
+      case "xxl":
+        return "64px";
+      case "url":
+        return "0 0 24px 0";
+      case "login":
+        return "0 0 12px 0";
+      default:
+        return "0";
+    }
+  }};
+
+  ${props => props.border === "dropdown" && `
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  `}
+
+  ${props => props.border === "error" && `
+    box-shadow: none;
+    &:focus {
+      box-shadow: 0 0 0 2px red;
+    }
+  `}
+
+  &:focus {
+    /* box-shadow: 0 0 0 2px #ced4da; */
+  }
+`;
 
 export { Input };

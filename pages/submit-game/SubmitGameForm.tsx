@@ -11,33 +11,46 @@ import { DropdownWithLabel } from "components/EditFormComponents";
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
 import { SubmitGameFormData } from "./index";
-import { styled } from "stitches.config";
+import styled from "styled-components";
 import Link from "next/link";
 
-const Banner = styled('div', {
-  alignItems: 'flex-start',
-  padding: '12px 16px',
-  borderRadius: '10px',
-  border: '1px solid hsl(210 20% 85%)',
-  boxShadow: '0 6px 18px rgba(15,15,15,0.04)',
-  maxWidth: '100%',
-  marginBottom: '12px',
-  backgroundColor: 'hsl(210 20% 97%)',
-  color: 'hsl(210 30% 8%)',
-});
+const Banner = styled.div`
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid hsl(210 20% 85%);
+  box-shadow: 0 6px 18px rgba(15,15,15,0.04);
+  max-width: 100%;
+  margin-bottom: 12px;
+  background-color: hsl(210 20% 97%);
+  color: hsl(210 30% 8%);
+`;
+
+const StyledForm = styled(Form)`
+  align-items: center;
+  background-color: white;
+  width: 640px;
+  align-self: center;
+  padding: 12px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const FormContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+`;
+
+const SubmitButton = styled(Button)`
+  width: 200px;
+  font-size: 18px;
+`;
 
 const dropdownWidth = "370px";
-
-const formStyles = {
-  alignItems: "center",
-  backgroundColor: "White",
-  width: "640px",
-  alignSelf: "center",
-  padding: "12px",
-  "@sm": {
-    width: "100%",
-  },
-};
 
 type SubmitGameFormProps = {
   control: Control<SubmitGameFormData>;
@@ -61,19 +74,12 @@ const SubmitGameForm = ({
   watch,
 }: SubmitGameFormProps) => {
   return (
-    <Form css={formStyles} onSubmit={handleSubmit(onSubmit)}>
+    <StyledForm onSubmit={handleSubmit(onSubmit)}>
       <Banner>
         <b>Reminder:</b> Results for <b>ITSL Season 15</b> must be submitted through the{" "}
         <Link href="/schedule">my schedule</Link> page
       </Banner>
-      <Box
-        css={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          gap: "15px",
-        }}
-      >
+      <FormContainer>
         <Controller
           name="gameCode"
           control={control}
@@ -221,13 +227,12 @@ const SubmitGameForm = ({
           )}
         />
 
-        <Button
+        <SubmitButton
           disabled={isSubmitting}
-          css={{ width: "200px", fontSize: "18px" }}
           type="submit"
         >
           {isSubmitting ? <Spinner size="3" /> : "Submit"}
-        </Button>
+        </SubmitButton>
 
         {errors.root && <Text type="error">{errors.root.message}</Text>}
         {errors.gameCode && <Text type="error">{errors.gameCode.message}</Text>}
@@ -238,8 +243,8 @@ const SubmitGameForm = ({
         {errors.endTurn && <Text type="error">{errors.endTurn.message}</Text>}
         {errors.endMode && <Text type="error">{errors.endMode.message}</Text>}
         {errors.video1 && <Text type="error">{errors.video1.message}</Text>}
-      </Box>
-    </Form>
+      </FormContainer>
+    </StyledForm>
   );
 };
 

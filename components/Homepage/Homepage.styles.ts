@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { styled } from "stitches.config";
 
+export const GlobalContainer = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+});
 const borderStyle = "solid 1px $greyLight";
 export const PlayerInfo = styled("div", {
   display: "flex",

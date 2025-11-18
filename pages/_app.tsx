@@ -14,14 +14,15 @@ import "@radix-ui/themes/styles.css";
 import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import { styled } from "stitches.config";
+import styled, { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { theme } from "../theme";
 
-const Footer = styled("footer", {
-  textAlign: "center",
-  margin: "$medium 0",
-});
+const Footer = styled.footer`
+  text-align: center;
+  margin: ${props => props.theme.space.medium} 0;
+`;
 
 function App({ Component, pageProps, name, id, email, role, tournaments }: AppProps) {
   const [queryClient] = useState(() => new QueryClient({
@@ -38,15 +39,17 @@ function App({ Component, pageProps, name, id, email, role, tournaments }: AppPr
       <AuthProvider name={name} email={email} id={id} role={role} tournaments={tournaments}>
         <Provider store={store}>
           <IntlContextProvider>
-            {/* @ts-ignore */}
-            <Theme>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-              <Footer>
-                <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
-              </Footer>
-            </Theme>
+            <StyledThemeProvider theme={theme}>
+              {/* @ts-ignore */}
+              <Theme>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+                <Footer>
+                  <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
+                </Footer>
+              </Theme>
+            </StyledThemeProvider>
           </IntlContextProvider>
         </Provider>
       </AuthProvider>

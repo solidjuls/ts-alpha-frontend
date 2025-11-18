@@ -1,18 +1,17 @@
 "use client";
 import { useEffect, useMemo } from "react";
+import styled from "styled-components";
 import { FlagIcon } from "components/FlagIcon";
-import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { Game, TournamentsType } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
-import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
+import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer } from "./Homepage.styles";
 import MultiSelect from "components/MultiSelect";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
-import { styled } from "stitches.config";
 import { Button } from "components/Button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
@@ -52,9 +51,9 @@ const PlayerInfoBox = ({
   "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode"
 >) => {
   return (
-    <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Box
-        css={{
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      <div
+        style={{
           display: "flex",
           margin: "0 8px 0 8px",
           flexDirection: "row",
@@ -66,10 +65,10 @@ const PlayerInfoBox = ({
         <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USA" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
-      </Box>
+      </div>
       <span>vs</span>
-      <Box
-        css={{
+      <div
+        style={{
           display: "flex",
           margin: "0 8px 0 8px",
           flexDirection: "row",
@@ -81,16 +80,16 @@ const PlayerInfoBox = ({
         <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USSR" ? "bold" : undefined}>
           {ussrPlayer}
         </Text>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
-      <Flex
-        css={{
+      <div
+        style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
@@ -104,7 +103,7 @@ const ResultRow = ({ game }: { game: Game }) => {
           {game.gameType}
         </Text>
         <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
-      </Flex>
+      </div>
 
       <PlayerInfoBox
         usaCountryCode={game.usaCountryCode}
@@ -121,7 +120,7 @@ const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() 
 
 const EmptyState = () => {
   return (
-    <Box
+    <div
       css={{
         display: "flex",
         justifyContent: "center",
@@ -133,7 +132,7 @@ const EmptyState = () => {
       <Text css={{ fontSize: "20px" }} strong="bold">
         No games
       </Text>
-    </Box>
+    </div>
   );
 };
 
@@ -159,7 +158,7 @@ const FilterUser: React.FC<FilterUserProps> = ({
   );
 
   return (
-    <Box css={{ margin: "4px" }}>
+    <div css={{ margin: "4px" }}>
       <MultiSelect
         items={usersMemo}
         placeholder="Select Players..."
@@ -167,7 +166,7 @@ const FilterUser: React.FC<FilterUserProps> = ({
         setSelectedValues={setSelectedValues}
         closeOnSelect={false}
       />
-    </Box>
+    </div>
   );
 };
 const FilterTournament: React.FC<FilterTournamentProps> = ({
@@ -181,7 +180,7 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
   );
 
   return (
-    <Box css={{ margin: "4px" }}>
+    <div css={{ margin: "4px" }}>
       <MultiSelect
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
@@ -189,7 +188,7 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
         setSelectedValues={setSelectedValues}
         closeOnSelect={false}
       />
-    </Box>
+    </div>
   );
 };
 
@@ -240,11 +239,11 @@ console.log("tournaments", tournaments)
         onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
         checked={videoSelected}
       />
-      <Flex>
+      <div css={{ display: "flex" }}>
         <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
         </Button>
-      </Flex>
+      </div>
     </FilterPanel>
   );
 };
@@ -252,11 +251,11 @@ console.log("tournaments", tournaments)
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
-      <Flex css={{ width: "100%" }}>
+      <div css={{ display: 'flex', width: "100%" }}>
         <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
           <Spinner />
         </StyledResultsPanel>
-      </Flex>
+      </div>
     );
   }
   return (
@@ -270,22 +269,15 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
   );
 };
 
-const ResponsiveContainer = styled("div", {
+const ResponsiveContainer = styled.div`
   display: "flex",
   flexDirection: "row",
   width: "100%",
   maxWidth: "1100px",
-  variants: {
-    direction: {
-      row: {
-        flexDirection: "row",
-      },
-      column: {
-        flexDirection: "column",
-      },
-    },
-  },
-});
+  @media (max-width: 768px) {
+    flexDirection: "column";
+  }
+`
 
 const Homepage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -308,7 +300,7 @@ const Homepage: React.FC = () => {
         "@sm": "column",
       }}
     >
-      <Flex css={{ flexDirection: "column", width: "100%" }}>
+      <GlobalContainer>
         <Filter />
         <ResultsPanel
           data={items.results}
@@ -323,10 +315,10 @@ const Homepage: React.FC = () => {
             onPageChange={onPageChange}
           />
         )}
-      </Flex>
-      <Box>
+      </GlobalContainer>
+      <div>
         <TopPlayerRating />
-      </Box>
+      </div>
     </ResponsiveContainer>
   );
 };
