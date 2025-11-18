@@ -152,6 +152,44 @@ const SubmitGameForm = ({
         />
 
         <Controller
+          name="gameWinner"
+          control={control}
+          rules={{ required: "Please select game winner" }}
+          render={({ field }) => (
+            <DropdownWithLabel
+              labelText="gameWinner"
+              placeholder="Game winner"
+              items={gameWinningOptions}
+              selectedItem={field.value}
+              selectedValueProperty="value"
+              selectedInputProperty="text"
+              error={!!errors.playedAs}
+              css={{ width: dropdownWidth }}
+              onSelect={field.onChange}
+            />
+          )}
+        />
+
+        <Controller
+          name="endTurn"
+          control={control}
+          rules={{ required: "End turn is required" }}
+          render={({ field }) => (
+            <DropdownWithLabel
+              labelText="endTurn"
+              placeholder="End turn"
+              selectedItem={field.value}
+              selectedValueProperty="value"
+              selectedInputProperty="text"
+              error={!!errors.endTurn}
+              items={turns}
+              css={{ width: dropdownWidth }}
+              onSelect={field.onChange}
+            />
+          )}
+        />
+
+        <Controller
           name="endMode"
           control={control}
           rules={{ required: "Please select the victory type" }}

@@ -1,5 +1,5 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import gamesService, { GameListResponse, GetGamesParams, Game } from '../services/games.service';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import gamesService, { GameListResponse, GetGamesParams, Game, SubmitGameData } from '../services/games.service';
 
 // Query keys for React Query
 export const GAMES_QUERY_KEYS = {
@@ -131,5 +131,22 @@ export const useGamesByTournaments = (
     staleTime: 5 * 60 * 1000, // 5 minutes
     keepPreviousData: true,
     ...options,
+  });
+};
+
+// Hook for submitting a game
+export const useSubmitGame = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: SubmitGameData) => gamesService.submitGame(data),
+    onSuccess: () => {
+      // Invalidate and refetch games lists
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.homepage() });
+    },
+    onError: (error: any) => {
+      console.error('Submit game failed:', error);
+    },
   });
 };

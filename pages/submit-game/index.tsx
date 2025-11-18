@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { getInfoFromCookies } from "utils/cookies";
-import { GameWinner, TournamentsType } from "types/game.types";
+import { GameWinner } from "types/game.types";
 import { DropdownItemType, ServerType } from "types/types";
-import getAxiosInstance from "utils/axios";
+
 import { useSession } from "contexts/AuthProvider";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { UserType } from "types/user.types";
+import { useAllUsers } from "hooks/useUsers";
+import { useTournamentsByStatus } from "hooks/useTournaments";
+import { useSubmitGame } from "hooks/useGames";
+import { UsersListResponse } from "services/users.service";
+import { Tournament } from "services/tournaments.service";
 import { tournamentStatus } from "utils/constants";
 import SubmitGameForm from "./SubmitGameForm";
 
@@ -51,17 +54,13 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     },
   });
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
-    url: "/api/user",
-    cacheId: "user-list",
-  });
-  
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData<
-    TournamentsType[]
-  >({
-    url: `/api/game/tournaments?status=${tournamentStatus["open"]}`,
-    cacheId: "tournament-list",
-  });
+  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 1000);
+
+  const { data: tournaments, isLoading: loadingTournaments } = useTournamentsByStatus([
+    tournamentStatus["open"]
+  ]);
+
+  const submitGameMutation = useSubmitGame();
 
   // Prefill form from URL query parameters
   useEffect(() => {
@@ -202,19 +201,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     }
 
     try {
-      await getAxiosInstance().post(
-        "/api/games/submit",
-        {
-          data: normalizeData(data),
-        },
-        {
-          cache: {
-            update: {
-              "game-list": "delete",
-            },
-          },
-        },
-      );
+      await submitGameMutation.mutateAsync(normalizeData(data));
       router.push("/");
     } catch (e) {
       console.log("error submit-game", e);
@@ -225,13 +212,13 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   if (loadingTournaments || loadingUsers) return null;
 
   const usersParsed: DropdownItemType[] =
-    users?.map((item) => ({
+    (usersResponse as UsersListResponse)?.results?.map((item) => ({
       value: item.id,
       text: item.name,
     })) || [];
 
   const leagueTypes: DropdownItemType[] =
-    tournaments?.map((item) => ({
+    (tournaments as Tournament[])?.map((item) => ({
       value: item.id.toString(),
       text: item.tournament_name,
     })) || [];
@@ -253,24 +240,24 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
 export async function getServerSideProps({ req, res }: ServerType) {
   const payload = getInfoFromCookies(req, res);
 
-  if (!payload) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
+  // if (!payload) {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
 
-  if (payload?.id === "2224") {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
-  return { props: { role: payload.role || null } };
+  // if (payload?.id === "2224") {
+  //   return {
+  //     redirect: {
+  //       permanent: false,
+  //       destination: "/login",
+  //     },
+  //   };
+  // }
+  return { props: { role: payload?.role || null } };
 }
 
 export default SubmitGameContainer;

@@ -47,6 +47,17 @@ export interface GetGamesParams {
   video?: boolean; // filter games with videos
 }
 
+export interface SubmitGameData {
+  gameWinner: string;
+  gameCode: string;
+  gameType: string;
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  endTurn: string;
+  endMode: string;
+  video1?: string;
+}
+
 class GamesService {
   private axiosInstance;
 
@@ -94,6 +105,13 @@ class GamesService {
       p: page,
       pageSize: 20,
     });
+  }
+
+  async submitGame(data: SubmitGameData): Promise<any> {
+    const response = await this.axiosInstance.post('/games/submit', {
+      data: data
+    });
+    return response.data;
   }
 }
 
