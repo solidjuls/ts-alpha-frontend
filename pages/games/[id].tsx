@@ -1,17 +1,17 @@
 import { useState } from "react";
 import type { GetServerSideProps } from "next";
-import type { Game, GameAPIResponseType } from "types/game.types";
-import { Box, Span, Flex } from "components/Atoms";
+import type { Game } from "services/games.service";
+import type { GameWinner } from "types/game.types";
+import { Span, Flex } from "components/Atoms";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { DetailContainer } from "components/DetailContainer";
 import Text from "components/Text";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
-import { styled } from "stitches.config";
+import styled from "styled-components";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText, getTurnText } from "utils/games";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { useGames } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
 import { UnstyledLink } from "components/Homepage/Homepage.styles";
@@ -30,43 +30,39 @@ const spanStyle = {
   },
 }
 
-const StyledLink = styled(Link, {
-  textDecoration: "none",
-  color: "Black",
-  variants: {
-    borderBottom: {
-      usa: {
-        borderBottom: "2px solid blue",
-      },
-      ussr: {
-        borderBottom: "2px solid red",
-      },
-    },
-  },
-});
+interface StyledLinkProps {
+  borderBottom?: "usa" | "ussr";
+}
 
-const StyledChevronDownIcon = styled(ChevronDownIcon, {
-  position: "absolute",
-  variants: {
-    color: {
-      red: { color: "red" },
-      green: { color: "green" },
-    },
-  },
-});
+const StyledLink = styled(Link)<StyledLinkProps>`
+  text-decoration: none;
+  color: Black;
 
-const StyledChevronUpIcon = styled(ChevronUpIcon, {
-  position: "absolute",
-  variants: {
-    color: {
-      red: { color: "red" },
-      green: { color: "green" },
-    },
-  },
-});
+  ${props => props.borderBottom === "usa" && `
+    border-bottom: 2px solid blue;
+  `}
+
+  ${props => props.borderBottom === "ussr" && `
+    border-bottom: 2px solid red;
+  `}
+`;
+
+interface ChevronIconProps {
+  color?: "red" | "green";
+}
+
+const StyledChevronDownIcon = styled(ChevronDownIcon)<ChevronIconProps>`
+  position: absolute;
+  color: ${props => props.color || "black"};
+`;
+
+const StyledChevronUpIcon = styled(ChevronUpIcon)<ChevronIconProps>`
+  position: absolute;
+  color: ${props => props.color || "black"};
+`;
 type PlayerNameProps = {
   playerName: string;
-  userId: bigint;
+  userId: string;
   rating: number;
   previousRating: number;
   countryCode: string;
@@ -140,7 +136,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
       loserName = data.usaPlayer + " " + flags[data.usaCountryCode?.toLowerCase()];
     }
 
-    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
+    return `${data.gameType}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner as GameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
   };
 
   return (
@@ -178,7 +174,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
             <Span style={spanStyle}>{data.gameType}</Span>
             <Span>{data.game_code}</Span>
-            <Span>{getWinnerText(data.gameWinner)}</Span>
+            <Span>{getWinnerText(data.gameWinner as GameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>
             <Span>{endMode}</Span>
             <Span>{data.created_at ? dateFormat(new Date(data.created_at)) : null}</Span>
@@ -214,37 +210,60 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
   );
 };
 
+const GameContainer = styled.div<{ isLoading: boolean }>`
+  display: flex;
+  width: 100%;
+  max-width: 48rem;
+  flex-direction: column;
+  background-color: white;
+  padding: 24px 0 0 0;
+  align-items: center;
+  justify-content: ${props => props.isLoading ? "center" : "flex-start"};
+  height: ${props => props.isLoading ? "250px" : "auto"};
+  border: solid 1px lightgray;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+`;
+
 const Game: React.FC<GameProps> = ({ gameId }) => {
-  const router = useRouter();
+  // Use the games endpoint with ID filter to get full game details including ratings and player info
+  const { data, isLoading, error } = useGames({ id: gameId });
 
-  const { data, isLoading } = useFetchInitialData<GameAPIResponseType>({
-    url: `/api/game?id=${gameId}`,
-  });
-  if (!data) return null;
-
-  if (data.results && data.results.length === 0) {
-    return null;
+  if (error) {
+    return (
+      <DetailContainer>
+        <GameContainer isLoading={false}>
+          <div>Error loading game details</div>
+        </GameContainer>
+      </DetailContainer>
+    );
   }
+
+  if (!data && !isLoading) {
+    return (
+      <DetailContainer>
+        <GameContainer isLoading={false}>
+          <div>Game not found</div>
+        </GameContainer>
+      </DetailContainer>
+    );
+  }
+
+  if (data && data.results && data.results.length === 0) {
+    return (
+      <DetailContainer>
+        <GameContainer isLoading={false}>
+          <div>Game not found</div>
+        </GameContainer>
+      </DetailContainer>
+    );
+  }
+
   return (
     <DetailContainer>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          maxWidth: "48rem",
-          flexDirection: "column",
-          backgroundColor: "white",
-          padding: "24px 0 0 0",
-          alignItems: "center",
-          justifyContent: isLoading ? "center" : "flex-start",
-          height: isLoading ? "250px" : "auto",
-          border: "solid 1px lightgray",
-          borderRadius: "8px",
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        }}
-      >
-        {isLoading ? <Spinner size="3" /> : <GameContent data={data.results[0]} />}
-      </div>
+      <GameContainer isLoading={isLoading}>
+        {isLoading ? <Spinner size="3" /> : data && data.results && data.results[0] && <GameContent data={data.results[0]} />}
+      </GameContainer>
     </DetailContainer>
   );
 };

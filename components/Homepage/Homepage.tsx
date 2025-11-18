@@ -121,7 +121,7 @@ const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() 
 const EmptyState = () => {
   return (
     <div
-      css={{
+      style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",

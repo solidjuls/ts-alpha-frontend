@@ -1,31 +1,48 @@
 import { DisplayInfo } from "components/DisplayInfo";
 import { getInfoFromCookies } from "utils/cookies";
-import { Box, Flex } from "components/Atoms";
 import { DetailContainer } from "components/DetailContainer";
 import { Spinner } from "@radix-ui/themes";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { useUserById } from "hooks/useUsers";
+import { useGamesByUsers } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
-import { Game, User } from "types/game.types";
-import { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from "next/types";
+import { UserDetail } from "services/users.service";
+import { Game as ServiceGame } from "services/games.service";
+import { Game as ComponentGame, GameWinner } from "types/game.types";
+import { NextApiRequest, NextApiResponse } from "next/types";
 import { ParsedUrlQuery } from "querystring";
+import styled from "styled-components";
 
-const UserProfileContent: React.FC<User> = (data) => (
+// Convert service Game type to component Game type
+const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentGame => ({
+  ...serviceGame,
+  id: BigInt(serviceGame.id),
+  usaPlayerId: BigInt(serviceGame.usaPlayerId),
+  ussrPlayerId: BigInt(serviceGame.ussrPlayerId),
+  reporter_id: serviceGame.reporter_id ? BigInt(serviceGame.reporter_id) : null,
+  gameWinner: serviceGame.gameWinner as GameWinner,
+  created_at: serviceGame.created_at ? new Date(serviceGame.created_at) : null,
+  updated_at: serviceGame.updated_at ? new Date(serviceGame.updated_at) : null,
+  reported_at: new Date(serviceGame.reported_at),
+  gameDate: new Date(serviceGame.gameDate),
+});
+
+const UserProfileContent: React.FC<UserDetail> = (data) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
-    <DisplayInfo label="Federation" infoText={data?.countries?.country_name} />
+    <DisplayInfo label="Federation" infoText={data?.countries?.country_name || "-"} />
     <DisplayInfo label="Playdek" infoText={data?.name} />
-    <DisplayInfo label="Location" infoText={data?.cities?.name} />
-    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform} />
+    <DisplayInfo label="Location" infoText={data?.cities?.name || "-"} />
+    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform || "-"} />
     <DisplayInfo label="Email" infoText={data?.email} />
 
-    <DisplayInfo label="Rating" infoText={data?.rating?.toString()} />
+    <DisplayInfo label="Rating" infoText={data?.rating?.toString() || "-"} />
     <DisplayInfo label="Regional federation" infoText="-" />
     <DisplayInfo
       label="Last activity date"
       infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
     />
-    <DisplayInfo label="Preferred game duration" infoText={data?.preferred_game_duration} />
+    <DisplayInfo label="Preferred game duration" infoText={data?.preferred_game_duration || "-"} />
   </>
 );
 
@@ -33,45 +50,64 @@ interface UserProfileProps {
   id: string;
 }
 
-type GameResponseType = {
-  results: Game[];
-  totalRows: number;
-};
+// Styled components for the profile layout
+const ProfileContainer = styled.div`
+  display: grid;
+  gap: 0.25rem;
+  max-width: 48rem;
+  height: ${props => props.userLoading ? "250px" : "auto"};
+  grid-template-columns: 1fr 2fr;
+  background-color: white;
+  padding: 24px 0 24px 24px;
+  align-items: left;
+  border: solid 1px lightgray;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+`;
+
+const RecentGamesContainer = styled.div`
+  display: flex;
+  width: 100%;
+  border-radius: 0;
+  margin: 32px 0 0 0;
+  flex-direction: column;
+`;
+
 const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
-  const { data, isLoading } = useFetchInitialData<User>({ url: `/api/user?id=${id}` });
-  const { data: games, isLoading: loadingGames } = useFetchInitialData<GameResponseType>({
-    url: `/api/game?userFilter=${id}&pageSize=10`,
-  });
+  // Use NestJS endpoints with React Query
+  const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
+  const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], 1, 10);
+
+  // Handle errors
+  if (userError) {
+    return (
+      <DetailContainer>
+        <ProfileContainer style={{ height: "250px" }}>
+          <div>Error loading user profile</div>
+        </ProfileContainer>
+      </DetailContainer>
+    );
+  }
 
   return (
     <>
       <DetailContainer>
-        <div
-          style={{
-            display: "grid",
-            gap: "0.25rem",
-            maxWidth: "48rem",
-            gridTemplateColumns: "1fr 2fr",
-            backgroundColor: "white",
-            padding: "24px 0 24px 24px",
-            alignItems: "left",
-            border: "solid 1px lightgray",
-            height: isLoading ? "250px" : "auto",
-            borderRadius: "8px",
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-            width: "100%",
-          }}
-        >
-          {isLoading || !data ? <Spinner size="3" /> : <UserProfileContent {...data} />}
-        </div>
+        <ProfileContainer userLoading={userLoading}>
+          {userLoading || !userData ? <Spinner size="3" /> : <UserProfileContent {...userData} />}
+        </ProfileContainer>
       </DetailContainer>
       <DetailContainer backButton={false}>
-        <div
-          style={{ display: "flex", width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
-        >
+        <RecentGamesContainer>
           Recent Games
-          {loadingGames || !games ? <Spinner size="3" /> : <ResultsPanel data={games.results} />}
-        </div>
+          {gamesError ? (
+            <div>Error loading recent games</div>
+          ) : gamesLoading || !gamesData ? (
+            <Spinner size="3" />
+          ) : (
+            <ResultsPanel data={gamesData.results.map(convertServiceGameToComponentGame)} />
+          )}
+        </RecentGamesContainer>
       </DetailContainer>
     </>
   );
