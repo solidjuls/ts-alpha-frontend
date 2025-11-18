@@ -1,9 +1,9 @@
 import { styled } from "stitches.config";
-import { Box } from "components/Atoms";
 import Text from "components/Text";
-import { User } from "components/User";
+import { FlagIcon } from "components/FlagIcon";
 import { SkeletonPlayers } from "components/Skeletons";
 import useFetchInitialData from "hooks/useFetchInitialData";
+import { UserType } from "types/user.types";
 
 const SidePanelStyled = styled("div", {
   display: "flex",
@@ -15,6 +15,18 @@ const SidePanelStyled = styled("div", {
   borderRadius: "12px",
   width: "240px",
 });
+
+const User = ({ name, rating, countryCode }: UserType) => {
+  return (
+    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <FlagIcon code={countryCode} />
+        <Text>{name}</Text>
+      </div>
+      <Text>{rating}</Text>
+    </div>
+  );
+};
 
 const Announcement = () => {
   return (
@@ -31,7 +43,7 @@ const TopPlayerRating = () => {
   return (
     <SidePanelStyled>
       <Text
-        css={{
+        style={{
           textAlign: "center",
           fontSize: "20px",
           borderBottom: "solid 1px $greyLight",
@@ -41,11 +53,11 @@ const TopPlayerRating = () => {
         Top Players
       </Text>
       {isLoading && <SkeletonPlayers />}
-      <Box>
+      <div>
         {data.results?.map((item, index) => (
           <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
         ))}
-      </Box>
+      </div>
     </SidePanelStyled>
   );
 };

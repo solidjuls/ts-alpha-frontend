@@ -270,12 +270,12 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
 };
 
 const ResponsiveContainer = styled.div`
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  maxWidth: "1100px",
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1100px;
   @media (max-width: 768px) {
-    flexDirection: "column";
+    flex-direction: "column";
   }
 `
 
@@ -294,12 +294,7 @@ const Homepage: React.FC = () => {
   };
 
   return (
-    <ResponsiveContainer
-      direction={{
-        "@initial": "row",
-        "@sm": "column",
-      }}
-    >
+    <ResponsiveContainer>
       <GlobalContainer>
         <Filter />
         <ResultsPanel
