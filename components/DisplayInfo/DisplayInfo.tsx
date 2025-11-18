@@ -9,10 +9,10 @@ type DisplayInfoProps = {
 
 const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "300px" }) => {
   return (
-    <Flex css={{ flexDirection: "column", maxWidth }}>
+    <div style={{ display: "flex",flexDirection: "column", maxWidth }}>
       <StyledLabel htmlFor="userName">{label}</StyledLabel>
       <StyledLabelInfo id="userName">{infoText || "-"}</StyledLabelInfo>
-    </Flex>
+    </div>
   );
 };
 

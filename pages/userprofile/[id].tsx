@@ -46,8 +46,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
   return (
     <>
       <DetailContainer>
-        <Box
-          css={{
+        <div
+          style={{
             display: "grid",
             gap: "0.25rem",
             maxWidth: "48rem",
@@ -63,15 +63,15 @@ const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
           }}
         >
           {isLoading || !data ? <Spinner size="3" /> : <UserProfileContent {...data} />}
-        </Box>
+        </div>
       </DetailContainer>
       <DetailContainer backButton={false}>
-        <Flex
-          css={{ width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
+        <div
+          style={{ display: "flex", width: "100%", borderRadius: "0", margin: "32px 0 0 0", flexDirection: "column" }}
         >
           Recent Games
           {loadingGames || !games ? <Spinner size="3" /> : <ResultsPanel data={games.results} />}
-        </Flex>
+        </div>
       </DetailContainer>
     </>
   );

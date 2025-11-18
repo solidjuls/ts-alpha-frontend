@@ -145,7 +145,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
 
   return (
     <>
-      <Flex css={{ alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", marginLeft: "16px", marginBottom: "12px" }}>
         <PlayerName
           playerName={data.usaPlayer}
           userId={data.usaPlayerId}
@@ -162,10 +162,10 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           countryCode={data.ussrCountryCode}
           isUSSR
         />
-      </Flex>
-      <Flex css={{ flexDirection: "column", alignItems: "center", marginBottom: "8px" }}>
-        <Box css={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
-          <Flex css={{ flexDirection: "column", alignItems: "end" }}>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "8px" }}>
+        <div style={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "5fr 0.1fr 5fr" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "end" }}>
             <Span>Tournament:</Span>
             <Span>Identifier:</Span>
             <Span>Won by:</Span>
@@ -173,10 +173,10 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
             <Span>Via:</Span>
             <Span>Date:</Span>
             {data.videoURL && <Span>Video:</Span>}
-          </Flex>
-          <Box css={{ width: "5px" }} />
-          <Flex css={{ flexDirection: "column", alignItems: "start" }}>
-            <Span css={spanStyle}>{data.gameType}</Span>
+          </div>
+          <div style={{ width: "5px" }} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+            <Span style={spanStyle}>{data.gameType}</Span>
             <Span>{data.game_code}</Span>
             <Span>{getWinnerText(data.gameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>
@@ -187,18 +187,18 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
                 Link to video
               </a>
             )}
-          </Flex>
-        </Box>
-      </Flex>
+          </div>
+        </div>
+      </div>
       {role === userRoles.SUPERADMIN && (
         <>
           <Flex>
-            <Button css={{ width: "150px", margin: "8px" }}>
+            <Button style={{ width: "150px", margin: "8px" }}>
               <UnstyledLink href={linkToRecreate} target="_blank">
                 Recreate game
               </UnstyledLink>
             </Button>
-            <Button css={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
+            <Button style={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
               Delete this game
             </Button>
           </Flex>
@@ -227,8 +227,9 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   }
   return (
     <DetailContainer>
-      <Flex
-        css={{
+      <div
+        style={{
+          display: "flex",
           width: "100%",
           maxWidth: "48rem",
           flexDirection: "column",
@@ -243,7 +244,7 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
         }}
       >
         {isLoading ? <Spinner size="3" /> : <GameContent data={data.results[0]} />}
-      </Flex>
+      </div>
     </DetailContainer>
   );
 };
@@ -271,21 +272,21 @@ const Rating = ({
   isUSSR?: Boolean;
 }) => {
   return !isUSSR ? (
-    <Flex css={{ justifyContent: "flex-end", margin: "0 8px 0 8px" }}>
+    <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end", margin: "0 8px 0 8px"}}>
       <Text fontSize="small">{previousRating}</Text>
-      <Box css={{ position: "relative", marginLeft: "4px", width: "15px" }}>
+      <div style={{ position: "relative", marginLeft: "4px", width: "15px"  }}>
         <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
-      </Box>
+      </div>
       <Text fontSize="small">{rating}</Text>
-    </Flex>
+    </div>
   ) : (
-    <Flex css={{ margin: "0 8px 0 8px" }}>
+    <div style={{ display: "flex", flexDirection: "row", margin: "0 8px 0 8px"}}>
       <Text fontSize="small">{rating}</Text>
-      <Box css={{ position: "relative", marginRight: "4px", width: "15px" }}>
+      <div style={{ position: "relative", marginRight: "4px", width: "15px" }}>
         <ChevronContainer rating={Number(rating)} previousRating={previousRating} />
-      </Box>
+      </div>
       <Text fontSize="small">{previousRating}</Text>
-    </Flex>
+    </div>
   );
 };
 
@@ -298,30 +299,30 @@ const PlayerName: React.FC<PlayerNameProps> = ({
   isUSSR,
 }) => {
   return (
-    <Flex css={{ flexDirection: "column" }}>
-      <Flex css={{ margin: "0 8px 0 8px", display: "flex", alignItems: "flex-end" }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", flexDirection: "row", margin: "0 8px 0 8px", alignItems: "flex-end" }}>
         {!isUSSR ? (
           <>
             <StyledLink borderBottom="usa" href={`/userprofile/${userId}`}>
               {playerName}
             </StyledLink>
-            <Flex css={{ flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <FlagIcon code={countryCode} />
-            </Flex>
+            </div>
           </>
         ) : (
           <>
-            <Flex css={{ flexDirection: "column" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <FlagIcon code={countryCode} />
-            </Flex>
+            </div>
             <StyledLink borderBottom="ussr" href={`/userprofile/${userId}`}>
               {playerName}
             </StyledLink>
           </>
         )}
-      </Flex>
+      </div>
       <Rating rating={rating} previousRating={previousRating} isUSSR={isUSSR} />
-    </Flex>
+    </div>
   );
 };
 
