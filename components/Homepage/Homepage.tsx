@@ -34,11 +34,11 @@ type ResultsPanelProps = {
   isLoading?: boolean;
 };
 
-const responsive = {
-  "@sm": {
-    display: "none",
-  },
-};
+const ResponsiveText = styled(Text)`
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
 
 const PlayerInfoBox = ({
   usaPlayer,
@@ -96,12 +96,12 @@ const ResultRow = ({ game }: { game: Game }) => {
           margin: "0 0 0 8px",
         }}
       >
-        <Text fontSize="small" css={{ alignSelf: "center", ...responsive }}>
+        <ResponsiveText fontSize="small" style={{ alignSelf: "center" }}>
           {`Game #${game.id}`}
-        </Text>
-        <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4, ...responsive }}>
+        </ResponsiveText>
+        <ResponsiveText fontSize="small" style={{ alignSelf: "center", marginLeft: 4 }}>
           {game.gameType}
-        </Text>
+        </ResponsiveText>
         <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
       </div>
 
@@ -129,7 +129,7 @@ const EmptyState = () => {
         height: "320px",
       }}
     >
-      <Text css={{ fontSize: "20px" }} strong="bold">
+      <Text style={{ fontSize: "20px" }} strong="bold">
         No games
       </Text>
     </div>
@@ -158,7 +158,7 @@ const FilterUser: React.FC<FilterUserProps> = ({
   );
 
   return (
-    <div css={{ margin: "4px" }}>
+    <div style={{ margin: "4px" }}>
       <MultiSelect
         items={usersMemo}
         placeholder="Select Players..."
@@ -180,7 +180,7 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
   );
 
   return (
-    <div css={{ margin: "4px" }}>
+    <div style={{ margin: "4px" }}>
       <MultiSelect
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
@@ -239,8 +239,8 @@ console.log("tournaments", tournaments)
         onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
         checked={videoSelected}
       />
-      <div css={{ display: "flex" }}>
-        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
+      <div style={{ display: "flex" }}>
+        <Button style={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
         </Button>
       </div>
@@ -251,8 +251,8 @@ console.log("tournaments", tournaments)
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
-      <div css={{ display: 'flex', width: "100%" }}>
-        <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
+      <div style={{ display: 'flex', width: "100%" }}>
+        <StyledResultsPanel style={{ justifyContent: "center", alignItems: "center" }}>
           <Spinner />
         </StyledResultsPanel>
       </div>
