@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
-import { Box, Flex } from "components/Atoms";
+import styled from "styled-components";
 import { Button } from "components/Button";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
@@ -13,12 +13,10 @@ import { dateIntlFormatter } from "utils/dates";
 import { useSession } from "contexts/AuthProvider";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
-import { styled } from "stitches.config";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
 import { useTournamentStateMachine } from "hooks/useTournamentStateMachine";
-import { TournamentState } from "machines/tournamentStateMachine";
 
 const DescriptionBox = styled("div", {
   marginTop: "8px",
@@ -29,23 +27,143 @@ const DescriptionBox = styled("div", {
   border: "1px solid #e9ecef"
 });
 
-const StatusText = styled("span", {
-  fontWeight: "500",
-  variants: {
-    type: {
-      registered: {
-        color: "#16a34a",
-      },
-      default: {
-        color: "#6b7280",
-      },
-      admin: {
-        color: "#6b7280",
-        fontWeight: "500",
-      }
-    }
+interface StatusTextProps {
+  $type?: 'registered' | 'default' | 'admin';
+}
+
+const StatusText = styled.span<StatusTextProps>`
+  font-weight: 500;
+
+  color: ${props => {
+    if (props.$type === 'registered') return '#16a34a';
+    if (props.$type === 'admin') return '#6b7280';
+    return '#6b7280';
+  }};
+
+  ${props => props.$type === 'admin' && `
+    font-weight: 500;
+  `}
+`;
+
+const NotFoundContainer = styled.div`
+  text-align: center;
+  padding: 40px;
+`;
+
+const TournamentCard = styled.div`
+  border: solid 1px lightgray;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background-color: white;
+`;
+
+const TournamentGrid = styled.div`
+  display: grid;
+  gap: 0.25rem;
+  max-width: 48rem;
+  grid-template-columns: 1fr 2fr;
+  padding: 24px 0 24px 24px;
+  align-items: left;
+  width: 100%;
+`;
+
+const DescriptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  grid-column: 1 / -1;
+`;
+
+const ActionSection = styled.div`
+  padding: 20px 24px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+
+const ManualRegistrationForm = styled.div`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  padding: 24px;
+`;
+
+const FormHeader = styled.div`
+  margin-bottom: 16px;
+`;
+
+const FormTitle = styled.h3`
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const FormDescription = styled.p`
+  margin: 8px 0 0 0;
+  color: #6b7280;
+  font-size: 14px;
+`;
+
+const FormRow = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+`;
+
+const FormField = styled.div`
+  flex: 1;
+`;
+
+interface RegisterButtonProps {
+  $isRegistered?: boolean;
+}
+
+const RegisterButton = styled(Button)<RegisterButtonProps>`
+  background-color: ${props => props.$isRegistered ? '#dc2626' : '#16a34a'};
+
+  &:hover {
+    background-color: ${props => props.$isRegistered ? '#b91c1c' : '#15803d'};
   }
-});
+`;
+
+const EditButton = styled(Button)`
+  background-color: #3b82f6;
+`;
+
+const ManualRegisterButton = styled(Button)`
+  background-color: #10b981;
+
+  &:hover {
+    background-color: #059669;
+  }
+
+  &:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+  }
+`;
+
+const ActionButton = styled(Button)<{ $variant?: string }>`
+  background-color: ${props => {
+    switch (props.$variant) {
+      case 'start-registration': return '#059669';
+      case 'close-registration': return '#dc2626';
+      case 'start-tournament': return '#7c3aed';
+      case 'close-tournament': return '#374151';
+      case 'waitlist-enabled': return '#f59e0b';
+      case 'waitlist-disabled': return '#6b7280';
+      default: return '#6b7280';
+    }
+  }};
+`;
 
 const ManualRegistrationInput = styled("input", {
   padding: "8px 12px",
@@ -83,26 +201,21 @@ const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering })
           }}>
             <div>
               {isUserRegistered && (
-                <StatusText type="registered">
+                <StatusText $type="registered">
                   ✓ You are registered for this tournament
                 </StatusText>
               )}
               {!isUserRegistered && (
-                <StatusText type="default">
+                <StatusText $type="default">
                   Click to register for this tournament
                 </StatusText>
               )}
             </div>
 
-            <Button
+            <RegisterButton
               onClick={onRegisterClick}
               disabled={isRegistering}
-              style={{
-                backgroundColor: isUserRegistered ? "#dc2626" : "#16a34a",
-                "&:hover": {
-                  backgroundColor: isUserRegistered ? "#b91c1c" : "#15803d",
-                }
-              }}
+              $isRegistered={isUserRegistered}
             >
               {isRegistering ? (
                 <Spinner size="1" />
@@ -377,24 +490,18 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
 
       {/* Manual Registration Form */}
       {showManualRegistration && (
-        <div style={{
-          backgroundColor: "white",
-          borderRadius: "8px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-          marginBottom: "24px",
-          padding: "24px"
-        }}>
-          <div style={{ marginBottom: "16px" }}>
-            <h3 style={{ margin: 0, color: "#1f2937", fontSize: "18px", fontWeight: "600" }}>
+        <ManualRegistrationForm>
+          <FormHeader>
+            <FormTitle>
               Register User Manually
-            </h3>
-            <p style={{ margin: "8px 0 0 0", color: "#6b7280", fontSize: "14px" }}>
+            </FormTitle>
+            <FormDescription>
               Search and select a user to register for this tournament
-            </p>
-          </div>
+            </FormDescription>
+          </FormHeader>
 
-          <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
-            <div style={{ flex: 1 }}>
+          <FormRow>
+            <FormField>
               <UserTypeahead
                 labelText=""
                 users={usersForDropdown}
@@ -405,25 +512,15 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
                 css={{ width: "100%" }}
                 error={false}
               />
-            </div>
-            <Button
+            </FormField>
+            <ManualRegisterButton
               onClick={onManualRegisterClick}
               disabled={!selectedUser || isManualRegistering}
-              style={{
-                backgroundColor: "#10b981",
-                "&:hover": {
-                  backgroundColor: "#059669",
-                },
-                "&:disabled": {
-                  backgroundColor: "#d1d5db",
-                  cursor: "not-allowed"
-                }
-              }}
             >
               {isManualRegistering ? <Spinner size="1" /> : "Register"}
-            </Button>
-          </div>
-        </div>
+            </ManualRegisterButton>
+          </FormRow>
+        </ManualRegistrationForm>
       )}
 
       {/* Edit Form */}
