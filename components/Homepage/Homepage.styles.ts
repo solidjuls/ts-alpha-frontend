@@ -14,7 +14,7 @@ export const PlayerInfo = styled.div`
   flex-direction: column;
   /* border-bottom: ${borderStyle}; */
   padding: 4px;
-  margin: 4px;
+  margin-bottom: 4px;
   border-width: 1px;
   border-radius: 6px;
   border: solid 1px #e5e7eb;
@@ -38,6 +38,7 @@ export const StyledCardRow = styled.div`
 export const StyledResultsPanel = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   background-color: #f8f9fa;
   border: solid 1px transparent;
   border-radius: 12px;

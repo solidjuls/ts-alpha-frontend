@@ -187,14 +187,14 @@ const HorizontalNavigation = () => {
 
   return (
     <HorizontalNavigationLayout>
-      <Box
-        css={{
+      <div
+        style={{
           display: "flex",
           flexDirection: "row",
         }}
       >
         <Items styles={horizontalItemStyles} role={role} />
-      </Box>
+      </div>
       {!name && (
         <UnstyledLink href="/login" passHref>
           <StyledText>
@@ -334,19 +334,20 @@ const VerticalSidebar = () => {
 const Navigation = () => {
   return (
     <>
-      <Flex
-        css={{
+      <div
+        style={{
+          display: "flex",
           backgroundColor: "var(--gray-200)",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          justifyContent: "center",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
           height: "50px",
+          width: "100%",
         }}
       >
         <VerticalSidebar />
         <HorizontalNavigation />
-      </Flex>
-      <img src="/menu-image.jpeg" style={{ width: "100%", height: "50%" }} />
+      </div>
     </>
   );
 };

@@ -272,7 +272,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
 const ResponsiveContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100%;
   max-width: 1100px;
   @media (max-width: 768px) {
     flex-direction: "column";

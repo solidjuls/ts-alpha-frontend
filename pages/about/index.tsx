@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { TopPlayerRating } from "components/TopPlayerRating";
+import { SimpleLayout } from "components/Layout";
 import Image from 'next/image'
 
 const WIDTH = 24;
@@ -8,22 +9,6 @@ const HEIGHT = 16;
 
 const RightBox = styled.div`
   float: right;
-`;
-
-const PageContainer = styled.div`
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.6;
-  margin: 0;
-  padding: 0;
-  background-color: var(--surface-ground);
-  color: #1f2937;
-`;
-
-const Header = styled.header`
-  background-color: #f8f9fa;
-  color: #1f2937;
-  padding: 16px;
-  text-align: center;
 `;
 
 const Main = styled.main`
@@ -35,9 +20,7 @@ const Main = styled.main`
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 `;
 
-const Title = styled.h1`
-  color: #1f2937;
-`;
+
 
 const Subtitle = styled.h2`
   color: #1f2937;
@@ -77,11 +60,10 @@ const Link = styled.a<LinkProps>`
 `;
 
 const AboutPage = () => (
-  <PageContainer>
-    <Header>
-      <Title>Welcome to Twilight-Struggle.com</Title>
-    </Header>
-
+  <SimpleLayout
+    title="Welcome to Twilight-Struggle.com"
+    subtitle="The home of competitive Twilight Struggle"
+  >
     <Main>
       <Section>
         <p>
@@ -480,7 +462,7 @@ const AboutPage = () => (
         </List>
       </Section>
     </Main>
-  </PageContainer>
+  </SimpleLayout>
 );
 
 export default AboutPage;

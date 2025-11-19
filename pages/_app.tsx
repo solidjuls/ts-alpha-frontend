@@ -3,7 +3,6 @@ import type { AppContext, AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
-import Layout from "components/Layout";
 
 import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as needed
 import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
@@ -14,17 +13,20 @@ import "@radix-ui/themes/styles.css";
 import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
 import { store } from "../redux/store";
-import styled, { ThemeProvider as StyledThemeProvider } from "styled-components";
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { theme } from "../theme";
 
-const Footer = styled.footer`
-  text-align: center;
-  margin: ${props => props.theme.space.medium} 0;
-`;
+interface CustomAppProps extends AppProps {
+  name?: string;
+  id?: string;
+  email?: string;
+  role?: number;
+  tournaments?: any[];
+}
 
-function App({ Component, pageProps, name, id, email, role, tournaments }: AppProps) {
+function App({ Component, pageProps, name, id, email, role, tournaments }: CustomAppProps) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
@@ -42,12 +44,7 @@ function App({ Component, pageProps, name, id, email, role, tournaments }: AppPr
             <StyledThemeProvider theme={theme}>
               {/* @ts-ignore */}
               <Theme>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
-                <Footer>
-                  <p>&copy; {new Date().getFullYear()} Twilight-Struggle.com | All rights reserved.</p>
-                </Footer>
+                <Component {...pageProps} />
               </Theme>
             </StyledThemeProvider>
           </IntlContextProvider>
@@ -61,7 +58,7 @@ App.getInitialProps = async (appContext: AppContext) => {
   const { ctx, Component } = appContext;
   const { req, res } = appContext.ctx;
 
-  const payload = getInfoFromCookies(req, res);
+  const payload = getInfoFromCookies(req as any, res as any);
 
   let pageProps = {};
   if (Component.getInitialProps) {
@@ -77,7 +74,7 @@ App.getInitialProps = async (appContext: AppContext) => {
     id: payload.id,
     email: payload.mail,
     role: payload.role,
-    tournaments: payload.tournaments
+    tournaments: payload.tournamentsRegistered || []
   };
 };
 
