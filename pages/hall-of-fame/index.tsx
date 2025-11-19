@@ -4,36 +4,36 @@ import { Flex } from "components/Atoms";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 
-const PageContainer = styled("div", {
-  fontFamily: "$body",
-  backgroundColor: "var(--surface-ground)",
-  color: "$text",
-  padding: "1rem",
-});
+const PageContainer = styled.div`
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--surface-ground);
+  color: #1f2937;
+  padding: 1rem;
+`;
 
-const Header = styled("header", {
-  backgroundColor: "$headerBg",
-  color: "$headerText",
-  padding: "$small",
-  textAlign: "center",
-  borderRadius: "8px",
-  marginBottom: "2rem",
-});
+const Header = styled.header`
+  background-color: #f8f9fa;
+  color: #1f2937;
+  padding: 16px;
+  text-align: center;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+`;
 
-const Title = styled("h1", { color: "$text" });
-const Subtitle = styled("h2", { marginTop: "2rem", color: "$text" });
+const Title = styled.h1`
+  color: #1f2937;
+`;
 
-const TableContainer = styled("div", {
-  width: "100%",
-  marginBottom: "2rem",
-  overflowX: "auto",
-});
+const Subtitle = styled.h2`
+  margin-top: 2rem;
+  color: #1f2937;
+`;
 
-const Table = styled("table", {
-  width: "100%",
-  borderCollapse: "collapse",
-  fontSize: "0.95rem",
-  backgroundColor: "transparent",
+const TableContainer = styled.div`
+  width: 100%;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+`;
 
   "th, td": { padding: "0.75rem", textAlign: "left" },
   th: { backgroundColor: "#365f65", color: "#fff", fontWeight: "bold" },
@@ -68,18 +68,67 @@ const Table = styled("table", {
   },
 });
 
-const Link = styled("a", {
-  color: "$link",
-  textDecoration: "none",
-  fontWeight: "bold",
-  "&:hover": { textDecoration: "underline", color: "$linkHover" },
-});
+  /* ----- MOBILE CARD STYLE ----- */
+  @media (max-width: 700px) {
+    border: 0;
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody, tr, td {
+      display: block;
+      width: 100%;
+    }
+
+    tr {
+      margin-bottom: 1rem;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+
+    td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      position: relative;
+
+      &::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: bold;
+        color: #365f65;
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+`;
+
+const Link = styled.a`
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+  }
+`;
+
+const PlayerCellContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
 
 const PlayerCell = ({ flag, name, id }: { flag?: string; name: string; id?: number }) => (
-  <Flex css={{ alignItems: "center", gap: "6px" }}>
+  <PlayerCellContainer>
     {flag && <FlagIcon code={flag} />}
     {id ? <Link href={`/userprofile/${id}`}>{name}</Link> : <Text>{name}</Text>}
-  </Flex>
+  </PlayerCellContainer>
 );
 
 interface HallOfFameEntry {
