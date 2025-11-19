@@ -1,4 +1,5 @@
 import { Spinner } from "@radix-ui/themes";
+import styled from "styled-components";
 import { getInfoFromCookies } from "utils/cookies";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import {
@@ -9,158 +10,173 @@ import {
 } from "utils/constants";
 import { ServerType } from "types/types";
 import Text from "components/Text";
-import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { Tournament } from "services/tournaments.service";
-import { styled } from "stitches.config";
 import { UnstyledLink } from "components/Schedule/Schedule.styles";
 import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
 
 // Tournament Table Styles
-const TournamentTable = styled("table", {
-  width: "100%",
-  maxWidth: "1460px",
-  borderCollapse: "collapse",
-  backgroundColor: "white",
-  borderRadius: "12px",
-  overflow: "hidden",
-  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-  margin: "16px",
-});
+const TournamentTable = styled.table`
+  width: 100%;
+  max-width: 1460px;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin: 16px;
+`;
 
-const TableHeader = styled("thead", {
-  backgroundColor: "$gray500",
-  color: "white",
-});
+const TableHeader = styled.thead`
+  background-color: #6b7280;
+  color: white;
+`;
 
-const TableHeaderCell = styled("th", {
-  padding: "16px 12px",
-  textAlign: "left",
-  fontWeight: "600",
-  fontSize: "14px",
-  textTransform: "uppercase",
-  letterSpacing: "0.05em",
-  borderBottom: "1px solid $greyLight",
+const TableHeaderCell = styled.th`
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
 
-  "&:first-child": {
-    paddingLeft: "20px",
-  },
-  "&:last-child": {
-    paddingRight: "20px",
-  },
+  &:first-child {
+    padding-left: 20px;
+  }
 
-  "@sm": {
-    padding: "12px 8px",
-    fontSize: "12px",
-    "&:first-child": {
-      paddingLeft: "12px",
-    },
-    "&:last-child": {
-      paddingRight: "12px",
-    },
-  },
-});
+  &:last-child {
+    padding-right: 20px;
+  }
 
-const TableBody = styled("tbody", {});
+  @media (max-width: 640px) {
+    padding: 12px 8px;
+    font-size: 12px;
 
-const TableRow = styled("tr", {
-  borderBottom: "1px solid $greyLight",
-  transition: "background-color 0.2s ease",
-  cursor: "pointer",
+    &:first-child {
+      padding-left: 12px;
+    }
 
-  "&:hover": {
-    backgroundColor: "#f8f9fa",
-  },
+    &:last-child {
+      padding-right: 12px;
+    }
+  }
+`;
 
-  "&:last-child": {
-    borderBottom: "none",
-  },
+const TableBody = styled.tbody``;
 
-  variants: {
-    status: {
-      closed: {
-        backgroundColor: "$redAlpha",
-        "&:hover": {
-          backgroundColor: "rgba(255, 0, 0, 0.5)",
-        },
-      },
-      open: {
-        backgroundColor: "$greenAlpha",
-        "&:hover": {
-          backgroundColor: "rgba(0, 128, 0, 0.5)",
-        },
-      },
-      registrationOpen: {
-        backgroundColor: "$blueAlpha",
-        "&:hover": {
-          backgroundColor: "rgba(0, 0, 255, 0.5)",
-        },
-      },
-    },
-  },
-});
+interface TableRowProps {
+  $status?: 'closed' | 'open' | 'registrationOpen';
+}
 
-const TableCell = styled("td", {
-  padding: "16px 12px",
-  verticalAlign: "middle",
-  fontSize: "14px",
+const TableRow = styled.tr<TableRowProps>`
+  border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
 
-  "&:first-child": {
-    paddingLeft: "20px",
-    fontWeight: "500",
-  },
-  "&:last-child": {
-    paddingRight: "20px",
-  },
+  &:hover {
+    background-color: ${props => {
+      if (props.$status === 'closed') return 'rgba(255, 0, 0, 0.5)';
+      if (props.$status === 'open') return 'rgba(0, 128, 0, 0.5)';
+      if (props.$status === 'registrationOpen') return 'rgba(0, 0, 255, 0.5)';
+      return '#f8f9fa';
+    }};
+  }
 
-  "@sm": {
-    padding: "12px 8px",
-    fontSize: "13px",
-    "&:first-child": {
-      paddingLeft: "12px",
-    },
-    "&:last-child": {
-      paddingRight: "12px",
-    },
-  },
-});
+  &:last-child {
+    border-bottom: none;
+  }
 
-const StatusBadge = styled("span", {
-  display: "inline-flex",
-  alignItems: "center",
-  padding: "4px 12px",
-  borderRadius: "20px",
-  fontSize: "12px",
-  fontWeight: "500",
-  textTransform: "capitalize",
+  background-color: ${props => {
+    if (props.$status === 'closed') return 'rgba(255, 0, 0, 0.1)';
+    if (props.$status === 'open') return 'rgba(0, 128, 0, 0.1)';
+    if (props.$status === 'registrationOpen') return 'rgba(0, 0, 255, 0.1)';
+    return 'transparent';
+  }};
+`;
 
-  variants: {
-    status: {
-      closed: {
-        backgroundColor: "#fee2e2",
-        color: "#dc2626",
-      },
-      open: {
-        backgroundColor: "#dcfce7",
-        color: "#16a34a",
-      },
-      registrationOpen: {
-        backgroundColor: "#dbeafe",
-        color: "#2563eb",
-      },
-    },
-  },
-});
+const TableCell = styled.td`
+  padding: 16px 12px;
+  vertical-align: middle;
+  font-size: 14px;
 
-const ResponsiveContainer = styled("div", {
-  width: "100%",
-  overflowX: "auto",
+  &:first-child {
+    padding-left: 20px;
+    font-weight: 500;
+  }
 
-  "@sm": {
-    overflowX: "scroll",
-  },
-});
+  &:last-child {
+    padding-right: 20px;
+  }
+
+  @media (max-width: 640px) {
+    padding: 12px 8px;
+    font-size: 13px;
+
+    &:first-child {
+      padding-left: 12px;
+    }
+
+    &:last-child {
+      padding-right: 12px;
+    }
+  }
+`;
+
+interface StatusBadgeProps {
+  $status?: 'closed' | 'open' | 'registrationOpen';
+}
+
+const StatusBadge = styled.span<StatusBadgeProps>`
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+
+  background-color: ${props => {
+    if (props.$status === 'closed') return '#fee2e2';
+    if (props.$status === 'open') return '#dcfce7';
+    if (props.$status === 'registrationOpen') return '#dbeafe';
+    return '#f3f4f6';
+  }};
+
+  color: ${props => {
+    if (props.$status === 'closed') return '#dc2626';
+    if (props.$status === 'open') return '#16a34a';
+    if (props.$status === 'registrationOpen') return '#2563eb';
+    return '#6b7280';
+  }};
+`;
+
+const ResponsiveContainer = styled.div`
+  width: 100%;
+  overflow-x: auto;
+
+  @media (max-width: 640px) {
+    overflow-x: scroll;
+  }
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const EmptyStateContainer = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+`;
 
 type TournamentStatusKey = keyof typeof tournamentStatus;
 const getVariant: (statusId: TournamentStatusType) => TournamentStatusKey = (statusId) => {
@@ -191,12 +207,12 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
     router.push(`/tournaments/${tournament.id}`);
   };
   return (
-    <TableRow onClick={onClick}>
+    <TableRow onClick={onClick} $status={statusVariant}>
       <TableCell>
         {tournament.tournament_name}
       </TableCell>
       <TableCell>
-        <StatusBadge status={statusVariant}>{statusName}</StatusBadge>
+        <StatusBadge $status={statusVariant}>{statusName}</StatusBadge>
       </TableCell>
       <TableCell>{adminsFormatted}</TableCell>
       <TableCell>{dateFormatted}</TableCell>
@@ -216,20 +232,14 @@ const Tournaments = ({ role } : { role: number }) => {
       {/* <Legend /> */}
 
       <ResponsiveContainer>
-        <Flex
-          css={{
-            flexDirection: "column",
-            width: "100%",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <HeaderContainer>
           <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
-      </Flex>
+        </HeaderContainer>
         {role === userRoles.SUPERADMIN && (
-          <Button css={{ marginLeft: "16px",width: "180px" }}>
+          <Button style={{ marginLeft: "16px", width: "180px" }}>
             <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
-        </Button>)}
+          </Button>
+        )}
         <TournamentTable>
           <TableHeader>
             <tr>
@@ -247,21 +257,12 @@ const Tournaments = ({ role } : { role: number }) => {
         </TournamentTable>
 
         {(!data || data.length === 0) && (
-          <Box
-            css={{
-              textAlign: "center",
-              padding: "40px",
-              color: "$gray500",
-              backgroundColor: "white",
-              borderRadius: "12px",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-            }}
-          >
+          <EmptyStateContainer>
             <Text fontSize="big">No tournaments found</Text>
-            <Text fontSize="medium" css={{ marginTop: "8px" }}>
+            <Text fontSize="medium" style={{ marginTop: "8px" }}>
               Create a new tournament to get started.
             </Text>
-          </Box>
+          </EmptyStateContainer>
         )}
       </ResponsiveContainer>
     </>
