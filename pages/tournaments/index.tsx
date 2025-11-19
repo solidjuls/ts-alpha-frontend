@@ -13,7 +13,6 @@ import { Box, Flex } from "components/Atoms";
 import { Button } from "components/Button";
 import { Tournament } from "services/tournaments.service";
 import { styled } from "stitches.config";
-import Legend from "./Legend";
 import { UnstyledLink } from "components/Schedule/Schedule.styles";
 import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";

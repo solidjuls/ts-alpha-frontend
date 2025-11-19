@@ -7,6 +7,8 @@ import tournamentsService, {
   TournamentAdmin,
   AddTournamentAdminRequest,
   RemoveTournamentAdminRequest,
+  AddToWaitlistRequest,
+  RemoveFromWaitlistRequest,
 } from '../services/tournaments.service';
 
 // Query keys for tournaments
@@ -224,6 +226,56 @@ export const useRemoveTournamentAdmin = () => {
         queryKey: [...tournamentKeys.detail(variables.tournamentId.toString()), 'admins']
       });
       // Invalidate tournament details to refresh adminId/adminName arrays
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(variables.tournamentId.toString())
+      });
+    },
+  });
+};
+
+// Waitlist Management Hooks
+
+export const useWaitlistPlayers = (tournamentId: number) => {
+  return useQuery({
+    queryKey: [...tournamentKeys.detail(tournamentId.toString()), 'waitlist'],
+    queryFn: () => tournamentsService.getWaitlistPlayers(tournamentId),
+    enabled: !!tournamentId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+export const useAddToWaitlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ tournamentId, data }: { tournamentId: number; data: AddToWaitlistRequest }) =>
+      tournamentsService.addToWaitlist(tournamentId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate waitlist query
+      queryClient.invalidateQueries({
+        queryKey: [...tournamentKeys.detail(variables.tournamentId.toString()), 'waitlist']
+      });
+      // Also invalidate tournament details
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(variables.tournamentId.toString())
+      });
+    },
+  });
+};
+
+export const useRemoveFromWaitlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ tournamentId, data }: { tournamentId: number; data: RemoveFromWaitlistRequest }) =>
+      tournamentsService.removeFromWaitlist(tournamentId, data),
+    onSuccess: (_, variables) => {
+      // Invalidate waitlist query
+      queryClient.invalidateQueries({
+        queryKey: [...tournamentKeys.detail(variables.tournamentId.toString()), 'waitlist']
+      });
+      // Also invalidate tournament details
       queryClient.invalidateQueries({
         queryKey: tournamentKeys.detail(variables.tournamentId.toString())
       });

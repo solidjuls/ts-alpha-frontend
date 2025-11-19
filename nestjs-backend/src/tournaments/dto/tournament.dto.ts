@@ -30,6 +30,23 @@ export interface RegisteredPlayerPublicDto {
   countryCode?: string;
 }
 
+export interface WaitlistPlayerDto {
+  waitlistId: number;
+  email: string; // Will be empty string for non-admin users
+  waitlistedAt: Date;
+  userId?: string;
+  name: string;
+  countryCode?: string;
+}
+
+export interface WaitlistPlayerPublicDto {
+  waitlistId: number;
+  waitlistedAt: Date;
+  userId?: string;
+  name: string;
+  countryCode?: string;
+}
+
 export interface GetTournamentsQueryDto {
   id?: string;
   status?: string;

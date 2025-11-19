@@ -132,6 +132,7 @@ model users {
   schedule_schedule_ussr_player_idTousers         schedule[]          @relation("schedule_ussr_player_idTousers")
   tournament_admins                               tournament_admins[]
   tournament_registration                         tournament_registration[]
+  tournament_waitlist                             tournament_waitlist[]
   user_game_stats                                 user_game_stats?
   cities                                          cities?             @relation(fields: [city_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_city_id_foreign")
   countries                                       countries?          @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_country_id_foreign")
@@ -202,6 +203,20 @@ model tournament_registration {
   @@index([userId], map: "fk_tournament_registration_user")
 }
 
+model tournament_waitlist {
+  id           Int         @id @default(autoincrement())
+  tournamentId Int
+  userId       BigInt      @db.UnsignedBigInt
+  created_at   DateTime?   @default(now()) @db.Timestamp(0)
+  updated_at   DateTime?   @default(now()) @db.Timestamp(0)
+  tournaments  tournaments @relation(fields: [tournamentId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist")
+  users        users       @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist_user")
+
+  @@unique([tournamentId, userId], map: "unique_tournament_user_waitlist")
+  @@index([tournamentId], map: "fk_tournament_waitlist")
+  @@index([userId], map: "fk_tournament_waitlist_user")
+}
+
 model tournaments {
   id                      Int                       @id @default(autoincrement())
   tournament_name         String                    @db.VarChar(255)
@@ -216,6 +231,7 @@ model tournaments {
   standings               standings[]
   tournament_admins       tournament_admins[]
   tournament_registration tournament_registration[]
+  tournament_waitlist     tournament_waitlist[]
   TournamentStatus        TournamentStatus          @relation(fields: [status_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tournaments_TournamentStatus_FK")
 
   @@index([status_id], map: "tournaments_TournamentStatus_FK")

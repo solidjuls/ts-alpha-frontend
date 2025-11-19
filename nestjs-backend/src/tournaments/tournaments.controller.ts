@@ -341,6 +341,76 @@ export class TournamentsController {
     }
   }
 
+  // GET /api/tournaments/:id/waitlist - Get waitlist players for tournament
+  @Get(':id/waitlist')
+  async getWaitlistPlayers(@Param('id') id: string, @CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournamentId = Number(id);
+      const userRole = user?.role || 1;
+      const userId = user?.id?.toString() || '';
+
+      const waitlistPlayers = await this.tournamentsService.getWaitlistPlayers(tournamentId, userRole, userId);
+      return waitlistPlayers;
+    } catch (error) {
+      console.error("TOURNAMENT WAITLIST GET API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // POST /api/tournaments/:id/waitlist - Add user to waitlist
+  @Post(':id/waitlist')
+  async addToWaitlist(@Param('id') id: string, @Body() body: { userId?: string }, @CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournamentId = Number(id);
+      const userId = body.userId || user?.id?.toString();
+
+      if (!userId) {
+        throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.tournamentsService.addToWaitlist(tournamentId, userId);
+      return result;
+    } catch (error) {
+      console.error("TOURNAMENT WAITLIST ADD API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // DELETE /api/tournaments/:id/waitlist - Remove user from waitlist
+  @Delete(':id/waitlist')
+  async removeFromWaitlist(@Param('id') id: string, @Body() body: { userId?: string; waitlistId?: string }, @CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournamentId = Number(id);
+      const { userId, waitlistId } = body;
+
+      if (waitlistId) {
+        // Remove by waitlist ID (admin action)
+        const result = await this.tournamentsService.removeFromWaitlistById(tournamentId, waitlistId);
+        return result;
+      } else {
+        // Remove by user ID (self or admin action)
+        const targetUserId = userId || user?.id?.toString();
+        if (!targetUserId) {
+          throw new HttpException('User ID or waitlist ID is required', HttpStatus.BAD_REQUEST);
+        }
+        const result = await this.tournamentsService.removeFromWaitlist(tournamentId, targetUserId);
+        return result;
+      }
+    } catch (error) {
+      console.error("TOURNAMENT WAITLIST REMOVE API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Public()
   @Get('health')
   getHealth() {

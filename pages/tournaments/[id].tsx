@@ -16,6 +16,7 @@ import { ServerType } from "types/types";
 import { styled } from "stitches.config";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
+import TournamentWaitlist from "components/TournamentWaitlist";
 import { useTournamentStateMachine } from "hooks/useTournamentStateMachine";
 import { TournamentState } from "machines/tournamentStateMachine";
 
@@ -81,12 +82,12 @@ const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering })
             alignItems: "center"
           }}>
             <div>
-              {registrationStatus === 'registered' && (
+              {isUserRegistered && (
                 <StatusText type="registered">
                   ✓ You are registered for this tournament
                 </StatusText>
               )}
-              {registrationStatus === 'not_registered' && (
+              {!isUserRegistered && (
                 <StatusText type="default">
                   Click to register for this tournament
                 </StatusText>
@@ -97,15 +98,15 @@ const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering })
               onClick={onRegisterClick}
               disabled={isRegistering}
               style={{
-                backgroundColor: registrationStatus === 'registered' ? "#dc2626" : "#16a34a",
+                backgroundColor: isUserRegistered ? "#dc2626" : "#16a34a",
                 "&:hover": {
-                  backgroundColor: registrationStatus === 'registered' ? "#b91c1c" : "#15803d",
+                  backgroundColor: isUserRegistered ? "#b91c1c" : "#15803d",
                 }
               }}
             >
               {isRegistering ? (
                 <Spinner size="1" />
-              ) : registrationStatus === 'registered' ? (
+              ) : isUserRegistered ? (
                 "Unregister"
               ) : (
                 "Register"

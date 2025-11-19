@@ -24,6 +24,15 @@ export interface RegisteredPlayer {
   countryCode?: string;
 }
 
+export interface WaitlistPlayer {
+  waitlistId: number;
+  email: string; // Will be empty string for non-admin users
+  waitlistedAt: Date;
+  userId?: string;
+  name: string;
+  countryCode?: string;
+}
+
 export interface CreateTournamentRequest {
   tournamentName: string;
   status: number;
@@ -64,6 +73,15 @@ export interface RemoveTournamentAdminRequest {
 export interface UpdateTournamentStatusRequest {
   id: number;
   status: number;
+}
+
+export interface AddToWaitlistRequest {
+  userId?: string;    // For admin adding someone else, optional for self
+}
+
+export interface RemoveFromWaitlistRequest {
+  userId?: string;    // For removing by user ID
+  waitlistId?: string; // For removing by waitlist ID (admin action)
 }
 
 class TournamentsService {
@@ -187,6 +205,28 @@ class TournamentsService {
   async removeTournamentAdmin(data: RemoveTournamentAdminRequest): Promise<{ message: string }> {
     const response = await this.axiosInstance.delete(`/tournaments/${data.tournamentId}/admins`, {
       data: { userId: data.userId }
+    });
+    return response.data;
+  }
+
+  // Waitlist Management Methods
+
+  // GET /api/tournaments/:id/waitlist - Get waitlist players for tournament
+  async getWaitlistPlayers(tournamentId: number): Promise<WaitlistPlayer[]> {
+    const response = await this.axiosInstance.get(`/tournaments/${tournamentId}/waitlist`);
+    return response.data;
+  }
+
+  // POST /api/tournaments/:id/waitlist - Add user to waitlist
+  async addToWaitlist(tournamentId: number, data: AddToWaitlistRequest): Promise<any> {
+    const response = await this.axiosInstance.post(`/tournaments/${tournamentId}/waitlist`, data);
+    return response.data;
+  }
+
+  // DELETE /api/tournaments/:id/waitlist - Remove user from waitlist
+  async removeFromWaitlist(tournamentId: number, data: RemoveFromWaitlistRequest): Promise<{ message: string }> {
+    const response = await this.axiosInstance.delete(`/tournaments/${tournamentId}/waitlist`, {
+      data
     });
     return response.data;
   }

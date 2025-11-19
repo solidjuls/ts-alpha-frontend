@@ -347,4 +347,66 @@ export class TournamentsService {
     return result;
   }
 
+  // Waitlist methods
+  async getWaitlistPlayers(tournamentId: number, userRole: number, userId: string): Promise<any[]> {
+    const waitlistEntries = await this.databaseService.tournament_waitlist.findMany({
+      where: {
+        tournamentId: tournamentId,
+      },
+      include: {
+        users: {
+          include: {
+            countries: true,
+          }
+        }
+      },
+      orderBy: {
+        created_at: 'asc', // First come, first served
+      },
+    });
+
+    // Check if user is admin (global admin or tournament admin)
+    const isAdmin = await this.isUserAdminForTournament(userRole, userId, tournamentId);
+
+    // Map waitlist data with user data
+    return waitlistEntries.map(entry => {
+      const user = entry.users;
+      return {
+        waitlistId: entry.id,
+        email: isAdmin ? (user?.email || '') : '', // Only include email for admins
+        waitlistedAt: entry.created_at || new Date(),
+        userId: user?.id?.toString(),
+        name: user ? `${user.first_name} ${user.last_name}` : 'Unknown User',
+        countryCode: user?.countries?.tld_code,
+      };
+    });
+  }
+
+  async addToWaitlist(tournamentId: number, userId: string): Promise<any> {
+    return await this.databaseService.tournament_waitlist.create({
+      data: {
+        tournamentId: tournamentId,
+        userId: BigInt(userId),
+      }
+    });
+  }
+
+  async removeFromWaitlist(tournamentId: number, userId: string): Promise<any> {
+    return await this.databaseService.tournament_waitlist.deleteMany({
+      where: {
+        tournamentId: tournamentId,
+        userId: BigInt(userId),
+      }
+    });
+  }
+
+  async removeFromWaitlistById(tournamentId: number, waitlistId: string): Promise<any> {
+    return await this.databaseService.tournament_waitlist.deleteMany({
+      where: {
+        tournamentId: tournamentId,
+        id: Number(waitlistId),
+      }
+    });
+  }
+
 }
