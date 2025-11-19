@@ -1,5 +1,5 @@
 import { Flex } from "components/Atoms";
-import { StyledLabel, StyledLabelInfo } from "./DisplayInfo.styles";
+import { StyledLabel, StyledLabelInfo } from "./DisplayInfo.styled";
 
 type DisplayInfoProps = {
   label: string;

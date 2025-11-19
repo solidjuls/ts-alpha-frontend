@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { Button } from "components/Button";
-import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
+import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
 import { useWaitlistPlayers, useAddToWaitlist, useRemoveFromWaitlist } from "hooks/useTournaments";
 import { useAllUsers } from "hooks/useUsers";
 import { User } from "services/users.service";

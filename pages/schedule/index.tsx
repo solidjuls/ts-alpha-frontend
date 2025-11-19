@@ -24,7 +24,7 @@ import {
   DueDateCell,
   UnstyledLink,
   CheckOpponentProfileCell,
-} from "components/Schedule/Schedule.styles";
+} from "components/Schedule/Schedule.styled";
 
 interface ScheduleProps {
   isSuperAdmin: boolean;

@@ -1,184 +1,90 @@
-import Link from "next/link";
-import { Box } from "components/Atoms";
-import Text from "components/Text";
 import { useSession } from "contexts/AuthProvider";
-import { styled, keyframes } from "stitches.config";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { FormattedMessage } from "react-intl";
 import { UserAvatar } from "components/UserAvatar";
 import {
   Root,
   Trigger,
-  Content,
   Portal,
   Item,
-  Arrow,
-  Separator,
 } from "@radix-ui/react-dropdown-menu";
 import { userRoles } from "utils/constants";
+import {
+  Flex,
+  StyledText,
+  StyledHamburgerMenuIcon,
+  HorizontalNavigationLayout,
+  UnstyledLink,
+  StyledContent,
+  VerticalSidebarLayout,
+  NavigationContainer,
+  HorizontalItemsContainer,
+  HorizontalNavText,
+} from './Sidebar.styled';
 
-const slideUpAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateY(2px)" },
-  "100%": { opacity: 1, transform: "translateY(0)" },
-});
-
-const slideRightAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateX(-2px)" },
-  "100%": { opacity: 1, transform: "translateX(0)" },
-});
-
-const slideDownAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateY(-2px)" },
-  "100%": { opacity: 1, transform: "translateY(0)" },
-});
-
-const slideLeftAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateX(2px)" },
-  "100%": { opacity: 1, transform: "translateX(0)" },
-});
-
-const sidebarItemStyles = {
-  borderTop: "solid 1px rgba(255,255,255,.15)",
-  backgroundColor: "#24292f",
-  color: "white",
-  cursor: "pointer",
-  padding: "8px 16px",
-  margin: 0,
-};
-
-const horizontalItemStyles = {
-  borderTop: "solid 1px rgba(255,255,255,.15)",
-  backgroundColor: "var(--gray-200)",
-  cursor: "pointer",
-  color: "black",
-  padding: "8px 12px",
-  margin: 0,
-};
-
-const Flex = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  variants: {
-    display: {
-      none: {
-        display: "none",
-      },
-    },
-  },
-});
-
-const StyledText = styled(Text, {
-  display: "flex",
-  cursor: "pointer",
-  fontWeight: "600",
-  color: "black",
-  "@sm": {
-    display: "none",
-  },
-});
-
-const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon, {
-  color: "black",
-  "@sm": {
-    width: "25px",
-    height: "25px",
-    display: "flex",
-    justifyContent: "flex-start",
-    cursor: "pointer",
-  },
-});
-
-const HorizontalNavigationLayout = styled(Flex, {
-  justifyContent: "space-between",
-  backgroundColor: "var(--gray-200)",
-  width: "100%",
-  "@sm": {
-    display: "none",
-  },
-});
-export const UnstyledLink = styled(Link, {
-  all: "unset" /* Unset all styles */,
-  display: "inline" /* Reset to inline display */,
-  cursor: "pointer" /* Set cursor to pointer */,
-});
-const Items = ({ styles, role }: any) => {
+const Items = ({ role }: any) => {
   return (
     <>
       <UnstyledLink href="/" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Game Results
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/players" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Player List
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
-      {/* <Text css={horizontalItemStyles}>Federations</Text> */}
+      {/* <HorizontalNavText>Federations</HorizontalNavText> */}
       <UnstyledLink href="/submitform" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Submit Form
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/schedule" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           My Schedule
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/standings" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Standings
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/userprofile" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           <FormattedMessage id="profileText" />
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/recreateform" passHref>
-          <Text strong="bold" css={horizontalItemStyles}>
+          <HorizontalNavText>
             Recreate Form
-          </Text>
+          </HorizontalNavText>
         </UnstyledLink>
       )}
       {role === userRoles.SUPERADMIN && (
         <UnstyledLink href="/usercreate" passHref>
-          <Text strong="bold" css={horizontalItemStyles}>
+          <HorizontalNavText>
             Register User
-          </Text>
+          </HorizontalNavText>
         </UnstyledLink>
       )}
       <UnstyledLink href="/tournaments" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Tournaments
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/hall-of-fame" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           Hall of Fame
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
       <UnstyledLink href="/about" passHref>
-        <Text strong="bold" css={horizontalItemStyles}>
+        <HorizontalNavText>
           About Us
-        </Text>
+        </HorizontalNavText>
       </UnstyledLink>
     </>
-  );
-};
-
-const VerticalNavigation = () => {
-  const { name } = useSession();
-  return (
-    <Flex
-      css={{
-        backgroundColor: "#E2E8F0",
-        flexDirection: "column",
-        alignItems: "flex-start",
-      }}
-    ></Flex>
   );
 };
 
@@ -187,14 +93,9 @@ const HorizontalNavigation = () => {
 
   return (
     <HorizontalNavigationLayout>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-        }}
-      >
-        <Items styles={horizontalItemStyles} role={role} />
-      </div>
+      <HorizontalItemsContainer>
+        <Items role={role} />
+      </HorizontalItemsContainer>
       {!name && (
         <UnstyledLink href="/login" passHref>
           <StyledText>
@@ -211,30 +112,7 @@ const HorizontalNavigation = () => {
   );
 };
 
-const StyledContent = styled(Content, {
-  minWidth: 120,
-  borderRadius: 6,
-  boxShadow:
-    "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
-  "@media (prefers-reduced-motion: no-preference)": {
-    animationDuration: "400ms",
-    animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-    willChange: "transform, opacity",
-    '&[data-state="open"]': {
-      '&[data-side="top"]': { animationName: slideDownAndFade },
-      '&[data-side="right"]': { animationName: slideLeftAndFade },
-      '&[data-side="bottom"]': { animationName: slideUpAndFade },
-      '&[data-side="left"]': { animationName: slideRightAndFade },
-    },
-  },
-});
 
-const VerticalSidebarLayout = styled(Flex, {
-  display: "none",
-  "@sm": {
-    display: "flex",
-  },
-});
 const VerticalSidebar = () => {
   const { name, role } = useSession();
   return (
@@ -247,82 +125,82 @@ const VerticalSidebar = () => {
           <StyledContent align="end">
             <UnstyledLink href="/" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   Game Results
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/players" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   Player List
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/submitform" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   Submit Form
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/schedule" passHref>
-              <Text strong="bold" css={horizontalItemStyles}>
+              <HorizontalNavText>
                 My Schedule
-              </Text>
+              </HorizontalNavText>
             </UnstyledLink>
             <UnstyledLink href="/standings" passHref>
-              <Text strong="bold" css={horizontalItemStyles}>
+              <HorizontalNavText>
                 Standings
-              </Text>
+              </HorizontalNavText>
             </UnstyledLink>
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
-                  <Text strong="bold" css={horizontalItemStyles}>
+                  <HorizontalNavText>
                     Recreate Form
-                  </Text>
+                  </HorizontalNavText>
                 </Item>
               </UnstyledLink>
             )}
             {role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/userprofile" passHref>
                 <Item>
-                  <Text strong="bold" css={horizontalItemStyles}>
+                  <HorizontalNavText>
                     Register Form
-                  </Text>
+                  </HorizontalNavText>
                 </Item>
               </UnstyledLink>
             )}
             <UnstyledLink href="/userprofile" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   <FormattedMessage id="profileText" />
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/tournaments" passHref>
-              <Text strong="bold" css={horizontalItemStyles}>
+              <HorizontalNavText>
                 Tournaments
-              </Text>
+              </HorizontalNavText>
             </UnstyledLink>
             <UnstyledLink href="/hall-of-fame" passHref>
-              <Text strong="bold" css={horizontalItemStyles}>
+              <HorizontalNavText>
                 Hall of Fame
-              </Text>
+              </HorizontalNavText>
             </UnstyledLink>
             <UnstyledLink href="/about" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   <FormattedMessage id="aboutUs" />
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
             <UnstyledLink href="/login" passHref>
               <Item>
-                <Text strong="bold" css={horizontalItemStyles}>
+                <HorizontalNavText>
                   {name ? <FormattedMessage id="signOut" /> : <FormattedMessage id="signIn" />}
-                </Text>
+                </HorizontalNavText>
               </Item>
             </UnstyledLink>
           </StyledContent>
@@ -334,20 +212,10 @@ const VerticalSidebar = () => {
 const Navigation = () => {
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          backgroundColor: "var(--gray-200)",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          height: "50px",
-          width: "100%",
-        }}
-      >
+      <NavigationContainer>
         <VerticalSidebar />
         <HorizontalNavigation />
-      </div>
+      </NavigationContainer>
     </>
   );
 };

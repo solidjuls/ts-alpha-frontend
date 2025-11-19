@@ -14,7 +14,7 @@ import { getWinnerText, getTurnText } from "utils/games";
 import { useGames } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
-import { UnstyledLink } from "components/Homepage/Homepage.styles";
+import { UnstyledLink } from "components/Homepage/Homepage.styled";
 import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import { userRoles } from "utils/constants";

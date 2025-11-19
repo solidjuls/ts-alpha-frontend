@@ -1,34 +1,8 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
 import { Spinner } from '@radix-ui/themes';
 import { useIsAuthenticated } from '../../hooks/useAuth';
-
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 50vh;
-  text-align: center;
-`;
-
-const ErrorTitle = styled.h2`
-  color: #e74c3c;
-  margin-bottom: 16px;
-`;
-
-const ErrorMessage = styled.p`
-  color: #666;
-  margin-bottom: 24px;
-`;
+import { LoadingContainer, ErrorContainer, ErrorTitle, ErrorMessage } from './ProtectedRoute.styled';
 
 interface ProtectedRouteProps {
   children: ReactNode;

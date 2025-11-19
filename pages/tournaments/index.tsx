@@ -12,7 +12,7 @@ import { ServerType } from "types/types";
 import Text from "components/Text";
 import { Button } from "components/Button";
 import { Tournament } from "services/tournaments.service";
-import { UnstyledLink } from "components/Schedule/Schedule.styles";
+import { UnstyledLink } from "components/Schedule/Schedule.styled";
 import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
 

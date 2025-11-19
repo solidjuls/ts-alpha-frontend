@@ -6,7 +6,7 @@ import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import useFetchInitialData from "hooks/useFetchInitialData";
 import { Pagination } from "components/Pagination";
-import { FilterPanel } from "components/Homepage/Homepage.styles";
+import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { useDispatch, useSelector } from "react-redux";

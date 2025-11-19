@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "components/Button";
-import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
+import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
 import { useRegisteredPlayers, useUnregisterFromTournament } from "hooks/useTournaments";
 import { styled } from "stitches.config";
 import { UnstyledLink } from "pages/players";
