@@ -273,7 +273,7 @@ const ResponsiveContainer = styled.div`
   display: flex;
   flex-direction: row;
   max-width: 1100px;
-  @media (max-width: 768px) {
+  @media (max-width: 668px) {
     flex-direction: "column";
   }
 `

@@ -99,6 +99,9 @@ const HeroSubtitle = styled.p`
 `;
 
 const ContentSection = styled.section`
+  display: flex;
+  justify-self: center;
+  width: 100%;
   background: white;
   border-radius: 8px;
   padding: ${props => props.theme.space.large};
