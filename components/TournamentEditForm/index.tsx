@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
-import { Form, Box } from "components/Atoms";
+import styled from "styled-components";
 import { Button } from "components/Button";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import DateComponent from "components/EditFormComponents/DateComponent";
@@ -8,97 +8,129 @@ import { EditTextAreaComponent } from "components/EditFormComponents/EditTextAre
 import getAxiosInstance from "utils/axios";
 import { TournamentCreateState, TournamentsType } from "types/game.types";
 import { tournamentStatus } from "utils/constants";
-import { styled } from "stitches.config";
 import UserTypeahead from "pages/submitform/UserTypeahead";
 import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin } from "hooks/useTournaments";
 import { useAllUsers } from "hooks/useUsers";
 import { User, UsersListResponse } from "services/users.service";
 import { DropdownItemType } from "types/types";
 
-const EditFormContainer = styled("div", {
-  marginTop: "24px",
-  border: "1px solid #e9ecef",
-  borderRadius: "8px",
-  backgroundColor: "white",
-});
+const EditFormContainer = styled.div`
+  margin-top: 24px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: white;
+`;
 
-const EditFormHeader = styled("div", {
-  padding: "16px 20px",
-  borderBottom: "1px solid #e9ecef",
-  backgroundColor: "#f8f9fa",
-  borderRadius: "8px 8px 0 0",
-  fontWeight: "500",
-});
+const EditFormHeader = styled.div`
+  padding: 16px 20px;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  font-weight: 500;
+`;
 
-const AdminSection = styled("div", {
-  marginTop: "24px",
-  padding: "16px",
-  border: "1px solid #e9ecef",
-  borderRadius: "6px",
-  backgroundColor: "#f8f9fa",
-});
+const AdminSection = styled.div`
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+`;
 
-const AdminSectionHeader = styled("h4", {
-  margin: "0 0 16px 0",
-  fontSize: "16px",
-  fontWeight: "500",
-  color: "#374151",
-});
+const AdminSectionHeader = styled.h4`
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+`;
 
-const AdminList = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-  marginBottom: "16px",
-});
+const AdminList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
 
-const AdminItem = styled("div", {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "8px 12px",
-  backgroundColor: "white",
-  border: "1px solid #d1d5db",
-  borderRadius: "4px",
-});
+const AdminItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+`;
 
-const AdminName = styled("span", {
-  fontSize: "14px",
-  color: "#374151",
-});
+const AdminName = styled.span`
+  font-size: 14px;
+  color: #374151;
+`;
 
-const RemoveButton = styled("button", {
-  padding: "4px 8px",
-  fontSize: "12px",
-  backgroundColor: "#dc2626",
-  color: "white",
-  border: "none",
-  borderRadius: "4px",
-  cursor: "pointer",
-  "&:hover": {
-    backgroundColor: "#b91c1c",
-  },
-  "&:disabled": {
-    backgroundColor: "#9ca3af",
-    cursor: "not-allowed",
-  },
-});
+const RemoveButton = styled.button`
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 
-const AddAdminContainer = styled("div", {
-  display: "flex",
-  gap: "12px",
-  alignItems: "flex-end",
-});
+  &:hover {
+    background-color: #b91c1c;
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
+`;
+
+const AddAdminContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+`;
+
+const FormContainer = styled.form`
+  align-items: center;
+  background-color: white;
+  width: 100%;
+  padding: 20px;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ErrorMessage = styled.div`
+  color: #dc2626;
+  font-size: 14px;
+  text-align: center;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+`;
+
+const CancelButton = styled(Button)`
+  background-color: #6b7280;
+`;
+
+const SaveButton = styled(Button)`
+  background-color: #3b82f6;
+`;
+
+const AddAdminButton = styled(Button)`
+  background-color: #10b981;
+  height: 40px;
+
+  &:hover {
+    background-color: #059669;
+  }
+`;
 
 const inputWidth = "370px";
-
-const formStyles = {
-  alignItems: "center",
-  backgroundColor: "White",
-  width: "100%",
-  padding: "20px",
-  gap: "16px",
-};
 
 interface TournamentEditFormProps {
   tournament: TournamentsType;
@@ -261,39 +293,40 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
       <EditFormHeader>
         Edit Tournament
       </EditFormHeader>
-      
-      <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
+
+      <FormContainer onSubmit={(e: React.FormEvent) => e.preventDefault()}>
         <EditTextComponent
           labelText="Tournament Name"
-          inputValue={form?.tournamentName.value}
+          inputValue={form?.tournamentName.value || ""}
           onInputValueChange={(value) => onInputValueChange("tournamentName", value)}
           css={{ width: inputWidth }}
           error={form?.tournamentName.error}
+          maxLength={255}
         />
-        
+
         <DropdownWithLabel
           labelText="Status"
           items={statusIds}
           error={form?.statusId?.error}
           css={{ width: inputWidth }}
-          selectedItem={form.statusId?.value}
+          selectedItem={form.statusId?.value || ""}
           placeholder="Status"
           onSelect={(value: string) => onInputValueChange("statusId", value)}
         />
-        
+
         <DateComponent
           labelText="Starting Date"
           inputValue={formattedDate}
           onInputValueChange={(value) => onInputValueChange("startingDate", value)}
-          error={form?.startingDate.error}
         />
-        
+
         <EditTextAreaComponent
           labelText="Description"
-          inputValue={form?.description.value}
+          inputValue={form?.description.value || ""}
           onInputValueChange={(value) => onInputValueChange("description", value)}
           css={{ width: "500px", height: "150px" }}
           error={form?.description.error}
+          maxLength={1000}
         />
 
         {/* Tournament Admins Management */}
@@ -323,49 +356,42 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
               labelText="Add Admin"
               users={availableUsers}
               selectedItem={selectedAdminUser}
-              onSelect={(item: DropdownItemType) => setSelectedAdminUser(item.value)}
+              onSelect={(item: DropdownItemType) => setSelectedAdminUser(item.value || "")}
               onBlur={() => {}}
               placeholder="Select user to add as admin..."
               css={{ width: "300px" }}
             />
-            <Button
+            <AddAdminButton
               onClick={handleAddAdmin}
               disabled={!selectedAdminUser || isAddingAdmin}
-              css={{
-                backgroundColor: "#10b981",
-                height: "40px",
-                "&:hover": { backgroundColor: "#059669" }
-              }}
             >
               {isAddingAdmin ? <Spinner size="2" /> : "Add Admin"}
-            </Button>
+            </AddAdminButton>
           </AddAdminContainer>
         </AdminSection>
 
         {errorMsg && (
-          <Box css={{ color: "#dc2626", fontSize: "14px", textAlign: "center" }}>
+          <ErrorMessage>
             {errorMsg}
-          </Box>
+          </ErrorMessage>
         )}
-        
-        <Box css={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-          <Button
-            css={{ backgroundColor: "#6b7280" }}
+
+        <ButtonContainer>
+          <CancelButton
             onClick={onCancel}
             disabled={isSubmitting}
           >
             Cancel
-          </Button>
-          
-          <Button
+          </CancelButton>
+
+          <SaveButton
             disabled={isSubmitting}
-            css={{ backgroundColor: "#3b82f6" }}
             onClick={handleSave}
           >
             {isSubmitting ? <Spinner size="2" /> : "Save Changes"}
-          </Button>
-        </Box>
-      </Form>
+          </SaveButton>
+        </ButtonContainer>
+      </FormContainer>
     </EditFormContainer>
   );
 };
