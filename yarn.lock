@@ -1953,15 +1953,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stitches/react@npm:^1.2.8":
-  version: 1.2.8
-  resolution: "@stitches/react@npm:1.2.8"
-  peerDependencies:
-    react: ">= 16.3.0"
-  checksum: 10c0/d9c03cd88ac25edc493b23a1359f36aa9a497d13bb7a833204d8228b09b6227c1a8ea22e946312ca605f7819fbdd3c49d5f8a5f14b2801c9a31d36172d7f60ac
-  languageName: node
-  linkType: hard
-
 "@swc/counter@npm:^0.1.3":
   version: 0.1.3
   resolution: "@swc/counter@npm:0.1.3"
@@ -6109,7 +6100,6 @@ __metadata:
     "@radix-ui/react-switch": "npm:^1.1.0"
     "@radix-ui/themes": "npm:^3.1.3"
     "@reduxjs/toolkit": "npm:^2.2.7"
-    "@stitches/react": "npm:^1.2.8"
     "@tanstack/react-query": "npm:^5.90.3"
     "@types/bcryptjs": "npm:^2.4.2"
     "@types/node": "npm:20.14.12"

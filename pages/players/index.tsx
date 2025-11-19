@@ -1,14 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 
-import { styled } from "stitches.config";
-import { Flex } from "components/Atoms";
+import styled from "styled-components";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import useFetchInitialData from "hooks/useFetchInitialData";
-import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
-import getAxiosInstance from "utils/axios";
 import { FilterPanel } from "components/Homepage/Homepage.styles";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
@@ -26,78 +23,115 @@ import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
 import { UserType } from "types/user.types";
 
-export const UnstyledLink = styled(Link, {
-  all: "unset",
-  cursor: "pointer",
-});
+interface CardColumnProps {
+  header: string;
+  value: string | number;
+  countryCode?: string;
+}
 
-const borderStyle = "solid 1px $greyLight";
-const ResultsStyleWrapper = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.5rem",
-  backgroundColor: "$infoForm",
-  border: "solid 1px none",
-  borderRadius: "12px",
-  flexGrow: "1",
-  marginBottom: "12px",
-  width: "100%",
-  maxWidth: "1000px",
-  height: "500px",
-});
+interface PlayerRowProps {
+  index: number;
+  player: {
+    id: string;
+    rank: number;
+    name: string;
+    countryCode?: string;
+    rating: number;
+  };
+}
 
-export const StyledResultsPanel = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  backgroundColor: "$infoForm",
-  border: "solid 1px none",
-  borderRadius: "12px",
-  flexGrow: "1",
-  marginBottom: "12px",
-  height: "500px",
-  overflowY: "scroll",
-});
+interface ResultsPanelProps {
+  data: any[];
+  onPageChange?: (page: any) => Promise<void>;
+  isLoading?: boolean;
+}
 
-const StyledCardRow = styled("div", {
-  display: "grid",
-  gap: "1rem",
-  margin: "4px",
-  gridTemplateColumns: "min-content 3fr min-content",
-  paddingInlineStart: "8px",
-  paddingInlineEnd: "8px",
-  paddingTop: "4px",
-  paddingBottom: "4px",
-  borderWidth: "1px",
-  borderRadius: "6px",
-  border: "solid 1px $greyLight",
-  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-});
+const FlexColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
-const CardColumn = ({ header, value, countryCode }) => {
+const FlexRow = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+`;
+
+export const UnstyledLink = styled(Link)`
+  all: unset;
+  cursor: pointer;
+`;
+
+const ResultsStyleWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: ${props => props.theme?.colors?.infoForm || '#f8f9fa'};
+  border: solid 1px transparent;
+  border-radius: 12px;
+  flex-grow: 1;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 1000px;
+  height: 500px;
+`;
+
+export const StyledResultsPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${props => props.theme?.colors?.infoForm || '#f8f9fa'};
+  border: solid 1px transparent;
+  border-radius: 12px;
+  flex-grow: 1;
+  margin-bottom: 12px;
+  height: 500px;
+  overflow-y: scroll;
+`;
+
+const StyledCardRow = styled.div`
+  display: grid;
+  gap: 1rem;
+  margin: 4px;
+  grid-template-columns: min-content 3fr min-content;
+  padding-inline-start: 8px;
+  padding-inline-end: 8px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-width: 1px;
+  border-radius: 6px;
+  border: solid 1px ${props => props.theme?.colors?.greyLight || '#e0e0e0'};
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+`;
+
+const CardColumn: React.FC<CardColumnProps> = ({ header, value, countryCode }) => {
   return (
-    <>
-      <Flex css={{ flexDirection: "column" }}>
-        <Text fontSize="small">{header}</Text>
-        <Flex css={{ alignItems: "center" }}>
-          {countryCode && <FlagIcon code={countryCode} />}
-          <Text fontSize="medium">{value}</Text>
-        </Flex>
-      </Flex>
-    </>
+    <FlexColumn>
+      <Text fontSize="small">{header}</Text>
+      <FlexRow>
+        {countryCode && <FlagIcon code={countryCode} />}
+        <Text fontSize="medium">{value}</Text>
+      </FlexRow>
+    </FlexColumn>
   );
 };
 
-const ResultsPanel = ({ data }) => {
+const ResultsPanel: React.FC<ResultsPanelProps> = ({ data }) => {
   return (
-    <Flex css={{ flexDirection: "column", width: "100%", height: "100%" }}>
+    <FlexContainer>
       <StyledResultsPanel>
-        {data?.map((player, index) => <PlayerRow key={index} index={index} player={player} />)}
+        {data?.map((player: any, index: number) => <PlayerRow key={index} index={index} player={player} />)}
       </StyledResultsPanel>
-    </Flex>
+    </FlexContainer>
   );
 };
 
-const PlayerRow = ({ index, player }) => {
+const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
   return (
     <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
       <StyledCardRow>
@@ -109,14 +143,13 @@ const PlayerRow = ({ index, player }) => {
   );
 };
 
-const getNameFromUsers = (data) => data?.map((item) => ({ code: item.id, name: item.name }));
+const getNameFromUsers = (data: any[] | null) => data?.map((item: any) => ({ code: item.id, name: item.name })) || [];
 
 const Players = () => {
   const [playdeckValue, setPlaydeckValue] = useState("");
   const {
     data: users,
     isLoading: isLoadingUsers,
-    error,
   } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
   const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({
     url: `/api/countries`,
@@ -132,7 +165,7 @@ const Players = () => {
     dispatch(fetchPlayersList());
   }, [filters, currentPage, dispatch]);
 
-  const onPageChange = async (page) => {
+  const onPageChange = async (page: number) => {
     dispatch(setCurrentPage(page));
   };
 
@@ -149,22 +182,25 @@ const Players = () => {
         <MultiSelect
           setSelectedValues={(value: string) => dispatch(setPlayersFilter(value))}
           items={usersMemo}
-          selectedValues={playersSelected}
+          selectedValues={playersSelected as any}
           placeholder="Select Players..."
         />
-        <CountriesTypeahead
-          placeholder="Type the federation name..."
-          css={{ width: "300px", height: "40px" }}
-          onSelect={(value) => value && dispatch(setCountriesFilter(value.value))}
-          onBlur={() => {
-            dispatch(setCountriesFilter(""));
-          }}
-          items={countries?.map((item) => ({ value: item.id, text: item.country_name }))}
-          selectedItem={countriesSelected?.value}
-        />
+        <div style={{ width: "300px", height: "40px" }}>
+          <CountriesTypeahead
+            placeholder="Type the federation name..."
+            css={{ width: "100%", height: "100%" }}
+            onSelect={(value: any) => value && dispatch(setCountriesFilter(value.value))}
+            onBlur={() => {
+              dispatch(setCountriesFilter(""));
+            }}
+            items={(countries as any)?.map((item: any) => ({ value: item.id, text: item.country_name })) || []}
+            selectedItem={(countriesSelected as any)?.value}
+            labelText=""
+            error={false}
+          />
+        </div>
         <Input
           type="text"
-          filter="filter"
           value={playdeckValue}
           placeholder="Type the Playdek name"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -175,12 +211,11 @@ const Players = () => {
               dispatch(setPlaydeckFilter(playdeckValue));
             }
           }}
-          border={error ? "error" : undefined}
         />
       </FilterPanel>
       <ResultsStyleWrapper>
         <ResultsPanel
-          data={items.results}
+          data={(items as any)?.results || []}
           onPageChange={onPageChange}
           isLoading={status === "loading"}
         />
