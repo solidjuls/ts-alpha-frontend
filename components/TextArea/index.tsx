@@ -1,47 +1,73 @@
-import { styled } from "stitches.config";
+import styled from "styled-components";
 
-const TextArea = styled("textarea", {
-  variants: {
-    margin: {
-      xxl: { margin: 64 },
-      url: { margin: "0 0 24px 0" },
-      login: { margin: "0 0 12px 0" },
-    },
-    border: {
-      dropdown: {
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-      },
-      error: {
-        border: "solid 1px red",
-        "&:focus": {
-          boxShadow: `0 0 0 2px red`,
-        },
-        boxShadow: "none",
-      },
-    },
-    filter: {
-      filter: {
-        minHeight: "80px",
-      },
-    },
-  },
-  all: "unset",
-  display: "inline-flex",
-  alignItems: "flex-start",
-  justifyContent: "flex-start",
-  borderRadius: 4,
-  padding: "8px 10px",
-  minHeight: 60,
-  fontSize: 15,
-  lineHeight: 1.4,
-  border: "1px solid #ced4da",
-  color: "black",
-  resize: "vertical", // allows resizing vertically only
-  "&:focus": {
-    outline: "none",
-    // boxShadow: `0 0 0 2px #ced4da`,
-  },
-});
+interface TextAreaProps {
+  $margin?: 'xxl' | 'url' | 'login';
+  $border?: 'dropdown' | 'error';
+  $filter?: 'filter';
+}
+
+const TextArea = styled.textarea<TextAreaProps>`
+  all: unset;
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 4px;
+  padding: 8px 10px;
+  min-height: 60px;
+  font-size: 15px;
+  line-height: 1.4;
+  border: 1px solid #ced4da;
+  color: black;
+  resize: vertical; /* allows resizing vertically only */
+
+  &:focus {
+    outline: none;
+    /* box-shadow: 0 0 0 2px #ced4da; */
+  }
+
+  /* Margin variants */
+  ${props => {
+    switch (props.$margin) {
+      case 'xxl':
+        return 'margin: 64px;';
+      case 'url':
+        return 'margin: 0 0 24px 0;';
+      case 'login':
+        return 'margin: 0 0 12px 0;';
+      default:
+        return '';
+    }
+  }}
+
+  /* Border variants */
+  ${props => {
+    switch (props.$border) {
+      case 'dropdown':
+        return `
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        `;
+      case 'error':
+        return `
+          border: solid 1px red;
+          box-shadow: none;
+
+          &:focus {
+            box-shadow: 0 0 0 2px red;
+          }
+        `;
+      default:
+        return '';
+    }
+  }}
+
+  /* Filter variants */
+  ${props => {
+    if (props.$filter === 'filter') {
+      return 'min-height: 80px;';
+    }
+    return '';
+  }}
+`;
 
 export { TextArea }

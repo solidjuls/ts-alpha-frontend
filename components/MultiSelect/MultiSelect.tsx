@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
-import { styled } from "stitches.config";
+import styled from "styled-components";
 import { MultiSelectItemType } from "types/types";
 
-const StyledMultiSelect = styled(MultiSelect, {
-  width: "250px",
-  padding: "0",
-});
-
+const StyledMultiSelect = styled(MultiSelect)`
+  width: 250px;
+  padding: 0;
+`
 type MultiSelectComponentProps = {
   items: MultiSelectItemType[];
   placeholder: string;

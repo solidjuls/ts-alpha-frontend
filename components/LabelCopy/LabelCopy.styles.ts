@@ -1,7 +1,8 @@
-import { styled } from "stitches.config";
+import styled from "styled-components";
 
-export const Wrapper = styled("div", {
-  display: "inline-flex",
-  alignItems: "center",
-  gap: "8px",
-});
+export const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+  
