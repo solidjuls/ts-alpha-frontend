@@ -16,6 +16,8 @@ import { ServerType } from "types/types";
 import { styled } from "stitches.config";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
+import { useTournamentStateMachine } from "hooks/useTournamentStateMachine";
+import { TournamentState } from "machines/tournamentStateMachine";
 
 const DescriptionBox = styled("div", {
   marginTop: "8px",
@@ -78,7 +80,7 @@ const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering })
             justifyContent: "space-between",
             alignItems: "center"
           }}>
-            <Box>
+            <div>
               {registrationStatus === 'registered' && (
                 <StatusText type="registered">
                   ✓ You are registered for this tournament
@@ -89,12 +91,12 @@ const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering })
                   Click to register for this tournament
                 </StatusText>
               )}
-            </Box>
+            </div>
 
             <Button
               onClick={onRegisterClick}
               disabled={isRegistering}
-              css={{
+              style={{
                 backgroundColor: registrationStatus === 'registered' ? "#dc2626" : "#16a34a",
                 "&:hover": {
                   backgroundColor: registrationStatus === 'registered' ? "#b91c1c" : "#15803d",
@@ -290,7 +292,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   // Admin Mode - Show tournament info with admin controls (to be implemented)
   return (
     <DetailContainer>
-      <Box css={{
+      <div style={{
         border: "solid 1px lightgray",
         boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
         borderRadius: "8px",
@@ -374,24 +376,24 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
 
       {/* Manual Registration Form */}
       {showManualRegistration && (
-        <Box css={{
+        <div style={{
           backgroundColor: "white",
           borderRadius: "8px",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
           marginBottom: "24px",
           padding: "24px"
         }}>
-          <Box css={{ marginBottom: "16px" }}>
+          <div style={{ marginBottom: "16px" }}>
             <h3 style={{ margin: 0, color: "#1f2937", fontSize: "18px", fontWeight: "600" }}>
               Register User Manually
             </h3>
             <p style={{ margin: "8px 0 0 0", color: "#6b7280", fontSize: "14px" }}>
               Search and select a user to register for this tournament
             </p>
-          </Box>
+          </div>
 
-          <Flex css={{ gap: "16px", alignItems: "flex-end" }}>
-            <Box css={{ flex: 1 }}>
+          <div style={{ display: "flex", gap: "16px", alignItems: "flex-end" }}>
+            <div style={{ flex: 1 }}>
               <UserTypeahead
                 labelText=""
                 users={usersForDropdown}
@@ -402,11 +404,11 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
                 css={{ width: "100%" }}
                 error={false}
               />
-            </Box>
+            </div>
             <Button
               onClick={onManualRegisterClick}
               disabled={!selectedUser || isManualRegistering}
-              css={{
+              style={{
                 backgroundColor: "#10b981",
                 "&:hover": {
                   backgroundColor: "#059669",
@@ -419,8 +421,8 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
             >
               {isManualRegistering ? <Spinner size="1" /> : "Register"}
             </Button>
-          </Flex>
-        </Box>
+          </div>
+        </div>
       )}
 
       {/* Edit Form */}

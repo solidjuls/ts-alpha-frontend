@@ -112,7 +112,7 @@ export class TournamentsController {
   @Put()
   async updateTournamentFull(@Body() body: UpdateTournamentDto) {
     try {
-      const { id, tournamentName, status, startingDate, description } = body;
+      const { id, tournamentName, status, waitlist, startingDate, description } = body;
 
       if (!id) {
         throw new HttpException('Missing tournament ID', HttpStatus.BAD_REQUEST);
@@ -121,6 +121,7 @@ export class TournamentsController {
       const updateData: any = {};
       if (tournamentName) updateData.tournamentName = tournamentName;
       if (status) updateData.status = status;
+      if (waitlist !== undefined) updateData.waitlist = waitlist;
       if (startingDate) updateData.startingDate = new Date(startingDate);
       if (description !== undefined) updateData.description = description;
 
@@ -139,7 +140,7 @@ export class TournamentsController {
   @Patch()
   async createTournament(@Body() body: CreateTournamentDto) {
     try {
-      const { tournamentName, status, admins, startingDate, description } = body;
+      const { tournamentName, status, waitlist, admins, startingDate, description } = body;
 
       if (!tournamentName || !status) {
         throw new HttpException('Missing name or status in request body', HttpStatus.BAD_REQUEST);
@@ -149,6 +150,7 @@ export class TournamentsController {
       const created = await this.tournamentsService.createTournament({
         tournamentName,
         status,
+        waitlist,
         admins: admins ? Number(admins) : undefined,
         startingDate: startingDateFormatted,
         description

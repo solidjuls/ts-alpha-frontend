@@ -22,6 +22,7 @@ export class TournamentsService {
         id: true,
         tournament_name: true,
         status_id: true,
+        waitlist: true,
         starting_date: true,
         description: true,
         created_at: true,
@@ -48,6 +49,7 @@ export class TournamentsService {
       id: item.id.toString(),
       tournament_name: item.tournament_name,
       status_id: item.status_id,
+      waitlist: item.waitlist,
       starting_date: item.starting_date,
       description: item.description,
       created_at: item.created_at,
@@ -63,6 +65,7 @@ export class TournamentsService {
         id: true,
         tournament_name: true,
         status_id: true,
+        waitlist: true,
         description: true,
         starting_date: true,
         created_at: true,
@@ -94,6 +97,7 @@ export class TournamentsService {
       tournament_name: item.tournament_name,
       description: item.description,
       status_id: item.status_id,
+      waitlist: item.waitlist,
       starting_date: item.starting_date,
       created_at: item.created_at,
       updated_at: item.updated_at,
@@ -179,17 +183,19 @@ export class TournamentsService {
   async createTournament(tournamentData: {
     tournamentName: string;
     status: number;
+    waitlist?: boolean;
     admins?: number;
     startingDate?: Date;
     description?: string;
   }): Promise<any> {
-    const { tournamentName, status, admins, startingDate, description } = tournamentData;
+    const { tournamentName, status, waitlist, admins, startingDate, description } = tournamentData;
 
     // Create the tournament
     const newTournament = await this.databaseService.tournaments.create({
       data: {
         tournament_name: tournamentName,
         status_id: Number(status),
+        waitlist: waitlist || false,
         starting_date: startingDate || null,
         description: description || null,
       },
@@ -222,6 +228,7 @@ export class TournamentsService {
   async updateTournamentFull(id: number, updateData: {
     tournamentName?: string;
     status?: number;
+    waitlist?: boolean;
     startingDate?: Date;
     description?: string;
   }): Promise<any> {
@@ -232,6 +239,7 @@ export class TournamentsService {
       data: {
         ...(updateData.tournamentName && { tournament_name: updateData.tournamentName }),
         ...(updateData.status && { status_id: Number(updateData.status) }),
+        ...(updateData.waitlist !== undefined && { waitlist: updateData.waitlist }),
         ...(updateData.startingDate && { starting_date: updateData.startingDate }),
         ...(updateData.description !== undefined && { description: updateData.description }),
       },

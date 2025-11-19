@@ -2,6 +2,7 @@ export interface TournamentDto {
   id: string;
   tournament_name: string;
   status_id: number;
+  waitlist: boolean;
   starting_date: Date | null;
   adminId: string[];
   adminName: string[];
@@ -38,6 +39,7 @@ export interface GetTournamentsQueryDto {
 export interface CreateTournamentDto {
   tournamentName: string;
   status: number;
+  waitlist?: boolean;
   admins?: string;
   startingDate?: Date;
   description?: string;
@@ -47,6 +49,7 @@ export interface UpdateTournamentDto {
   id: number;
   tournamentName?: string;
   status?: number;
+  waitlist?: boolean;
   startingDate?: Date;
   description?: string;
 }

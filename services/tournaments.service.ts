@@ -5,6 +5,7 @@ export interface Tournament {
   id: string;
   tournament_name: string;
   status_id: number;
+  waitlist: boolean;
   starting_date: Date | null;
   adminId: string[];
   adminName: string[];
