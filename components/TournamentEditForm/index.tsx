@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Spinner } from "@radix-ui/themes";
 import styled from "styled-components";
 import { Button } from "components/Button";
@@ -6,7 +7,7 @@ import { DropdownWithLabel, EditTextComponent } from "components/EditFormCompone
 import DateComponent from "components/EditFormComponents/DateComponent";
 import { EditTextAreaComponent } from "components/EditFormComponents/EditTextArea";
 import getAxiosInstance from "utils/axios";
-import { TournamentCreateState, TournamentsType } from "types/game.types";
+import { TournamentsType } from "types/game.types";
 import { tournamentStatus } from "utils/constants";
 import UserTypeahead from "pages/submitform/UserTypeahead";
 import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin } from "hooks/useTournaments";
@@ -92,7 +93,7 @@ const AddAdminContainer = styled.div`
 `;
 
 const FormContainer = styled.form`
-  align-items: center;
+  align-items: flex-start;
   background-color: white;
   width: 100%;
   padding: 20px;
@@ -132,6 +133,14 @@ const AddAdminButton = styled(Button)`
 
 const inputWidth = "370px";
 
+// Form data type for react-hook-form
+interface TournamentFormData {
+  tournamentName: string;
+  statusId: string;
+  description: string;
+  startingDate: Date;
+}
+
 interface TournamentEditFormProps {
   tournament: TournamentsType;
   onSave?: () => void;
@@ -139,30 +148,22 @@ interface TournamentEditFormProps {
 }
 
 const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditFormProps) => {
-  const [form, setForm] = useState<TournamentCreateState>(() => ({
-    tournamentName: {
-      value: tournament.tournament_name || "",
-      error: false,
+  // Initialize react-hook-form
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    clearErrors
+  } = useForm<TournamentFormData>({
+    defaultValues: {
+      tournamentName: tournament.tournament_name || "",
+      statusId: tournament.status_id?.toString() || "4",
+      description: tournament.description || "",
+      startingDate: tournament.starting_date ? new Date(tournament.starting_date) : new Date(),
     },
-    statusId: {
-      value: tournament.status_id?.toString() || "4",
-      error: false,
-    },
-    description: {
-      value: tournament.description || "",
-      error: false,
-    },
-    startingDate: {
-      value: tournament.starting_date ? new Date(tournament.starting_date) : new Date(),
-      error: false,
-    },
-    admins: {
-      value: "",
-      error: false,
-    },
-  }));
+    mode: "onChange"
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   // Admin management state
@@ -180,64 +181,27 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
   const addAdminMutation = useAddTournamentAdmin();
   const removeAdminMutation = useRemoveTournamentAdmin();
 
-  const validated = () => {
-    let submit = true;
-    Object.keys(form).forEach((key: string) => {
-      if (["tournamentName", "statusId"].includes(key) &&
-        form[key as keyof TournamentCreateState].value === ""
-      ) {
-        setForm((prevState: any) => ({
-          ...prevState,
-          [key]: {
-            ...prevState[key],
-            error: true,
-          },
-        }));
-        submit = false;
-      }
-    });
-    return submit;
-  };
-
-  const onInputValueChange = (key: keyof TournamentCreateState, value: string | Date) => {
-    setForm((prevState) => {
-      return {
-        ...prevState,
-        [key]: {
-          value,
-          error: prevState[key].error ? value === "" : false,
-        },
-      };
-    });
-  };
-
   const statusIds = Object.entries(tournamentStatus).map(([key, value]) => ({
     value: value.toString(),
     text: key,
   }));
 
-  const formattedDate = form?.startingDate.value ? new Date(form?.startingDate.value) : new Date();
+  const onSubmit = async (data: TournamentFormData) => {
+    try {
+      setErrorMsg("");
+      clearErrors();
 
-  const handleSave = async () => {
-    if (validated()) {
-      try {
-        setIsSubmitting(true);
-        setErrorMsg("");
+      await getAxiosInstance().put("/api/game/tournaments", {
+        id: tournament.id,
+        tournamentName: data.tournamentName,
+        status: data.statusId,
+        startingDate: data.startingDate,
+        description: data.description
+      });
 
-        await getAxiosInstance().put("/api/game/tournaments", {
-          id: tournament.id,
-          tournamentName: form?.tournamentName.value,
-          status: form?.statusId.value,
-          startingDate: form?.startingDate.value,
-          description: form?.description.value
-        });
-
-        onSave?.();
-      } catch (e: any) {
-        setErrorMsg(e?.response?.data?.error || "Failed to update tournament");
-      } finally {
-        setIsSubmitting(false);
-      }
+      onSave?.();
+    } catch (e: any) {
+      setErrorMsg(e?.response?.data?.error || "Failed to update tournament");
     }
   };
 
@@ -294,39 +258,72 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
         Edit Tournament
       </EditFormHeader>
 
-      <FormContainer onSubmit={(e: React.FormEvent) => e.preventDefault()}>
-        <EditTextComponent
-          labelText="Tournament Name"
-          inputValue={form?.tournamentName.value || ""}
-          onInputValueChange={(value) => onInputValueChange("tournamentName", value)}
-          css={{ width: inputWidth }}
-          error={form?.tournamentName.error}
-          maxLength={255}
+      <FormContainer onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="tournamentName"
+          control={control}
+          rules={{
+            required: "Tournament name is required",
+            maxLength: { value: 255, message: "Tournament name must be less than 255 characters" }
+          }}
+          render={({ field }) => (
+            <EditTextComponent
+              labelText="Tournament Name"
+              inputValue={field.value}
+              onInputValueChange={field.onChange}
+              css={{ width: inputWidth }}
+              error={!!errors.tournamentName}
+              maxLength={255}
+            />
+          )}
         />
 
-        <DropdownWithLabel
-          labelText="Status"
-          items={statusIds}
-          error={form?.statusId?.error}
-          css={{ width: inputWidth }}
-          selectedItem={form.statusId?.value || ""}
-          placeholder="Status"
-          onSelect={(value: string) => onInputValueChange("statusId", value)}
+        <Controller
+          name="statusId"
+          control={control}
+          rules={{ required: "Status is required" }}
+          render={({ field }) => (
+            <DropdownWithLabel
+              labelText="Status"
+              items={statusIds}
+              error={!!errors.statusId}
+              css={{ width: inputWidth }}
+              selectedItem={field.value}
+              placeholder="Status"
+              onSelect={field.onChange}
+            />
+          )}
         />
 
-        <DateComponent
-          labelText="Starting Date"
-          inputValue={formattedDate}
-          onInputValueChange={(value) => onInputValueChange("startingDate", value)}
+        <Controller
+          name="startingDate"
+          control={control}
+          rules={{ required: "Starting date is required" }}
+          render={({ field }) => (
+            <DateComponent
+              labelText="Starting Date"
+              inputValue={field.value}
+              onInputValueChange={field.onChange}
+            />
+          )}
         />
 
-        <EditTextAreaComponent
-          labelText="Description"
-          inputValue={form?.description.value || ""}
-          onInputValueChange={(value) => onInputValueChange("description", value)}
-          css={{ width: "500px", height: "150px" }}
-          error={form?.description.error}
-          maxLength={1000}
+        <Controller
+          name="description"
+          control={control}
+          rules={{
+            maxLength: { value: 1000, message: "Description must be less than 1000 characters" }
+          }}
+          render={({ field }) => (
+            <EditTextAreaComponent
+              labelText="Description"
+              inputValue={field.value}
+              onInputValueChange={field.onChange}
+              css={{ width: "500px", height: "150px" }}
+              error={!!errors.description}
+              maxLength={1000}
+            />
+          )}
         />
 
         {/* Tournament Admins Management */}
@@ -370,6 +367,15 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
           </AddAdminContainer>
         </AdminSection>
 
+        {/* Display form validation errors */}
+        {Object.keys(errors).length > 0 && (
+          <ErrorMessage>
+            {Object.values(errors).map((error, index) => (
+              <div key={index}>{error?.message}</div>
+            ))}
+          </ErrorMessage>
+        )}
+
         {errorMsg && (
           <ErrorMessage>
             {errorMsg}
@@ -378,6 +384,7 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
 
         <ButtonContainer>
           <CancelButton
+            type="button"
             onClick={onCancel}
             disabled={isSubmitting}
           >
@@ -385,8 +392,8 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
           </CancelButton>
 
           <SaveButton
+            type="submit"
             disabled={isSubmitting}
-            onClick={handleSave}
           >
             {isSubmitting ? <Spinner size="2" /> : "Save Changes"}
           </SaveButton>

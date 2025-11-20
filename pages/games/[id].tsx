@@ -1,11 +1,12 @@
 import { useState } from "react";
 import type { GetServerSideProps } from "next";
-import type { Game } from "services/games.service";
+import type { GameType } from "services/games.service";
 import type { GameWinner } from "types/game.types";
 import { Span, Flex } from "components/Atoms";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { DetailContainer } from "components/DetailContainer";
+import { MainLayout } from "components/Layout";
 import Text from "components/Text";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
@@ -78,7 +79,7 @@ type GameProps = {
 };
 
 type GameContentProps = {
-  data: Game;
+  data: GameType;
 };
 
 const GameContent: React.FC<GameContentProps> = ({ data }) => {
@@ -228,43 +229,51 @@ const GameContainer = styled.div<{ isLoading: boolean }>`
 const Game: React.FC<GameProps> = ({ gameId }) => {
   // Use the games endpoint with ID filter to get full game details including ratings and player info
   const { data, isLoading, error } = useGames({ id: gameId });
-
+console.log("data", data)
   if (error) {
     return (
-      <DetailContainer>
-        <GameContainer isLoading={false}>
-          <div>Error loading game details</div>
-        </GameContainer>
-      </DetailContainer>
+      <MainLayout>
+        <DetailContainer>
+          <GameContainer isLoading={false}>
+            <div>Error loading game details</div>
+          </GameContainer>
+        </DetailContainer>
+      </MainLayout>
     );
   }
 
   if (!data && !isLoading) {
     return (
-      <DetailContainer>
-        <GameContainer isLoading={false}>
-          <div>Game not found</div>
-        </GameContainer>
-      </DetailContainer>
+      <MainLayout>
+        <DetailContainer>
+          <GameContainer isLoading={false}>
+            <div>Game not found</div>
+          </GameContainer>
+        </DetailContainer>
+      </MainLayout>
     );
   }
 
   if (data && data.results && data.results.length === 0) {
     return (
-      <DetailContainer>
-        <GameContainer isLoading={false}>
-          <div>Game not found</div>
-        </GameContainer>
-      </DetailContainer>
+      <MainLayout>
+        <DetailContainer>
+          <GameContainer isLoading={false}>
+            <div>Game not found</div>
+          </GameContainer>
+        </DetailContainer>
+      </MainLayout>
     );
   }
 
   return (
-    <DetailContainer>
-      <GameContainer isLoading={isLoading}>
-        {isLoading ? <Spinner size="3" /> : data && data.results && data.results[0] && <GameContent data={data.results[0]} />}
-      </GameContainer>
-    </DetailContainer>
+    <MainLayout>
+      <DetailContainer>
+        <GameContainer isLoading={isLoading}>
+          {isLoading ? <Spinner size="3" /> : data && data.results && data.results[0] && <GameContent data={data.results[0]} />}
+        </GameContainer>
+      </DetailContainer>
+    </MainLayout>
   );
 };
 

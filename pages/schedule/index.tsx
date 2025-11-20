@@ -1,13 +1,12 @@
 import "react-day-picker/lib/style.css";
 import { useState } from "react";
+import Head from "next/head";
 import { Box, Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
-import { dateFormat } from "utils/dates";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
 import { DropdownItemType, ServerType } from "types/types";
-import { Button } from "components/Button";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { userRoles } from "utils/constants";
 import { GameWinner } from "types/game.types";
@@ -15,9 +14,9 @@ import styled from "styled-components";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
-import Link from "next/link";
 import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
+import { MainLayout } from "components/Layout";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -314,10 +313,22 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
 
   if (error) {
     return (
-      <div>
-        <h1>My Schedule</h1>
-        <div>Error loading schedule: {error.message}</div>
-      </div>
+      <>
+        <Head>
+          <title>My Schedule - Twilight Struggle</title>
+          <meta
+            name="description"
+            content="View your tournament schedule and upcoming games in Twilight Struggle competitions."
+          />
+          <link rel="icon" href="/ts-icon.webp" />
+        </Head>
+        <MainLayout>
+          <div>
+            <h1>My Schedule</h1>
+            <div>Error loading schedule: {error.message}</div>
+          </div>
+        </MainLayout>
+      </>
     );
   }
 
@@ -366,15 +377,23 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
             isLoading={isLoading} 
           />
 
-          {data && data.totalPages > 1 && (
-            <Pagination
-              currentPage={currentPage.toString()}
-              totalPages={data.totalPages.toString()}
-              onPageChange={onPageChange}
+            <SchedulePanel
+              data={data?.results}
+              userId={userId}
+              isAdmin={tournamentsAdmin.length > 0}
+              isLoading={isLoading}
             />
-          )}
-        </Flex>
-      </ResponsiveContainer>
+
+            {data && data.totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage.toString()}
+                totalPages={data.totalPages.toString()}
+                onPageChange={onPageChange}
+              />
+            )}
+          </Flex>
+        </ResponsiveContainer>
+      </MainLayout>
     </>
   );
 };

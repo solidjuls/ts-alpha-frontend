@@ -7,7 +7,7 @@ export interface GameRating {
   previousRating: number;
 }
 
-export interface Game {
+export interface GameType {
   id: string;
   created_at: Date | null;
   updated_at: Date | null;

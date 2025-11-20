@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Checkbox } from "components/Checkbox";
-import { styled } from '@stitches/react';
+import styled from 'styled-components';
 import ReplacePlayers from './ReplacePlayers';
 import CsvUploadButton from './CsvButtonUpload';
 import UserTypeahead from 'pages/submitform/UserTypeahead';
@@ -16,41 +16,41 @@ import { useAddSchedule } from 'hooks/useSchedule';
 import { Spinner } from '@radix-ui/themes';
 import Text from 'components/Text';
 
-const Panel = styled('div', {
-  padding: '16px',
-  border: '1px solid #ccc',
-  borderRadius: '8px',
-  backgroundColor: '#f9f9f9',
-  marginBottom: '8px'
-});
+const Panel = styled.div`
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-bottom: 8px;
+`;
 
-const ManualScheduleSection = styled('div', {
-  marginTop: '16px',
-  padding: '16px',
-  border: '1px solid #ddd',
-  borderRadius: '6px',
-  backgroundColor: '#f8f9fa',
-});
+const ManualScheduleSection = styled.div`
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+`;
 
-const SectionTitle = styled('h4', {
-  margin: '0 0 12px 0',
-  fontSize: '16px',
-  fontWeight: '500',
-  color: '#374151',
-});
+const SectionTitle = styled.h4`
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+`;
 
-const FormRow = styled('div', {
-  display: 'flex',
-  gap: '12px',
-  alignItems: 'flex-end',
-  marginBottom: '12px',
-  flexWrap: 'wrap',
-});
+const FormRow = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+`;
 
-const GameCodeInput = styled(Input, {
-  width: '80px',
-  height: '35px',
-});
+const GameCodeInput = styled(Input)`
+  width: 80px;
+  height: 35px;
+`;
 
 interface ScheduleFilterProps {
   noSchedule: boolean;
