@@ -3,12 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "migration": "node utils/migrationProcess.js",
-    "dev:planetscale": "pscale connect --execute-protocol 'mysql' ts-alpha dev --execute 'yarn dev'",
-    "dev:planetscale:prod": "pscale connect --execute-protocol 'mysql' ts-alpha main --execute 'yarn dev'",
     "format:fix": "prettier --write --ignore-path .gitignore .",
-    "build": "prisma generate --sql && next build",
-    "postinstall": "prisma generate",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "ts:check": "tsc"
