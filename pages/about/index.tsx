@@ -458,6 +458,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/2781">Tomek Babicz</Link> (Pacynka): <Link href="https://www.youtube.com/@teoem_be" target="_blank">YouTube</Link> - <Image src="/flags/PL.png"  width={WIDTH} height={HEIGHT} />
+          </li>
+          <li>
             <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
           </li>
           <li>
