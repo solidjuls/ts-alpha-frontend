@@ -170,6 +170,26 @@ export const useDeleteTournament = () => {
   });
 };
 
+// Get user's registered tournaments
+export const useUserRegisteredTournaments = () => {
+  return useQuery({
+    queryKey: [...tournamentKeys.all, 'user', 'registered'],
+    queryFn: () => tournamentsService.getUserRegisteredTournaments(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Get tournaments where user is admin
+export const useUserAdminTournaments = () => {
+  return useQuery({
+    queryKey: [...tournamentKeys.all, 'user', 'admin'],
+    queryFn: () => tournamentsService.getUserAdminTournaments(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // Generic tournaments query hook
 export const useTournaments = (params?: {
   id?: string;

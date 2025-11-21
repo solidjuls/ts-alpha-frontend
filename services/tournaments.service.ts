@@ -209,6 +209,30 @@ class TournamentsService {
     return response.data;
   }
 
+  // User Tournament Methods
+
+  // GET /api/tournaments/user/registered - Get user's registered tournaments
+  async getUserRegisteredTournaments(): Promise<Tournament[]> {
+    const response = await this.axiosInstance.get('/tournaments/user/registered');
+    return response.data;
+  }
+
+  // GET /api/tournaments/user/admin - Get tournaments where user is admin
+  async getUserAdminTournaments(): Promise<Tournament[]> {
+    const response = await this.axiosInstance.get('/tournaments/user/admin');
+    return response.data;
+  }
+
+  // GET /api/tournaments/user/available-with-schedule - Get user's available tournaments with default schedule
+  async getUserAvailableTournamentsWithSchedule(): Promise<{
+    tournaments: Tournament[];
+    defaultSchedule: any;
+    isAdmin: boolean;
+  }> {
+    const response = await this.axiosInstance.get('/tournaments/user/available-with-schedule');
+    return response.data;
+  }
+
   // Waitlist Management Methods
 
   // GET /api/tournaments/:id/waitlist - Get waitlist players for tournament

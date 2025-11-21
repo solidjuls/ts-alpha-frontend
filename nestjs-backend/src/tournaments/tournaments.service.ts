@@ -256,6 +256,260 @@ export class TournamentsService {
     });
   }
 
+  async getUserRegisteredTournaments(userId: string): Promise<TournamentDto[]> {
+    // Get tournaments where user is registered
+    const registrations = await this.databaseService.tournament_registration.findMany({
+      where: {
+        userId: BigInt(userId),
+        status: {
+          in: ['accepted', 'pending'] // Only include active registrations
+        }
+      },
+      include: {
+        tournaments: {
+          include: {
+            tournament_admins: {
+              include: {
+                users: {
+                  select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Map to tournament DTOs
+    return registrations.map(registration => {
+      const tournament = registration.tournaments;
+      return {
+        id: tournament.id.toString(),
+        tournament_name: tournament.tournament_name,
+        status_id: tournament.status_id,
+        waitlist: tournament.waitlist,
+        starting_date: tournament.starting_date,
+        description: tournament.description,
+        created_at: tournament.created_at,
+        updated_at: tournament.updated_at,
+        adminId: tournament.tournament_admins.map(admin => admin.users.id.toString()),
+        adminName: tournament.tournament_admins.map(admin =>
+          `${admin.users.first_name} ${admin.users.last_name}`
+        ),
+      };
+    });
+  }
+
+  async getUserAdminTournaments(userId: string): Promise<TournamentDto[]> {
+    // Get tournaments where user is admin
+    const adminTournaments = await this.databaseService.tournament_admins.findMany({
+      where: {
+        userId: BigInt(userId),
+      },
+      include: {
+        tournaments: {
+          include: {
+            tournament_admins: {
+              include: {
+                users: {
+                  select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Map to tournament DTOs
+    return adminTournaments.map(adminTournament => {
+      const tournament = adminTournament.tournaments;
+      return {
+        id: tournament.id.toString(),
+        tournament_name: tournament.tournament_name,
+        status_id: tournament.status_id,
+        waitlist: tournament.waitlist,
+        starting_date: tournament.starting_date,
+        description: tournament.description,
+        created_at: tournament.created_at,
+        updated_at: tournament.updated_at,
+        adminId: tournament.tournament_admins.map(admin => admin.users.id.toString()),
+        adminName: tournament.tournament_admins.map(admin =>
+          `${admin.users.first_name} ${admin.users.last_name}`
+        ),
+      };
+    });
+  }
+
+  async getUserAvailableTournamentsWithSchedule(userId: string): Promise<{
+    tournaments: TournamentDto[];
+    defaultSchedule: any;
+    isAdmin: boolean;
+  }> {
+    const tournaments: TournamentDto[] = [];
+    let isAdmin = false;
+
+    // Get tournaments where user is registered (status: open = 1)
+    const registrations = await this.databaseService.tournament_registration.findMany({
+      where: {
+        userId: BigInt(userId),
+        tournaments: {
+          status_id: {
+            in: [1, 2]
+          }
+        }
+      },
+      include: {
+        tournaments: {
+          include: {
+            tournament_admins: {
+              include: {
+                users: {
+                  select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Add registered open tournaments
+    tournaments.push(...registrations.map(registration => {
+      const tournament = registration.tournaments;
+      return {
+        id: tournament.id.toString(),
+        tournament_name: tournament.tournament_name,
+        status_id: tournament.status_id,
+        waitlist: tournament.waitlist,
+        starting_date: tournament.starting_date,
+        description: tournament.description,
+        created_at: tournament.created_at,
+        updated_at: tournament.updated_at,
+        adminId: tournament.tournament_admins.map(admin => admin.users.id.toString()),
+        adminName: tournament.tournament_admins.map(admin =>
+          `${admin.users.first_name} ${admin.users.last_name}`
+        ),
+      };
+    }));
+
+    // Get tournaments where user is admin (status: closed = 2)
+    const adminTournaments = await this.databaseService.tournament_admins.findMany({
+      where: {
+        userId: BigInt(userId),
+        tournaments: {
+          status_id: 2 // Registration closed tournaments
+        }
+      },
+      include: {
+        tournaments: {
+          include: {
+            tournament_admins: {
+              include: {
+                users: {
+                  select: {
+                    id: true,
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Add admin tournaments
+    if (adminTournaments.length > 0) {
+      isAdmin = true;
+      tournaments.push(...adminTournaments.map(adminTournament => {
+        const tournament = adminTournament.tournaments;
+        return {
+          id: tournament.id.toString(),
+          tournament_name: tournament.tournament_name,
+          status_id: tournament.status_id,
+          waitlist: tournament.waitlist,
+          starting_date: tournament.starting_date,
+          description: tournament.description,
+          created_at: tournament.created_at,
+          updated_at: tournament.updated_at,
+          adminId: tournament.tournament_admins.map(admin => admin.users.id.toString()),
+          adminName: tournament.tournament_admins.map(admin =>
+            `${admin.users.first_name} ${admin.users.last_name}`
+          ),
+        };
+      }));
+    }
+
+    // Get default schedule for first tournament if available
+    let defaultSchedule = null;
+    if (tournaments.length > 0) {
+      const firstTournamentId = tournaments[0].id;
+
+      // Get schedule for first tournament
+      const scheduleResults = await this.databaseService.schedule.findMany({
+        where: {
+          tournamentId: parseInt(firstTournamentId),
+        },
+        include: {
+          users_schedule_userIdTousers: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              country: true,
+            },
+          },
+          users_schedule_opponentIdTousers: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              country: true,
+            },
+          },
+          games: {
+            select: {
+              id: true,
+              winner: true,
+              created_at: true,
+            },
+          },
+        },
+        orderBy: {
+          dueDate: 'asc',
+        },
+        take: 20, // First page
+      });
+
+      defaultSchedule = {
+        results: scheduleResults,
+        totalCount: scheduleResults.length,
+        totalPages: Math.ceil(scheduleResults.length / 20),
+        currentPage: 1,
+      };
+    }
+
+    return {
+      tournaments,
+      defaultSchedule,
+      isAdmin,
+    };
+  }
+
   async deleteTournament(id: string): Promise<{ id: number }> {
     const deleted = await this.databaseService.tournaments.delete({
       where: {

@@ -1,14 +1,13 @@
 import "react-day-picker/lib/style.css";
-import { useState } from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { Box, Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { getInfoFromCookies } from "utils/cookies";
-import { DropdownItemType, ServerType } from "types/types";
+import { ServerType } from "types/types";
 import { DueDateDisplay } from "components/DueDateDisplay";
-import { userRoles } from "utils/constants";
 import { GameWinner } from "types/game.types";
 import styled from "styled-components";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
@@ -17,6 +16,9 @@ import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
 import { MainLayout } from "components/Layout";
+import { useUserRegisteredTournaments, useUserAdminTournaments } from "hooks/useTournaments";
+import { Tournament } from "services/tournaments.service";
+import { tournamentStatus, userRoles } from "utils/constants";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -26,11 +28,11 @@ import {
 } from "components/Schedule/Schedule.styled";
 
 interface ScheduleProps {
-  isSuperAdmin: boolean;
-  tournamentsAdmin: DropdownItemType[];
-  tournamentsRegistered: string[];
-  isAdmin: boolean;
   userId: string;
+  userRole: number;
+  initialTournaments: Tournament[];
+  initialSchedule: any;
+  isAdmin: boolean;
 }
 
 interface ResponsiveContainerProps {
@@ -39,7 +41,7 @@ interface ResponsiveContainerProps {
 
 const ResponsiveContainer = styled.div<ResponsiveContainerProps>`
   display: flex;
-  flex-direction: ${props => props.direction === "column" ? "column" : "row"};
+  flex-direction: column;
   width: 100%;
   max-width: 1100px;
 `;
@@ -81,6 +83,35 @@ const TournamentText = styled(Text)`
 const ColumnUnstyledLink = styled(UnstyledLink)`
   display: flex;
   flex-direction: column;
+`;
+
+const TabContainer = styled.div`
+  display: flex;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  width: fit-content;
+`;
+
+interface TabButtonProps {
+  $active?: boolean;
+}
+
+const TabButton = styled.button<TabButtonProps>`
+  padding: 12px 24px;
+  border: none;
+  background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#f5f5f5'};
+  color: ${props => props.$active ? 'white' : '#666'};
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  outline: none;
+
+  &:hover {
+    background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#e0e0e0'};
+  }
 `;
 
 const generateQueryParams = ({
@@ -378,16 +409,16 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
           />
 
             <SchedulePanel
-              data={data?.results}
+              data={scheduleData?.results}
               userId={userId}
-              isAdmin={tournamentsAdmin.length > 0}
-              isLoading={isLoading}
+              isAdmin={isUserAdminForTournament}
+              isLoading={shouldFetchSchedule ? isLoading : false}
             />
 
-            {data && data.totalPages > 1 && (
+            {scheduleData && scheduleData.totalPages > 1 && (
               <Pagination
                 currentPage={currentPage.toString()}
-                totalPages={data.totalPages.toString()}
+                totalPages={scheduleData.totalPages.toString()}
                 onPageChange={onPageChange}
               />
             )}
@@ -410,12 +441,9 @@ export async function getServerSideProps({ req, res }: ServerType) {
     };
   }
 
-  // For now, we'll use mock data for tournaments
-  // In a real implementation, you'd fetch this from your NestJS API
-  const leagueTypesAdmin: DropdownItemType[] = payload?.tournamentsAdmin?.map((id: any) => ({
-    value: id.toString(),
-    text: `Tournament ${id}`,
-  })) || [];
+  try {
+    // Get token from cookies
+    const token = req.cookies.token;
 
   const leagueTypesAdmin: DropdownItemType[] =
     tournaments?.data

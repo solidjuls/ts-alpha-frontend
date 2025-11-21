@@ -411,6 +411,51 @@ export class TournamentsController {
     }
   }
 
+  // GET /api/tournaments/user/registered - Get user's registered tournaments
+  @Get('user/registered')
+  async getUserRegisteredTournaments(@CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournaments = await this.tournamentsService.getUserRegisteredTournaments(user.id.toString());
+      return tournaments;
+    } catch (error) {
+      console.error("GET USER REGISTERED TOURNAMENTS API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // GET /api/tournaments/user/admin - Get tournaments where user is admin
+  @Get('user/admin')
+  async getUserAdminTournaments(@CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournaments = await this.tournamentsService.getUserAdminTournaments(user.id.toString());
+      return tournaments;
+    } catch (error) {
+      console.error("GET USER ADMIN TOURNAMENTS API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // GET /api/tournaments/user/available-with-schedule - Get user's available tournaments with default schedule
+  @Get('user/available-with-schedule')
+  async getUserAvailableTournamentsWithSchedule(@CurrentUser() user: JwtPayloadDto) {
+    try {
+      const result = await this.tournamentsService.getUserAvailableTournamentsWithSchedule(user.id.toString());
+      return result;
+    } catch (error) {
+      console.error("GET USER AVAILABLE TOURNAMENTS WITH SCHEDULE API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Public()
   @Get('health')
   getHealth() {
