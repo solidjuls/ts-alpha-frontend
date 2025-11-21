@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { TournamentDto, RegisteredPlayerDto } from './dto/tournament.dto';
+import { ScheduleDto } from 'src/schedule/dto/schedule.dto';
 
 @Injectable()
 export class TournamentsService {
@@ -363,7 +364,7 @@ export class TournamentsService {
         userId: BigInt(userId),
         tournaments: {
           status_id: {
-            in: [1, 2]
+            in: [2, 3, 4]
           }
         }
       },
@@ -385,7 +386,7 @@ export class TournamentsService {
         },
       },
     });
-console.log("registrations", registrations);
+
     // Add registered open tournaments
     tournaments.push(...registrations.map(registration => {
       const tournament = registration.tournaments;
@@ -404,55 +405,6 @@ console.log("registrations", registrations);
         ),
       };
     }));
-console.log("tournaments", tournaments);
-    // Get tournaments where user is admin (status: closed = 2)
-    const adminTournaments = await this.databaseService.tournament_admins.findMany({
-      where: {
-        userId: BigInt(userId),
-        tournaments: {
-          status_id: 2 // Registration closed tournaments
-        }
-      },
-      include: {
-        tournaments: {
-          include: {
-            tournament_admins: {
-              include: {
-                users: {
-                  select: {
-                    id: true,
-                    first_name: true,
-                    last_name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-console.log("adminTournaments", adminTournaments);
-    // Add admin tournaments
-    if (adminTournaments.length > 0) {
-      isAdmin = true;
-      tournaments.push(...adminTournaments.map(adminTournament => {
-        const tournament = adminTournament.tournaments;
-        return {
-          id: tournament.id.toString(),
-          tournament_name: tournament.tournament_name,
-          status_id: tournament.status_id,
-          waitlist: tournament.waitlist,
-          starting_date: tournament.starting_date,
-          description: tournament.description,
-          created_at: tournament.created_at,
-          updated_at: tournament.updated_at,
-          adminId: tournament.tournament_admins.map(admin => admin.users.id.toString()),
-          adminName: tournament.tournament_admins.map(admin =>
-            `${admin.users.first_name} ${admin.users.last_name}`
-          ),
-        };
-      }));
-    }
 
     // Get default schedule for first tournament if available
     let defaultSchedule = null;
@@ -471,10 +423,10 @@ console.log("adminTournaments", adminTournaments);
               first_name: true,
               last_name: true,
               countries: {
-              select: {
-                tld_code: true,
+                select: {
+                  tld_code: true,
+                },
               },
-            },
             },
           },
           users_schedule_ussr_player_idTousers: {
@@ -483,17 +435,23 @@ console.log("adminTournaments", adminTournaments);
               first_name: true,
               last_name: true,
               countries: {
-              select: {
-                tld_code: true,
+                select: {
+                  tld_code: true,
+                },
               },
             },
+          },
+          tournaments: {
+            select: {
+              id: true,
+              tournament_name: true,
             },
           },
           game_results: {
             select: {
               game_winner: true,
               game_date: true,
-            }
+            },
           },
         },
         orderBy: {
@@ -502,8 +460,25 @@ console.log("adminTournaments", adminTournaments);
         take: 20, // First page
       });
 
+      const scheduleParsed : ScheduleDto[] = scheduleResults.map(result => ({
+        gameWinner: result.game_results?.game_winner || null,
+        gameDate: result.game_results?.game_date?.toISOString() || null,
+        dueDate: result.due_date.toISOString(),
+        gameCode: result.game_code,
+        id: result.id.toString(),
+        gameResultsId: result.game_results_id?.toString() || null,
+        nameUsa: `${result.users_schedule_usa_player_idTousers?.first_name || ''} ${result.users_schedule_usa_player_idTousers?.last_name || ''}`,
+        nameUssr: `${result.users_schedule_ussr_player_idTousers?.first_name || ''} ${result.users_schedule_ussr_player_idTousers?.last_name || ''}`,
+        idUsa: result.users_schedule_usa_player_idTousers?.id?.toString() || '',
+        countryUsa: result.users_schedule_usa_player_idTousers?.countries?.tld_code || null,
+        countryUssr: result.users_schedule_ussr_player_idTousers?.countries?.tld_code || null,
+        idUssr: result.users_schedule_ussr_player_idTousers?.id?.toString() || '',
+        tournamentName: result.tournaments.tournament_name,
+        tournamentId: result.tournaments.id.toString()
+      }));
+console.log("scheduleParsed", scheduleParsed);
       defaultSchedule = {
-        results: scheduleResults,
+        results: scheduleParsed,
         totalCount: scheduleResults.length,
         totalPages: Math.ceil(scheduleResults.length / 20),
         currentPage: 1,

@@ -90,9 +90,11 @@ export const endType: Array<DropdownItemType> = [
 
 export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus];
 export const tournamentStatus = {
-  open: 1,
-  closed: 2,
-  registrationOpen: 4,
+  initial: 1,
+  registrationClosed: 3,
+  registrationOpen: 2,
+  ongoing: 4,
+  closed: 5,
 } as const;
 
 export const gameWinningOptions: Array<DropdownItemType> = [
