@@ -190,6 +190,16 @@ export const useUserAdminTournaments = () => {
   });
 };
 
+// Get user's available tournaments with default schedule
+export const useUserAvailableTournamentsWithSchedule = () => {
+  return useQuery({
+    queryKey: [...tournamentKeys.all, 'user', 'available-with-schedule'],
+    queryFn: () => tournamentsService.getUserAvailableTournamentsWithSchedule(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // Generic tournaments query hook
 export const useTournaments = (params?: {
   id?: string;

@@ -204,15 +204,15 @@ model tournament_registration {
 }
 
 model tournament_waitlist {
-  id           Int         @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   tournamentId Int
-  userId       BigInt      @db.UnsignedBigInt
-  position     Int?        @db.UnsignedInt
+  userId       BigInt          @db.UnsignedBigInt
+  position     Int?            @db.UnsignedInt
   status       waitlist_status @default(waiting)
-  created_at   DateTime?   @default(now()) @db.Timestamp(0)
-  updated_at   DateTime?   @default(now()) @db.Timestamp(0)
-  tournaments  tournaments @relation(fields: [tournamentId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist")
-  users        users       @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist_user")
+  created_at   DateTime?       @default(now()) @db.Timestamp(0)
+  updated_at   DateTime?       @default(now()) @db.Timestamp(0)
+  tournaments  tournaments     @relation(fields: [tournamentId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist")
+  users        users           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "fk_tournament_waitlist_user")
 
   @@unique([tournamentId, userId], map: "unique_tournament_user_waitlist")
   @@index([tournamentId], map: "fk_tournament_waitlist")

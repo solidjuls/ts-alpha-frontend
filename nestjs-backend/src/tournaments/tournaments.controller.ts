@@ -445,7 +445,9 @@ export class TournamentsController {
   @Get('user/available-with-schedule')
   async getUserAvailableTournamentsWithSchedule(@CurrentUser() user: JwtPayloadDto) {
     try {
+      console.log("asdadasd")
       const result = await this.tournamentsService.getUserAvailableTournamentsWithSchedule(user.id.toString());
+      console.log("asdadasd", result)
       return result;
     } catch (error) {
       console.error("GET USER AVAILABLE TOURNAMENTS WITH SCHEDULE API Error:", error);

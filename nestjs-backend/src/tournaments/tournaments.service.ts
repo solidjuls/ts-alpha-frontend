@@ -385,7 +385,7 @@ export class TournamentsService {
         },
       },
     });
-
+console.log("registrations", registrations);
     // Add registered open tournaments
     tournaments.push(...registrations.map(registration => {
       const tournament = registration.tournaments;
@@ -404,7 +404,7 @@ export class TournamentsService {
         ),
       };
     }));
-
+console.log("tournaments", tournaments);
     // Get tournaments where user is admin (status: closed = 2)
     const adminTournaments = await this.databaseService.tournament_admins.findMany({
       where: {
@@ -431,7 +431,7 @@ export class TournamentsService {
         },
       },
     });
-
+console.log("adminTournaments", adminTournaments);
     // Add admin tournaments
     if (adminTournaments.length > 0) {
       isAdmin = true;
@@ -462,35 +462,42 @@ export class TournamentsService {
       // Get schedule for first tournament
       const scheduleResults = await this.databaseService.schedule.findMany({
         where: {
-          tournamentId: parseInt(firstTournamentId),
+          tournaments_id: parseInt(firstTournamentId),
         },
         include: {
-          users_schedule_userIdTousers: {
+          users_schedule_usa_player_idTousers: {
             select: {
               id: true,
               first_name: true,
               last_name: true,
-              country: true,
+              countries: {
+              select: {
+                tld_code: true,
+              },
+            },
             },
           },
-          users_schedule_opponentIdTousers: {
+          users_schedule_ussr_player_idTousers: {
             select: {
               id: true,
               first_name: true,
               last_name: true,
-              country: true,
+              countries: {
+              select: {
+                tld_code: true,
+              },
+            },
             },
           },
-          games: {
+          game_results: {
             select: {
-              id: true,
-              winner: true,
-              created_at: true,
-            },
+              game_winner: true,
+              game_date: true,
+            }
           },
         },
         orderBy: {
-          dueDate: 'asc',
+          due_date: 'asc',
         },
         take: 20, // First page
       });
