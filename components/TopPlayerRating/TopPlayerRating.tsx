@@ -1,7 +1,7 @@
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { SkeletonPlayers } from "components/Skeletons";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { usePlayerRatings } from "hooks/useRating";
 import { UserType } from "types/user.types";
 import {
   SidePanelStyled,
@@ -32,8 +32,27 @@ const Announcement = () => {
 };
 
 const TopPlayerRating = () => {
-  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1&pso=5" });
-  if (!data) return null;
+  const {
+    data: playersData,
+    isLoading,
+    error
+  } = usePlayerRatings({
+    page: 1,
+    pageSize: 5,
+    orderBy: 'rating',
+    orderDirection: 'desc',
+  });
+
+  if (error) {
+    return (
+      <SidePanelStyled>
+        <TitleText strong="bold">
+          Top Players
+        </TitleText>
+        <Text>Error loading top players</Text>
+      </SidePanelStyled>
+    );
+  }
 
   return (
     <SidePanelStyled>
@@ -42,8 +61,13 @@ const TopPlayerRating = () => {
       </TitleText>
       {isLoading && <SkeletonPlayers />}
       <PlayersContainer>
-        {(data as any).results?.map((item: any, index: number) => (
-          <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
+        {playersData?.results?.map((player) => (
+          <User
+            key={player.id}
+            name={player.name}
+            rating={player.rating}
+            countryCode={player.countryCode || ''}
+          />
         ))}
       </PlayersContainer>
     </SidePanelStyled>
