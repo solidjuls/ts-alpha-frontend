@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import styled from "styled-components";
 import { FlagIcon } from "components/FlagIcon";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
-import { Game, TournamentsType } from "types/game.types";
+import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer } from "./Homepage.styled";
@@ -12,21 +12,14 @@ import MultiSelect from "components/MultiSelect";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import { Button } from "components/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import {
-  fetchGameList,
-  setClearFilter,
-  setCurrentPage,
-  setPlayersFilter,
-  setTournamentFilter,
-  setVideoFilter,
-} from "../../redux/gameListSlice";
 import { Checkbox } from "components/Checkbox";
-import { UserType } from "types/user.types";
 import { MultiSelectItemType } from "types/types";
-import { useUsers } from "hooks/useUsers";
+import { useAllUsers } from "hooks/useUsers";
 import { useTournaments } from "hooks/useTournaments";
+import { useGames } from "hooks/useGames";
+import { GetGamesParams } from "services/games.service";
+import { Tournament } from "services/tournaments.service";
+import { User, UsersListResponse } from "services/users.service";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -136,17 +129,18 @@ const EmptyState = () => {
 };
 
 type FilterUserProps = {
-  users: UserType[];
-  selectedValues: MultiSelectItemType[];
+  users: User[];
+  selectedValues: string[];
+  setSelectedValues: (values: string[]) => void;
 };
 
 type FilterTournamentProps = {
-  tournaments: TournamentsType[];
-  selectedValues: MultiSelectItemType[];
+  tournaments: Tournament[];
+  selectedValues: string[];
+  setSelectedValues: (values: string[]) => void;
 };
 
 const FilterUser: React.FC<FilterUserProps> = ({
-  onFilterChange,
   users,
   selectedValues,
   setSelectedValues,
@@ -160,14 +154,24 @@ const FilterUser: React.FC<FilterUserProps> = ({
     <div style={{ margin: "4px" }}>
       <MultiSelect
         items={usersMemo}
-        placeholder="Select Players..."
+        placeholder="Select Players (max 2)..."
         selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
+        setSelectedValues={(values: string) => {
+          // Handle the MultiSelect component's interface which passes a single string
+          // but we need to manage it as an array for our state
+          const valuesArray = Array.isArray(values) ? values : [values];
+          // Limit to maximum 2 players
+          if (valuesArray.length <= 2) {
+            setSelectedValues(valuesArray);
+          }
+        }}
         closeOnSelect={false}
+        selectionLimit={2}
       />
     </div>
   );
 };
+
 const FilterTournament: React.FC<FilterTournamentProps> = ({
   tournaments,
   selectedValues,
@@ -184,58 +188,64 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
         selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
+        setSelectedValues={(values: string) => {
+          const valuesArray = Array.isArray(values) ? values : [values];
+          setSelectedValues(valuesArray);
+        }}
         closeOnSelect={false}
       />
     </div>
   );
 };
 
-const Filter = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "1,2,3,4" });
-  const { data: users, isLoading: isLoadingUsers } = useUsers()
+type FilterProps = {
+  playersSelected: string[];
+  setPlayersSelected: (values: string[]) => void;
+  tournamentSelected: string[];
+  setTournamentSelected: (values: string[]) => void;
+  videoSelected: boolean;
+  setVideoSelected: (value: boolean) => void;
+  onClear: () => void;
+};
 
-  const { filters } = useSelector((state: RootState) => state.gameList);
-  const { playersSelected, tournamentSelected, videoSelected } = filters;
-console.log("tournaments", tournaments)
-  const onClear = () => {
-    dispatch(setClearFilter());
-  };
-  // --blue-50: #f4fafe;
-  // --blue-100: #cae6fc;
-  // --blue-200: #a0d2fa;
-  // --blue-300: #75bef8;
-  // --blue-400: #4baaf5;
-  // --blue-500: #2196f3;
-  // --blue-600: #1c80cf;
-  // --blue-700: #1769aa;
-  // --blue-800: #125386;
+const Filter: React.FC<FilterProps> = ({
+  playersSelected,
+  setPlayersSelected,
+  tournamentSelected,
+  setTournamentSelected,
+  videoSelected,
+  setVideoSelected,
+  onClear,
+}) => {
+  const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "1,2,3,4" });
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000); // Get all users for filtering
 
   if (isLoadingTournament || isLoadingUsers) return null;
+
+  // Type cast tournaments to Tournament[] since we know it returns tournaments for this query
+  const tournamentsList = tournaments as Tournament[];
+  // Type cast users data to get the results
+  const usersResponse = usersData as UsersListResponse;
+
   return (
     <FilterPanel>
-      {users && (
+      {usersResponse?.results && (
         <FilterUser
-          users={users}
+          users={usersResponse.results}
           selectedValues={playersSelected}
-          setSelectedValues={(value) => {
-            dispatch(setPlayersFilter(value));
-          }}
-          closeOnSelect={false}
+          setSelectedValues={setPlayersSelected}
         />
       )}
-      {tournaments && (
+      {tournamentsList && (
         <FilterTournament
-          tournaments={tournaments}
+          tournaments={tournamentsList}
           selectedValues={tournamentSelected}
-          setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
-          closeOnSelect={false}
+          setSelectedValues={setTournamentSelected}
         />
       )}
       <Checkbox
         text="Games with videos"
-        onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
+        onCheckedChange={() => setVideoSelected(!videoSelected)}
         checked={videoSelected}
       />
       <div style={{ display: "flex" }}>
@@ -278,33 +288,70 @@ const ResponsiveContainer = styled.div`
 `
 
 const Homepage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { items, status, filters, currentPage, totalPages } = useSelector(
-    (state: RootState) => state.gameList,
-  );
+  // Local state for filters
+  const [playersSelected, setPlayersSelected] = useState<string[]>([]);
+  const [tournamentSelected, setTournamentSelected] = useState<string[]>([]);
+  const [videoSelected, setVideoSelected] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    dispatch(fetchGameList());
-  }, [filters, currentPage, dispatch]);
+  // Build filters for API call
+  const gameFilters: GetGamesParams = useMemo(() => {
+    const filters: GetGamesParams = {
+      p: currentPage,
+      pageSize: 20,
+    };
 
-  const onPageChange = async (page: string) => {
-    dispatch(setCurrentPage(page));
+    if (playersSelected.length > 0) {
+      filters.userFilter = playersSelected.join(',');
+    }
+
+    if (tournamentSelected.length > 0) {
+      filters.toFilter = tournamentSelected.join(',');
+    }
+
+    if (videoSelected) {
+      filters.video = true;
+    }
+
+    return filters;
+  }, [playersSelected, tournamentSelected, videoSelected, currentPage]);
+
+  // Fetch games using React Query
+  const { data: gamesData, isLoading } = useGames(gameFilters);
+
+  const onPageChange = (page: string) => {
+    setCurrentPage(Number(page));
   };
+
+  const onClear = () => {
+    setPlayersSelected([]);
+    setTournamentSelected([]);
+    setVideoSelected(false);
+    setCurrentPage(1);
+  };
+
+  const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
 
   return (
     <ResponsiveContainer>
       <GlobalContainer>
-        <Filter />
-        <ResultsPanel
-          data={items.results}
-          isLoading={status === "loading"}
-          // dateValue={dateValue}
-          // onClickDay={onClickDay}
+        <Filter
+          playersSelected={playersSelected}
+          setPlayersSelected={setPlayersSelected}
+          tournamentSelected={tournamentSelected}
+          setTournamentSelected={setTournamentSelected}
+          videoSelected={videoSelected}
+          setVideoSelected={setVideoSelected}
+          onClear={onClear}
         />
-        {!(status === "loading") && (
+        <ResultsPanel
+          data={gamesData?.results || []}
+          isLoading={isLoading}
+        />
+        {!isLoading && gamesData && (
           <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
+            currentPage={currentPage.toString()}
+            totalPages={totalPages.toString()}
             onPageChange={onPageChange}
           />
         )}
