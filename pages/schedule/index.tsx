@@ -128,7 +128,7 @@ const generateQueryParams = ({
   tournamentId: string;
   gameCode: string;
 }) => {
-  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gc=${gameCode}`;
+  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gameCode=${gameCode}`;
 };
 
 const resolveLink = ({
@@ -147,7 +147,7 @@ const resolveLink = ({
   gameCode: string;
 }) => {
   if (!gameResultsId)
-    return `/submit-schedule${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode })}`;
+    return `/submit-game${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode })}`;
 
   return `/games/${gameResultsId}`;
 };

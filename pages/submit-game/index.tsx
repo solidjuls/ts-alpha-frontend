@@ -27,6 +27,8 @@ export interface SubmitGameFormData {
   endTurn: string;
   endMode: string;
   video1: string;
+  usaPlayerId?: string;
+  ussrPlayerId?: string;
 }
 
 const SubmitGameContainer = ({ role }: SubmitGameProps) => {
@@ -51,6 +53,8 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       endTurn: "",
       endMode: "",
       video1: "",
+      usaPlayerId: "",
+      ussrPlayerId: "",
     },
   });
 
@@ -66,6 +70,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   useEffect(() => {
     if (router.isReady) {
       const {
+        // Direct form parameters
         gameWinner,
         gameCode,
         gameType,
@@ -74,8 +79,14 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         endTurn,
         endMode,
         video1,
+        // Schedule page parameters
+        id: scheduleId,
+        idUsa,
+        idUssr,
+        tid: tournamentId,
       } = router.query;
 
+      // Handle direct form parameters
       if (gameWinner && typeof gameWinner === "string") {
         setValue("gameWinner", gameWinner as GameWinner);
       }
@@ -100,14 +111,45 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       if (video1 && typeof video1 === "string") {
         setValue("video1", video1);
       }
+
+      if (tournamentId && typeof tournamentId === "string") {
+        setValue("gameType", tournamentId);
+      }
+
+      // Handle USA and USSR player IDs from schedule
+      if (idUsa && typeof idUsa === "string") {
+        setValue("usaPlayerId", idUsa);
+      }
+      if (idUssr && typeof idUssr === "string") {
+        setValue("ussrPlayerId", idUssr);
+      }
+
+      // Determine opponent and played as based on current user ID
+      if (id && idUsa && idUssr && typeof idUsa === "string" && typeof idUssr === "string") {
+        if (id === idUsa) {
+          // Current user is USA player
+          setValue("opponentWas", idUssr);
+          setValue("playedAs", "1"); // USA
+        } else if (id === idUssr) {
+          // Current user is USSR player
+          setValue("opponentWas", idUsa);
+          setValue("playedAs", "2"); // USSR
+        }
+      }
     }
-  }, [router.isReady, router.query, setValue]);
+  }, [router.isReady, router.query, setValue, id]);
 
   const normalizeData = (data: SubmitGameFormData) => {
     let usaPlayerId = "";
     let ussrPlayerId = "";
-    
-    if (data.playedAs === "1") {
+
+    // If we have player IDs from schedule (schedule mode)
+    if (data.usaPlayerId && data.ussrPlayerId) {
+      usaPlayerId = data.usaPlayerId;
+      ussrPlayerId = data.ussrPlayerId;
+    }
+    // Otherwise use the traditional playedAs/opponentWas logic (direct mode)
+    else if (data.playedAs === "1") {
       usaPlayerId = id as string;
       ussrPlayerId = data.opponentWas;
     } else if (data.playedAs === "2") {
@@ -152,10 +194,13 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       isValid = false;
     }
 
-    // Check if opponent is not the same as current user
-    if (data.opponentWas === id) {
-      setError("opponentWas", { type: "manual", message: "You cannot play against yourself" });
-      isValid = false;
+    // Only validate opponent in direct mode (not schedule mode)
+    if (!data.usaPlayerId && !data.ussrPlayerId) {
+      // Check if opponent is not the same as current user
+      if (data.opponentWas === id) {
+        setError("opponentWas", { type: "manual", message: "You cannot play against yourself" });
+        isValid = false;
+      }
     }
 
     // Validate end turn and end mode combinations
@@ -223,6 +268,15 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       text: item.tournament_name,
     })) || [];
 
+  // Determine if we're in schedule mode (coming from schedule with player IDs)
+  const usaPlayerId = watch("usaPlayerId");
+  const ussrPlayerId = watch("ussrPlayerId");
+  const isScheduleMode = !!(usaPlayerId && ussrPlayerId);
+
+  // Get user names for the player IDs in schedule mode
+  const usaPlayerName = usaPlayerId ? usersParsed.find(user => user.value === usaPlayerId)?.text || `User ${usaPlayerId}` : "";
+  const ussrPlayerName = ussrPlayerId ? usersParsed.find(user => user.value === ussrPlayerId)?.text || `User ${ussrPlayerId}` : "";
+
   return (
     <SubmitGameForm
       control={control}
@@ -233,6 +287,9 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       errors={errors}
       isSubmitting={isSubmitting}
       watch={watch}
+      isScheduleMode={isScheduleMode}
+      usaPlayerName={usaPlayerName}
+      ussrPlayerName={ussrPlayerName}
     />
   );
 };

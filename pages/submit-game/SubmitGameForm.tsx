@@ -61,6 +61,9 @@ type SubmitGameFormProps = {
   leagueTypes: DropdownItemType[];
   users: DropdownItemType[];
   watch: UseFormWatch<SubmitGameFormData>;
+  isScheduleMode: boolean;
+  usaPlayerName: string;
+  ussrPlayerName: string;
 };
 
 const SubmitGameForm = ({
@@ -72,6 +75,9 @@ const SubmitGameForm = ({
   errors,
   isSubmitting,
   watch,
+  isScheduleMode,
+  usaPlayerName,
+  ussrPlayerName,
 }: SubmitGameFormProps) => {
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -97,6 +103,44 @@ const SubmitGameForm = ({
           )}
         />
 
+        {isScheduleMode && (
+          <>
+            <Controller
+              name="usaPlayerId"
+              control={control}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="USA Player"
+                  inputValue={usaPlayerName}
+                  placeholder="USA Player"
+                  onInputValueChange={() => {}} // Read-only
+                  css={{ width: "250px" }}
+                  key="usaPlayerId"
+                  disabled
+                  error={false}
+                />
+              )}
+            />
+
+            <Controller
+              name="ussrPlayerId"
+              control={control}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="USSR Player"
+                  inputValue={ussrPlayerName}
+                  placeholder="USSR Player"
+                  onInputValueChange={() => {}} // Read-only
+                  css={{ width: "250px" }}
+                  key="ussrPlayerId"
+                  disabled
+                  error={false}
+                />
+              )}
+            />
+          </>
+        )}
+
         <Controller
           name="gameType"
           control={control}
@@ -116,45 +160,49 @@ const SubmitGameForm = ({
           )}
         />
 
-        <Controller
-          name="playedAs"
-          control={control}
-          rules={{ required: "Please select which side you played as" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="PlayedAs"
-              placeholder="I played as..."
-              items={gameSides}
-              selectedItem={field.value}
-              selectedValueProperty="value"
-              selectedInputProperty="text"
-              error={!!errors.playedAs}
-              css={{ width: dropdownWidth }}
-              onSelect={field.onChange}
+        {!isScheduleMode && (
+          <>
+            <Controller
+              name="playedAs"
+              control={control}
+              rules={{ required: "Please select which side you played as" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="PlayedAs"
+                  placeholder="I played as..."
+                  items={gameSides}
+                  selectedItem={field.value}
+                  selectedValueProperty="value"
+                  selectedInputProperty="text"
+                  error={!!errors.playedAs}
+                  css={{ width: dropdownWidth }}
+                  onSelect={field.onChange}
+                />
+              )}
             />
-          )}
-        />
 
-        <Controller
-          name="opponentWas"
-          control={control}
-          rules={{ required: "Please select your opponent" }}
-          render={({ field }) => (
-            <UserTypeahead
-              labelText="opponentWas"
-              selectedItem={field.value}
-              error={!!errors.opponentWas}
-              placeholder="Type the opponent name..."
-              css={{ width: dropdownWidth }}
-              onBlur={() => {
-                // Don't clear on blur for react-hook-form
-              }}
-              onSelect={(value) =>
-                field.onChange(value?.value || "")
-              }
+            <Controller
+              name="opponentWas"
+              control={control}
+              rules={{ required: "Please select your opponent" }}
+              render={({ field }) => (
+                <UserTypeahead
+                  labelText="opponentWas"
+                  selectedItem={field.value}
+                  error={!!errors.opponentWas}
+                  placeholder="Type the opponent name..."
+                  css={{ width: dropdownWidth }}
+                  onBlur={() => {
+                    // Don't clear on blur for react-hook-form
+                  }}
+                  onSelect={(value) =>
+                    field.onChange(value?.value || "")
+                  }
+                />
+              )}
             />
-          )}
-        />
+          </>
+        )}
 
         <Controller
           name="gameWinner"
