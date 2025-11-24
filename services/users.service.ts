@@ -68,6 +68,12 @@ export interface UpdateUserData {
   country?: number;
 }
 
+export interface UpdatePasswordData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 class UsersService {
   private axiosInstance: AxiosInstance;
 
@@ -138,6 +144,12 @@ class UsersService {
   // Update existing user
   async updateUser(userData: UpdateUserData): Promise<{ message: string }> {
     const response = await this.axiosInstance.post('/users', userData);
+    return response.data;
+  }
+
+  // Update user password
+  async updatePassword(passwordData: UpdatePasswordData): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post('/users/update-password', passwordData);
     return response.data;
   }
 }

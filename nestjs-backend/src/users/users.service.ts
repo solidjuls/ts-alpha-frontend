@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
+import { hash, compare } from 'bcrypt';
 import {
   UserDto,
   UserDetailDto,
   UsersListResponse,
   CreateUserDto,
   UpdateUserDto,
+  UpdatePasswordDto,
 } from './dto/users.dto';
 
 @Injectable()
@@ -296,6 +298,47 @@ export class UsersService {
     } catch (error) {
       console.error('Error updating user:', error);
       return { success: false, error: 'Failed to update user' };
+    }
+  }
+
+  async updatePassword(email: string, passwordData: UpdatePasswordDto): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { currentPassword, newPassword, confirmPassword } = passwordData;
+
+      // Validate password confirmation
+      if (newPassword !== confirmPassword) {
+        return { success: false, error: 'New passwords do not match' };
+      }
+
+      // Get user with current password
+      const user = await this.databaseService.users.findUnique({
+        where: { email },
+        select: { id: true, password: true },
+      });
+
+      if (!user) {
+        return { success: false, error: 'User not found' };
+      }
+
+      // Verify current password
+      const isCurrentPasswordValid = await compare(currentPassword, user.password);
+      if (!isCurrentPasswordValid) {
+        return { success: false, error: 'Current password is incorrect' };
+      }
+
+      // Hash new password
+      const hashedNewPassword = await hash(newPassword, 12);
+
+      // Update password
+      await this.databaseService.users.update({
+        where: { email },
+        data: { password: hashedNewPassword },
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error updating password:', error);
+      return { success: false, error: 'Failed to update password' };
     }
   }
 }

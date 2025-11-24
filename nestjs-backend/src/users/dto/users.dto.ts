@@ -74,3 +74,9 @@ export interface UpdateUserDto {
   city?: number;
   country?: number;
 }
+
+export interface UpdatePasswordDto {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

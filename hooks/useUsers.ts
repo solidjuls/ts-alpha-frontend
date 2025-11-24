@@ -7,6 +7,7 @@ import {
   GetUsersParams,
   CreateUserData,
   UpdateUserData,
+  UpdatePasswordData,
 } from '../services/users.service';
 
 // Query keys for cache management
@@ -102,7 +103,7 @@ export const useUpdateUser = () => {
       // Invalidate and refetch users lists
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEYS.lists() });
       queryClient.invalidateQueries({ queryKey: USERS_QUERY_KEYS.all });
-      
+
       // If we have the user ID, invalidate the specific user detail
       // Note: We'd need to modify the service to return user ID or find it another way
       // For now, we'll invalidate all user details
@@ -110,6 +111,22 @@ export const useUpdateUser = () => {
     },
     onError: (error) => {
       console.error('Error updating user:', error);
+    },
+  });
+};
+
+// Hook to update user password
+export const useUpdatePassword = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (passwordData: UpdatePasswordData) => usersService.updatePassword(passwordData),
+    onSuccess: () => {
+      // No need to invalidate queries for password updates
+      console.log('Password updated successfully');
+    },
+    onError: (error) => {
+      console.error('Error updating password:', error);
     },
   });
 };

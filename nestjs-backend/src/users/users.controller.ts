@@ -22,6 +22,7 @@ import {
   UserDto,
   CreateUserDto,
   UpdateUserDto,
+  UpdatePasswordDto,
 } from './dto/users.dto';
 
 @Controller('users')
@@ -165,6 +166,34 @@ export class UsersController {
       return { message: 'User created successfully' };
     } catch (error) {
       console.error('[Users PUT]', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('update-password')
+  async updatePassword(
+    @Body() passwordData: UpdatePasswordDto,
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      const result = await this.usersService.updatePassword(user.mail, passwordData);
+
+      if (!result.success) {
+        throw new HttpException(
+          result.error || 'Failed to update password',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      console.error('[Users POST update-password]', error);
       if (error instanceof HttpException) {
         throw error;
       }
