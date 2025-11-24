@@ -2,7 +2,7 @@ import React from "react";
 import { Control, FieldErrors, UseFormHandleSubmit, UseFormWatch } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import Text from "components/Text";
-import TextComponent from "../submitform/TextComponent";
+import TextComponent from "./TextComponent";
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";

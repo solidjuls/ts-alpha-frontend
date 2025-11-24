@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Typeahead } from "components/Autocomplete/Typeahead";
-import WithLabel from "pages/submitform/WithLabel";
+import WithLabel from "pages/submit-game/WithLabel";
 import { useAllUsers } from "hooks/useUsers";
 import { DropdownItemType } from "types/types";
 import { UsersListResponse } from "services/users.service";

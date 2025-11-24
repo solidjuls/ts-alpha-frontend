@@ -9,7 +9,7 @@ import UserTypeahead from 'components/UserTypeahead';
 import { Flex, Box } from 'components/Atoms';
 import { useQuery } from '@tanstack/react-query';
 import { usersService } from 'services/users.service';
-import DateComponent from 'pages/submitform/DateComponent';
+import DateComponent from 'components/EditFormComponents/DateComponent';
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { useAddSchedule } from 'hooks/useSchedule';

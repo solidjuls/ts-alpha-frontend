@@ -1,8 +1,8 @@
 import React from "react";
 import { GameWinner, SubmitFormValue } from "types/game.types";
 import Text from "components/Text";
-import TextComponent from "../submitform/TextComponent";
-import DateComponent from "../submitform/DateComponent";
+import TextComponent from "../submit-game/TextComponent";
+import DateComponent from "components/EditFormComponents/DateComponent";
 
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
