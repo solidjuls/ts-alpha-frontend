@@ -1,12 +1,11 @@
 import { Flex, Span } from "components/Atoms";
 import { Button } from "components/Button";
-import UserTypeahead from "pages/submitform/UserTypeahead"
+import UserTypeahead from "components/UserTypeahead"
 import { useState } from "react";
-import { DropdownItemType } from "types/types";
+// DropdownItemType is now used internally by UserTypeahead
 import getAxiosInstance from "utils/axios";
 import { Title } from "./styles";
-import { useQuery } from '@tanstack/react-query';
-import { usersService } from 'services/users.service';
+// React Query and users service are now used internally by UserTypeahead
 
 interface ReplacePlayersProps {
   tournament: string | undefined
@@ -19,24 +18,9 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [newUser, setNewUser] = useState("")
   const [responseMessage, setResponseMessage] = useState("")
 
-  // Fetch users for the tournament using React Query and NestJS backend
-  const { data: users, isLoading: loadingUsers } = useQuery({
-    queryKey: ['users', tournament],
-    queryFn: async () => {
-      if (!tournament) return [];
-      return await usersService.getUsersByTournament(tournament);
-    },
-    enabled: !!tournament,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  // Users are now fetched directly by the UserTypeahead components
 
-  if(loadingUsers) return null
-
-  const usersParsed: DropdownItemType[] =
-    users?.map((item) => ({
-      value: item.id,
-      text: item.name,
-    })) || [];
+  // Users are now fetched directly by the UserTypeahead components
 
   const updatePlayers = async () => {
     const updated = await getAxiosInstance().patch('/api/schedule', {
@@ -54,22 +38,20 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
-              users={usersParsed}
               placeholder="Player to replace..."
               css={styles}
               onBlur={() => setOldUser("")}
-              onSelect={(value: DropdownItemType) =>
+              onSelect={(value) =>
                 setOldUser(value?.value as string)
               }
             />
             <UserTypeahead
               labelText="newPlayer"
               selectedItem={newUser}
-              users={usersParsed}
               placeholder="Type the new player..."
               css={styles}
               onBlur={() => setNewUser("")}
-              onSelect={(value: DropdownItemType) =>
+              onSelect={(value) =>
                 setNewUser(value?.value as string)
               }
             />

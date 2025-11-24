@@ -6,10 +6,10 @@ import { UserCreateState } from "types/game.types";
 import { Button } from "components/Button";
 import getAxiosInstance from "utils/axios";
 import Text from "components/Text";
-import CitiesTypeahead from "./CitiesTypeahead";
+import CitiesTypeahead from "components/CitiesTypeahead";
+import CountriesTypeahead from "components/CountriesTypeahead";
 import { platforms, gameDurations } from "utils/constants";
 import { DropdownItemType } from "types/types";
-import CountriesTypeahead from "./CountriesTypeahead";
 
 const inputWidth = "200px";
 const dropdownWidth = "270px";

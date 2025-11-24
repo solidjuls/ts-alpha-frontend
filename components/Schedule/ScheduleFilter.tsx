@@ -3,8 +3,8 @@ import { Checkbox } from "components/Checkbox";
 import styled from 'styled-components';
 import ReplacePlayers from './ReplacePlayers';
 import CsvUploadButton from './CsvButtonUpload';
-import UserTypeahead from 'pages/submitform/UserTypeahead';
-import { DropdownItemType } from 'types/types';
+import UserTypeahead from 'components/UserTypeahead';
+// DropdownItemType is now used internally by UserTypeahead
 
 import { Flex, Box } from 'components/Atoms';
 import { useQuery } from '@tanstack/react-query';
@@ -98,10 +98,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const usersFilter: DropdownItemType[] = users?.map((item) => ({
-    value: item.id,
-    text: item.name,
-  })) || []
+  // Users are now fetched directly by the UserTypeahead components
 
   // Handle manual schedule creation
   const handleCreateSchedule = async () => {
@@ -167,7 +164,6 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             <>
               <UserTypeahead
                 labelText="Filter by Player"
-                users={usersFilter}
                 selectedItem={selectedPlayer}
                 placeholder="Type the player name to filter schedule..."
                 css={{ width: '320px', marginRight: "8px" }}
@@ -175,23 +171,22 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   setSelectedPlayer("");
                   onPlayerSelect?.("");
                 }}
-                onSelect={(item: DropdownItemType) => {
-                  setSelectedPlayer(item.value || "");
-                  onPlayerSelect?.(item.value || "");
+                onSelect={(item) => {
+                  setSelectedPlayer(item?.value || "");
+                  onPlayerSelect?.(item?.value || "");
                 }}
               />
               <UserTypeahead
                 labelText="Remove Player"
-                users={usersFilter}
                 selectedItem={selectedPlayerToRemove}
                 placeholder="Type the player name to remove..."
                 css={{ width: '320px' }}
                 onBlur={() => {
                   // Handle blur if needed
                 }}
-                onSelect={(item: DropdownItemType) => {
-                  setSelectedPlayerToRemove(item.value || "");
-                  onPlayerRemove?.(item.value || "");
+                onSelect={(item) => {
+                  setSelectedPlayerToRemove(item?.value || "");
+                  onPlayerRemove?.(item?.value || "");
                 }}
               />
             </>
@@ -205,26 +200,24 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             <FormRow>
               <UserTypeahead
                 labelText="USA Player"
-                users={usersFilter}
                 selectedItem={usaPlayer}
                 placeholder="Select USA player..."
                 css={{ width: '200px' }}
                 onBlur={() => {}}
-                onSelect={(item: DropdownItemType) => {
-                  setUsaPlayer(item.value || "");
+                onSelect={(item) => {
+                  setUsaPlayer(item?.value || "");
                   setScheduleMessage(""); // Clear any error messages
                 }}
               />
 
               <UserTypeahead
                 labelText="USSR Player"
-                users={usersFilter}
                 selectedItem={ussrPlayer}
                 placeholder="Select USSR player..."
                 css={{ width: '200px' }}
                 onBlur={() => {}}
-                onSelect={(item: DropdownItemType) => {
-                  setUssrPlayer(item.value || "");
+                onSelect={(item) => {
+                  setUssrPlayer(item?.value || "");
                   setScheduleMessage(""); // Clear any error messages
                 }}
               />

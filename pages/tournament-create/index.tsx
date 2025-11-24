@@ -6,12 +6,10 @@ import { DetailContainer } from "components/DetailContainer"
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import DateComponent from "components/EditFormComponents/DateComponent";
 import { EditTextAreaComponent } from "components/EditFormComponents/EditTextArea";
-import { useAllUsers } from "hooks/useUsers";
+// Users are now fetched directly by the UserTypeahead component
 import { useCreateTournament } from "hooks/useTournaments";
-import { User, UsersListResponse } from "services/users.service";
-import UserTypeahead from "pages/submitform/UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { TournamentCreateState } from "types/game.types";
-import { DropdownItemType } from "types/types";
 import { tournamentStatus } from "utils/constants";
 import { useRouter } from "next/router";
 
@@ -61,13 +59,7 @@ const TournamentCreate = () => {
   const [errorMsg, setErrorMsg] = useState("");
 
   // React Query hooks
-  const { data: users, isLoading: loadingUsers } = useAllUsers(1, 1000); // Get all users for dropdown
   const createTournamentMutation = useCreateTournament();
-
-  if (loadingUsers) return <DetailContainer><Spinner size="3" /></DetailContainer>;
-  if (!users?.results) return null;
-
-  const usersData = users as UsersListResponse;
 
   const validated = () => {
     let submit = true;
@@ -124,11 +116,7 @@ const TournamentCreate = () => {
     text: key,
   }));
 
-  const usersParsed: DropdownItemType[] =
-    usersData.results?.map((item: User) => ({
-      value: item.id,
-      text: item.name,
-    })) || [];
+  // Users are now fetched directly by the UserTypeahead component
   const formattedDate = form?.startingDate.value ? new Date(form?.startingDate.value) : new Date()
 
   return (
@@ -165,13 +153,12 @@ const TournamentCreate = () => {
           labelText="admins"
           selectedItem={form.admins.value || ""}
           error={form.admins.error}
-          users={usersParsed}
           placeholder="Type the admin name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("admins", "");
           }}
-          onSelect={(value: DropdownItemType) =>
+          onSelect={(value) =>
             onInputValueChange("admins", value?.value || "")
           }
         />

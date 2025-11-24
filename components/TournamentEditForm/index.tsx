@@ -9,7 +9,7 @@ import { EditTextAreaComponent } from "components/EditFormComponents/EditTextAre
 import getAxiosInstance from "utils/axios";
 import { TournamentsType } from "types/game.types";
 import { tournamentStatus } from "utils/constants";
-import UserTypeahead from "pages/submitform/UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin } from "hooks/useTournaments";
 import { useAllUsers } from "hooks/useUsers";
 import { User, UsersListResponse } from "services/users.service";

@@ -6,13 +6,12 @@ import { Button } from "components/Button";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
-import CitiesTypeahead from "pages/usercreate/CitiesTypeahead";
-import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import CitiesTypeahead from "components/CitiesTypeahead";
+import CountriesTypeahead from "components/CountriesTypeahead";
 import { DropdownItemType } from "types/types";
 import { UserDetail, UpdateUserData, UpdatePasswordData } from "services/users.service";
 import { useUpdateUser, useUpdatePassword } from "hooks/useUsers";
-import { useAllCountries } from "hooks/useCountries";
-import { useCities } from "hooks/useCities";
+// Countries and cities hooks are now used directly by the typeahead components
 
 type UserProfileFormProps = {
   data: UserDetail;
@@ -57,8 +56,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
   // React Query hooks
   const updateUserMutation = useUpdateUser();
   const updatePasswordMutation = useUpdatePassword();
-  const { data: countriesData, isLoading: countriesLoading } = useAllCountries();
-  const { data: citiesData, isLoading: citiesLoading } = useCities();
+  // Countries and cities are now fetched directly by the typeahead components
 
   // React Hook Form for user profile
   const {
@@ -138,12 +136,9 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
     }
   };
 
-  if (countriesLoading || citiesLoading) {
-    return <Spinner size="3" />;
-  }
+  // Loading states are now handled by individual typeahead components
 
-  const countries = countriesData?.map((item) => ({ value: item.id, text: item.country_name })) || [];
-  const cities = citiesData?.map((city) => ({ value: city.id, text: city.name })) || [];
+  // Countries and cities are now fetched directly by the typeahead components
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -193,26 +188,24 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
 
         <CitiesTypeahead
           labelText="City"
-          items={cities}
           selectedItem={watchedCity?.toString() || ""}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
           error={!!profileErrors.city}
           placeholder="Type the city name..."
           css={{ width: "300px" }}
+          listWidth="500px"
           onBlur={() => {}}
-          onSelect={(value: any) => setProfileValue("city", value?.value ? Number(value.value) : null)}
+          onSelect={(value) => setProfileValue("city", value?.value ? Number(value.value) : null)}
         />
 
         <CountriesTypeahead
           labelText="Country"
-          items={countries}
           selectedItem={watchedCountry?.toString() || ""}
           error={!!profileErrors.country}
           placeholder="Type the country name..."
           css={{ width: "300px" }}
+          listWidth="320px"
           onBlur={() => {}}
-          onSelect={(value: any) => setProfileValue("country", value?.value ? Number(value.value) : null)}
+          onSelect={(value) => setProfileValue("country", value?.value ? Number(value.value) : null)}
         />
 
         <Button

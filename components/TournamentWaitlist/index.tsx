@@ -5,7 +5,7 @@ import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
 import { useWaitlistPlayers, useAddToWaitlist, useRemoveFromWaitlist } from "hooks/useTournaments";
 import { useAllUsers } from "hooks/useUsers";
 import { User } from "services/users.service";
-import UserTypeahead from "pages/submitform/UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { DropdownItemType } from "types/types";
 import { userRoles } from "utils/constants";
 

@@ -5,7 +5,7 @@ import TextComponent from "./TextComponent";
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
-import UserTypeahead from "./UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
@@ -124,12 +124,11 @@ const SubmitForm = ({
           labelText="opponentWas"
           selectedItem={form.opponentWas.value}
           error={form.opponentWas.error}
-          users={users}
           placeholder="Type the opponent name..."
           onBlur={() => {
             onInputValueChange("opponentWas", "");
           }}
-          onSelect={(value: DropdownItemType) =>
+          onSelect={(value) =>
             onInputValueChange("opponentWas", value?.value || "")
           }
         />

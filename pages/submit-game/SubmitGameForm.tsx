@@ -6,7 +6,7 @@ import TextComponent from "../submitform/TextComponent";
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
-import UserTypeahead from "../submitform/UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
@@ -144,13 +144,12 @@ const SubmitGameForm = ({
               labelText="opponentWas"
               selectedItem={field.value}
               error={!!errors.opponentWas}
-              users={users}
               placeholder="Type the opponent name..."
               css={{ width: dropdownWidth }}
               onBlur={() => {
                 // Don't clear on blur for react-hook-form
               }}
-              onSelect={(value: DropdownItemType) =>
+              onSelect={(value) =>
                 field.onChange(value?.value || "")
               }
             />

@@ -7,7 +7,7 @@ import DateComponent from "../submitform/DateComponent";
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
 import { Button } from "components/Button";
 import { Box, Form } from "components/Atoms";
-import UserTypeahead from "../submitform/UserTypeahead";
+import UserTypeahead from "components/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 
 import { Spinner } from "@radix-ui/themes";
@@ -100,32 +100,26 @@ const RecreateRating = ({
         <UserTypeahead
           labelText="usaPlayer"
           selectedItem={form.usaPlayerId.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
           error={form.usaPlayerId.error}
-          users={users}
           placeholder="Type USA player name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("usaPlayerId", "");
           }}
-          onSelect={(value: DropdownItemType) => {
+          onSelect={(value) => {
             onInputValueChange("usaPlayerId", value?.value);
           }}
         />
         <UserTypeahead
           labelText="ussrPlayer"
           selectedItem={form.ussrPlayerId.value}
-          selectedValueProperty="value"
-          selectedInputProperty="text"
           error={form.ussrPlayerId.error}
-          users={users}
           placeholder="Type USSR player name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("ussrPlayerId", "");
           }}
-          onSelect={(value: DropdownItemType) => {
+          onSelect={(value) => {
             onInputValueChange("ussrPlayerId", value?.value);
           }}
         />

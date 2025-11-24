@@ -9,10 +9,10 @@ import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
-import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
+import CountriesTypeahead from "components/CountriesTypeahead";
 import { Input } from "components/Input";
 import { usePlayerRatings } from "hooks/useRating";
-import { useAllCountries } from "hooks/useCountries";
+// Countries hook is now used directly by the CountriesTypeahead component
 import { MultiSelectItemType } from "types/types";
 
 interface CardColumnProps {
@@ -145,7 +145,7 @@ const Players = () => {
   const [playdeckInput, setPlaydeckInput] = useState("");
   const [playdeckValue, setPlaydeckValue] = useState("");
 
-  const { data: countries, isLoading: isLoadingCountries } = useAllCountries();
+  // Countries are now fetched directly by the CountriesTypeahead component
 
   // Use React Query for player ratings
   const {
@@ -177,7 +177,7 @@ const Players = () => {
     setCurrentPage(page);
   };
 
-  if (isLoadingCountries) return null;
+  // Loading states are now handled by individual components
 
   const paginationVisibility = !(
     playersSelected?.length !== 0 ||
@@ -202,19 +202,19 @@ const Players = () => {
           <CountriesTypeahead
             placeholder="Type the federation name..."
             css={{ width: "100%", height: "100%" }}
-            onSelect={(value: any) => {
+            onSelect={(value) => {
               if (value) {
-                setCountriesSelected(value.value);
+                setCountriesSelected(value.value || "");
                 setCurrentPage(1); // Reset to first page when filtering
               }
             }}
             onBlur={() => {
               setCountriesSelected("");
             }}
-            items={countries?.map((country) => ({ value: country.id, text: country.country_name })) || []}
             selectedItem={countriesSelected || ""}
             labelText=""
             error={false}
+            listWidth="320px"
           />
         </div>
         <Input
