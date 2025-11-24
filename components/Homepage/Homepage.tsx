@@ -9,7 +9,6 @@ import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
 import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer } from "./Homepage.styled";
 import MultiSelect from "components/MultiSelect";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import { Button } from "components/Button";

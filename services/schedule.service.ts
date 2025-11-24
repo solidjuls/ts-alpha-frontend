@@ -24,6 +24,7 @@ export interface ScheduleListResponse {
   totalRows: number;
   currentPage: number;
   totalPages: number;
+  defaultTournament: string;
 }
 
 export interface GetScheduleParams {

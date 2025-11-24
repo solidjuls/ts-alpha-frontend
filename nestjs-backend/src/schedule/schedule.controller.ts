@@ -97,6 +97,7 @@ export class ScheduleController {
           currentPage: parsedPage,
           totalPages: 0,
           userTournaments,
+          defaultTournament: '',
         };
       }
 
