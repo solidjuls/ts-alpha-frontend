@@ -364,6 +364,12 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
     );
   }
 
+  const activeTabButton = (tournament, index) => {
+    if (currentTournament) {
+      return currentTournament.id === tournament.id;
+    }
+    return index === 0
+  }
   return (
     <>
       <h1>My Schedule</h1>
@@ -410,7 +416,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
           />
 
             <SchedulePanel
-              data={scheduleData?.results}
+              data={scheduleData}
               userId={userId}
               isAdmin={isUserAdminForTournament}
               isLoading={false}

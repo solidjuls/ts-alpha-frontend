@@ -92,4 +92,6 @@ export interface ScheduleListResponse {
   totalRows: number;
   currentPage: number;
   totalPages: number;
+  userTournaments?: any[];
+  defaultTournament: string;
 }

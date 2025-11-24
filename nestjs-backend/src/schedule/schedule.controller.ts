@@ -13,6 +13,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ScheduleService } from './schedule.service';
+import { TournamentsService } from '../tournaments/tournaments.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtPayloadDto } from '../auth/dto/auth.dto';
@@ -29,7 +30,10 @@ import {
 @Controller('schedule')
 @UseGuards(JwtAuthGuard)
 export class ScheduleController {
-  constructor(private readonly scheduleService: ScheduleService) {}
+  constructor(
+    private readonly scheduleService: ScheduleService,
+    private readonly tournamentsService: TournamentsService,
+  ) {}
 
   @Get()
   async getSchedules(
@@ -48,7 +52,6 @@ export class ScheduleController {
         orderDirection = 'asc',
         // Legacy parameters for backward compatibility
         uid,
-        t: tournament,
         u: userFilter,
         p,
         pso,
@@ -57,18 +60,45 @@ export class ScheduleController {
 
       // Use new parameters if available, otherwise fall back to legacy
       const finalUserId = userId || uid;
-      const finalTournamentId = tournamentId || tournament;
       const finalPage = page || p || '1';
       const finalPageSize = pageSize || pso || '20';
 
+      // Get user's registered tournaments first
+      const userTournaments = await this.tournamentsService.getUserRegisteredTournaments(user.id.toString());
+
       // Parse parameters
       const parsedUserId = finalUserId ? Number(finalUserId) : undefined;
-      const parsedTournamentIds = finalTournamentId ? finalTournamentId.split(',') : undefined;
       const parsedUserFilter = userFilter ? Number(userFilter) : undefined;
       const parsedPage = Number(finalPage);
       const parsedPageSize = Number(finalPageSize);
       const parsedOnlyPending = onlyPending === 'true';
       const adminView = a === '1';
+
+      // Handle tournament parameter - make it mandatory
+      let parsedTournamentIds: string[] | undefined;
+
+      if (tournamentId) {
+        // Use provided tournament ID(s)
+        parsedTournamentIds = tournamentId.split(',');
+      } else if (userTournaments.length > 0) {
+        // No tournament provided, select default from user tournaments
+        // Prioritize ongoing tournaments (status_id = 4), then any other tournament
+        const ongoingTournaments = userTournaments.filter(t => t.status_id === 4);
+        const defaultTournament = ongoingTournaments.length > 0
+          ? ongoingTournaments[0]
+          : userTournaments[0];
+
+        parsedTournamentIds = [defaultTournament.id];
+      } else {
+        // User has no tournaments - return empty results
+        return {
+          results: [],
+          totalRows: 0,
+          currentPage: parsedPage,
+          totalPages: 0,
+          userTournaments,
+        };
+      }
 
       // Validate orderBy parameter
       const validOrderBy = ['dueDate', 'gameDate', 'tournamentName'];
@@ -78,6 +108,7 @@ export class ScheduleController {
       const validOrderDirection = ['asc', 'desc'];
       const finalOrderDirection = validOrderDirection.includes(orderDirection) ? orderDirection : 'asc';
 
+console.log("parsedTournamentIds", parsedUserId, parsedTournamentIds);
       const result = await this.scheduleService.getSchedules({
         userId: parsedUserId,
         tournament: parsedTournamentIds,
@@ -90,7 +121,12 @@ export class ScheduleController {
         orderDirection: finalOrderDirection,
       });
 
-      return result;
+      
+      return {
+        ...result,
+        userTournaments,
+        defaultTournament: parsedTournamentIds[0],
+      };
     } catch (error) {
       console.error('[Schedule GET]', error);
       throw new HttpException(
