@@ -145,19 +145,16 @@ export class UsersService {
         {
           first_name: {
             contains: search,
-            mode: 'insensitive',
           },
         },
         {
           last_name: {
             contains: search,
-            mode: 'insensitive',
           },
         },
         {
           email: {
             contains: search,
-            mode: 'insensitive',
           },
         },
       ];

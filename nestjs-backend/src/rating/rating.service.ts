@@ -142,7 +142,6 @@ export class RatingService {
     if (playdeckName) {
       whereConditions.name = {
         contains: playdeckName,
-        mode: 'insensitive',
       };
     }
 
@@ -152,13 +151,11 @@ export class RatingService {
         {
           first_name: {
             contains: nameSearch,
-            mode: 'insensitive',
           },
         },
         {
           last_name: {
             contains: nameSearch,
-            mode: 'insensitive',
           },
         },
       ];
@@ -169,7 +166,6 @@ export class RatingService {
       whereConditions.countries = {
         country_name: {
           contains: federationSearch,
-          mode: 'insensitive',
         },
       };
     }
