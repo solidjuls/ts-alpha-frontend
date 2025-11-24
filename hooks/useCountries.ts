@@ -18,3 +18,13 @@ export const useCountries = (searchQuery?: string) => {
     gcTime: 15 * 60 * 1000, // 15 minutes
   });
 };
+
+// Hook to get all countries (for dropdowns)
+export const useAllCountries = () => {
+  return useQuery({
+    queryKey: countriesKeys.search(undefined), // Use undefined for all countries
+    queryFn: () => countriesService.getCountries(), // No search query = all countries
+    staleTime: 10 * 60 * 1000, // 10 minutes (longer since countries don't change often)
+    gcTime: 30 * 60 * 1000, // 30 minutes
+  });
+};

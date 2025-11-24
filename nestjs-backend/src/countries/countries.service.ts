@@ -7,8 +7,21 @@ export class CountriesService {
   constructor(private databaseService: DatabaseService) {}
 
   async getCountries(searchQuery?: string): Promise<CountryDto[]> {
-    // If no search query or less than 3 characters, return empty array
-    if (!searchQuery || searchQuery.length < 3) {
+    let whereClause = {};
+    let takeLimit = undefined;
+
+    // If search query is provided and has at least 3 characters, filter by it
+    if (searchQuery && searchQuery.length >= 3) {
+      whereClause = {
+        country_name: {
+          contains: searchQuery,
+        },
+      };
+      takeLimit = 50; // Limit results for search to prevent too many suggestions
+    }
+    // If no search query, return all countries (for dropdowns)
+    // If search query is less than 3 characters, return empty array (for typeahead)
+    else if (searchQuery && searchQuery.length < 3) {
       return [];
     }
 
@@ -18,15 +31,11 @@ export class CountriesService {
         country_name: true,
         tld_code: true,
       },
-      where: {
-        country_name: {
-          contains: searchQuery,
-        },
-      },
+      where: whereClause,
       orderBy: {
         country_name: 'asc',
       },
-      take: 50, // Limit results to prevent too many suggestions
+      ...(takeLimit && { take: takeLimit }),
     });
 
     return countries.map(country => ({

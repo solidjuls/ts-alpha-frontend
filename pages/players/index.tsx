@@ -11,8 +11,8 @@ import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import { usePlayerRatings } from "hooks/useRating";
+import { useAllCountries } from "hooks/useCountries";
 import { MultiSelectItemType } from "types/types";
 
 interface CardColumnProps {
@@ -145,9 +145,7 @@ const Players = () => {
   const [playdeckInput, setPlaydeckInput] = useState("");
   const [playdeckValue, setPlaydeckValue] = useState("");
 
-  const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({
-    url: `/api/countries`,
-  });
+  const { data: countries, isLoading: isLoadingCountries } = useAllCountries();
 
   // Use React Query for player ratings
   const {
@@ -213,7 +211,7 @@ const Players = () => {
             onBlur={() => {
               setCountriesSelected("");
             }}
-            items={(countries as any)?.map((item: any) => ({ value: item.id, text: item.country_name })) || []}
+            items={countries?.map((country) => ({ value: country.id, text: country.country_name })) || []}
             selectedItem={countriesSelected || ""}
             labelText=""
             error={false}
