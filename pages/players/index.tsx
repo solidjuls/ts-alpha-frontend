@@ -1,27 +1,19 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 import styled from "styled-components";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import { Pagination } from "components/Pagination";
 import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "redux/store";
-import {
-  fetchPlayersList,
-  setCurrentPage,
-  setPlayersFilter,
-  setCountriesFilter,
-  setPlaydeckFilter,
-} from "../../redux/playersListSlice";
 import { ServerType } from "types/types";
 import CountriesTypeahead from "pages/usercreate/CountriesTypeahead";
 import { Input } from "components/Input";
-import { UserType } from "types/user.types";
+import useFetchInitialData from "hooks/useFetchInitialData";
+import { usePlayerRatings } from "hooks/useRating";
+import { MultiSelectItemType } from "types/types";
 
 interface CardColumnProps {
   header: string;
@@ -143,44 +135,67 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
   );
 };
 
-const getNameFromUsers = (data: any[] | null) => data?.map((item: any) => ({ code: item.id, name: item.name })) || [];
+
 
 const Players = () => {
+  // Local state for filters
+  const [currentPage, setCurrentPage] = useState(1);
+  const [playersSelected, setPlayersSelected] = useState<MultiSelectItemType[]>([]);
+  const [countriesSelected, setCountriesSelected] = useState<string>("");
+  const [playdeckInput, setPlaydeckInput] = useState("");
   const [playdeckValue, setPlaydeckValue] = useState("");
-  const {
-    data: users,
-    isLoading: isLoadingUsers,
-  } = useFetchInitialData<UserType[]>({ url: "/api/user", cacheId: "user-list" });
+
   const { data: countries, isLoading: isLoadingCountries } = useFetchInitialData({
     url: `/api/countries`,
   });
-  const dispatch = useDispatch<AppDispatch>();
-  const { items, status, filters, currentPage, totalPages } = useSelector(
-    (state: RootState) => state.playersList,
-  );
-  const { playersSelected, countriesSelected, playdeckInput } = filters;
-  const usersMemo = useMemo(() => getNameFromUsers(users), [users]);
 
-  useEffect(() => {
-    dispatch(fetchPlayersList());
-  }, [filters, currentPage, dispatch]);
+  // Use React Query for player ratings
+  const {
+    data: playersData,
+    isLoading: isLoadingPlayers,
+    error: playersError,
+  } = usePlayerRatings({
+    page: currentPage,
+    pageSize: 20,
+    playerFilter: playersSelected.length > 0 ? playersSelected.map(p => p.code) : undefined,
+    countrySelected: countriesSelected || undefined,
+    playdeck: playdeckInput || undefined,
+    orderBy: 'rating',
+    orderDirection: 'desc',
+  });
+
+  // Get users from the rating results for the MultiSelect
+  const usersMemo = useMemo(() => {
+    if (playersData?.results) {
+      return playersData.results.map((player) => ({
+        code: player.id,
+        name: player.name
+      }));
+    }
+    return [];
+  }, [playersData]);
 
   const onPageChange = async (page: number) => {
-    dispatch(setCurrentPage(page));
+    setCurrentPage(page);
   };
 
-  if (isLoadingUsers || isLoadingCountries) return null;
+  if (isLoadingCountries) return null;
+
   const paginationVisibility = !(
     playersSelected?.length !== 0 ||
     countriesSelected?.length !== 0 ||
     playdeckInput
   );
+
   return (
     <>
       <h1>Players list</h1>
       <FilterPanel>
         <MultiSelect
-          setSelectedValues={(value: string) => dispatch(setPlayersFilter(value))}
+          setSelectedValues={(value: any) => {
+            setPlayersSelected(value);
+            setCurrentPage(1); // Reset to first page when filtering
+          }}
           items={usersMemo}
           selectedValues={playersSelected as any}
           placeholder="Select Players..."
@@ -189,12 +204,17 @@ const Players = () => {
           <CountriesTypeahead
             placeholder="Type the federation name..."
             css={{ width: "100%", height: "100%" }}
-            onSelect={(value: any) => value && dispatch(setCountriesFilter(value.value))}
+            onSelect={(value: any) => {
+              if (value) {
+                setCountriesSelected(value.value);
+                setCurrentPage(1); // Reset to first page when filtering
+              }
+            }}
             onBlur={() => {
-              dispatch(setCountriesFilter(""));
+              setCountriesSelected("");
             }}
             items={(countries as any)?.map((item: any) => ({ value: item.id, text: item.country_name })) || []}
-            selectedItem={(countriesSelected as any)?.value}
+            selectedItem={countriesSelected || ""}
             labelText=""
             error={false}
           />
@@ -204,24 +224,29 @@ const Players = () => {
           value={playdeckValue}
           placeholder="Type the Playdek name"
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setPlaydeckValue(() => event.target.value)
+            setPlaydeckValue(event.target.value)
           }
           onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
             if (event.key === "Enter") {
-              dispatch(setPlaydeckFilter(playdeckValue));
+              setPlaydeckInput(playdeckValue);
+              setCurrentPage(1); // Reset to first page when filtering
             }
           }}
         />
       </FilterPanel>
       <ResultsStyleWrapper>
         <ResultsPanel
-          data={(items as any)?.results || []}
+          data={playersData?.results || []}
           onPageChange={onPageChange}
-          isLoading={status === "loading"}
+          isLoading={isLoadingPlayers}
         />
       </ResultsStyleWrapper>
       {paginationVisibility && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={playersData?.totalPages || 1}
+          onPageChange={onPageChange}
+        />
       )}
     </>
   );
