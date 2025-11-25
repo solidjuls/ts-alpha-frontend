@@ -6,6 +6,7 @@ export const ratingKeys = {
   all: ['rating'] as const,
   players: () => [...ratingKeys.all, 'players'] as const,
   playersList: (params: GetPlayerRatingsParams) => [...ratingKeys.players(), params] as const,
+  health: () => [...ratingKeys.all, 'health'] as const,
 };
 
 // Hook for getting player ratings with pagination and filtering
@@ -17,5 +18,17 @@ export const usePlayerRatings = (params: GetPlayerRatingsParams = {}) => {
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     // Keep previous data while fetching new data (for smooth pagination)
     placeholderData: (previousData) => previousData,
+  });
+};
+
+// Hook for rating service health check
+export const useRatingHealth = () => {
+  return useQuery({
+    queryKey: ratingKeys.health(),
+    queryFn: () => ratingService.healthCheck(),
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 60 * 1000, // 1 minute
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };

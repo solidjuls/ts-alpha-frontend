@@ -13,7 +13,7 @@ export interface AuthResponseDto {
 
 export interface JwtPayloadDto {
   mail: string;
-  playdek_name: string;
+  name: string;
   role: number;
   id: string;
   tournamentsAdmin: number[];
@@ -63,7 +63,7 @@ export interface RegisterUserResponse {
   success: boolean;
   message: string;
   user: {
-    playdek_name: string;
+    name: string;
     email: string;
     id: string;
     role: number;

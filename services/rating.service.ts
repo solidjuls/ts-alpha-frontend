@@ -1,5 +1,6 @@
-import getAxiosInstance from "utils/axios";
+import axios, { AxiosInstance } from 'axios';
 
+// Player rating interfaces
 export interface PlayerRatingDto {
   id: string;
   rank: number;
@@ -32,6 +33,18 @@ export interface GetPlayerRatingsParams {
 }
 
 class RatingService {
+  private axiosInstance: AxiosInstance;
+
+  constructor() {
+    this.axiosInstance = axios.create({
+      baseURL: 'http://localhost:4002/api',
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   async getPlayerRatings(params: GetPlayerRatingsParams = {}): Promise<PlayerRatingListResponse> {
     const {
       page = 1,
@@ -68,9 +81,17 @@ class RatingService {
       queryParams.append('federation', federation);
     }
 
-    const response = await getAxiosInstance().get(`/api/rating?${queryParams.toString()}`);
+    const response = await this.axiosInstance.get(`/rating?${queryParams.toString()}`);
+    return response.data;
+  }
+
+  // Health check endpoint
+  async healthCheck(): Promise<{ status: string; timestamp: string }> {
+    const response = await this.axiosInstance.get('/rating/health');
     return response.data;
   }
 }
 
+// Export singleton instance
 export const ratingService = new RatingService();
+export default ratingService;
