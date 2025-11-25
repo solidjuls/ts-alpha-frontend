@@ -487,6 +487,28 @@ export class TournamentsController {
   }
 
   @Public()
+  @Post(':id/bulk-register')
+  async bulkRegisterUsers(@Param('id') tournamentId: string, @CurrentUser() user: JwtPayloadDto) {
+    const id = parseInt(tournamentId);
+    if (isNaN(id)) {
+      throw new HttpException('Invalid tournament ID', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const result = await this.tournamentsService.bulkRegisterRandomUsers(id, user);
+      return {
+        success: true,
+        message: 'Bulk registration completed',
+        ...result
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Failed to perform bulk registration', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get('health')
   getHealth() {
     return {

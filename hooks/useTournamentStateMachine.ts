@@ -50,7 +50,7 @@ export const useTournamentStateMachine = ({
       });
     }
   }, [tournament, send]);
-
+console.log("state", state)
   // Call onStateChange when state changes
   useEffect(() => {
     if (onStateChange) {

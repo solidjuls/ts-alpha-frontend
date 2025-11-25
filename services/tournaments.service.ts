@@ -85,6 +85,15 @@ export interface UpdateTournamentStatusResponse {
   };
 }
 
+export interface BulkRegisterResponse {
+  success: boolean;
+  message: string;
+  totalAttempted: number;
+  successCount: number;
+  errorCount: number;
+  errors: string[];
+}
+
 export interface AddToWaitlistRequest {
   userId?: string;    // For admin adding someone else, optional for self
 }
@@ -171,11 +180,7 @@ class TournamentsService {
     return response.data;
   }
 
-  // POST /api/tournaments - Update tournament status
-  async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<any> {
-    const response = await this.axiosInstance.post('/tournaments', data);
-    return response.data;
-  }
+
 
   // PUT /api/tournaments - Update tournament details
   async updateTournament(data: UpdateTournamentRequest): Promise<any> {
@@ -268,6 +273,12 @@ class TournamentsService {
   // PATCH /api/tournaments/status - Update tournament status
   async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<UpdateTournamentStatusResponse> {
     const response = await this.axiosInstance.patch('/tournaments/status', data);
+    return response.data;
+  }
+
+  // POST /api/tournaments/:id/bulk-register - Bulk register 150 random users
+  async bulkRegisterRandomUsers(tournamentId: number): Promise<BulkRegisterResponse> {
+    const response = await this.axiosInstance.post(`/tournaments/${tournamentId}/bulk-register`);
     return response.data;
   }
 }

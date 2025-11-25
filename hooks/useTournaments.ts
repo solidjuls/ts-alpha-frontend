@@ -4,6 +4,7 @@ import tournamentsService, {
   UpdateTournamentRequest,
   RegisterTournamentRequest,
   UpdateTournamentStatusRequest,
+  BulkRegisterResponse,
   TournamentAdmin,
   AddTournamentAdminRequest,
   RemoveTournamentAdminRequest,
@@ -308,6 +309,26 @@ export const useRemoveFromWaitlist = () => {
       // Also invalidate tournament details
       queryClient.invalidateQueries({
         queryKey: tournamentKeys.detail(variables.tournamentId.toString())
+      });
+    },
+  });
+};
+
+// Bulk register random users mutation
+export const useBulkRegisterUsers = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tournamentId: number) =>
+      tournamentsService.bulkRegisterRandomUsers(tournamentId),
+    onSuccess: (_, tournamentId) => {
+      // Invalidate registered players query
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.players(tournamentId)
+      });
+      // Also invalidate tournament details
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(tournamentId.toString())
       });
     },
   });

@@ -223,15 +223,15 @@ export const tournamentStateMachineHelpers = {
   // Get current state from status_id
   getStateFromStatusId: (status_id: number): TournamentState => {
     switch (status_id) {
-      case 0:
-        return TournamentState.INITIAL;
       case 1:
-        return TournamentState.REGISTRATION_OPEN;
+        return TournamentState.INITIAL;
       case 2:
-        return TournamentState.REGISTRATION_CLOSED;
+        return TournamentState.REGISTRATION_OPEN;
       case 3:
-        return TournamentState.ONGOING;
+        return TournamentState.REGISTRATION_CLOSED;
       case 4:
+        return TournamentState.ONGOING;
+      case 5:
         return TournamentState.CLOSED;
       default:
         return TournamentState.INITIAL;
@@ -242,15 +242,15 @@ export const tournamentStateMachineHelpers = {
   getStatusIdFromState: (state: TournamentState): number => {
     switch (state) {
       case TournamentState.INITIAL:
-        return 0;
-      case TournamentState.REGISTRATION_OPEN:
         return 1;
-      case TournamentState.REGISTRATION_CLOSED:
+      case TournamentState.REGISTRATION_OPEN:
         return 2;
-      case TournamentState.ONGOING:
+      case TournamentState.REGISTRATION_CLOSED:
         return 3;
-      case TournamentState.CLOSED:
+      case TournamentState.ONGOING:
         return 4;
+      case TournamentState.CLOSED:
+        return 5;
       default:
         return 0;
     }

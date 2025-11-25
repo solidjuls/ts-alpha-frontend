@@ -699,4 +699,110 @@ console.log("scheduleParsed", scheduleParsed);
     };
   }
 
+  async bulkRegisterRandomUsers(tournamentId: number, user: any): Promise<any> {
+    // Check if user has permission to perform bulk registration
+    const userRole = user.role || 3; // Default to PLAYER if no role
+    const isSuperAdmin = userRole === 1; // SUPERADMIN
+    const isAdmin = userRole === 2; // ADMIN
+
+    // Check if user is tournament admin
+    let isTournamentAdmin = false;
+    if (!isSuperAdmin && !isAdmin) {
+      const tournamentAdmins = await this.databaseService.tournament_admins.findMany({
+        where: {
+          tournamentId: tournamentId,
+          userId: BigInt(user.id)
+        }
+      });
+      isTournamentAdmin = tournamentAdmins.length > 0;
+    }
+
+    if (!isSuperAdmin && !isAdmin && !isTournamentAdmin) {
+      throw new Error('Insufficient permissions to perform bulk registration');
+    }
+
+    // Check if tournament exists and allows registration
+    const tournament = await this.databaseService.tournaments.findUnique({
+      where: { id: tournamentId }
+    });
+
+    if (!tournament) {
+      throw new Error('Tournament not found');
+    }
+
+    // Check if tournament allows registration (status_id = 2)
+    if (tournament.status_id !== 2) {
+      throw new Error('Tournament is not open for registration');
+    }
+
+    // Generate 150 random unique user IDs from 1600-2800
+    const minUserId = 1600;
+    const maxUserId = 2800;
+    const usersToRegister = 150;
+    const totalUsers = maxUserId - minUserId + 1;
+
+    const selectedUserIds = new Set<number>();
+    while (selectedUserIds.size < usersToRegister) {
+      const randomId = Math.floor(Math.random() * totalUsers) + minUserId;
+      selectedUserIds.add(randomId);
+    }
+
+    let successCount = 0;
+    let errorCount = 0;
+    const errors: string[] = [];
+
+    // Register users one by one
+    for (const userId of selectedUserIds) {
+      try {
+        // Check if user exists
+        const userExists = await this.databaseService.users.findUnique({
+          where: { id: BigInt(userId) }
+        });
+
+        if (!userExists) {
+          errorCount++;
+          errors.push(`User ${userId} does not exist`);
+          continue;
+        }
+
+        // Check if user is already registered
+        const existingRegistration = await this.databaseService.tournament_registration.findFirst({
+          where: {
+            tournamentId: tournamentId,
+            userId: BigInt(userId)
+          }
+        });
+
+        if (existingRegistration) {
+          errorCount++;
+          errors.push(`User ${userId} is already registered`);
+          continue;
+        }
+
+        // Register the user
+        await this.databaseService.tournament_registration.create({
+          data: {
+            tournamentId: tournamentId,
+            userId: BigInt(userId),
+            status: 'accepted',
+            created_at: new Date(),
+            updated_at: new Date()
+          }
+        });
+
+        successCount++;
+      } catch (error) {
+        errorCount++;
+        errors.push(`Failed to register user ${userId}: ${error.message}`);
+      }
+    }
+
+    return {
+      totalAttempted: usersToRegister,
+      successCount,
+      errorCount,
+      errors: errors.slice(0, 10) // Return first 10 errors to avoid huge response
+    };
+  }
+
 }
