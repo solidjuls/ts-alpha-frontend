@@ -1,8 +1,8 @@
 import styled from "styled-components";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useStandings, PlayerStanding } from "hooks/useStandings";
 
 const headerColor = {
   backgroundColor: "rgb(28, 69, 135)",

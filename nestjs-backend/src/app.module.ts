@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { CountriesModule } from './countries/countries.module';
 import { CitiesModule } from './cities/cities.module';
 import { RatingModule } from './rating/rating.module';
+import { StandingsModule } from './standings/standings.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -27,7 +28,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     UsersModule,
     CountriesModule,
     CitiesModule,
-    RatingModule
+    RatingModule,
+    StandingsModule
   ],
   controllers: [AppController],
   providers: [
