@@ -52,6 +52,7 @@ export interface RegisterUserDto {
   confirmPassword: string;
   firstName: string;
   lastName: string;
+  playdek_name: string;
   countryId?: string;
   cityId?: string;
   phoneNumber?: string;

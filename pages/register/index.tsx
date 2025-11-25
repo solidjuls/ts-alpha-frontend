@@ -132,6 +132,7 @@ const RegisterFormComponent: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    playdek_name: '',
     countryId: '',
     cityId: '',
     phoneNumber: '',
@@ -172,6 +173,9 @@ const RegisterFormComponent: React.FC = () => {
     }
     if (!formData.confirmPassword.trim()) {
       errors.push('Password confirmation is required');
+    }
+    if (!formData.playdek_name.trim()) {
+      errors.push('Playdek name is required');
     }
 
     // New mandatory fields
@@ -215,6 +219,7 @@ const RegisterFormComponent: React.FC = () => {
         email: formData.email.trim(),
         password: formData.password,
         confirmPassword: formData.confirmPassword,
+        playdek_name: formData.playdek_name.trim(),
         countryId: formData.countryId.trim() || undefined,
         cityId: formData.cityId.trim() || undefined,
         phoneNumber: formData.phoneNumber.trim() || undefined,
@@ -280,6 +285,21 @@ const RegisterFormComponent: React.FC = () => {
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
           disabled={registerMutation.isPending}
+          required
+        />
+      </FormField>
+
+      <FormField>
+        <Label htmlFor="playdek_name">
+          <FormattedMessage id="playdeckName" defaultMessage="Playdek Name" />
+        </Label>
+        <StyledInput
+          type="text"
+          id="playdek_name"
+          value={formData.playdek_name}
+          onChange={(e) => handleInputChange('playdek_name', e.target.value)}
+          disabled={registerMutation.isPending}
+          placeholder="Enter your Playdek username"
           required
         />
       </FormField>

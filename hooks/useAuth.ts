@@ -64,7 +64,7 @@ export const useRegister = () => {
       queryClient.setQueryData(authKeys.profile(), {
         id: data.user.id,
         email: data.user.email,
-        name: data.user.name,
+        name: data.user.playdek_name,
         role: data.user.role,
         tournamentsAdmin: [],
         tournamentsRegistered: data.user.tournaments || [],

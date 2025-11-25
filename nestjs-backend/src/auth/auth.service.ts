@@ -181,6 +181,7 @@ export class AuthService {
       confirmPassword,
       firstName,
       lastName,
+      playdek_name,
       countryId,
       cityId,
       phoneNumber,
@@ -205,15 +206,12 @@ export class AuthService {
     // Hash password
     const hashedPassword = await hash(password, 12);
 
-    // Create full name
-    const fullName = `${firstName} ${lastName}`.trim();
-
     // Create user with provided fields and defaults for missing required fields
     const newUser = await this.databaseService.users.create({
       data: {
         email,
         password: hashedPassword,
-        playdek_name: fullName,
+        playdek_name: playdek_name,
         first_name: firstName,
         last_name: lastName,
         role_id: 3, // Default to player role
