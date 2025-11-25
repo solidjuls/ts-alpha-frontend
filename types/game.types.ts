@@ -103,7 +103,7 @@ export type GameAPIResponseType = {
 export const zGameAPI = z.object({
   gameWinner: z.enum(["1", "2", "3"]),
   gameCode: z.string(),
-  gameType: z.string(),
+  tournamentId: z.string(),
   usaPlayerId: z.string(),
   ussrPlayerId: z.string(),
   endTurn: z.string(),

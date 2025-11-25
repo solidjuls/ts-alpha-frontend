@@ -15,7 +15,7 @@ export interface GameType {
   ussrPlayerId: string;
   usaRatingDifference: number;
   ussrRatingDifference: number;
-  gameType: string;
+  tournamentId: string;
   game_code: string;
   reported_at: Date;
   gameWinner: string;
@@ -50,7 +50,7 @@ export interface GetGamesParams {
 export interface SubmitGameData {
   gameWinner: string;
   gameCode: string;
-  gameType: string;
+  tournamentId: string;
   usaPlayerId: string;
   ussrPlayerId: string;
   endTurn: string;

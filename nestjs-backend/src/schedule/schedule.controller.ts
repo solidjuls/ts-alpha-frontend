@@ -163,7 +163,7 @@ console.log("parsedTournamentIds", parsedUserId, parsedTournamentIds);
           id: Number(schedules.id),
           ussrPlayerId: Number(schedules.ussr_player_id),
           gameCode: schedules.game_code,
-          gameType: Number(schedules.tournaments_id),
+          tournamentId: Number(schedules.tournaments_id),
         });
 
         if (validateSchedule?.game_results_id) {

@@ -21,7 +21,7 @@ type SubmitGameProps = {
 export interface SubmitGameFormData {
   gameWinner: GameWinner | "";
   gameCode: string;
-  gameType: string;
+  tournamentId: string;
   opponentWas: string;
   playedAs: string;
   endTurn: string;
@@ -47,7 +47,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     defaultValues: {
       gameWinner: "",
       gameCode: "",
-      gameType: "",
+      tournamentId: "",
       opponentWas: "",
       playedAs: "",
       endTurn: "",
@@ -94,7 +94,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         setValue("gameCode", gameCode);
       }
       if (gameType && typeof gameType === "string") {
-        setValue("gameType", gameType);
+        setValue("tournamentId", gameType);
       }
       if (opponentWas && typeof opponentWas === "string") {
         setValue("opponentWas", opponentWas);
@@ -113,7 +113,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       }
 
       if (tournamentId && typeof tournamentId === "string") {
-        setValue("gameType", tournamentId);
+        setValue("tournamentId", tournamentId);
       }
 
       // Handle USA and USSR player IDs from schedule
@@ -158,7 +158,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     }
 
     return {
-      gameType: data.gameType,
+      tournamentId: data.tournamentId,
       usaPlayerId,
       ussrPlayerId,
       gameWinner: data.gameWinner as GameWinner,

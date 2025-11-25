@@ -142,7 +142,7 @@ const SubmitGameForm = ({
         )}
 
         <Controller
-          name="gameType"
+          name="tournamentId"
           control={control}
           rules={{ required: "Tournament is required" }}
           render={({ field }) => (
@@ -153,7 +153,7 @@ const SubmitGameForm = ({
               selectedItem={field.value}
               placeholder="Select tournament"
               height="270px"
-              error={!!errors.gameType}
+              error={!!errors.tournamentId}
               css={{ width: dropdownWidth }}
               onSelect={field.onChange}
             />
@@ -283,7 +283,7 @@ const SubmitGameForm = ({
 
         {errors.root && <Text type="error">{errors.root.message}</Text>}
         {errors.gameCode && <Text type="error">{errors.gameCode.message}</Text>}
-        {errors.gameType && <Text type="error">{errors.gameType.message}</Text>}
+        {errors.tournamentId && <Text type="error">{errors.tournamentId.message}</Text>}
         {errors.playedAs && <Text type="error">{errors.playedAs.message}</Text>}
         {errors.opponentWas && <Text type="error">{errors.opponentWas.message}</Text>}
         {errors.gameWinner && <Text type="error">{errors.gameWinner.message}</Text>}

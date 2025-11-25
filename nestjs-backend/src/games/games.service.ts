@@ -65,7 +65,7 @@ export class GamesService {
           ussrPlayerId: game.ussr_player_id.toString(),
           usaRatingDifference,
           ussrRatingDifference,
-          gameType: game.tournaments?.tournament_name || 'Unknown',
+          tournamentId: game.tournaments?.tournament_name || 'Unknown',
           game_code: game.game_code,
           reported_at: game.created_at,
           gameWinner: game.game_winner,
@@ -232,7 +232,7 @@ export class GamesService {
           usaPlayerId: BigInt(data.usaPlayerId),
           ussrPlayerId: BigInt(data.ussrPlayerId),
           gameWinner: data.gameWinner,
-          gameType: data.gameType,
+          tournamentId: data.tournamentId,
         });
 
       const dateNow = new Date(Date.now());
@@ -243,7 +243,7 @@ export class GamesService {
         ussr_player_id: BigInt(data.ussrPlayerId),
         usa_previous_rating: usaRating,
         ussr_previous_rating: ussrRating,
-        tournament_id: Number(data.gameType),
+        tournament_id: Number(data.tournamentId),
         game_code: data.gameCode,
         reported_at: dateNow,
         game_winner: data.gameWinner,

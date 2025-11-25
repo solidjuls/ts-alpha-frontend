@@ -184,7 +184,7 @@ console.log("totalRows", userToFilter, tournament.map(t => Number(t)));
     id,
     ussrPlayerId,
     gameCode,
-    gameType
+    tournamentId
   }: ValidateScheduleDto): Promise<ScheduleValidationResult | null> {
     const schedule = await this.databaseService.schedule.findFirst({
       select: {
@@ -196,7 +196,7 @@ console.log("totalRows", userToFilter, tournament.map(t => Number(t)));
         usa_player_id: BigInt(usaPlayerId),
         ussr_player_id: BigInt(ussrPlayerId),
         game_code: gameCode,
-        tournaments_id: gameType,
+        tournaments_id: tournamentId,
       }
     });
 

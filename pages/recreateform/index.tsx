@@ -23,7 +23,7 @@ export type RecreateFormState = {
   gameDate: SubmitFormValue<Date>;
   gameWinner: SubmitFormValue<GameWinner>;
   gameCode: SubmitFormValue<string>;
-  gameType: SubmitFormValue<string>;
+  tournamentId: SubmitFormValue<string>;
   ussrPlayerId: SubmitFormValue<string>;
   usaPlayerId: SubmitFormValue<string>;
   endTurn: SubmitFormValue<string>;
@@ -39,7 +39,7 @@ const initializeState: InitializeStateType = (searchParams: ReadonlyURLSearchPar
   const gameDate = searchParams.get("gameDate");
   const gameWinner = searchParams.get("gameWinner") as GameWinner;
   const game_code = searchParams.get("game_code") || "";
-  const gameType = searchParams.get("gameType") || "";
+  const gameType = searchParams.get("tournamentId") || "";
   const endTurn = searchParams.get("endTurn") || "";
   const endMode = searchParams.get("endMode") || "";
   const video1 = searchParams.get("video1") || "";
@@ -63,7 +63,7 @@ const initializeState: InitializeStateType = (searchParams: ReadonlyURLSearchPar
       value: game_code,
       error: false,
     },
-    gameType: {
+    tournamentId: {
       value: gameType,
       error: false,
     },
@@ -110,7 +110,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     let payloadObject: GameRecreate = {
       oldId: localForm.oldId.value,
       gameDate: localForm.gameDate.value.toISOString(),
-      gameType: localForm.gameType.value,
+      tournamentId: localForm.tournamentId.value,
       usaPlayerId: localForm.usaPlayerId.value,
       ussrPlayerId: localForm.ussrPlayerId.value,
       gameWinner: localForm.gameWinner.value,

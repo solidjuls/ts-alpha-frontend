@@ -67,7 +67,7 @@ export interface ValidateScheduleDto {
   id: number;
   ussrPlayerId: number;
   gameCode: string;
-  gameType: number;
+  tournamentId: number;
 }
 
 export interface ScheduleValidationResult {

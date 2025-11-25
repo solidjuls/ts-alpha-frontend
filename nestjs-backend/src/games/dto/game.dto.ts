@@ -11,7 +11,7 @@ export interface GameDto {
   ussrPlayerId: string;
   usaRatingDifference: number;
   ussrRatingDifference: number;
-  gameType: string;
+  tournamentId: string;
   game_code: string;
   reported_at: Date;
   gameWinner: string;
@@ -34,7 +34,7 @@ export type GameWinner = "1" | "2" | "3";
 export interface SubmitGameDto {
   gameWinner: GameWinner;
   gameCode: string;
-  gameType: string;
+  tournamentId: string;
   usaPlayerId: string;
   ussrPlayerId: string;
   endTurn: string;
@@ -63,7 +63,7 @@ export interface GameListResponse {
 export interface CreateGameDto {
   usaPlayerId: string;
   ussrPlayerId: string;
-  gameType: string;
+  tournamentId: string;
   gameCode: string;
   gameWinner: string;
   endTurn: string;
@@ -76,7 +76,7 @@ export interface UpdateGameDto {
   id: string;
   usaPlayerId: string;
   ussrPlayerId: string;
-  gameType: string;
+  tournamentId: string;
   gameCode: string;
   gameWinner: string;
   endTurn: string;

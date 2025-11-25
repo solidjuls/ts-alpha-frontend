@@ -27,7 +27,7 @@ export class RatingService {
     usaRating: number,
     ussrRating: number,
     gameWinner: GameWinner,
-    gameType: string,
+    tournamentId: string,
   ): {
     newUsaRating: number;
     newUssrRating: number;
@@ -77,12 +77,12 @@ export class RatingService {
     usaPlayerId,
     ussrPlayerId,
     gameWinner,
-    gameType,
+    tournamentId,
   }: {
     usaPlayerId: bigint;
     ussrPlayerId: bigint;
     gameWinner: GameWinner;
-    gameType: string;
+    tournamentId: string;
   }): Promise<{
     newUsaRating: number;
     newUssrRating: number;
@@ -97,7 +97,7 @@ export class RatingService {
 
     console.log('usaRating, ussrRating', usaRating, ussrRating);
 
-    return this.getNewRatings(usaRating, ussrRating, gameWinner, gameType);
+    return this.getNewRatings(usaRating, ussrRating, gameWinner, tournamentId);
   }
 
   async getPlayerRatings({
