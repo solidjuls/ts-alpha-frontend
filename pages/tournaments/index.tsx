@@ -201,9 +201,6 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   const statusVariant = getVariant(tournament.status_id);
 
   const onClick = () => {
-    if (tournament.status_id !== tournamentStatus.registrationOpen) {
-      return undefined
-    }
     router.push(`/tournaments/${tournament.id}`);
   };
   return (

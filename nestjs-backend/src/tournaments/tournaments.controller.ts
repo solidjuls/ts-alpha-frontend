@@ -19,6 +19,7 @@ import {
   RegisteredPlayerDto,
   CreateTournamentDto,
   UpdateTournamentDto,
+  UpdateTournamentStatusDto,
   AddTournamentAdminDto,
   RemoveTournamentAdminDto
 } from './dto/tournament.dto';
@@ -451,6 +452,33 @@ export class TournamentsController {
       return result;
     } catch (error) {
       console.error("GET USER AVAILABLE TOURNAMENTS WITH SCHEDULE API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // PATCH /api/tournaments/status - Update tournament status
+  @Patch('status')
+  async updateTournamentStatus(@Body() body: UpdateTournamentStatusDto, @CurrentUser() user: JwtPayloadDto) {
+    try {
+      const { tournamentId, status } = body;
+
+      if (!tournamentId || !status) {
+        throw new HttpException('Tournament ID and status are required', HttpStatus.BAD_REQUEST);
+      }
+
+      // Validate status values
+      const validStatuses = [2, 3, 4, 5]; // START_REGISTRATION, CLOSE_REGISTRATION, START_TOURNAMENT, CLOSE_TOURNAMENT
+      if (!validStatuses.includes(status)) {
+        throw new HttpException('Invalid status value. Must be 2, 3, 4, or 5', HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.tournamentsService.updateTournamentStatus(tournamentId, status, user);
+      return result;
+    } catch (error) {
+      console.error("UPDATE TOURNAMENT STATUS API Error:", error);
       throw new HttpException(
         error.message || 'Internal Server Error',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,

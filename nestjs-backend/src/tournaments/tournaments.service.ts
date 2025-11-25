@@ -210,6 +210,12 @@ export class TournamentsService {
           userId: admins
         }
       });
+      await this.databaseService.tournament_registration.create({
+        data: {
+          tournamentId: newTournament.id,
+          userId: admins
+        }
+      });
     }
 
     return newTournament;
@@ -643,6 +649,54 @@ console.log("scheduleParsed", scheduleParsed);
         id: Number(waitlistId),
       }
     });
+  }
+
+  async updateTournamentStatus(tournamentId: number, status: number, user: any): Promise<any> {
+    // First, verify the tournament exists and user has permission to update it
+    const tournament = await this.databaseService.tournaments.findUnique({
+      where: { id: tournamentId },
+      include: {
+        tournament_admins: {
+          select: {
+            userId: true
+          }
+        }
+      }
+    });
+
+    if (!tournament) {
+      throw new Error('Tournament not found');
+    }
+
+    // Check if user is authorized (superadmin or tournament admin)
+    const isSuperAdmin = user.role === 1; // SUPERADMIN role
+    const isAdmin = user.role === 2; // ADMIN role
+    const isTournamentAdmin = tournament.tournament_admins.some(
+      admin => admin.userId.toString() === user.id.toString()
+    );
+
+    if (!isSuperAdmin && !isAdmin && !isTournamentAdmin) {
+      throw new Error('Unauthorized to update tournament status');
+    }
+
+    // Update the tournament status
+    const updatedTournament = await this.databaseService.tournaments.update({
+      where: { id: tournamentId },
+      data: {
+        status_id: status,
+        updated_at: new Date()
+      }
+    });
+
+    return {
+      success: true,
+      message: 'Tournament status updated successfully',
+      tournament: {
+        id: updatedTournament.id,
+        status_id: updatedTournament.status_id,
+        updated_at: updatedTournament.updated_at
+      }
+    };
   }
 
 }

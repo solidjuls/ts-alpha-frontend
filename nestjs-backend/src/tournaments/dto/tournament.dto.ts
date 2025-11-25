@@ -91,3 +91,8 @@ export interface TournamentAdminDto {
   name: string;
   email?: string; // Only for admins viewing
 }
+
+export interface UpdateTournamentStatusDto {
+  tournamentId: number;
+  status: number; // 2=START_REGISTRATION, 3=CLOSE_REGISTRATION, 4=START_TOURNAMENT, 5=CLOSE_TOURNAMENT
+}

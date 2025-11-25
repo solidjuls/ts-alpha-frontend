@@ -71,8 +71,18 @@ export interface RemoveTournamentAdminRequest {
 }
 
 export interface UpdateTournamentStatusRequest {
-  id: number;
-  status: number;
+  tournamentId: number;
+  status: number; // 2=START_REGISTRATION, 3=CLOSE_REGISTRATION, 4=START_TOURNAMENT, 5=CLOSE_TOURNAMENT
+}
+
+export interface UpdateTournamentStatusResponse {
+  success: boolean;
+  message: string;
+  tournament: {
+    id: number;
+    status_id: number;
+    updated_at: Date;
+  };
 }
 
 export interface AddToWaitlistRequest {
@@ -252,6 +262,12 @@ class TournamentsService {
     const response = await this.axiosInstance.delete(`/tournaments/${tournamentId}/waitlist`, {
       data
     });
+    return response.data;
+  }
+
+  // PATCH /api/tournaments/status - Update tournament status
+  async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<UpdateTournamentStatusResponse> {
+    const response = await this.axiosInstance.patch('/tournaments/status', data);
     return response.data;
   }
 }
