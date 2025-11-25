@@ -64,6 +64,7 @@ type SubmitGameFormProps = {
   isScheduleMode: boolean;
   usaPlayerName: string;
   ussrPlayerName: string;
+  isRecreateMode?: boolean;
 };
 
 const SubmitGameForm = ({
@@ -78,6 +79,7 @@ const SubmitGameForm = ({
   isScheduleMode,
   usaPlayerName,
   ussrPlayerName,
+  isRecreateMode = false,
 }: SubmitGameFormProps) => {
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -103,7 +105,7 @@ const SubmitGameForm = ({
           )}
         />
 
-        {isScheduleMode && (
+        {isScheduleMode && !isRecreateMode && (
           <>
             <Controller
               name="usaPlayerId"
@@ -135,6 +137,46 @@ const SubmitGameForm = ({
                   key="ussrPlayerId"
                   disabled
                   error={false}
+                />
+              )}
+            />
+          </>
+        )}
+
+        {isRecreateMode && (
+          <>
+            <Controller
+              name="usaPlayerId"
+              control={control}
+              rules={{ required: "Please select USA player" }}
+              render={({ field }) => (
+                <UserTypeahead
+                  labelText="USA Player"
+                  selectedItem={field.value || null}
+                  error={!!errors.usaPlayerId}
+                  placeholder="Type USA player name..."
+                  css={{ width: dropdownWidth }}
+                  onSelect={(selectedItem: DropdownItemType | null) => {
+                    field.onChange(selectedItem?.value || "");
+                  }}
+                />
+              )}
+            />
+
+            <Controller
+              name="ussrPlayerId"
+              control={control}
+              rules={{ required: "Please select USSR player" }}
+              render={({ field }) => (
+                <UserTypeahead
+                  labelText="USSR Player"
+                  selectedItem={field.value || null}
+                  error={!!errors.ussrPlayerId}
+                  placeholder="Type USSR player name..."
+                  css={{ width: dropdownWidth }}
+                  onSelect={(selectedItem: DropdownItemType | null) => {
+                    field.onChange(selectedItem?.value || "");
+                  }}
                 />
               )}
             />

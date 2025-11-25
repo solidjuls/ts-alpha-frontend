@@ -169,7 +169,8 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       errors={errors}
       isSubmitting={isSubmitting}
       watch={watch}
-      isScheduleMode={true} // Recreate mode behaves like schedule mode with pre-filled player IDs
+      isScheduleMode={false} // Not schedule mode
+      isRecreateMode={true} // Enable recreate mode with editable player fields
       usaPlayerName={usaPlayerName}
       ussrPlayerName={ussrPlayerName}
     />
