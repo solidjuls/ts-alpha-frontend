@@ -17,7 +17,7 @@ import { ServerType } from "types/types";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
-import { useTournamentStateMachine } from "hooks/useTournamentStateMachine";
+import { tournamentStatusHelpers, ACTION_TO_STATUS, ACTION_LABELS } from "utils/tournamentStatus";
 
 const DescriptionBox = styled("div", {
   marginTop: "8px",

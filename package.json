@@ -23,7 +23,6 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@tanstack/react-query": "^5.90.3",
     "@types/styled-components": "^5.1.34",
-    "@xstate/react": "^6.0.0",
     "axios": "^1.7.5",
     "axios-cache-interceptor": "^1.5.3",
     "bcryptjs": "^2.4.3",
@@ -55,7 +54,6 @@
     "superjson": "^1.8.1",
     "typescript": "^4.7.4",
     "use-debounce": "^8.0.4",
-    "xstate": "^5.24.0",
     "zod": "^3.11.6"
   },
   "devDependencies": {
