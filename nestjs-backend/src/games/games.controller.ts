@@ -8,6 +8,7 @@ import {
   UseGuards,
   HttpException,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -17,6 +18,7 @@ import {
   GameListResponse,
   GameFilterDto,
   SubmitGameRequestDto,
+  RecreateGameDto,
 } from './dto/game.dto';
 
 @Controller('games')
@@ -143,6 +145,28 @@ export class GamesController {
       console.error('[Games POST Submit]', error);
       throw new HttpException(
         'Error submitting result',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('recreate')
+  @UseGuards(JwtAuthGuard)
+  async recreateGame(@Body() body: { data: RecreateGameDto }, @Req() req: any) {
+    try {
+      const user = req.user;
+      const result = await this.gamesService.recreateGame(body.data, user.role, user.mail);
+
+      // Convert BigInt to string for JSON serialization
+      const resultParsed = JSON.stringify(result, (_key, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      );
+
+      return JSON.parse(resultParsed);
+    } catch (error) {
+      console.error('Error recreating game:', error);
+      throw new HttpException(
+        error.message || 'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

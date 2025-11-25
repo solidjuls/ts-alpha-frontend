@@ -9,6 +9,7 @@ import { useSession } from "contexts/AuthProvider";
 import { useAllUsers } from "hooks/useUsers";
 import { useTournamentsByStatus } from "hooks/useTournaments";
 import { useSubmitGame } from "hooks/useGames";
+import { useRecreateGame } from "hooks/useRecreateGame";
 import { UsersListResponse } from "services/users.service";
 import { Tournament } from "services/tournaments.service";
 import { tournamentStatus } from "utils/constants";
@@ -29,6 +30,9 @@ export interface SubmitGameFormData {
   video1: string;
   usaPlayerId?: string;
   ussrPlayerId?: string;
+  // Recreate mode specific fields
+  oldId?: string;
+  gameDate?: string;
 }
 
 const SubmitGameContainer = ({ role }: SubmitGameProps) => {
@@ -55,6 +59,8 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       video1: "",
       usaPlayerId: "",
       ussrPlayerId: "",
+      oldId: "",
+      gameDate: "",
     },
   });
 
@@ -65,6 +71,10 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   ]);
 
   const submitGameMutation = useSubmitGame();
+  const recreateGameMutation = useRecreateGame();
+
+  // Detect if we're in recreate mode
+  const isRecreateMode = router.query.oldId || router.query.id;
 
   // Prefill form from URL query parameters
   useEffect(() => {
@@ -73,7 +83,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         // Direct form parameters
         gameWinner,
         gameCode,
-        gameType,
+        tId,
         opponentWas,
         playedAs,
         endTurn,
@@ -84,7 +94,23 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         idUsa,
         idUssr,
         tid: tournamentId,
+        // Recreate mode parameters
+        oldId,
+        gameDate,
+        ussrPlayerId,
+        usaPlayerId,
       } = router.query;
+
+      // Handle recreate mode parameters first (they take priority)
+      if (isRecreateMode) {
+        // Set recreate-specific fields
+        if (oldId && typeof oldId === "string") {
+          setValue("oldId", oldId);
+        }
+        if (gameDate && typeof gameDate === "string") {
+          setValue("gameDate", gameDate);
+        }
+      }
 
       // Handle direct form parameters
       if (gameWinner && typeof gameWinner === "string") {
@@ -93,8 +119,8 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       if (gameCode && typeof gameCode === "string") {
         setValue("gameCode", gameCode);
       }
-      if (gameType && typeof gameType === "string") {
-        setValue("tournamentId", gameType);
+      if (tId && typeof tId === "string") {
+        setValue("tournamentId", tId);
       }
       if (opponentWas && typeof opponentWas === "string") {
         setValue("opponentWas", opponentWas);
@@ -116,34 +142,36 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         setValue("tournamentId", tournamentId);
       }
 
-      // Handle USA and USSR player IDs from schedule
-      if (idUsa && typeof idUsa === "string") {
-        setValue("usaPlayerId", idUsa);
-      }
-      if (idUssr && typeof idUssr === "string") {
-        setValue("ussrPlayerId", idUssr);
-      }
+      // Handle USA and USSR player IDs from schedule (only if not in recreate mode)
+      if (!isRecreateMode) {
+        if (idUsa && typeof idUsa === "string") {
+          setValue("usaPlayerId", idUsa);
+        }
+        if (idUssr && typeof idUssr === "string") {
+          setValue("ussrPlayerId", idUssr);
+        }
 
-      // Determine opponent and played as based on current user ID
-      if (id && idUsa && idUssr && typeof idUsa === "string" && typeof idUssr === "string") {
-        if (id === idUsa) {
-          // Current user is USA player
-          setValue("opponentWas", idUssr);
-          setValue("playedAs", "1"); // USA
-        } else if (id === idUssr) {
-          // Current user is USSR player
-          setValue("opponentWas", idUsa);
-          setValue("playedAs", "2"); // USSR
+        // Determine opponent and played as based on current user ID
+        if (id && idUsa && idUssr && typeof idUsa === "string" && typeof idUssr === "string") {
+          if (id === idUsa) {
+            // Current user is USA player
+            setValue("opponentWas", idUssr);
+            setValue("playedAs", "1"); // USA
+          } else if (id === idUssr) {
+            // Current user is USSR player
+            setValue("opponentWas", idUsa);
+            setValue("playedAs", "2"); // USSR
+          }
         }
       }
     }
-  }, [router.isReady, router.query, setValue, id]);
+  }, [router.isReady, router.query, setValue, id, isRecreateMode]);
 
   const normalizeData = (data: SubmitGameFormData) => {
     let usaPlayerId = "";
     let ussrPlayerId = "";
 
-    // If we have player IDs from schedule (schedule mode)
+    // If we have player IDs from schedule or recreate mode
     if (data.usaPlayerId && data.ussrPlayerId) {
       usaPlayerId = data.usaPlayerId;
       ussrPlayerId = data.ussrPlayerId;
@@ -157,7 +185,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       usaPlayerId = data.opponentWas;
     }
 
-    return {
+    const baseData = {
       tournamentId: data.tournamentId,
       usaPlayerId,
       ussrPlayerId,
@@ -167,6 +195,17 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       endTurn: data.endTurn,
       video1: data.video1 || undefined,
     };
+
+    // Add recreate-specific fields if in recreate mode
+    if (isRecreateMode) {
+      return {
+        ...baseData,
+        oldId: data.oldId || "",
+        gameDate: data.gameDate || new Date().toISOString(),
+      };
+    }
+
+    return baseData;
   };
 
   const isValidURL = (url: string) => {
@@ -236,7 +275,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   };
 
   const onSubmit = async (data: SubmitGameFormData) => {
-    if (!id) {
+    if (!id && !isRecreateMode) {
       setError("root", { type: "manual", message: "Error submitting your result. Refresh the page and try again" });
       return;
     }
@@ -246,11 +285,21 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     }
 
     try {
-      await submitGameMutation.mutateAsync(normalizeData(data));
+      const normalizedData = normalizeData(data);
+
+      if (isRecreateMode) {
+        // Type assertion for recreate mode - we know it has the required fields
+        await recreateGameMutation.mutateAsync(normalizedData as any);
+      } else {
+        await submitGameMutation.mutateAsync(normalizedData);
+      }
       router.push("/");
     } catch (e) {
       console.log("error submit-game", e);
-      setError("root", { type: "manual", message: "There was an error submitting the result" });
+      const errorMessage = isRecreateMode
+        ? "There was an error recreating the game"
+        : "There was an error submitting the result";
+      setError("root", { type: "manual", message: errorMessage });
     }
   };
 

@@ -42,6 +42,19 @@ export interface SubmitGameDto {
   video1?: string;
 }
 
+export interface RecreateGameDto {
+  oldId: string;
+  gameDate: string;
+  gameWinner: GameWinner;
+  gameCode: string;
+  tournamentId: string;
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  endTurn: string;
+  endMode: string;
+  video1?: string;
+}
+
 export interface SubmitGameRequestDto {
   data: SubmitGameDto;
 }

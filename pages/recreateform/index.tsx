@@ -1,258 +1,177 @@
-import getAxiosInstance from "utils/axios";
-import { useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { getInfoFromCookies } from "utils/cookies";
 import { GameRecreate, GameWinner } from "types/game.types";
-import { ReadonlyURLSearchParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { tournamentStatus, userRoles } from "utils/constants";
 import { ServerType } from "types/types";
-import RecreateRating from "pages/recreateform/RecreateRating";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import { useRouter } from "next/router";
+import { useRecreateGame } from "hooks/useRecreateGame";
+import { useUsers } from "hooks/useUsers";
+import { useTournamentsByStatus } from "hooks/useTournaments";
+import SubmitGameForm from "pages/submit-game/SubmitGameForm";
 
 type SubmitFormProps = {
   role: number;
 };
 
-export type SubmitFormValue<T> = {
-  value: T;
-  error: boolean;
-};
+// Import the SubmitGameFormData interface from the submit-game page
+import { SubmitGameFormData } from "pages/submit-game/index";
 
-export type RecreateFormState = {
-  oldId: SubmitFormValue<string>;
-  gameDate: SubmitFormValue<Date>;
-  gameWinner: SubmitFormValue<GameWinner>;
-  gameCode: SubmitFormValue<string>;
-  tournamentId: SubmitFormValue<string>;
-  ussrPlayerId: SubmitFormValue<string>;
-  usaPlayerId: SubmitFormValue<string>;
-  endTurn: SubmitFormValue<string>;
-  endMode: SubmitFormValue<string>;
-  video1: SubmitFormValue<string>;
-};
+// Use SubmitGameFormData directly since we're reusing the same form
+type RecreateFormData = SubmitGameFormData;
 
-export type RecreateFormNormalizeType = (localForm: RecreateFormState) => GameRecreate;
+const validateForm = (data: RecreateFormData) => {
+  // Check required fields
+  const requiredFields = ['gameWinner', 'gameCode', 'tournamentId', 'ussrPlayerId', 'usaPlayerId', 'endTurn', 'endMode'];
+  for (const field of requiredFields) {
+    if (!data[field as keyof RecreateFormData]) {
+      return false;
+    }
+  }
 
-type InitializeStateType = (searchParams: ReadonlyURLSearchParams) => RecreateFormState;
-const initializeState: InitializeStateType = (searchParams: ReadonlyURLSearchParams) => {
-  const oldId = searchParams.get("id") || "";
-  const gameDate = searchParams.get("gameDate");
-  const gameWinner = searchParams.get("gameWinner") as GameWinner;
-  const game_code = searchParams.get("game_code") || "";
-  const gameType = searchParams.get("tournamentId") || "";
-  const endTurn = searchParams.get("endTurn") || "";
-  const endMode = searchParams.get("endMode") || "";
-  const video1 = searchParams.get("video1") || "";
-  const ussrPlayerId = searchParams.get("ussrPlayerId") || "";
-  const usaPlayerId = searchParams.get("usaPlayerId") || "";
+  // Final Scoring validation
+  if (data.endMode === "Final Scoring" && data.endTurn !== "11") {
+    return false;
+  }
 
-  return {
-    oldId: {
-      value: oldId,
-      error: false,
-    },
-    gameDate: {
-      value: gameDate ? new Date(gameDate) : new Date(),
-      error: false,
-    },
-    gameWinner: {
-      value: gameWinner,
-      error: false,
-    },
-    gameCode: {
-      value: game_code,
-      error: false,
-    },
-    tournamentId: {
-      value: gameType,
-      error: false,
-    },
-    ussrPlayerId: {
-      value: ussrPlayerId,
-      error: false,
-    },
-    usaPlayerId: {
-      value: usaPlayerId,
-      error: false,
-    },
-    endTurn: {
-      value: endTurn,
-      error: false,
-    },
-    endMode: {
-      value: endMode,
-      error: false,
-    },
-    video1: {
-      value: video1,
-      error: false,
-    },
-  };
+  // Turn 11 validation
+  if (data.endTurn === "11" && data.endMode !== "Final Scoring" && data.endMode !== "Europe Control") {
+    return false;
+  }
+
+  // Wargames validation
+  if (data.endMode === "Wargames" && !["8", "9", "10"].includes(data.endTurn)) {
+    return false;
+  }
+
+  return true;
 };
 
 const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const searchParams = useSearchParams();
-  const [form, setForm] = useState<RecreateFormState>(() => initializeState(searchParams));
-  const [buttonDisabled, setButtonDisabled] = useState(false);
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData({
-    url: "/api/user",
-    cacheId: "user-list",
-  });
-  const { data: tournaments, isLoading: loadingTournaments } = useFetchInitialData({
-    url: `/api/game/tournaments`,
-    cacheId: "tournament-list",
+  const recreateGameMutation = useRecreateGame();
+
+  // React Query hooks for data fetching
+  const { data: usersResponse, isLoading: loadingUsers } = useUsers({});
+  const { data: tournaments, isLoading: loadingTournaments } = useTournamentsByStatus([
+    tournamentStatus.ongoing
+  ]);
+
+  // React Hook Form setup
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    setError,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RecreateFormData>({
+    defaultValues: {
+      oldId: "",
+      gameDate: new Date().toISOString().split('T')[0],
+      gameWinner: "",
+      gameCode: "",
+      tournamentId: "",
+      ussrPlayerId: "",
+      usaPlayerId: "",
+      endTurn: "",
+      endMode: "",
+      video1: "",
+    },
   });
 
-  const normalizeData: RecreateFormNormalizeType = (localForm: RecreateFormState) => {
-    let payloadObject: GameRecreate = {
-      oldId: localForm.oldId.value,
-      gameDate: localForm.gameDate.value.toISOString(),
-      tournamentId: localForm.tournamentId.value,
-      usaPlayerId: localForm.usaPlayerId.value,
-      ussrPlayerId: localForm.ussrPlayerId.value,
-      gameWinner: localForm.gameWinner.value,
-      gameCode: localForm.gameCode.value,
-      endMode: localForm.endMode.value,
-      endTurn: localForm.endTurn.value,
-      video1: localForm.video1.value,
+  // Prefill form from URL query parameters
+  useEffect(() => {
+    if (searchParams) {
+      const oldId = searchParams.get("id") || "";
+      const gameDate = searchParams.get("gameDate");
+      const gameWinner = searchParams.get("gameWinner") as GameWinner;
+      const gameCode = searchParams.get("gameCode") || "";
+      const tournamentId = searchParams.get("tournamentId") || "";
+      const endTurn = searchParams.get("endTurn") || "";
+      const endMode = searchParams.get("endMode") || "";
+      const video1 = searchParams.get("video1") || "";
+      const ussrPlayerId = searchParams.get("idUssr") || "";
+      const usaPlayerId = searchParams.get("idUsa") || "";
+
+      if (oldId) setValue("oldId", oldId);
+      if (gameDate) setValue("gameDate", gameDate);
+      if (gameWinner) setValue("gameWinner", gameWinner);
+      if (gameCode) setValue("gameCode", gameCode);
+      if (tournamentId) setValue("tournamentId", tournamentId);
+      if (endTurn) setValue("endTurn", endTurn);
+      if (endMode) setValue("endMode", endMode);
+      if (video1) setValue("video1", video1);
+      if (ussrPlayerId) setValue("ussrPlayerId", ussrPlayerId);
+      if (usaPlayerId) setValue("usaPlayerId", usaPlayerId);
+    }
+  }, [searchParams, setValue]);
+
+  const normalizeData = (data: RecreateFormData): GameRecreate => {
+    return {
+      oldId: data.oldId || "",
+      gameDate: data.gameDate || new Date().toISOString(),
+      tournamentId: data.tournamentId,
+      usaPlayerId: data.usaPlayerId || "",
+      ussrPlayerId: data.ussrPlayerId || "",
+      gameWinner: data.gameWinner as GameWinner,
+      gameCode: data.gameCode,
+      endMode: data.endMode,
+      endTurn: data.endTurn,
+      video1: data.video1 || undefined,
     };
-
-    return payloadObject;
   };
 
-  const validated = () => {
-    let submit = true;
-    Object.keys(form).forEach((key: string) => {
-      if (key !== "video1" && key !== "oldId" && form[key as keyof RecreateFormState].value === "") {
-        setForm((prevState: any) => ({
-          ...prevState,
-          [key]: {
-            ...prevState[key],
-            error: true,
-          },
-        }));
-        submit = false;
-      }
-    });
-
-    if (!submit) return submit;
-
-    if (form.endMode.value === "Final Scoring" && form.endTurn.value !== "11") {
-      setForm((prevState: any) => ({
-        ...prevState,
-        ["endTurn"]: {
-          ...prevState["endTurn"],
-          error: true,
-        },
-        ["endMode"]: {
-          ...prevState["endMode"],
-          error: true,
-        },
-      }));
-      submit = false;
+  const onSubmit = async (data: RecreateFormData) => {
+    if (!validateForm(data)) {
+      setError("root", { type: "manual", message: "Please check your form inputs" });
+      return;
     }
 
-    if (
-      form.endTurn.value === "11" &&
-      form.endMode.value !== "Final Scoring" &&
-      form.endMode.value !== "Europe Control"
-    ) {
-      setForm((prevState: any) => ({
-        ...prevState,
-        ["endTurn"]: {
-          ...prevState["endTurn"],
-          error: true,
-        },
-        ["endMode"]: {
-          ...prevState["endMode"],
-          error: true,
-        },
-      }));
-      submit = false;
-    }
-
-    // Wargammes can only be used if turn 8, 9, 10
-    if (form.endMode.value === "Wargames" && !["8", "9", "10"].includes(form.endTurn.value)) {
-      setForm((prevState: any) => ({
-        ...prevState,
-        ["endTurn"]: {
-          ...prevState["endTurn"],
-          error: true,
-        },
-      }));
-      submit = false;
-    }
-
-    return submit;
-  };
-
-  const onInputValueChange = (key: keyof RecreateFormState, value: string | Date) => {
-    setForm((prevState) => {
-      return {
-        ...prevState,
-        [key]: {
-          value,
-          error: prevState[key].error ? value === "" : false,
-        },
-      };
-    });
-  };
-
-  const onSubmit = async () => {
-    if (validated()) {
-      try {
-        setIsSubmitting(true);
-        // @ts-ignore
-        await getAxiosInstance().post(
-          "/api/game/recreate",
-          {
-            data: normalizeData(form),
-          },
-          {
-            cache: {
-              update: {
-                "game-list": "delete",
-              },
-            },
-          },
-        );
-        router.push("/");
-      } catch (e) {
-        setErrorMsg(e?.response?.data || "There was an error submitting the result");
-      } finally {
-        setIsSubmitting(false);
-      }
+    try {
+      await recreateGameMutation.mutateAsync(normalizeData(data));
+      router.push("/");
+    } catch (e: any) {
+      setError("root", {
+        type: "manual",
+        message: e?.response?.data || e?.message || "There was an error recreating the game"
+      });
     }
   };
 
   if (loadingTournaments || loadingUsers) return null;
 
-  const usersParsed = users?.map((item) => ({
+  const usersParsed = (Array.isArray(usersResponse) ? usersResponse : usersResponse?.results || []).map((item: any) => ({
     value: item.id,
     text: item.name,
   }));
 
-  const leagueTypes = tournaments?.map((item) => ({
+  const leagueTypes = tournaments?.map((item: any) => ({
     value: item.id.toString(),
     text: item.tournament_name,
-  }));
+  })) || [];
+
+  // Get player names for display
+  const usaPlayerId = watch("usaPlayerId");
+  const ussrPlayerId = watch("ussrPlayerId");
+  const usaPlayerName = usersParsed.find(user => user.value === usaPlayerId)?.text || "";
+  const ussrPlayerName = usersParsed.find(user => user.value === ussrPlayerId)?.text || "";
 
   return (
-    <RecreateRating
-      role={role}
-      form={form}
+    <SubmitGameForm
+      control={control}
+      handleSubmit={handleSubmit}
       onSubmit={onSubmit}
       users={usersParsed}
       leagueTypes={leagueTypes}
-      onInputValueChange={onInputValueChange}
-      buttonDisabled={buttonDisabled}
-      setButtonDisabled={setButtonDisabled}
+      errors={errors}
       isSubmitting={isSubmitting}
-      setForm={setForm}
-      recreate={true}
+      watch={watch}
+      isScheduleMode={true} // Recreate mode behaves like schedule mode with pre-filled player IDs
+      usaPlayerName={usaPlayerName}
+      ussrPlayerName={ussrPlayerName}
     />
   );
 };
