@@ -55,7 +55,7 @@ export class UsersService {
       id: user.id.toString(),
       first_name: user.first_name,
       last_name: user.last_name,
-      name: user.playdek_name,
+      playdek_name: user.playdek_name,
       email: user.email,
       phone_number: user.phone_number,
       last_login_at: user.last_login_at?.toISOString(),

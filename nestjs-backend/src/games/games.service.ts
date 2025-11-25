@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { RatingService } from '../rating/rating.service';
-import { Prisma } from '@prisma/client';
 import {
   GameDto,
   GameListResponse,
@@ -17,8 +16,8 @@ export class GamesService {
     private readonly ratingService: RatingService,
   ) {}
 
-  private createPrismaFilter(filter: GameFilterDto): Prisma.game_resultsWhereInput {
-    const prismaFilter: Prisma.game_resultsWhereInput = {};
+  private createPrismaFilter(filter: GameFilterDto): any {
+    const prismaFilter: any = {};
 
     if (filter.id) {
       prismaFilter.id = filter.id;
@@ -161,7 +160,7 @@ export class GamesService {
       ],
     });
 
-    const normalizedGames = games.map((game) => {
+    const normalizedGames = games.map((game: any) => {
       let ratingHistoryUSA = 0;
       let ratingHistoryUSSR = 0;
       
@@ -280,7 +279,7 @@ export class GamesService {
       });
 
       // Convert BigInt to string for JSON serialization
-      const resultParsed = JSON.stringify(result, (key, value) =>
+      const resultParsed = JSON.stringify(result, (_key, value) =>
         typeof value === 'bigint' ? value.toString() : value,
       );
 
