@@ -13,7 +13,7 @@ export interface AuthResponseDto {
 
 export interface JwtPayloadDto {
   mail: string;
-  name: string;
+  playdek_name: string;
   role: number;
   id: string;
   tournamentsAdmin: number[];
@@ -24,7 +24,7 @@ export interface JwtPayloadDto {
 
 export interface UserFromTokenDto {
   id: number;
-  name: string;
+  playdek_name: string;
   mail: string;
   role: number;
   tournamentsAdmin: number[];
@@ -40,7 +40,7 @@ export interface ResetPasswordDto {
 export interface CreateUserDto {
   email: string;
   password: string;
-  name: string;
+  playdek_name: string;
   first_name?: string;
   last_name?: string;
   role_id?: number;
@@ -63,7 +63,7 @@ export interface RegisterUserResponse {
   success: boolean;
   message: string;
   user: {
-    name: string;
+    playdek_name: string;
     email: string;
     id: string;
     role: number;

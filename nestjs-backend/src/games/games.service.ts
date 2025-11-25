@@ -32,7 +32,7 @@ export class GamesService {
     }
 
     if (filter.toFilter && filter.toFilter.length > 0) {
-      prismaFilter.game_type = { in: filter.toFilter };
+      prismaFilter.tournament_id = { in: filter.toFilter };
     }
 
     if (filter.video === true) {
@@ -201,7 +201,7 @@ export class GamesService {
         usa_player_id: true,
         ussr_player_id: true,
         game_winner: true,
-        game_type: true,
+        tournament_id: true,
         id: true,
         tournaments: {
           select: {
@@ -244,7 +244,7 @@ export class GamesService {
         ussr_player_id: BigInt(data.ussrPlayerId),
         usa_previous_rating: usaRating,
         ussr_previous_rating: ussrRating,
-        game_type: Number(data.gameType),
+        tournament_id: Number(data.gameType),
         game_code: data.gameCode,
         reported_at: dateNow,
         game_winner: data.gameWinner,

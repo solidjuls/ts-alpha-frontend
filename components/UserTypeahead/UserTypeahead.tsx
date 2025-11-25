@@ -46,7 +46,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
   // Transform users data to DropdownItemType format
   const userItems: DropdownItemType[] = usersData?.results?.map((user: any) => ({
     value: user.id,
-    text: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.name || user.id,
+    text: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.playdek_name || user.id,
   })) || [];
 
   // Client-side filtering for better UX (in addition to server-side search)

@@ -28,7 +28,7 @@ const formStyles = {
 
 const getInitialState = () => {
   return {
-    name: {
+    playdek_name: {
       value: "",
       error: false,
     },
@@ -129,7 +129,7 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
     payloadObject["city"] = localForm.city.value;
     payloadObject["first_name"] = localForm.first_name.value;
     payloadObject["last_name"] = localForm.last_name.value;
-    payloadObject["name"] = localForm.name.value;
+    payloadObject["playdek_name"] = localForm.playdek_name.value;
     payloadObject["email"] = localForm.email.value;
     payloadObject["phone"] = localForm.phone.value;
 
@@ -165,10 +165,10 @@ const UserCreateForm: React.FC<UserCreateFormProps> = ({ countries, cities }) =>
       />
       <EditTextComponent
         labelText="playdekName"
-        inputValue={form?.name.value}
-        onInputValueChange={(value) => onInputValueChange("name", value)}
+        inputValue={form?.playdek_name.value}
+        onInputValueChange={(value) => onInputValueChange("playdek_name", value)}
         css={{ width: inputWidth }}
-        error={form?.name.error}
+        error={form?.playdek_name.error}
       />
       <EditTextComponent
         labelText="phone"

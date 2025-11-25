@@ -147,13 +147,13 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
         <h2>Update Profile</h2>
 
         <EditTextComponent
-          labelText="Name"
-          inputValue={watchProfile("name")}
-          onInputValueChange={(value) => setProfileValue("name", value)}
+          labelText="Playdek Name"
+          inputValue={watchProfile("playdek_name")}
+          onInputValueChange={(value) => setProfileValue("playdek_name", value)}
           css={{ width: inputWidth }}
-          error={!!profileErrors.name}
+          error={!!profileErrors.playdek_name}
           maxLength={100}
-          {...registerProfile("name", { required: "Name is required" })}
+          {...registerProfile("playdek_name", { required: "Playdek name is required" })}
         />
 
         <EditTextComponent

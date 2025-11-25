@@ -140,7 +140,7 @@ export class RatingService {
 
     // Filter by playdek name (using the 'name' field)
     if (playdeckName) {
-      whereConditions.name = {
+      whereConditions.playdek_name = {
         contains: playdeckName,
       };
     }
@@ -209,7 +209,7 @@ export class RatingService {
       countryCode: user.countries?.tld_code || undefined,
       country_name: user.countries?.country_name || undefined,
       rating: user.ratings_history[0]?.rating || DEFAULT_RATING,
-      playdek_name: user.name || undefined,
+      playdek_name: user.playdek_name || undefined,
     }));
 
     // Sort results

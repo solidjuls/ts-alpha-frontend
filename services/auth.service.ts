@@ -25,7 +25,7 @@ export interface LoginResponse {
 export interface CreateUserRequest {
   email: string;
   password: string;
-  name: string;
+  playdek_name: string;
   first_name?: string;
   last_name?: string;
   role_id?: number;
@@ -59,7 +59,7 @@ export interface RegisterResponse {
   success: boolean;
   message: string;
   user: {
-    name: string;
+    playdek_name: string;
     email: string;
     id: string;
     role: number;

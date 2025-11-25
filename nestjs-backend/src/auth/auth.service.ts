@@ -51,7 +51,7 @@ export class AuthService {
     // Create JWT payload
     const payload: JwtPayloadDto = {
       mail: user.email!,
-      name: user.name!,
+      playdek_name: user.playdek_name!,
       role: user.role_id || 3, // Default to player role if not set
       id: user.id.toString(),
       tournamentsAdmin: tournamentsAdmin.map(t => Number(t.tournamentId)),
@@ -65,7 +65,7 @@ export class AuthService {
 
     // Prepare response
     const authResponse: AuthResponseDto = {
-      name: user.name!,
+      playdek_name: user.playdek_name!,
       email: user.email!,
       id: user.id.toString(),
       role: user.role_id || 3, // Default to player role if not set
@@ -136,7 +136,7 @@ export class AuthService {
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<{ success: boolean; user?: AuthResponseDto }> {
-    const { email, password, name, first_name, last_name, role_id } = createUserDto;
+    const { email, password, playdek_name, first_name, last_name, role_id } = createUserDto;
 
     // Check if user already exists
     const existingUser = await this.databaseService.users.findFirst({
@@ -155,9 +155,9 @@ export class AuthService {
       data: {
         email,
         password: hashedPassword,
-        name,
-        first_name: first_name || name.split(' ')[0],
-        last_name: last_name || name.split(' ')[1] || '',
+        playdek_name: playdek_name,
+        first_name: first_name || playdek_name.split(' ')[0],
+        last_name: last_name || playdek_name.split(' ')[1] || '',
         role_id: role_id || 3, // Default to player role
       },
     });
@@ -213,7 +213,7 @@ export class AuthService {
       data: {
         email,
         password: hashedPassword,
-        name: fullName,
+        playdek_name: fullName,
         first_name: firstName,
         last_name: lastName,
         role_id: 3, // Default to player role
@@ -226,17 +226,14 @@ export class AuthService {
         preferred_gaming_platform: preferredGamingPlatform || null,
         preferred_game_duration: preferredGameDuration || null,
         // Defaults for other required fields
-        regional_federation_id: null,
         timezone_id: null,
-        email_verified_at: null,
-        remember_token: null,
         last_login_at: null,
       },
     });
 
     // Prepare response
     const userResponse: AuthResponseDto = {
-      name: newUser.name!,
+      playdek_name: newUser.playdek_name!,
       email: newUser.email!,
       id: newUser.id.toString(),
       role: newUser.role_id || 3,
