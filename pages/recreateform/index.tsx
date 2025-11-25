@@ -7,25 +7,20 @@ import { tournamentStatus, userRoles } from "utils/constants";
 import { ServerType } from "types/types";
 import { useRouter } from "next/router";
 import { useRecreateGame } from "hooks/useRecreateGame";
-import { useUsers } from "hooks/useUsers";
+import { useAllUsers } from "hooks/useUsers";
+import { UsersListResponse } from "services/users.service";
 import { useTournamentsByStatus } from "hooks/useTournaments";
-import SubmitGameForm from "pages/submit-game/SubmitGameForm";
+import SubmitRecreateForm, { RecreateGameFormData } from "./SubmitRecreateForm";
 
 type SubmitFormProps = {
   role: number;
 };
 
-// Import the SubmitGameFormData interface from the submit-game page
-import { SubmitGameFormData } from "pages/submit-game/index";
-
-// Use SubmitGameFormData directly since we're reusing the same form
-type RecreateFormData = SubmitGameFormData;
-
-const validateForm = (data: RecreateFormData) => {
+const validateForm = (data: RecreateGameFormData) => {
   // Check required fields
   const requiredFields = ['gameWinner', 'gameCode', 'tournamentId', 'ussrPlayerId', 'usaPlayerId', 'endTurn', 'endMode'];
   for (const field of requiredFields) {
-    if (!data[field as keyof RecreateFormData]) {
+    if (!data[field as keyof RecreateGameFormData]) {
       return false;
     }
   }
@@ -53,8 +48,11 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   const router = useRouter();
   const recreateGameMutation = useRecreateGame();
 
-  // React Query hooks for data fetching
-  const { data: usersResponse, isLoading: loadingUsers } = useUsers({});
+  // React Query hooks for data fetching - fetch ALL users without pagination
+  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 1000) as {
+    data: UsersListResponse | undefined;
+    isLoading: boolean;
+  }; // Get first 1000 users
   const { data: tournaments, isLoading: loadingTournaments } = useTournamentsByStatus([
     tournamentStatus.ongoing
   ]);
@@ -67,15 +65,14 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     setError,
     watch,
     formState: { errors, isSubmitting },
-  } = useForm<RecreateFormData>({
+  } = useForm<RecreateGameFormData>({
     defaultValues: {
       oldId: "",
-      gameDate: new Date().toISOString().split('T')[0],
-      gameWinner: "",
       gameCode: "",
-      tournamentId: "",
-      ussrPlayerId: "",
       usaPlayerId: "",
+      ussrPlayerId: "",
+      tournamentId: "",
+      gameWinner: "",
       endTurn: "",
       endMode: "",
       video1: "",
@@ -86,18 +83,18 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
   useEffect(() => {
     if (searchParams) {
       const oldId = searchParams.get("id") || "";
-      const gameDate = searchParams.get("gameDate");
+
       const gameWinner = searchParams.get("gameWinner") as GameWinner;
       const gameCode = searchParams.get("gameCode") || "";
       const tournamentId = searchParams.get("tournamentId") || "";
       const endTurn = searchParams.get("endTurn") || "";
       const endMode = searchParams.get("endMode") || "";
       const video1 = searchParams.get("video1") || "";
-      const ussrPlayerId = searchParams.get("idUssr") || "";
-      const usaPlayerId = searchParams.get("idUsa") || "";
+      const ussrPlayerId = searchParams.get("ussrPlayerId") || "";
+      const usaPlayerId = searchParams.get("usaPlayerId") || "";
 
+      // Prepopulate all form fields from URL parameters
       if (oldId) setValue("oldId", oldId);
-      if (gameDate) setValue("gameDate", gameDate);
       if (gameWinner) setValue("gameWinner", gameWinner);
       if (gameCode) setValue("gameCode", gameCode);
       if (tournamentId) setValue("tournamentId", tournamentId);
@@ -109,10 +106,10 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     }
   }, [searchParams, setValue]);
 
-  const normalizeData = (data: RecreateFormData): GameRecreate => {
+  const normalizeData = (data: RecreateGameFormData): GameRecreate => {
     return {
       oldId: data.oldId || "",
-      gameDate: data.gameDate || new Date().toISOString(),
+      gameDate: new Date().toISOString(), // Use current date since we removed gameDate field
       tournamentId: data.tournamentId,
       usaPlayerId: data.usaPlayerId || "",
       ussrPlayerId: data.ussrPlayerId || "",
@@ -124,7 +121,7 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
     };
   };
 
-  const onSubmit = async (data: RecreateFormData) => {
+  const onSubmit = async (data: RecreateGameFormData) => {
     if (!validateForm(data)) {
       setError("root", { type: "manual", message: "Please check your form inputs" });
       return;
@@ -143,24 +140,21 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
 
   if (loadingTournaments || loadingUsers) return null;
 
-  const usersParsed = (Array.isArray(usersResponse) ? usersResponse : usersResponse?.results || []).map((item: any) => ({
-    value: item.id,
-    text: item.name,
-  }));
+  // Parse users data
+  const usersParsed = usersResponse?.results?.map((user: any) => ({
+    value: user.id.toString(),
+    text: user.name.trim()
+  })) || [];
 
   const leagueTypes = tournaments?.map((item: any) => ({
     value: item.id.toString(),
     text: item.tournament_name,
   })) || [];
 
-  // Get player names for display
-  const usaPlayerId = watch("usaPlayerId");
-  const ussrPlayerId = watch("ussrPlayerId");
-  const usaPlayerName = usersParsed.find(user => user.value === usaPlayerId)?.text || "";
-  const ussrPlayerName = usersParsed.find(user => user.value === ussrPlayerId)?.text || "";
+
 
   return (
-    <SubmitGameForm
+    <SubmitRecreateForm
       control={control}
       handleSubmit={handleSubmit}
       onSubmit={onSubmit}
@@ -169,10 +163,6 @@ const RecreateFormContainer = ({ role }: SubmitFormProps) => {
       errors={errors}
       isSubmitting={isSubmitting}
       watch={watch}
-      isScheduleMode={false} // Not schedule mode
-      isRecreateMode={true} // Enable recreate mode with editable player fields
-      usaPlayerName={usaPlayerName}
-      ussrPlayerName={ussrPlayerName}
     />
   );
 };

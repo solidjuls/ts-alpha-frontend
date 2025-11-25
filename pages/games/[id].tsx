@@ -96,7 +96,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
     ussrPlayerId,
   } = data;
   const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false);
-  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&game_code=${game_code}&tournamentId=${tournamentId}&endTurn=${endTurn}&video1=${data.video1 || ""}`;
+  const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&gameCode=${game_code}&tournamentId=${tournamentId}&endTurn=${endTurn}&video1=${data.video1 || ""}`;
 
   const deleteGame = async () => {
     getAxiosInstance().post(``);

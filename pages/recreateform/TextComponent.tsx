@@ -1,0 +1,42 @@
+import React from "react";
+import WithLabel from "./WithLabel";
+import { Input } from "components/Input";
+
+export type TextComponentProps = {
+  labelText: string;
+  inputValue: string;
+  placeholder: string;
+  onInputValueChange: (value: string) => void;
+  error: boolean;
+  disabled?: boolean;
+  css?: any;
+};
+
+const TextComponent = ({
+  labelText,
+  inputValue,
+  onInputValueChange,
+  placeholder,
+  error,
+  css,
+  ...rest
+}: TextComponentProps) => {
+  return (
+    <WithLabel labelText={labelText}>
+      <Input
+        type="text"
+        id="text-input"
+        defaultValue={inputValue}
+        placeholder={placeholder}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+          onInputValueChange(event.target.value)
+        }
+        css={css}
+        {...rest}
+        border={error ? "error" : undefined}
+      />
+    </WithLabel>
+  );
+};
+
+export default TextComponent;
