@@ -10,6 +10,8 @@ import {
   RecreateGameDto,
 } from './dto/game.dto';
 
+const FRIENDLY_GAME = 47
+
 @Injectable()
 export class GamesService {
   constructor(
@@ -66,7 +68,8 @@ export class GamesService {
           ussrPlayerId: game.ussr_player_id.toString(),
           usaRatingDifference,
           ussrRatingDifference,
-          tournamentId: game.tournaments?.tournament_name || 'Unknown',
+          tournamentName: game.tournaments?.tournament_name || 'Unknown',
+          tournamentId: game.tournaments?.id.toString() || '',
           game_code: game.game_code,
           reported_at: game.created_at,
           gameWinner: game.game_winner,
@@ -309,6 +312,14 @@ export class GamesService {
     }
   }
 
+  private tournamentRequiresRecreation(oldTournamentId: number, newTournamentId: number) {
+    if (oldTournamentId !== newTournamentId && (oldTournamentId === FRIENDLY_GAME || newTournamentId === FRIENDLY_GAME)) {
+      return true
+    }
+
+    return false
+  }
+
   private async startRecreatingRatings(input: RecreateGameDto, role: number, emailReporter: string): Promise<any> {
     try {
       await this.databaseService.$transaction(
@@ -331,7 +342,7 @@ export class GamesService {
             oldGameDate.usa_player_id.toString() === input.usaPlayerId &&
             oldGameDate.ussr_player_id.toString() === input.ussrPlayerId &&
             oldGameDate.game_winner === input.gameWinner &&
-            oldGameDate.tournament_id === Number(input.tournamentId)
+            !this.tournamentRequiresRecreation(oldGameDate.tournament_id, Number(input.tournamentId))
           ) {
             // Only update metadata
             await prismaTransaction.game_results.update({
@@ -349,13 +360,6 @@ export class GamesService {
             });
             console.log('updated instead of recreated');
             return { success: true };
-          }
-
-          // Check if user has permission for major changes
-          if (role !== 1) { // Only superadmins (role 1) can change players/winner/tournament
-            throw new Error(
-              'The player names, game winner and tournament can only be updated by superadmins. Please contact admin.',
-            );
           }
 
           console.log('start recreating.....');
@@ -543,6 +547,7 @@ export class GamesService {
       ussrPlayerId,
       gameWinner: gameWinner as any,
       tournamentId: gameType,
+      prismaTransaction,
     });
 
     console.log('newUsaRating, newUssrRating', gameId, newUsaRating, newUssrRating);

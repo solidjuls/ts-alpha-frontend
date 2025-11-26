@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { GameWinner } from '../games/dto/game.dto';
 import { PlayerRatingDto, PlayerRatingListResponse } from './dto/rating.dto';
+import { Prisma } from '@prisma/client';
 
 const DEFAULT_RATING = 5000;
 const FRIENDLY_GAME = "47"
@@ -10,8 +11,9 @@ const FRIENDLY_GAME = "47"
 export class RatingService {
   constructor(private readonly databaseService: DatabaseService) {}
 
-  async getRatingByPlayer(playerId: bigint): Promise<{ rating: number } | null> {
-    return await this.databaseService.ratings_history.findFirst({
+  async getRatingByPlayer(playerId: bigint, prismaTransaction?: any): Promise<{ rating: number } | null> {
+    const client = prismaTransaction || this.databaseService;
+    return await client.ratings_history.findFirst({
       select: {
         rating: true,
       },
@@ -113,24 +115,26 @@ export class RatingService {
     ussrPlayerId,
     gameWinner,
     tournamentId,
+    prismaTransaction,
   }: {
     usaPlayerId: bigint;
     ussrPlayerId: bigint;
     gameWinner: GameWinner;
     tournamentId: string;
+    prismaTransaction?: any;
   }): Promise<{
     newUsaRating: number;
     newUssrRating: number;
     usaRating: number;
     ussrRating: number;
   }> {
-    const usaRatingRecord = await this.getRatingByPlayer(usaPlayerId);
-    const ussrRatingRecord = await this.getRatingByPlayer(ussrPlayerId);
+    const usaRatingRecord = await this.getRatingByPlayer(usaPlayerId, prismaTransaction);
+    const ussrRatingRecord = await this.getRatingByPlayer(ussrPlayerId, prismaTransaction);
 
     const usaRating = usaRatingRecord?.rating || DEFAULT_RATING;
     const ussrRating = ussrRatingRecord?.rating || DEFAULT_RATING;
 
-    console.log('usaRating, ussrRating', usaRating, ussrRating);
+    console.log('usaRating, ussrRating', usaRating, ussrRating, usaRatingRecord?.rating, ussrRatingRecord?.rating);
 
     return this.getNewRatings(usaRating, ussrRating, gameWinner, tournamentId);
   }

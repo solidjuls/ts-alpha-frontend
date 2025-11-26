@@ -16,6 +16,7 @@ export interface GameType {
   usaRatingDifference: number;
   ussrRatingDifference: number;
   tournamentId: string;
+  tournamentName: string;
   game_code: string;
   reported_at: Date;
   gameWinner: string;

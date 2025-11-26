@@ -92,7 +92,7 @@ const ResultRow = ({ game }: { game: Game }) => {
           {`Game #${game.id}`}
         </ResponsiveText>
         <ResponsiveText fontSize="small" style={{ alignSelf: "center", marginLeft: 4 }}>
-          {game.tournamentId}
+          {game.tournamentName}
         </ResponsiveText>
         <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
       </div>

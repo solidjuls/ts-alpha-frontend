@@ -90,6 +90,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
     gameWinner,
     game_code,
     tournamentId,
+    tournamentName,
     endTurn,
     endMode,
     usaPlayerId,
@@ -126,7 +127,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
     const flags: CountryFlags = countryFlags;
     const endTurn = data.endTurn === 11 ? "Final Scoring" : `Turn ${data.endTurn}`;
     if (data.gameWinner === "3") {
-      return `${data.tournamentId}: ${data.game_code} - ${data.usaPlayer} ${flags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${flags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
+      return `${data.tournamentName}: ${data.game_code} - ${data.usaPlayer} ${flags[data.usaCountryCode?.toLowerCase()]} (USA) tied with ${data.ussrPlayer} ${flags[data.ussrCountryCode?.toLowerCase()]} in ${endTurn} (${endMode})`;
     }
 
     if (data.gameWinner === "1") {
@@ -137,7 +138,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
       loserName = data.usaPlayer + " " + flags[data.usaCountryCode?.toLowerCase()];
     }
 
-    return `${data.tournamentId}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner as GameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
+    return `${data.tournamentName}: ${data.game_code} - ${winnerName} (${getWinnerText(data.gameWinner as GameWinner)}) has defeated ${loserName} in ${endTurn} (${endMode})`;
   };
 
   return (
@@ -173,7 +174,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           </div>
           <div style={{ width: "5px" }} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-            <Span style={spanStyle}>{data.tournamentId}</Span>
+            <Span style={spanStyle}>{data.tournamentName}</Span>
             <Span>{data.game_code}</Span>
             <Span>{getWinnerText(data.gameWinner as GameWinner)}</Span>
             <Span>{getTurnText(data.endTurn)}</Span>

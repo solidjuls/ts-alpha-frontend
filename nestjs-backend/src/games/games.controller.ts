@@ -115,7 +115,6 @@ export class GamesController {
   async getGameById(@Param('id') id: string) {
     try {
       const game = await this.gamesService.getGameById(id);
-      
       if (!game) {
         throw new HttpException(
           'Game not found',
@@ -155,19 +154,6 @@ export class GamesController {
   async recreateGame(@Body() body: { data: RecreateGameDto }, @Req() req: any) {
     try {
       const user = req.user;
-        // gameWinner: GameWinner;
-        // gameCode: string;
-        // tournamentId: string;
-        // usaPlayerId: string;
-        // ussrPlayerId: string;
-        // endTurn: string;
-        // endMode: string;
-        // video1?: string;
-        if (!body.data.oldId) {
-          console.log("submitting", body.data)
-          const submitResult = await this.gamesService.submitGame(body.data);
-          return submitResult;
-        }
       const result = await this.gamesService.recreateGame(body.data, user.role, user.mail);
 
       // Convert BigInt to string for JSON serialization

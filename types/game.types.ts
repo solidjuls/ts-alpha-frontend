@@ -78,7 +78,8 @@ export type Game = {
   ussrPlayerId: bigint;
   usaRatingDifference: number;
   ussrRatingDifference: number;
-  gameType: string;
+  tournamentId: string;
+  tournamentName: string;
   game_code: string;
   reported_at: Date;
   gameWinner: GameWinner;
