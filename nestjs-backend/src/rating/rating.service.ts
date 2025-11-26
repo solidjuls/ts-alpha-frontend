@@ -3,7 +3,8 @@ import { DatabaseService } from '../database/database.service';
 import { GameWinner } from '../games/dto/game.dto';
 import { PlayerRatingDto, PlayerRatingListResponse } from './dto/rating.dto';
 
-const DEFAULT_RATING = 1500;
+const DEFAULT_RATING = 5000;
+const FRIENDLY_GAME = "47"
 
 @Injectable()
 export class RatingService {
@@ -22,6 +23,40 @@ export class RatingService {
       },
     });
   }
+  private roundValue(value: number) {
+    if (value < 0) {
+      const roundedPositiveValue = Math.round(Math.abs(value));
+      return roundedPositiveValue * -1;
+    }
+
+    return Math.round(value);
+  }
+  private  getRatingDifference(
+    defeated: number,
+    winner: number,
+    addValue: number = 100,
+    gameType: string,
+  ) {
+    let basicCalculus = (defeated - winner) * 0.05;
+    if (gameType === FRIENDLY_GAME) basicCalculus = basicCalculus / 2;
+
+    const newValue = this.roundValue(basicCalculus) + addValue;
+
+    if (addValue !== 0 && newValue <= 0) {
+      return 1;
+    }
+    if (newValue > 200) {
+      return 200;
+    }
+
+    return newValue;
+  };
+
+  private getSmallerValue(value1: number, value2: number) {
+    if (value1 > value2) return { bigger: value1, smaller: value2 };
+    if (value1 < value2) return { bigger: value1, smaller: value2 };
+    return { bigger: value1, smaller: value2 };
+  };
 
   private getNewRatings(
     usaRating: number,
@@ -34,43 +69,43 @@ export class RatingService {
     usaRating: number;
     ussrRating: number;
   } {
-    const K = 32; // K-factor for Elo rating system
-    
-    // Calculate expected scores
-    const expectedUsaScore = 1 / (1 + Math.pow(10, (ussrRating - usaRating) / 400));
-    const expectedUssrScore = 1 / (1 + Math.pow(10, (usaRating - ussrRating) / 400));
-    
-    // Determine actual scores based on game winner
-    let usaActualScore: number;
-    let ussrActualScore: number;
-    
-    switch (gameWinner) {
-      case "1": // USA wins
-        usaActualScore = 1;
-        ussrActualScore = 0;
-        break;
-      case "2": // USSR wins
-        usaActualScore = 0;
-        ussrActualScore = 1;
-        break;
-      case "3": // Tie
-        usaActualScore = 0.5;
-        ussrActualScore = 0.5;
-        break;
-      default:
-        throw new Error(`Invalid game winner: ${gameWinner}`);
+    let newUsaRating: number = 0;
+    let newUssrRating: number = 0;
+
+    if (gameWinner === "1") {
+      const ratingDifference: number = this.getRatingDifference(
+        ussrRating,
+        usaRating,
+        tournamentId === FRIENDLY_GAME ? 50 : 100,
+        tournamentId,
+      );
+      newUsaRating = usaRating + ratingDifference;
+      newUssrRating = ussrRating - ratingDifference;
+    } else if (gameWinner === "2") {
+      const ratingDifference: number = this.getRatingDifference(
+        usaRating,
+        ussrRating,
+        tournamentId === FRIENDLY_GAME ? 50 : 100,
+        tournamentId,
+      );
+      newUsaRating = usaRating - ratingDifference;
+      newUssrRating = ussrRating + ratingDifference;
+    } else if (gameWinner === "3") {
+      const { bigger, smaller } = this.getSmallerValue(usaRating, ussrRating);
+      const ratingDifference: number = this.getRatingDifference(smaller, bigger, 0, tournamentId);
+      console.log("ratingDifference", ratingDifference, usaRating, ussrRating, bigger, smaller);
+
+      if (usaRating <= ussrRating) {
+        newUsaRating = usaRating + Math.abs(ratingDifference);
+        newUssrRating = ussrRating - Math.abs(ratingDifference);
+        console.log("usaRating <= ussrRating", newUsaRating, newUssrRating);
+      } else if (usaRating > ussrRating) {
+        newUsaRating = usaRating - Math.abs(ratingDifference);
+        newUssrRating = ussrRating + Math.abs(ratingDifference);
+        console.log("usaRating > ussrRating", newUsaRating, newUssrRating);
+      }
     }
-    
-    // Calculate new ratings
-    const newUsaRating = Math.round(usaRating + K * (usaActualScore - expectedUsaScore));
-    const newUssrRating = Math.round(ussrRating + K * (ussrActualScore - expectedUssrScore));
-    
-    return {
-      newUsaRating,
-      newUssrRating,
-      usaRating,
-      ussrRating,
-    };
+    return { newUsaRating, newUssrRating, usaRating, ussrRating };
   }
 
   async calculateRating({

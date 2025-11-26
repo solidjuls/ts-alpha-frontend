@@ -531,6 +531,19 @@ export class TournamentsController {
     }
   }
 
+  @Get('ongoing-without-schedule')
+  async getOngoingTournamentsWithoutSchedule(@CurrentUser() user: JwtPayloadDto) {
+    try {
+      const tournaments = await this.tournamentsService.getOngoingTournamentsWithoutSchedule();
+      return tournaments;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Failed to get ongoing tournaments without schedule', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get('health')
   getHealth() {
     return {

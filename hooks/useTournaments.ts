@@ -32,6 +32,16 @@ export const useTournamentsByStatus = (statusArray: number[]) => {
   });
 };
 
+// Get ongoing tournaments with no scheduled games
+export const useOngoingTournamentsWithoutSchedule = () => {
+  return useQuery({
+    queryKey: [...tournamentKeys.all, 'ongoing-without-schedule'],
+    queryFn: () => tournamentsService.getOngoingTournamentsWithoutSchedule(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
 // Get tournaments by IDs
 export const useTournamentsById = (ids: string[]) => {
   return useQuery({

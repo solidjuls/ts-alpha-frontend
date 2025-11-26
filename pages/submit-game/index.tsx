@@ -7,12 +7,11 @@ import { DropdownItemType, ServerType } from "types/types";
 
 import { useSession } from "contexts/AuthProvider";
 import { useAllUsers } from "hooks/useUsers";
-import { useTournamentsByStatus } from "hooks/useTournaments";
+import { useOngoingTournamentsWithoutSchedule } from "hooks/useTournaments";
 import { useSubmitGame } from "hooks/useGames";
 import { useRecreateGame } from "hooks/useRecreateGame";
 import { UsersListResponse } from "services/users.service";
 import { Tournament } from "services/tournaments.service";
-import { tournamentStatus } from "utils/constants";
 import SubmitGameForm from "./SubmitGameForm";
 
 type SubmitGameProps = {
@@ -66,9 +65,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
 
   const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 1000);
 
-  const { data: tournaments, isLoading: loadingTournaments } = useTournamentsByStatus([
-    tournamentStatus["open"]
-  ]);
+  const { data: tournaments, isLoading: loadingTournaments } = useOngoingTournamentsWithoutSchedule();
 
   const submitGameMutation = useSubmitGame();
   const recreateGameMutation = useRecreateGame();

@@ -35,7 +35,7 @@ const Items = ({ role }: any) => {
         </HorizontalNavText>
       </UnstyledLink>
       {/* <HorizontalNavText>Federations</HorizontalNavText> */}
-      <UnstyledLink href="/submitform" passHref>
+      <UnstyledLink href="/submit-game" passHref>
         <HorizontalNavText>
           Submit Form
         </HorizontalNavText>
@@ -137,7 +137,7 @@ const VerticalSidebar = () => {
                 </HorizontalNavText>
               </Item>
             </UnstyledLink>
-            <UnstyledLink href="/submitform" passHref>
+            <UnstyledLink href="/submit-game" passHref>
               <Item>
                 <HorizontalNavText>
                   Submit Form

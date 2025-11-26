@@ -297,6 +297,12 @@ class TournamentsService {
     const response = await this.axiosInstance.post(`/tournaments/${tournamentId}/generate-schedule`);
     return response.data;
   }
+
+  // GET /api/tournaments/ongoing-without-schedule - Get ongoing tournaments with no scheduled games
+  async getOngoingTournamentsWithoutSchedule(): Promise<Tournament[]> {
+    const response = await this.axiosInstance.get('/tournaments/ongoing-without-schedule');
+    return response.data;
+  }
 }
 
 // Export singleton instance

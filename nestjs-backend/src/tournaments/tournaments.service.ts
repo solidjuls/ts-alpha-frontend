@@ -944,4 +944,51 @@ console.log("scheduleParsed", scheduleParsed);
     };
   }
 
+  async getOngoingTournamentsWithoutSchedule() {
+    // Get ongoing tournaments (status_id = 4) that have no scheduled games
+    const tournaments = await this.databaseService.tournaments.findMany({
+      where: {
+        status_id: 4, // Ongoing status
+        schedule: {
+          none: {} // No scheduled games
+        }
+      },
+      select: {
+        id: true,
+        tournament_name: true,
+        status_id: true,
+        created_at: true,
+        updated_at: true,
+        tournament_admins: {
+          select: {
+            users: {
+              select: {
+                id: true,
+                playdek_name: true,
+                email: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        created_at: 'desc'
+      }
+    });
+
+    // Transform the data to match the expected Tournament interface
+    return tournaments.map(tournament => ({
+      id: tournament.id.toString(),
+      tournament_name: tournament.tournament_name,
+      status_id: tournament.status_id,
+      created_at: tournament.created_at,
+      updated_at: tournament.updated_at,
+      admins: tournament.tournament_admins.map(admin => ({
+        id: admin.users.id.toString(),
+        name: admin.users.playdek_name,
+        email: admin.users.email
+      }))
+    }));
+  }
+
 }
