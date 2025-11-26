@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, HttpCode, HttpStatus, Get, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, ResetPasswordDto, CreateUserDto, RegisterUserDto } from './dto/auth.dto';
+import { LoginDto, ImpersonateDto, ResetPasswordDto, CreateUserDto, RegisterUserDto } from './dto/auth.dto';
 import { Public, CurrentUser } from './decorators/auth.decorators';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -48,6 +48,24 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterUserDto) {
     return await this.authService.registerUser(registerDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('impersonate')
+  @HttpCode(HttpStatus.OK)
+  async impersonate(@Body() impersonateDto: ImpersonateDto, @CurrentUser() user: any, @Res({ passthrough: true }) response: Response) {
+    const { user: impersonatedUser, token } = await this.authService.impersonate(impersonateDto.email, user);
+
+    // Set HTTP-only cookie
+    response.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development',
+      sameSite: 'strict',
+      maxAge: 8640000, // 100 days in seconds
+      path: '/',
+    });
+
+    return impersonatedUser;
   }
 
   @UseGuards(JwtAuthGuard)

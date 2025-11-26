@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import authService, {
   LoginRequest,
+  ImpersonateRequest,
   LoginResponse,
   ResetPasswordRequest,
   CreateUserRequest,
@@ -48,6 +49,33 @@ export const useLogin = () => {
     },
     onError: (error: any) => {
       console.error('Login failed:', error);
+    },
+  });
+};
+
+// Hook for impersonate mutation
+export const useImpersonate = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: (data: ImpersonateRequest) => authService.impersonate(data),
+    onSuccess: (data: LoginResponse) => {
+      // Update the profile cache with the impersonated user response
+      queryClient.setQueryData(authKeys.profile(), {
+        id: data.id,
+        email: data.email,
+        name: data.name,
+        role: data.role,
+        tournamentsAdmin: [],
+        tournamentsRegistered: data.tournaments || [],
+      });
+
+      // Redirect to home page
+      router.push('/');
+    },
+    onError: (error: any) => {
+      console.error('Impersonate failed:', error);
     },
   });
 };

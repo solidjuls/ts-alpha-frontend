@@ -26,18 +26,40 @@ export class AuthService {
       );
     }
 
-    // if (!user.password) {
-    //   console.log("password")
-    //   throw new UnauthorizedException('The password is incorrect');
-    // }
+    if (!user.password) {
+      console.log("password")
+      throw new UnauthorizedException('The password is incorrect');
+    }
 
     // Verify password
-    const isPasswordValid = true// await compare(pwd, user.password);
+    const isPasswordValid = await compare(pwd, user.password);
     if (!isPasswordValid) {
       console.log("isPasswordValid")
       throw new UnauthorizedException('The password is incorrect');
     }
 
+    return this.generateAuthResponse(user);
+  }
+
+  async impersonate(email: string, impersonatorUser: any): Promise<{ user: AuthResponseDto; token: string }> {
+    // Check if impersonator is superadmin
+    if (impersonatorUser.role !== 1) {
+      throw new UnauthorizedException('Only superadmins can impersonate other users');
+    }
+
+    // Find user to impersonate by email
+    const user = await this.databaseService.users.findFirst({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("User doesn't exist.");
+    }
+
+    return this.generateAuthResponse(user);
+  }
+
+  private async generateAuthResponse(user: any): Promise<{ user: AuthResponseDto; token: string }> {
     // Get tournaments admin
     const tournamentsAdmin = await this.databaseService.tournament_admins.findMany({
       select: { tournamentId: true },

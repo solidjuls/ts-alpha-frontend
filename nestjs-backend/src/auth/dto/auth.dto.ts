@@ -3,6 +3,10 @@ export interface LoginDto {
   pwd: string;
 }
 
+export interface ImpersonateDto {
+  email: string;
+}
+
 export interface AuthResponseDto {
   name: string;
   email: string;

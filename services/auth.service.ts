@@ -14,6 +14,10 @@ export interface LoginRequest {
   pwd: string;
 }
 
+export interface ImpersonateRequest {
+  email: string;
+}
+
 export interface LoginResponse {
   name: string;
   email: string;
@@ -90,6 +94,12 @@ export const authService = {
   // Login user
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     const response = await authApi.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  // Impersonate user (superadmin only)
+  impersonate: async (data: ImpersonateRequest): Promise<LoginResponse> => {
+    const response = await authApi.post('/auth/impersonate', data);
     return response.data;
   },
 
