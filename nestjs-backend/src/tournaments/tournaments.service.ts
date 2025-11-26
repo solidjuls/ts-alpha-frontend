@@ -805,4 +805,143 @@ console.log("scheduleParsed", scheduleParsed);
     };
   }
 
+  async generateRandomSchedule(tournamentId: number, user: any): Promise<any> {
+    // Check if user has permission to generate schedule
+    const userRole = user.role || 3; // Default to PLAYER if no role
+    const isSuperAdmin = userRole === 1; // SUPERADMIN
+    const isAdmin = userRole === 2; // ADMIN
+
+    // Check if user is tournament admin
+    let isTournamentAdmin = false;
+    if (!isSuperAdmin && !isAdmin) {
+      const tournamentAdmins = await this.databaseService.tournament_admins.findMany({
+        where: {
+          tournamentId: tournamentId,
+          userId: BigInt(user.id)
+        }
+      });
+      isTournamentAdmin = tournamentAdmins.length > 0;
+    }
+
+    if (!isSuperAdmin && !isAdmin && !isTournamentAdmin) {
+      throw new Error('Insufficient permissions to generate schedule');
+    }
+
+    // Check if tournament exists
+    const tournament = await this.databaseService.tournaments.findUnique({
+      where: { id: tournamentId }
+    });
+
+    if (!tournament) {
+      throw new Error('Tournament not found');
+    }
+
+    // Get all registered players for the tournament
+    const registeredPlayers = await this.databaseService.tournament_registration.findMany({
+      where: {
+        tournamentId: tournamentId,
+      },
+      select: {
+        userId: true
+      }
+    });
+
+    if (registeredPlayers.length < 2) {
+      throw new Error('Not enough registered players to generate schedule (minimum 2 required)');
+    }
+
+    // Generate 10 random unique pairs
+    const playerIds = registeredPlayers.map(p => p.userId);
+    const pairs: Array<{ usa_player_id: bigint; ussr_player_id: bigint }> = [];
+    const usedPlayers = new Set<string>();
+
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loop
+
+    while (pairs.length < 10 && attempts < maxAttempts) {
+      attempts++;
+
+      // Pick two random players
+      const shuffledPlayers = [...playerIds].sort(() => Math.random() - 0.5);
+      let usaPlayer: bigint | null = null;
+      let ussrPlayer: bigint | null = null;
+
+      // Find first available player for USA
+      for (const playerId of shuffledPlayers) {
+        const playerKey = playerId.toString();
+        if (!usedPlayers.has(playerKey)) {
+          usaPlayer = playerId;
+          break;
+        }
+      }
+
+      // Find second available player for USSR (different from USA player)
+      for (const playerId of shuffledPlayers) {
+        const playerKey = playerId.toString();
+        if (!usedPlayers.has(playerKey) && playerId !== usaPlayer) {
+          ussrPlayer = playerId;
+          break;
+        }
+      }
+
+      // If we found both players, add the pair
+      if (usaPlayer && ussrPlayer) {
+        pairs.push({
+          usa_player_id: usaPlayer,
+          ussr_player_id: ussrPlayer
+        });
+        usedPlayers.add(usaPlayer.toString());
+        usedPlayers.add(ussrPlayer.toString());
+      }
+
+      // If we don't have enough unique players, allow reuse
+      if (usedPlayers.size >= playerIds.length && pairs.length < 10) {
+        usedPlayers.clear();
+      }
+    }
+
+    // Generate random due dates (between 1-30 days from now)
+    const now = new Date();
+    const schedules = pairs.map((pair, index) => {
+      const daysFromNow = Math.floor(Math.random() * 30) + 1; // 1-30 days
+      const dueDate = new Date(now);
+      dueDate.setDate(dueDate.getDate() + daysFromNow);
+
+      return {
+        tournaments_id: tournamentId,
+        game_code: `GAME_${tournamentId}_${index + 1}_${Date.now()}`,
+        usa_player_id: pair.usa_player_id,
+        ussr_player_id: pair.ussr_player_id,
+        due_date: dueDate,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+    });
+
+    // Save schedules to database
+    let successCount = 0;
+    let errorCount = 0;
+    const errors: string[] = [];
+
+    for (const schedule of schedules) {
+      try {
+        await this.databaseService.schedule.create({
+          data: schedule
+        });
+        successCount++;
+      } catch (error) {
+        errorCount++;
+        errors.push(`Failed to create schedule for game ${schedule.game_code}: ${error.message}`);
+      }
+    }
+
+    return {
+      totalSchedules: schedules.length,
+      successCount,
+      errorCount,
+      errors: errors.slice(0, 5), // Return first 5 errors
+      generatedPairs: pairs.length
+    };
+  }
+
 }

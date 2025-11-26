@@ -509,6 +509,28 @@ export class TournamentsController {
     }
   }
 
+  @Post(':id/generate-schedule')
+  async generateRandomSchedule(@Param('id') tournamentId: string, @CurrentUser() user: JwtPayloadDto) {
+    const id = parseInt(tournamentId);
+    if (isNaN(id)) {
+      throw new HttpException('Invalid tournament ID', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const result = await this.tournamentsService.generateRandomSchedule(id, user);
+      return {
+        success: true,
+        message: 'Random schedule generated successfully',
+        ...result
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException('Failed to generate random schedule', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get('health')
   getHealth() {
     return {

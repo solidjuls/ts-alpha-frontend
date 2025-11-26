@@ -94,6 +94,16 @@ export interface BulkRegisterResponse {
   errors: string[];
 }
 
+export interface GenerateScheduleResponse {
+  success: boolean;
+  message: string;
+  totalSchedules: number;
+  successCount: number;
+  errorCount: number;
+  errors: string[];
+  generatedPairs: number;
+}
+
 export interface AddToWaitlistRequest {
   userId?: string;    // For admin adding someone else, optional for self
 }
@@ -279,6 +289,12 @@ class TournamentsService {
   // POST /api/tournaments/:id/bulk-register - Bulk register 150 random users
   async bulkRegisterRandomUsers(tournamentId: number): Promise<BulkRegisterResponse> {
     const response = await this.axiosInstance.post(`/tournaments/${tournamentId}/bulk-register`);
+    return response.data;
+  }
+
+  // POST /api/tournaments/:id/generate-schedule - Generate random schedule for tournament
+  async generateRandomSchedule(tournamentId: number): Promise<GenerateScheduleResponse> {
+    const response = await this.axiosInstance.post(`/tournaments/${tournamentId}/generate-schedule`);
     return response.data;
   }
 }

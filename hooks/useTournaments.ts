@@ -5,6 +5,7 @@ import tournamentsService, {
   RegisterTournamentRequest,
   UpdateTournamentStatusRequest,
   BulkRegisterResponse,
+  GenerateScheduleResponse,
   TournamentAdmin,
   AddTournamentAdminRequest,
   RemoveTournamentAdminRequest,
@@ -325,6 +326,26 @@ export const useBulkRegisterUsers = () => {
       // Invalidate registered players query
       queryClient.invalidateQueries({
         queryKey: tournamentKeys.players(tournamentId)
+      });
+      // Also invalidate tournament details
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(tournamentId.toString())
+      });
+    },
+  });
+};
+
+// Generate random schedule mutation
+export const useGenerateRandomSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tournamentId: number) =>
+      tournamentsService.generateRandomSchedule(tournamentId),
+    onSuccess: (_, tournamentId) => {
+      // Invalidate schedule queries if they exist
+      queryClient.invalidateQueries({
+        queryKey: ['schedule', tournamentId]
       });
       // Also invalidate tournament details
       queryClient.invalidateQueries({

@@ -101,6 +101,21 @@ export class ScheduleController {
         };
       }
 
+      // validate tournament is open for non-admin view
+      if (finalUserId) {
+        const openTournament = userTournaments.filter(t => t.id === parsedTournamentIds[0] && t.status_id === 4);
+        if (openTournament.length === 0) {
+          return {
+            results: [],
+            totalRows: 0,
+            currentPage: parsedPage,
+            totalPages: 0,
+            userTournaments,
+            defaultTournament: parsedTournamentIds[0],
+          };
+        }
+      }
+
       // Validate orderBy parameter
       const validOrderBy = ['dueDate', 'gameDate', 'tournamentName'];
       const finalOrderBy = validOrderBy.includes(orderBy) ? orderBy : 'dueDate';

@@ -44,7 +44,7 @@ export class ScheduleService {
     const where: any = {
       AND: []
     };
-
+    
     // Add tournament filter if provided
     if (tournament && tournament.length > 0) {
       where.AND.push({
