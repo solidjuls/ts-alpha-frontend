@@ -12,7 +12,6 @@ import "styles/stylesGlobal.css";
 import "@radix-ui/themes/styles.css";
 import { getInfoFromCookies } from "utils/cookies";
 import { Provider } from "react-redux";
-import { store } from "../redux/store";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
@@ -40,18 +39,16 @@ function App({ Component, pageProps, name, id, email, role, tournaments }: Custo
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider name={name} email={email} id={id} role={role} tournaments={tournaments}>
-        <Provider store={store}>
-          <IntlContextProvider>
-            <StyledThemeProvider theme={theme}>
-              {/* @ts-ignore */}
-              <Theme>
-                <MainLayout>
-                  <Component {...pageProps} />
-                </MainLayout>
-              </Theme>
-            </StyledThemeProvider>
-          </IntlContextProvider>
-        </Provider>
+        <IntlContextProvider>
+          <StyledThemeProvider theme={theme}>
+            {/* @ts-ignore */}
+            <Theme>
+              <MainLayout>
+                <Component {...pageProps} />
+              </MainLayout>
+            </Theme>
+          </StyledThemeProvider>
+        </IntlContextProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
