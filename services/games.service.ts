@@ -48,6 +48,20 @@ export interface GetGamesParams {
   video?: boolean; // filter games with videos
 }
 
+export interface RecreateGameParams {
+  oldId: string;
+  gameDate?: string;
+  op?: 'delete';
+  gameWinner?: string;
+  gameCode?: string;
+  tournamentId?: string;
+  usaPlayerId?: string;
+  ussrPlayerId?: string;
+  endTurn?: string;
+  endMode?: string;
+  video1?: string;
+}
+
 export interface SubmitGameData {
   gameWinner: string;
   gameCode: string;
@@ -113,6 +127,20 @@ class GamesService {
       data: data
     });
     return response.data;
+  }
+
+  async recreateGame(params: RecreateGameParams): Promise<any> {
+    const response = await this.axiosInstance.post('/games/recreate', {
+      data: params
+    });
+    return response.data;
+  }
+
+  async deleteGame(gameId: string): Promise<any> {
+    return this.recreateGame({
+      oldId: gameId,
+      op: 'delete'
+    });
   }
 }
 

@@ -308,6 +308,9 @@ export class GamesService {
         video1: data.video1,
       });
     } else {
+      if (data.op === 'delete') {
+        return this.deleteGameRecreateRatings(data, userRole, userEmail);
+      }
       return this.startRecreatingRatings(data, userRole, userEmail);
     }
   }
@@ -481,7 +484,115 @@ export class GamesService {
     return { success: true };
   }
 
+  private async deleteGameRecreateRatings(input: RecreateGameDto, role: number, emailReporter: string): Promise<any> {
+    try {
+      await this.databaseService.$transaction(
+        async (prismaTransaction) => {
+          const dateNow = new Date(Date.now());
 
+          // Get the old game data
+          const oldGameDate = await this.getGameByGameId(input.oldId, prismaTransaction);
+
+          if (!oldGameDate) {
+            throw new Error('Old game id is wrong');
+          }
+
+          // Add to log table
+          await this.addGameToLogTable(prismaTransaction, oldGameDate, emailReporter);
+          console.log('oldGameDate', oldGameDate);
+
+          // Check if only metadata changed (no rating recalculation needed)
+          const gameDeleted = await prismaTransaction.game_results.delete({
+            where: {
+              id: Number(input.oldId),
+            },
+          });
+
+          console.log("gameDeleted", gameDeleted);
+          console.log('start recreating.....');
+
+          // Get all games affected (created after or at the same time as the old game)
+          const allGamesAffected = await prismaTransaction.game_results.findMany({
+            select: {
+              id: true,
+              created_at: true,
+              usa_player_id: true,
+              ussr_player_id: true,
+              game_winner: true,
+              game_code: true,
+              tournament_id: true,
+            },
+            where: {
+              created_at: {
+                gte: new Date(oldGameDate?.created_at as Date),
+              },
+            },
+            orderBy: [
+              {
+                created_at: 'asc',
+              },
+            ],
+          });
+
+          console.log('allGamesAffected', allGamesAffected);
+
+          // Delete all rating history for affected games
+          const ids = allGamesAffected.map((game) => game.id);
+          const deletedMany = await prismaTransaction.ratings_history.deleteMany({
+            where: {
+              game_result_id: {
+                in: ids,
+              },
+            },
+          });
+
+          console.log('deletedMany', deletedMany);
+
+          // Recreate ratings for all affected games
+          for (const game of allGamesAffected) {
+            if (game.id.toString() === input.oldId) {
+              continue;
+            } else {
+              // Recalculate ratings for other affected games
+              const { usaRating, ussrRating } = await this.createNewRating({
+                usaPlayerId: BigInt(game.usa_player_id),
+                ussrPlayerId: BigInt(game.ussr_player_id),
+                gameWinner: game.game_winner as any,
+                createdAt: game.created_at,
+                updatedAt: dateNow,
+                gameId: game.id,
+                gameType: game.tournament_id?.toString() as string,
+                prismaTransaction,
+              });
+
+              console.log('new rating created for affected game', usaRating, ussrRating);
+
+              // Update previous ratings
+              await prismaTransaction.game_results.update({
+                data: {
+                  usa_previous_rating: usaRating,
+                  ussr_previous_rating: ussrRating,
+                },
+                where: {
+                  id: game.id,
+                },
+              });
+              console.log('affected game updated');
+            }
+          }
+        },
+        {
+          maxWait: 500000, // 500 seconds
+          timeout: 2000000, // 2000 seconds
+        },
+      );
+    } catch (error) {
+      console.error('Error recreating ratings:', error);
+      throw error;
+    }
+
+    return { success: true };
+  }
 
   private async getGameByGameId(gameId: string, prismaTransaction?: any): Promise<any> {
     const client = prismaTransaction || this.databaseService;

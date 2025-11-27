@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import gamesService, { GameListResponse, GetGamesParams, Game, SubmitGameData } from '../services/games.service';
+import gamesService, { GameListResponse, GetGamesParams, Game, SubmitGameData, RecreateGameParams } from '../services/games.service';
 
 // Query keys for React Query
 export const GAMES_QUERY_KEYS = {
@@ -147,6 +147,42 @@ export const useSubmitGame = () => {
     },
     onError: (error: any) => {
       console.error('Submit game failed:', error);
+    },
+  });
+};
+
+// Hook for recreating a game (can also be used for deletion)
+export const useRecreateGame = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: RecreateGameParams) => gamesService.recreateGame(params),
+    onSuccess: () => {
+      // Invalidate and refetch games lists and details
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.details() });
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.homepage() });
+    },
+    onError: (error: any) => {
+      console.error('Recreate game failed:', error);
+    },
+  });
+};
+
+// Hook for deleting a game
+export const useDeleteGame = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (gameId: string) => gamesService.deleteGame(gameId),
+    onSuccess: () => {
+      // Invalidate and refetch games lists and details
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.details() });
+      queryClient.invalidateQueries({ queryKey: GAMES_QUERY_KEYS.homepage() });
+    },
+    onError: (error: any) => {
+      console.error('Delete game failed:', error);
     },
   });
 };

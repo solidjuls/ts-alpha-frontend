@@ -11,11 +11,10 @@ import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText, getTurnText } from "utils/games";
-import { useGames } from "hooks/useGames";
+import { useGames, useDeleteGame } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
 import { UnstyledLink } from "components/Homepage/Homepage.styled";
-import getAxiosInstance from "utils/axios";
 import { useSession } from "contexts/AuthProvider";
 import { userRoles } from "utils/constants";
 import countryFlags from "public/country_flags.json";
@@ -98,24 +97,16 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
   const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false);
   const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&gameCode=${game_code}&tournamentId=${tournamentId}&endTurn=${endTurn}&video1=${data.video1 || ""}`;
 
-  const deleteGame = async () => {
-    getAxiosInstance().post(``);
-    const response = await getAxiosInstance().post(
-      "/api/game/recreate",
-      {
-        data: { oldId: id, op: "delete" },
-      },
-      {
-        cache: {
-          update: {
-            "game-list": "delete",
-          },
-        },
-      },
-    );
+  // React Query mutation for deleting game
+  const deleteGameMutation = useDeleteGame();
 
-    if (response.data) {
+  const deleteGame = async () => {
+    try {
+      await deleteGameMutation.mutateAsync(id);
       setDeleteSuccessMessage(true);
+    } catch (error) {
+      console.error('Error deleting game:', error);
+      // You could add error state handling here if needed
     }
   };
 
@@ -195,8 +186,12 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
                 Recreate game
               </UnstyledLink>
             </Button>
-            <Button style={{ width: "150px", margin: "8px" }} onClick={deleteGame}>
-              Delete this game
+            <Button
+              style={{ width: "150px", margin: "8px" }}
+              onClick={deleteGame}
+              disabled={deleteGameMutation.isPending}
+            >
+              {deleteGameMutation.isPending ? <Spinner size="2" /> : "Delete this game"}
             </Button>
           </Flex>
           {deleteSuccessMessage && <div>Game deleted successfully</div>}
