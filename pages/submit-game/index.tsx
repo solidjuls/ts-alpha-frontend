@@ -11,7 +11,7 @@ import { useSubmitGame } from "hooks/useGames";
 import { useRecreateGame } from "hooks/useRecreateGame";
 import { UsersListResponse } from "services/users.service";
 import { Tournament } from "services/tournaments.service";
-import SubmitGameForm from "./SubmitGameForm";
+import SubmitGameForm from "components/SubmitGame/SubmitGameForm";
 
 type SubmitGameProps = {
   role: number;

@@ -10,7 +10,7 @@ import UserTypeahead from "components/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
-import { SubmitGameFormData } from "./index";
+import { SubmitGameFormData } from "pages/submit-game/index";
 import styled from "styled-components";
 import Link from "next/link";
 

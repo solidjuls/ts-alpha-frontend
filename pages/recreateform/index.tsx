@@ -8,7 +8,7 @@ import { useRecreateGame } from "hooks/useRecreateGame";
 import { useAllUsers } from "hooks/useUsers";
 import { UsersListResponse } from "services/users.service";
 import { useTournamentsByStatus } from "hooks/useTournaments";
-import SubmitRecreateForm, { RecreateGameFormData } from "./SubmitRecreateForm";
+import SubmitRecreateForm, { RecreateGameFormData } from "components/RecreateForm/SubmitRecreateForm";
 
 const validateForm = (data: RecreateGameFormData) => {
   // Check required fields

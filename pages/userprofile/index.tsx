@@ -1,5 +1,5 @@
 import { Spinner } from "@radix-ui/themes";
-import UserProfileForm from "./UserProfileForm";
+import UserProfileForm from "components/UserProfile/UserProfileForm";
 import { useUserById } from "hooks/useUsers";
 import { useAuth } from "contexts/AuthProviderNew";
 
