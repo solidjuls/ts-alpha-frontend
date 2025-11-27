@@ -107,7 +107,13 @@ class ScheduleService {
   }
 
   async updateSchedule(params: UpdateScheduleParams): Promise<{ message: string }> {
-    const response = await this.axiosInstance.put('/schedule', params);
+    const response = await this.axiosInstance.post('/schedule', {
+      data: {
+        id: params.id,
+        due_date: params.dueDate,
+        game_code: params.gameCode,
+      }
+    });
     return response.data;
   }
 

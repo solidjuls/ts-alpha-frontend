@@ -13,6 +13,7 @@ import { dateIntlFormatter } from "utils/dates";
 import { useSession } from "contexts/AuthProvider";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
+import { MainLayout } from "components/Layout";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";

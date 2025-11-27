@@ -17,6 +17,7 @@ import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
 import { Tournament } from "services/tournaments.service";
 import { userRoles } from "utils/constants";
+import { MainLayout } from "components/Layout";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
