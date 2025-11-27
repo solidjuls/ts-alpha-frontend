@@ -25,6 +25,7 @@ import {
   ReplacePlayersDto,
   DeletePlayerDto,
   ScheduleListResponse,
+  UploadCsvScheduleDto,
 } from './dto/schedule.dto';
 
 @Controller('schedule')
@@ -302,6 +303,28 @@ console.log("parsedTournamentIds", parsedUserId, parsedTournamentIds);
       }
       throw new HttpException(
         'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('upload-csv')
+  async uploadCsvSchedule(
+    @Body() body: { data: UploadCsvScheduleDto },
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      const result = await this.scheduleService.uploadCsvSchedule(body.data);
+      return {
+        success: true,
+        message: `Successfully created ${result.created} schedule entries`,
+        created: result.created,
+        errors: result.errors,
+      };
+    } catch (error) {
+      console.error('CSV upload error:', error);
+      throw new HttpException(
+        error.message || 'Failed to upload CSV',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

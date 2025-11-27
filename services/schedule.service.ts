@@ -57,6 +57,26 @@ export interface ReplacePlayerParams {
   newPlayerId: string;
 }
 
+export interface CsvScheduleRow {
+  due_date: string;
+  game_code: string;
+  tournaments_id: string;
+  usa_player_id: string;
+  ussr_player_id: string;
+}
+
+export interface UploadCsvScheduleParams {
+  file: CsvScheduleRow[];
+  tournament: string;
+}
+
+export interface CsvUploadResponse {
+  success: boolean;
+  message: string;
+  created: number;
+  errors: string[];
+}
+
 class ScheduleService {
   private axiosInstance: AxiosInstance;
 
@@ -130,6 +150,13 @@ class ScheduleService {
 
   async deleteSchedule(id: string): Promise<{ message: string }> {
     const response = await this.axiosInstance.delete(`/schedule/${id}`);
+    return response.data;
+  }
+
+  async uploadCsvSchedule(params: UploadCsvScheduleParams): Promise<CsvUploadResponse> {
+    const response = await this.axiosInstance.post('/schedule/upload-csv', {
+      data: params
+    });
     return response.data;
   }
 

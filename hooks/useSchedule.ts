@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import scheduleService, { 
-  ScheduleListResponse, 
-  GetScheduleParams, 
-  AddScheduleParams, 
-  UpdateScheduleParams, 
-  ReplacePlayerParams 
+import scheduleService, {
+  ScheduleListResponse,
+  GetScheduleParams,
+  AddScheduleParams,
+  UpdateScheduleParams,
+  ReplacePlayerParams,
+  UploadCsvScheduleParams,
+  CsvUploadResponse
 } from '../services/schedule.service';
 
 // Query keys for React Query
@@ -115,6 +117,22 @@ export const useDeleteSchedule = () => {
     onSuccess: () => {
       // Invalidate and refetch schedule queries
       queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+  });
+};
+
+// Hook for uploading CSV schedule
+export const useUploadCsvSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: UploadCsvScheduleParams) => scheduleService.uploadCsvSchedule(params),
+    onSuccess: () => {
+      // Invalidate and refetch schedule lists
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.lists() });
+    },
+    onError: (error: any) => {
+      console.error('CSV upload failed:', error);
     },
   });
 };

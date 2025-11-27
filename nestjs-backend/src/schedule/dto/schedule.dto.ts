@@ -41,6 +41,19 @@ export interface CreateScheduleDto {
   gc: string; // game code
 }
 
+export interface CsvScheduleRow {
+  due_date: string;
+  game_code: string;
+  tournaments_id: string;
+  usa_player_id: string;
+  ussr_player_id: string;
+}
+
+export interface UploadCsvScheduleDto {
+  file: CsvScheduleRow[];
+  tournament: string;
+}
+
 export interface UpdateScheduleDto {
   tournaments_id: number;
   game_code: string;

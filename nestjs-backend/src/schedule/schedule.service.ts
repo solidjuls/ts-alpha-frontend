@@ -9,7 +9,9 @@ import {
   ValidateScheduleDto,
   ScheduleValidationResult,
   ScheduleUpdateResult,
-  ScheduleListResponse
+  ScheduleListResponse,
+  UploadCsvScheduleDto,
+  CsvScheduleRow
 } from './dto/schedule.dto';
 
 @Injectable()
@@ -325,5 +327,63 @@ console.log("totalRows", userToFilter, tournament.map(t => Number(t)));
     });
 
     return { updatedUSA, updatedUSSR };
+  }
+
+  async uploadCsvSchedule(data: UploadCsvScheduleDto): Promise<{ created: number; errors: string[] }> {
+    const { file, tournament } = data;
+    const errors: string[] = [];
+    let created = 0;
+
+    // Validate tournament exists
+    const tournamentExists = await this.databaseService.tournaments.findUnique({
+      where: { id: parseInt(tournament) }
+    });
+
+    if (!tournamentExists) {
+      throw new Error(`Tournament with ID ${tournament} not found`);
+    }
+
+    for (const [index, row] of file.entries()) {
+      try {
+        // Validate user IDs exist
+        const usaPlayerId = BigInt(row.usa_player_id);
+        const ussrPlayerId = BigInt(row.ussr_player_id);
+
+        const usaPlayer = await this.databaseService.users.findUnique({
+          where: { id: usaPlayerId }
+        });
+
+        const ussrPlayer = await this.databaseService.users.findUnique({
+          where: { id: ussrPlayerId }
+        });
+
+        if (!usaPlayer) {
+          errors.push(`Row ${index + 2}: USA player with ID ${row.usa_player_id} not found`);
+          continue;
+        }
+
+        if (!ussrPlayer) {
+          errors.push(`Row ${index + 2}: USSR player with ID ${row.ussr_player_id} not found`);
+          continue;
+        }
+
+        // Create schedule entry
+        await this.databaseService.schedule.create({
+          data: {
+            due_date: new Date(row.due_date),
+            game_code: row.game_code,
+            tournaments_id: parseInt(row.tournaments_id),
+            usa_player_id: usaPlayerId,
+            ussr_player_id: ussrPlayerId,
+          }
+        });
+
+        created++;
+      } catch (error) {
+        errors.push(`Row ${index + 2}: ${error.message}`);
+      }
+    }
+
+    return { created, errors };
   }
 }
