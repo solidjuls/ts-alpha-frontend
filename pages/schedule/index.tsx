@@ -15,10 +15,8 @@ import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
-import { MainLayout } from "components/Layout";
-import { useUserRegisteredTournaments, useUserAdminTournaments, useUserAvailableTournamentsWithSchedule } from "hooks/useTournaments";
 import { Tournament } from "services/tournaments.service";
-import { tournamentStatus, userRoles } from "utils/constants";
+import { userRoles } from "utils/constants";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -26,7 +24,6 @@ import {
   UnstyledLink,
   CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styled";
-import axios from "axios";
 
 interface ScheduleProps {
   userId: string;
@@ -431,7 +428,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
             )}
           </Flex>
         </ResponsiveContainer>
-      </MainLayout>
     </>
   );
 };

@@ -6,7 +6,6 @@ import { Span, Flex } from "components/Atoms";
 import { FlagIcon } from "components/FlagIcon";
 import Link from "next/link";
 import { DetailContainer } from "components/DetailContainer";
-import { MainLayout } from "components/Layout";
 import Text from "components/Text";
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
@@ -233,48 +232,40 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
 console.log("data", data)
   if (error) {
     return (
-      <MainLayout>
         <DetailContainer>
           <GameContainer isLoading={false}>
             <div>Error loading game details</div>
           </GameContainer>
         </DetailContainer>
-      </MainLayout>
     );
   }
 
   if (!data && !isLoading) {
     return (
-      <MainLayout>
         <DetailContainer>
           <GameContainer isLoading={false}>
             <div>Game not found</div>
           </GameContainer>
         </DetailContainer>
-      </MainLayout>
     );
   }
 
   if (data && data.results && data.results.length === 0) {
     return (
-      <MainLayout>
         <DetailContainer>
           <GameContainer isLoading={false}>
             <div>Game not found</div>
           </GameContainer>
         </DetailContainer>
-      </MainLayout>
     );
   }
 
   return (
-    <MainLayout>
       <DetailContainer>
         <GameContainer isLoading={isLoading}>
           {isLoading ? <Spinner size="3" /> : data && data.results && data.results[0] && <GameContent data={data.results[0]} />}
         </GameContainer>
       </DetailContainer>
-    </MainLayout>
   );
 };
 

@@ -15,6 +15,7 @@ import { Tournament } from "services/tournaments.service";
 import { UnstyledLink } from "components/Schedule/Schedule.styled";
 import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
+import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 
 // Tournament Table Styles
 const TournamentTable = styled.table`
@@ -152,15 +153,6 @@ const StatusBadge = styled.span<StatusBadgeProps>`
   }};
 `;
 
-const ResponsiveContainer = styled.div`
-  width: 100%;
-  overflow-x: auto;
-
-  @media (max-width: 640px) {
-    overflow-x: scroll;
-  }
-`;
-
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -228,40 +220,41 @@ const Tournaments = ({ role } : { role: number }) => {
     <>
       {/* <Legend /> */}
 
-      <ResponsiveContainer>
-        <HeaderContainer>
-          <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
-        </HeaderContainer>
-        {role === userRoles.SUPERADMIN && (
-          <Button style={{ marginLeft: "16px", width: "180px" }}>
-            <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
-          </Button>
-        )}
-        <TournamentTable>
-          <TableHeader>
-            <tr>
-              <TableHeaderCell>Tournament Name</TableHeaderCell>
-              <TableHeaderCell>Status</TableHeaderCell>
-              <TableHeaderCell>Administrators</TableHeaderCell>
-              <TableHeaderCell>Starting Date</TableHeaderCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {data?.map((tournament) => (
-              <TournamentRow key={tournament.id} tournament={tournament} />
-            ))}
-          </TableBody>
-        </TournamentTable>
+        <ResponsiveContainer>
+          <HeaderContainer>
+            <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
+          </HeaderContainer>
+          {role === userRoles.SUPERADMIN && (
+            <Button style={{ marginLeft: "16px", width: "180px" }}>
+              <UnstyledLink href="/tournament-create">Create New Tournament</UnstyledLink>
+            </Button>
+          )}
+          <TournamentTable>
+            <TableHeader>
+              <tr>
+                <TableHeaderCell>Tournament Name</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
+                <TableHeaderCell>Administrators</TableHeaderCell>
+                <TableHeaderCell>Starting Date</TableHeaderCell>
+              </tr>
+            </TableHeader>
+            <TableBody>
+              {data?.map((tournament) => (
+                <TournamentRow key={tournament.id} tournament={tournament} />
+              ))}
+            </TableBody>
+          </TournamentTable>
 
-        {(!data || data.length === 0) && (
-          <EmptyStateContainer>
-            <Text fontSize="big">No tournaments found</Text>
-            <Text fontSize="medium" style={{ marginTop: "8px" }}>
-              Create a new tournament to get started.
-            </Text>
-          </EmptyStateContainer>
-        )}
-      </ResponsiveContainer>
+          {(!data || data.length === 0) && (
+            <EmptyStateContainer>
+              <Text fontSize="big">No tournaments found</Text>
+              <Text fontSize="medium" style={{ marginTop: "8px" }}>
+                Create a new tournament to get started.
+              </Text>
+            </EmptyStateContainer>
+          )}
+        </ResponsiveContainer>
+
     </>
   );
 };

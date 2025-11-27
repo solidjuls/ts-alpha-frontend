@@ -63,7 +63,7 @@ const Items = ({ role }: any) => {
         </UnstyledLink>
       )}
       {role === userRoles.SUPERADMIN && (
-        <UnstyledLink href="/usercreate" passHref>
+        <UnstyledLink href="/register" passHref>
           <HorizontalNavText>
             Register User
           </HorizontalNavText>

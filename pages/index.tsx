@@ -2,8 +2,7 @@ import Head from "next/head";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getInfoFromCookies } from "utils/cookies";
 import Homepage from "components/Homepage";
-import { MainLayout } from "components/Layout";
-import { Server, ServerType } from "types/types";
+import { ServerType } from "types/types";
 
 export default function Home({ role }: { role: number }) {
   return (
@@ -16,9 +15,7 @@ export default function Home({ role }: { role: number }) {
         />
         <link rel="icon" href="/ts-icon.webp" />
       </Head>
-      <MainLayout>
-        <Homepage role={role} />
-      </MainLayout>
+      <Homepage role={role} />
     </>
   );
 }

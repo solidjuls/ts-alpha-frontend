@@ -14,6 +14,7 @@ import { Input } from "components/Input";
 import { usePlayerRatings } from "hooks/useRating";
 // Countries hook is now used directly by the CountriesTypeahead component
 import { MultiSelectItemType } from "types/types";
+import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 
 interface CardColumnProps {
   header: string;
@@ -186,67 +187,67 @@ const Players = () => {
   );
 
   return (
-    <>
-      <h1>Players list</h1>
-      <FilterPanel>
-        <MultiSelect
-          setSelectedValues={(value: any) => {
-            setPlayersSelected(value);
-            setCurrentPage(1); // Reset to first page when filtering
-          }}
-          items={usersMemo}
-          selectedValues={playersSelected as any}
-          placeholder="Select Players..."
-        />
-        <div style={{ width: "300px", height: "40px" }}>
-          <CountriesTypeahead
-            placeholder="Type the federation name..."
-            css={{ width: "100%", height: "100%" }}
-            onSelect={(value) => {
-              if (value) {
-                setCountriesSelected(value.value || "");
+      <ResponsiveContainer>
+        <h1>Players list</h1>
+        <FilterPanel>
+          <MultiSelect
+            setSelectedValues={(value: any) => {
+              setPlayersSelected(value);
+              setCurrentPage(1); // Reset to first page when filtering
+            }}
+            items={usersMemo}
+            selectedValues={playersSelected as any}
+            placeholder="Select Players..."
+          />
+          <div style={{ width: "300px", height: "40px" }}>
+            <CountriesTypeahead
+              placeholder="Type the federation name..."
+              css={{ width: "100%", height: "100%" }}
+              onSelect={(value) => {
+                if (value) {
+                  setCountriesSelected(value.value || "");
+                  setCurrentPage(1); // Reset to first page when filtering
+                }
+              }}
+              onBlur={() => {
+                setCountriesSelected("");
+              }}
+              selectedItem={countriesSelected || ""}
+              labelText=""
+              error={false}
+              listWidth="320px"
+            />
+          </div>
+          <Input
+            type="text"
+            value={playdeckValue}
+            placeholder="Type the Playdek name"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setPlaydeckValue(event.target.value)
+            }
+            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+              if (event.key === "Enter") {
+                setPlaydeckInput(playdeckValue);
                 setCurrentPage(1); // Reset to first page when filtering
               }
             }}
-            onBlur={() => {
-              setCountriesSelected("");
-            }}
-            selectedItem={countriesSelected || ""}
-            labelText=""
-            error={false}
-            listWidth="320px"
           />
-        </div>
-        <Input
-          type="text"
-          value={playdeckValue}
-          placeholder="Type the Playdek name"
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            setPlaydeckValue(event.target.value)
-          }
-          onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-            if (event.key === "Enter") {
-              setPlaydeckInput(playdeckValue);
-              setCurrentPage(1); // Reset to first page when filtering
-            }
-          }}
-        />
-      </FilterPanel>
-      <ResultsStyleWrapper>
-        <ResultsPanel
-          data={playersData?.results || []}
-          onPageChange={onPageChange}
-          isLoading={isLoadingPlayers}
-        />
-      </ResultsStyleWrapper>
-      {paginationVisibility && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={playersData?.totalPages || 1}
-          onPageChange={onPageChange}
-        />
-      )}
-    </>
+        </FilterPanel>
+        <ResultsStyleWrapper>
+          <ResultsPanel
+            data={playersData?.results || []}
+            onPageChange={onPageChange}
+            isLoading={isLoadingPlayers}
+          />
+        </ResultsStyleWrapper>
+        {paginationVisibility && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={playersData?.totalPages || 1}
+            onPageChange={onPageChange}
+          />
+        )}
+      </ResponsiveContainer>
   );
 };
 

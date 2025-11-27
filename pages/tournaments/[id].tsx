@@ -3,7 +3,6 @@ import { Spinner } from "@radix-ui/themes";
 import styled from "styled-components";
 import { Button } from "components/Button";
 import { DetailContainer } from "components/DetailContainer";
-import { MainLayout } from "components/Layout";
 import { DisplayInfo } from "components/DisplayInfo";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
 import useFetchInitialData from "hooks/useFetchInitialData";

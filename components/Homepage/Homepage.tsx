@@ -20,6 +20,7 @@ import { useGames } from "hooks/useGames";
 import { GetGamesParams } from "services/games.service";
 import { Tournament } from "services/tournaments.service";
 import { User, UsersListResponse } from "services/users.service";
+import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -277,15 +278,6 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
     </StyledResultsPanel>
   );
 };
-
-const ResponsiveContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  max-width: 1100px;
-  @media (max-width: 668px) {
-    flex-direction: "column";
-  }
-`
 
 const Homepage: React.FC = () => {
   // Local state for filters

@@ -17,6 +17,7 @@ import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { theme } from "../theme";
+import Layout, { MainLayout } from "components/Layout";
 
 interface CustomAppProps extends AppProps {
   name?: string;
@@ -44,7 +45,9 @@ function App({ Component, pageProps, name, id, email, role, tournaments }: Custo
             <StyledThemeProvider theme={theme}>
               {/* @ts-ignore */}
               <Theme>
-                <Component {...pageProps} />
+                <MainLayout>
+                  <Component {...pageProps} />
+                </MainLayout>
               </Theme>
             </StyledThemeProvider>
           </IntlContextProvider>

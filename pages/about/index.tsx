@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { TopPlayerRating } from "components/TopPlayerRating";
-import { SimpleLayout } from "components/Layout";
 import Image from 'next/image'
 
 const WIDTH = 24;
@@ -60,10 +59,6 @@ const Link = styled.a<LinkProps>`
 `;
 
 const AboutPage = () => (
-  <SimpleLayout
-    title="Welcome to Twilight-Struggle.com"
-    subtitle="The home of competitive Twilight Struggle"
-  >
     <Main>
       <Section>
         <p>
@@ -462,7 +457,6 @@ const AboutPage = () => (
         </List>
       </Section>
     </Main>
-  </SimpleLayout>
 );
 
 export default AboutPage;
