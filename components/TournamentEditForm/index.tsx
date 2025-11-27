@@ -6,13 +6,10 @@ import { Button } from "components/Button";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import DateComponent from "components/EditFormComponents/DateComponent";
 import { EditTextAreaComponent } from "components/EditFormComponents/EditTextArea";
-import getAxiosInstance from "utils/axios";
 import { TournamentsType } from "types/game.types";
 import { tournamentStatus } from "utils/constants";
 import UserTypeahead from "components/UserTypeahead";
-import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin } from "hooks/useTournaments";
-import { useAllUsers } from "hooks/useUsers";
-import { User, UsersListResponse } from "services/users.service";
+import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin, useUpdateTournament } from "hooks/useTournaments";
 import { DropdownItemType } from "types/types";
 
 const EditFormContainer = styled.div`
@@ -174,10 +171,8 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
   // Fetch tournament admins
   const { data: tournamentAdmins, refetch: refetchAdmins } = useTournamentAdmins(parseInt(tournament.id));
 
-  // Fetch all users for admin selection
-  const { data: usersData } = useAllUsers(1, 100);
-
-  // Admin management mutations
+  // Tournament and admin management mutations
+  const updateTournamentMutation = useUpdateTournament();
   const addAdminMutation = useAddTournamentAdmin();
   const removeAdminMutation = useRemoveTournamentAdmin();
 
@@ -191,17 +186,17 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
       setErrorMsg("");
       clearErrors();
 
-      await getAxiosInstance().put("/api/game/tournaments", {
-        id: tournament.id,
+      await updateTournamentMutation.mutateAsync({
+        id: parseInt(tournament.id),
         tournamentName: data.tournamentName,
-        status: data.statusId,
+        status: parseInt(data.statusId),
         startingDate: data.startingDate,
         description: data.description
       });
 
       onSave?.();
     } catch (e: any) {
-      setErrorMsg(e?.response?.data?.error || "Failed to update tournament");
+      setErrorMsg(e?.response?.data?.message || e?.message || "Failed to update tournament");
     }
   };
 
@@ -241,16 +236,8 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
     }
   };
 
-  // Convert users data to dropdown format
-  const usersForDropdown: DropdownItemType[] = (usersData as UsersListResponse)?.results ? (usersData as UsersListResponse).results.map((user: User) => ({
-    value: user.id,
-    text: user.name
-  })) : [];
-
-  // Filter out users who are already admins
-  const availableUsers = usersForDropdown.filter(user =>
-    !tournamentAdmins?.some(admin => admin.userId === user.value)
-  );
+  // Note: UserTypeahead component handles user fetching internally
+  // No need to pass users data or filter here
 
   return (
     <EditFormContainer>
@@ -351,9 +338,8 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
           <AddAdminContainer>
             <UserTypeahead
               labelText="Add Admin"
-              users={availableUsers}
               selectedItem={selectedAdminUser}
-              onSelect={(item: DropdownItemType) => setSelectedAdminUser(item.value || "")}
+              onSelect={(item: DropdownItemType | null) => setSelectedAdminUser(item?.value || "")}
               onBlur={() => {}}
               placeholder="Select user to add as admin..."
               css={{ width: "300px" }}

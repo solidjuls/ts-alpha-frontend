@@ -45,6 +45,7 @@ export interface UpdateTournamentRequest {
   id: number;
   tournamentName?: string;
   status?: number;
+  waitlist?: boolean;
   startingDate?: Date;
   description?: string;
 }
