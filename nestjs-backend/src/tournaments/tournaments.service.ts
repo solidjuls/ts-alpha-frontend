@@ -964,7 +964,8 @@ console.log("scheduleParsed", scheduleParsed);
             users: {
               select: {
                 id: true,
-                playdek_name: true,
+                first_name: true,
+                last_name: true,
                 email: true
               }
             }
@@ -985,7 +986,7 @@ console.log("scheduleParsed", scheduleParsed);
       updated_at: tournament.updated_at,
       admins: tournament.tournament_admins.map(admin => ({
         id: admin.users.id.toString(),
-        name: admin.users.playdek_name,
+        name: admin.users.first_name + ' ' + admin.users.last_name,
         email: admin.users.email
       }))
     }));

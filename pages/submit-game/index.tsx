@@ -7,7 +7,7 @@ import { DropdownItemType, ServerType } from "types/types";
 
 import { useSession } from "contexts/AuthProvider";
 import { useAllUsers } from "hooks/useUsers";
-import { useOngoingTournamentsWithoutSchedule } from "hooks/useTournaments";
+import { useOngoingTournamentsWithoutSchedule, useTournamentsById } from "hooks/useTournaments";
 import { useSubmitGame } from "hooks/useGames";
 import { useRecreateGame } from "hooks/useRecreateGame";
 import { UsersListResponse } from "services/users.service";
@@ -22,6 +22,7 @@ export interface SubmitGameFormData {
   gameWinner: GameWinner | "";
   gameCode: string;
   tournamentId: string;
+  tournamentName: string;
   opponentWas: string;
   playedAs: string;
   endTurn: string;
@@ -32,6 +33,11 @@ export interface SubmitGameFormData {
   // Recreate mode specific fields
   oldId?: string;
   gameDate?: string;
+}
+
+const getTournamentIdFromURL = (id: string | undefined) => {
+  if (id) return [id]
+  return []
 }
 
 const SubmitGameContainer = ({ role }: SubmitGameProps) => {
@@ -51,6 +57,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       gameWinner: "",
       gameCode: "",
       tournamentId: "",
+      tournamentName: "",
       opponentWas: "",
       playedAs: "",
       endTurn: "",
@@ -63,9 +70,10 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     },
   });
 
-  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 1000);
+  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 2000);
 
-  const { data: tournaments, isLoading: loadingTournaments } = useOngoingTournamentsWithoutSchedule();
+  const { data: tournaments, isLoading: loadingTournaments } = useOngoingTournamentsWithoutSchedule({ enabled: !router?.query?.tid });
+  const { data: tournament, isLoading: loadingTournament } = useTournamentsById(getTournamentIdFromURL(router?.query?.tid as string));
 
   const submitGameMutation = useSubmitGame();
   const recreateGameMutation = useRecreateGame();
@@ -78,102 +86,44 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     if (router.isReady) {
       const {
         // Direct form parameters
-        gameWinner,
         gameCode,
-        tId,
-        opponentWas,
-        playedAs,
-        endTurn,
-        endMode,
-        video1,
-        // Schedule page parameters
-        id: scheduleId,
         idUsa,
         idUssr,
         tid: tournamentId,
-        // Recreate mode parameters
-        oldId,
-        gameDate,
-        ussrPlayerId,
-        usaPlayerId,
       } = router.query;
 
-      // Handle recreate mode parameters first (they take priority)
-      if (isRecreateMode) {
-        // Set recreate-specific fields
-        if (oldId && typeof oldId === "string") {
-          setValue("oldId", oldId);
-        }
-        if (gameDate && typeof gameDate === "string") {
-          setValue("gameDate", gameDate);
-        }
-      }
-
-      // Handle direct form parameters
-      if (gameWinner && typeof gameWinner === "string") {
-        setValue("gameWinner", gameWinner as GameWinner);
-      }
       if (gameCode && typeof gameCode === "string") {
         setValue("gameCode", gameCode);
       }
-      if (tId && typeof tId === "string") {
-        setValue("tournamentId", tId);
-      }
-      if (opponentWas && typeof opponentWas === "string") {
-        setValue("opponentWas", opponentWas);
-      }
-      if (playedAs && typeof playedAs === "string") {
-        setValue("playedAs", playedAs);
-      }
-      if (endTurn && typeof endTurn === "string") {
-        setValue("endTurn", endTurn);
-      }
-      if (endMode && typeof endMode === "string") {
-        setValue("endMode", endMode);
-      }
-      if (video1 && typeof video1 === "string") {
-        setValue("video1", video1);
+
+      if (tournament && tournament[0]) {
+        setValue("tournamentName", tournament[0].tournament_name);
       }
 
-      if (tournamentId && typeof tournamentId === "string") {
-        setValue("tournamentId", tournamentId);
+      if (idUsa && typeof idUsa === "string") {
+        setValue("usaPlayerId", idUsa);
       }
 
-      // Handle USA and USSR player IDs from schedule (only if not in recreate mode)
-      if (!isRecreateMode) {
-        if (idUsa && typeof idUsa === "string") {
-          setValue("usaPlayerId", idUsa);
-        }
-        if (idUssr && typeof idUssr === "string") {
-          setValue("ussrPlayerId", idUssr);
-        }
-
-        // Determine opponent and played as based on current user ID
-        if (id && idUsa && idUssr && typeof idUsa === "string" && typeof idUssr === "string") {
-          if (id === idUsa) {
-            // Current user is USA player
-            setValue("opponentWas", idUssr);
-            setValue("playedAs", "1"); // USA
-          } else if (id === idUssr) {
-            // Current user is USSR player
-            setValue("opponentWas", idUsa);
-            setValue("playedAs", "2"); // USSR
-          }
-        }
+      if (idUssr && typeof idUssr === "string") {
+        setValue("ussrPlayerId", idUssr);
       }
     }
-  }, [router.isReady, router.query, setValue, id, isRecreateMode]);
+  }, [router.isReady, router.query, setValue, id, isRecreateMode, tournament]);
+
+  const getScheduleId = () => {
+    if (router?.query?.id) return { scheduleId: router?.query?.id }
+    return undefined
+  }
 
   const normalizeData = (data: SubmitGameFormData) => {
     let usaPlayerId = "";
     let ussrPlayerId = "";
 
-    // If we have player IDs from schedule or recreate mode
     if (data.usaPlayerId && data.ussrPlayerId) {
       usaPlayerId = data.usaPlayerId;
       ussrPlayerId = data.ussrPlayerId;
     }
-    // Otherwise use the traditional playedAs/opponentWas logic (direct mode)
+
     else if (data.playedAs === "1") {
       usaPlayerId = id as string;
       ussrPlayerId = data.opponentWas;
@@ -183,7 +133,8 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     }
 
     const baseData = {
-      tournamentId: data.tournamentId,
+      ...getScheduleId(),
+      tournamentId: data.tournamentId || router?.query?.tid,
       usaPlayerId,
       ussrPlayerId,
       gameWinner: data.gameWinner as GameWinner,
@@ -192,15 +143,6 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       endTurn: data.endTurn,
       video1: data.video1 || undefined,
     };
-
-    // Add recreate-specific fields if in recreate mode
-    if (isRecreateMode) {
-      return {
-        ...baseData,
-        oldId: data.oldId || "",
-        gameDate: data.gameDate || new Date().toISOString(),
-      };
-    }
 
     return baseData;
   };
@@ -284,15 +226,10 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     try {
       const normalizedData = normalizeData(data);
 
-      if (isRecreateMode) {
-        // Type assertion for recreate mode - we know it has the required fields
-        await recreateGameMutation.mutateAsync(normalizedData as any);
-      } else {
-        await submitGameMutation.mutateAsync(normalizedData);
-      }
+      await submitGameMutation.mutateAsync(normalizedData);
+
       router.push("/");
     } catch (e) {
-      console.log("error submit-game", e);
       const errorMessage = isRecreateMode
         ? "There was an error recreating the game"
         : "There was an error submitting the result";
@@ -320,8 +257,8 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   const isScheduleMode = !!(usaPlayerId && ussrPlayerId);
 
   // Get user names for the player IDs in schedule mode
-  const usaPlayerName = usaPlayerId ? usersParsed.find(user => user.value === usaPlayerId)?.text || `User ${usaPlayerId}` : "";
-  const ussrPlayerName = ussrPlayerId ? usersParsed.find(user => user.value === ussrPlayerId)?.text || `User ${ussrPlayerId}` : "";
+  const usaPlayerName = usersParsed.find(user => user.value === usaPlayerId)?.text;
+  const ussrPlayerName = usersParsed.find(user => user.value === ussrPlayerId)?.text;
 
   return (
     <SubmitGameForm

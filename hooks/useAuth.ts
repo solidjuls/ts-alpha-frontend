@@ -89,6 +89,7 @@ export const useRegister = () => {
     mutationFn: (userData: RegisterRequest) => authService.register(userData),
     onSuccess: (data) => {
       // Update the profile cache with the registration response
+
       queryClient.setQueryData(authKeys.profile(), {
         id: data.user.id,
         email: data.user.email,

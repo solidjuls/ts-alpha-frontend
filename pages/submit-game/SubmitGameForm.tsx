@@ -106,6 +106,23 @@ const SubmitGameForm = ({
         {isScheduleMode && (
           <>
             <Controller
+              name="tournamentName"
+              control={control}
+              rules={{ required: "Tournament is required" }}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="typeOfGame"
+                  key="gameType"
+                  inputValue={field.value}
+                  placeholder="Select tournament"
+                  error={!!errors.tournamentId}
+                  css={{ width: "250px" }}
+                  onInputValueChange={() => {}} // Read-only
+                  disabled
+                />
+              )}
+            />
+            <Controller
               name="usaPlayerId"
               control={control}
               render={({ field }) => (
@@ -142,28 +159,27 @@ const SubmitGameForm = ({
         )}
 
 
-
-        <Controller
-          name="tournamentId"
-          control={control}
-          rules={{ required: "Tournament is required" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="typeOfGame"
-              key="gameType"
-              items={leagueTypes}
-              selectedItem={field.value}
-              placeholder="Select tournament"
-              height="270px"
-              error={!!errors.tournamentId}
-              css={{ width: dropdownWidth }}
-              onSelect={field.onChange}
-            />
-          )}
-        />
-
         {!isScheduleMode && (
           <>
+            <Controller
+              name="tournamentId"
+              control={control}
+              rules={{ required: "Tournament is required" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="typeOfGame"
+                  key="gameType"
+                  items={leagueTypes}
+                  selectedItem={field.value}
+                  placeholder="Select tournament"
+                  height="270px"
+                  error={!!errors.tournamentId}
+                  css={{ width: dropdownWidth }}
+                  onSelect={field.onChange}
+                />
+              )}
+            />
+
             <Controller
               name="playedAs"
               control={control}

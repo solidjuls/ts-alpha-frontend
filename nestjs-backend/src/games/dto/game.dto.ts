@@ -32,6 +32,7 @@ export interface GameDto {
 export type GameWinner = "1" | "2" | "3";
 
 export interface SubmitGameDto {
+  scheduleId?: string;
   gameWinner: GameWinner;
   gameCode: string;
   tournamentId: string;

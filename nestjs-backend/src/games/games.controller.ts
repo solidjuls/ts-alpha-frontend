@@ -20,11 +20,15 @@ import {
   SubmitGameRequestDto,
   RecreateGameDto,
 } from './dto/game.dto';
+import { ScheduleService } from 'src/schedule/schedule.service';
 
 @Controller('games')
 @UseGuards(JwtAuthGuard)
 export class GamesController {
-  constructor(private readonly gamesService: GamesService) {}
+  constructor(
+    private readonly gamesService: GamesService,
+    private readonly scheduleService: ScheduleService
+  ) {}
 
   @Get()
   @Public() // Making this public as game results are typically viewable by everyone
@@ -139,6 +143,13 @@ export class GamesController {
   async submitGame(@Body() submitGameRequest: SubmitGameRequestDto) {
     try {
       const result = await this.gamesService.submitGame(submitGameRequest.data);
+
+      if (result && submitGameRequest.data.scheduleId) {
+        await this.scheduleService.updateSchedule({
+          gameResultId: result.id,
+          scheduleId: Number(submitGameRequest.data.scheduleId),
+        });
+      }
       return result;
     } catch (error) {
       console.error('[Games POST Submit]', error);

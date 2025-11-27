@@ -75,7 +75,7 @@ export class AuthService {
     // Create JWT payload
     const payload: JwtPayloadDto = {
       mail: user.email!,
-      name: user.playdek_name!,
+      name: user.first_name!,
       role: user.role_id || 3, // Default to player role if not set
       id: user.id.toString(),
       tournamentsAdmin: tournamentsAdmin.map(t => Number(t.tournamentId)),
@@ -89,7 +89,7 @@ export class AuthService {
 
     // Prepare response
     const authResponse: AuthResponseDto = {
-      name: user.playdek_name!,
+      name: user.first_name!,
       email: user.email!,
       id: user.id.toString(),
       role: user.role_id || 3, // Default to player role if not set
@@ -180,15 +180,15 @@ export class AuthService {
         email,
         password: hashedPassword,
         playdek_name: playdek_name,
-        first_name: first_name || playdek_name.split(' ')[0],
-        last_name: last_name || playdek_name.split(' ')[1] || '',
+        first_name: first_name,
+        last_name: last_name,
         role_id: role_id || 3, // Default to player role
       },
     });
 
     // Prepare response
     const userResponse: AuthResponseDto = {
-      name: newUser.playdek_name!,
+      name: newUser.first_name!,
       email: newUser.email!,
       id: newUser.id.toString(),
       role: newUser.role_id || 3,

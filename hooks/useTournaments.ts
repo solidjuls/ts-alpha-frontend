@@ -33,12 +33,13 @@ export const useTournamentsByStatus = (statusArray: number[]) => {
 };
 
 // Get ongoing tournaments with no scheduled games
-export const useOngoingTournamentsWithoutSchedule = () => {
+export const useOngoingTournamentsWithoutSchedule = ({ enabled = true}: { enabled: boolean }) => {
   return useQuery({
     queryKey: [...tournamentKeys.all, 'ongoing-without-schedule'],
     queryFn: () => tournamentsService.getOngoingTournamentsWithoutSchedule(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    enabled
   });
 };
 

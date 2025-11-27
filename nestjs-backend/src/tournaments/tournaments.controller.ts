@@ -38,8 +38,6 @@ export class TournamentsController {
   async getTournaments(@Query() query: GetTournamentsQueryDto, @CurrentUser() user?: JwtPayloadDto) {
     try {
       const { id, status, players } = query;
-      console.log("user", user);
-
       // Get registered players for a tournament
       if (typeof id === "string" && players === "true") {
         const registeredPlayers: RegisteredPlayerDto[] = await this.tournamentsService.getRegisteredPlayers(
