@@ -40,8 +40,6 @@ export const useLogin = () => {
         email: data.email,
         name: data.name,
         role: data.role,
-        tournamentsAdmin: [],
-        tournamentsRegistered: data.tournaments || [],
       });
 
       // Redirect to home page
@@ -67,8 +65,6 @@ export const useImpersonate = () => {
         email: data.email,
         name: data.name,
         role: data.role,
-        tournamentsAdmin: [],
-        tournamentsRegistered: data.tournaments || [],
       });
 
       // Redirect to home page
@@ -95,8 +91,6 @@ export const useRegister = () => {
         email: data.user.email,
         name: data.user.playdek_name,
         role: data.user.role,
-        tournamentsAdmin: [],
-        tournamentsRegistered: data.user.tournaments || [],
       });
 
       // Redirect to home page

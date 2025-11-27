@@ -60,26 +60,12 @@ export class AuthService {
   }
 
   private async generateAuthResponse(user: any): Promise<{ user: AuthResponseDto; token: string }> {
-    // Get tournaments admin
-    const tournamentsAdmin = await this.databaseService.tournament_admins.findMany({
-      select: { tournamentId: true },
-      where: { userId: user.id },
-    });
-
-    // Get tournaments registered
-    const tournamentsRegistered = await this.databaseService.tournament_registration.findMany({
-      select: { tournamentId: true },
-      where: { userId: BigInt(user.id) },
-    });
-
     // Create JWT payload
     const payload: JwtPayloadDto = {
       mail: user.email!,
       name: user.first_name!,
       role: user.role_id || 3, // Default to player role if not set
       id: user.id.toString(),
-      tournamentsAdmin: tournamentsAdmin.map(t => Number(t.tournamentId)),
-      tournamentsRegistered: tournamentsRegistered.map(t => Number(t.tournamentId)),
     };
 
     // Generate JWT token
@@ -92,8 +78,7 @@ export class AuthService {
       name: user.first_name!,
       email: user.email!,
       id: user.id.toString(),
-      role: user.role_id || 3, // Default to player role if not set
-      tournaments: tournamentsRegistered.map(t => Number(t.tournamentId)),
+      role: user.role_id || 3,
     };
 
     return { user: authResponse, token };
@@ -182,7 +167,7 @@ export class AuthService {
         playdek_name: playdek_name,
         first_name: first_name,
         last_name: last_name,
-        role_id: role_id || 3, // Default to player role
+        role_id: role_id || 3,
       },
     });
 
@@ -192,7 +177,6 @@ export class AuthService {
       email: newUser.email!,
       id: newUser.id.toString(),
       role: newUser.role_id || 3,
-      tournaments: [],
     };
 
     return { success: true, user: userResponse };
@@ -259,7 +243,6 @@ export class AuthService {
       email: newUser.email!,
       id: newUser.id.toString(),
       role: newUser.role_id || 3,
-      tournaments: [],
     };
 
     return {

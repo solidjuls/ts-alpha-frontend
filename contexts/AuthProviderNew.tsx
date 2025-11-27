@@ -9,8 +9,6 @@ interface AuthContextType {
     email: string;
     name: string;
     role: number;
-    tournamentsAdmin: number[];
-    tournamentsRegistered: number[];
   } | null;
 }
 

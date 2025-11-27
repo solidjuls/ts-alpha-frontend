@@ -76,8 +76,6 @@ export class AuthController {
       email: user.mail,
       name: user.name,
       role: user.role,
-      tournamentsAdmin: user.tournamentsAdmin,
-      tournamentsRegistered: user.tournamentsRegistered,
     };
   }
 

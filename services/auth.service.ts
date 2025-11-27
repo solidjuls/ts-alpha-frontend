@@ -86,8 +86,6 @@ export interface ProfileResponse {
   email: string;
   name: string;
   role: number;
-  tournamentsAdmin: number[];
-  tournamentsRegistered: number[];
 }
 
 export const authService = {

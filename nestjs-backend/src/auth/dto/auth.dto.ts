@@ -12,7 +12,6 @@ export interface AuthResponseDto {
   email: string;
   id: string;
   role: number;
-  tournaments: number[];
 }
 
 export interface JwtPayloadDto {
@@ -20,8 +19,6 @@ export interface JwtPayloadDto {
   name: string;
   role: number;
   id: string;
-  tournamentsAdmin: number[];
-  tournamentsRegistered: number[];
   iat?: number;
   exp?: number;
 }
@@ -31,8 +28,6 @@ export interface UserFromTokenDto {
   playdek_name: string;
   mail: string;
   role: number;
-  tournamentsAdmin: number[];
-  tournamentsRegistered: number[];
 }
 
 export interface ResetPasswordDto {
@@ -72,6 +67,5 @@ export interface RegisterUserResponse {
     email: string;
     id: string;
     role: number;
-    tournaments: number[];
   };
 }
