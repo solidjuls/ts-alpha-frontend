@@ -111,8 +111,14 @@ class ScheduleService {
     return response.data;
   }
 
-  async replacePlayer(params: ReplacePlayerParams): Promise<{ message: string }> {
-    const response = await this.axiosInstance.post('/schedule', params);
+  async replacePlayer(params: ReplacePlayerParams): Promise<any> {
+    const response = await this.axiosInstance.patch('/schedule', {
+      data: {
+        pold: params.oldPlayerId,
+        pnew: params.newPlayerId,
+        t: Number(params.tournamentId)
+      }
+    });
     return response.data;
   }
 

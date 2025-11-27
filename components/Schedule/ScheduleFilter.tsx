@@ -116,11 +116,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
     setScheduleMessage("");
 
     try {
-      // Hardcoded tournament ID for now (you can change this value)
-      const HARDCODED_TOURNAMENT_ID = "2";
-
       await addScheduleMutation.mutateAsync({
-        tournamentId: HARDCODED_TOURNAMENT_ID,
+        tournamentId: tournament,
         usaPlayerId: usaPlayer,
         ussrPlayerId: ussrPlayer,
         dueDate: dueDate.toISOString(),

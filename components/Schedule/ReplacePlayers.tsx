@@ -2,10 +2,8 @@ import { Flex, Span } from "components/Atoms";
 import { Button } from "components/Button";
 import UserTypeahead from "components/UserTypeahead"
 import { useState } from "react";
-// DropdownItemType is now used internally by UserTypeahead
-import getAxiosInstance from "utils/axios";
+import { useReplacePlayer } from "hooks/useSchedule";
 import { Title } from "./styles";
-// React Query and users service are now used internally by UserTypeahead
 
 interface ReplacePlayersProps {
   tournament: string | undefined
@@ -18,23 +16,29 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [newUser, setNewUser] = useState("")
   const [responseMessage, setResponseMessage] = useState("")
 
-  // Users are now fetched directly by the UserTypeahead components
-
-  // Users are now fetched directly by the UserTypeahead components
+  const replacePlayerMutation = useReplacePlayer();
 
   const updatePlayers = async () => {
-    const updated = await getAxiosInstance().patch('/api/schedule', {
-      data: {
-        pold:oldUser,
-        pnew:newUser,
-        t:tournament
-      }})
+    if (!tournament || !oldUser || !newUser) return;
 
-    setResponseMessage(`${updated?.data?.count} players have been updated`)
+    try {
+      const result = await replacePlayerMutation.mutateAsync({
+        tournamentId: tournament,
+        oldPlayerId: oldUser,
+        newPlayerId: newUser
+      });
+
+      // The backend returns an object with updatedUSA, updatedUSSR, updatedStandings
+      const totalUpdated = (result.updatedUSA?.count || 0) + (result.updatedUSSR?.count || 0);
+      setResponseMessage(`${totalUpdated} schedule entries have been updated`);
+    } catch (error) {
+      console.error('Error replacing players:', error);
+      setResponseMessage('Error updating players. Please try again.');
+    }
   }
-  return <Flex css={{ flexDirection: 'column' }}>
+  return <Flex style={{ flexDirection: 'column' }}>
           <Title>Replace Players</Title>
-          <Flex css={{ marginBottom: '16px'}}>
+          <Flex style={{ marginBottom: '16px'}}>
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
@@ -55,7 +59,13 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
                 setNewUser(value?.value as string)
               }
             />
-            <Button css={{ height: "40px", alignSelf: 'self-end' }} disabled={!oldUser || !newUser || !tournament} onClick={updatePlayers}>Update</Button>
+            <Button
+              style={{ height: "40px", alignSelf: 'flex-end' }}
+              disabled={!oldUser || !newUser || !tournament || replacePlayerMutation.isPending}
+              onClick={updatePlayers}
+            >
+              {replacePlayerMutation.isPending ? 'Updating...' : 'Update'}
+            </Button>
           </Flex>
         <Span>{responseMessage}</Span>
       </Flex>
