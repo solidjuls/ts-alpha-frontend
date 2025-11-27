@@ -1,4 +1,4 @@
-import { useSession } from "contexts/AuthProvider";
+import { useAuth } from "contexts/AuthProviderNew";
 import { FormattedMessage } from "react-intl";
 import { UserAvatar } from "components/UserAvatar";
 import {
@@ -89,23 +89,23 @@ const Items = ({ role }: any) => {
 };
 
 const HorizontalNavigation = () => {
-  const { name, role } = useSession();
+  const { user } = useAuth();
 
   return (
     <HorizontalNavigationLayout>
       <HorizontalItemsContainer>
-        <Items role={role} />
+        <Items role={user?.role} />
       </HorizontalItemsContainer>
-      {!name && (
+      {!user && (
         <UnstyledLink href="/login" passHref>
           <StyledText>
             <FormattedMessage id="signIn" />
           </StyledText>
         </UnstyledLink>
       )}
-      {name && (
+      {user && (
         <Flex>
-          <UserAvatar name={name} />
+          <UserAvatar name={user.name} />
         </Flex>
       )}
     </HorizontalNavigationLayout>
@@ -114,7 +114,7 @@ const HorizontalNavigation = () => {
 
 
 const VerticalSidebar = () => {
-  const { name, role } = useSession();
+  const { user } = useAuth();
   return (
     <VerticalSidebarLayout>
       <Root>
@@ -154,7 +154,7 @@ const VerticalSidebar = () => {
                 Standings
               </HorizontalNavText>
             </UnstyledLink>
-            {role === userRoles.SUPERADMIN && (
+            {user?.role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/recreateform" passHref>
                 <Item>
                   <HorizontalNavText>
@@ -163,7 +163,7 @@ const VerticalSidebar = () => {
                 </Item>
               </UnstyledLink>
             )}
-            {role === userRoles.SUPERADMIN && (
+            {user?.role === userRoles.SUPERADMIN && (
               <UnstyledLink href="/userprofile" passHref>
                 <Item>
                   <HorizontalNavText>
@@ -199,7 +199,7 @@ const VerticalSidebar = () => {
             <UnstyledLink href="/login" passHref>
               <Item>
                 <HorizontalNavText>
-                  {name ? <FormattedMessage id="signOut" /> : <FormattedMessage id="signIn" />}
+                  {user ? <FormattedMessage id="signOut" /> : <FormattedMessage id="signIn" />}
                 </HorizontalNavText>
               </Item>
             </UnstyledLink>

@@ -15,7 +15,7 @@ import { useGames, useDeleteGame } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { Button } from "components/Button";
 import { UnstyledLink } from "components/Homepage/Homepage.styled";
-import { useSession } from "contexts/AuthProvider";
+import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
 import countryFlags from "public/country_flags.json";
 import LabelCopy from "components/LabelCopy/LabelCopy";
@@ -81,7 +81,7 @@ type GameContentProps = {
 };
 
 const GameContent: React.FC<GameContentProps> = ({ data }) => {
-  const { role } = useSession();
+  const { user } = useAuth();
   const {
     id,
     gameDate,
@@ -178,7 +178,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           </div>
         </div>
       </div>
-      {role === userRoles.SUPERADMIN && (
+      {user?.role === userRoles.SUPERADMIN && (
         <>
           <Flex>
             <Button style={{ width: "150px", margin: "8px" }}>
@@ -197,7 +197,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           {deleteSuccessMessage && <div>Game deleted successfully</div>}
         </>
       )}
-      {(role === userRoles.SUPERADMIN || role === userRoles.ADMIN) && (
+      {(user?.role === userRoles.SUPERADMIN || user?.role === userRoles.ADMIN) && (
         <div style={{ padding: "12px", border: "solid 1px black" }}>
           <LabelCopy text={generateText()} />
         </div>

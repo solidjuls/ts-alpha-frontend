@@ -6,7 +6,7 @@ import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { Root, Trigger, Content, Item, Arrow, Separator } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSession } from "contexts/AuthProvider";
+import { useLogout } from "hooks/useAuth";
 import Text from "components/Text";
 import { Box } from "components/Atoms";
 
@@ -140,7 +140,7 @@ const StyledTextWithMargin = styled(StyledText)`
 const UserAvatar = ({ name }: { name: string }) => {
   const intl = useIntl();
   const router = useRouter();
-  const { logout } = useSession();
+  const logoutMutation = useLogout();
   return (
     <FlexContainer>
       <Root>
@@ -156,9 +156,11 @@ const UserAvatar = ({ name }: { name: string }) => {
         <StyledContent align="end">
           <StyledItem
             onClick={async () => {
-              if (logout) {
-                await logout();
+              try {
+                await logoutMutation.mutateAsync();
                 router.push("/");
+              } catch (error) {
+                console.error('Logout failed:', error);
               }
             }}
           >

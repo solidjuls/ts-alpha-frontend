@@ -5,7 +5,7 @@ import { getInfoFromCookies } from "utils/cookies";
 import { GameWinner } from "types/game.types";
 import { DropdownItemType, ServerType } from "types/types";
 
-import { useSession } from "contexts/AuthProvider";
+import { useAuth } from "contexts/AuthProviderNew";
 import { useAllUsers } from "hooks/useUsers";
 import { useOngoingTournamentsWithoutSchedule, useTournamentsById } from "hooks/useTournaments";
 import { useSubmitGame } from "hooks/useGames";
@@ -41,7 +41,7 @@ const getTournamentIdFromURL = (id: string | undefined) => {
 }
 
 const SubmitGameContainer = ({ role }: SubmitGameProps) => {
-  const { id } = useSession();
+  const { user } = useAuth();
   const router = useRouter();
   
   const {
@@ -108,7 +108,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
         setValue("ussrPlayerId", idUssr);
       }
     }
-  }, [router.isReady, router.query, setValue, id, isRecreateMode, tournament]);
+  }, [router.isReady, router.query, setValue, user?.id, isRecreateMode, tournament]);
 
   const getScheduleId = () => {
     if (router?.query?.id) return { scheduleId: router?.query?.id }
@@ -125,10 +125,10 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     }
 
     else if (data.playedAs === "1") {
-      usaPlayerId = id as string;
+      usaPlayerId = user?.id as string;
       ussrPlayerId = data.opponentWas;
     } else if (data.playedAs === "2") {
-      ussrPlayerId = id as string;
+      ussrPlayerId = user?.id as string;
       usaPlayerId = data.opponentWas;
     }
 
@@ -175,7 +175,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
     // Only validate opponent in direct mode (not schedule mode)
     if (!data.usaPlayerId && !data.ussrPlayerId) {
       // Check if opponent is not the same as current user
-      if (data.opponentWas === id) {
+      if (data.opponentWas === user?.id) {
         setError("opponentWas", { type: "manual", message: "You cannot play against yourself" });
         isValid = false;
       }
@@ -214,7 +214,7 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   };
 
   const onSubmit = async (data: SubmitGameFormData) => {
-    if (!id && !isRecreateMode) {
+    if (!user?.id && !isRecreateMode) {
       setError("root", { type: "manual", message: "Error submitting your result. Refresh the page and try again" });
       return;
     }
