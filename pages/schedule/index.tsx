@@ -320,7 +320,7 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
                 />
               </Flex> */}
 
-          {tournamentsAdmin.length > 0 && (
+          {isSuperAdmin && (
             <ScheduleFilter
               userAdminTournaments={tournamentsAdmin.length > 0}
               noSchedule={items?.length === 0}
