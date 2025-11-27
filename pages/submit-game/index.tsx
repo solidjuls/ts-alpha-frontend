@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { getInfoFromCookies } from "utils/cookies";
 import { GameWinner } from "types/game.types";
-import { DropdownItemType, ServerType } from "types/types";
+import { DropdownItemType } from "types/types";
 
 import { useAuth } from "contexts/AuthProviderNew";
 import { useAllUsers } from "hooks/useUsers";
@@ -277,27 +276,6 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
   );
 };
 
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
 
-  // if (!payload) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-
-  // if (payload?.id === "2224") {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-  return { props: { role: payload?.role || null } };
-}
 
 export default SubmitGameContainer;

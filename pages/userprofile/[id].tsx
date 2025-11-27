@@ -1,5 +1,4 @@
 import { DisplayInfo } from "components/DisplayInfo";
-import { getInfoFromCookies } from "utils/cookies";
 import { DetailContainer } from "components/DetailContainer";
 import { Spinner } from "@radix-ui/themes";
 import { useUserById } from "hooks/useUsers";
@@ -9,9 +8,8 @@ import { ResultsPanel } from "components/Homepage/Homepage";
 import { UserDetail } from "services/users.service";
 import { Game as ServiceGame } from "services/games.service";
 import { Game as ComponentGame, GameWinner } from "types/game.types";
-import { NextApiRequest, NextApiResponse } from "next/types";
-import { ParsedUrlQuery } from "querystring";
 import styled from "styled-components";
+import { useParams } from "next/navigation";
 
 // Convert service Game type to component Game type
 const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentGame => ({
@@ -46,9 +44,7 @@ const UserProfileContent: React.FC<UserDetail> = (data) => (
   </>
 );
 
-interface UserProfileProps {
-  id: string;
-}
+
 
 // Styled components for the profile layout
 const ProfileContainer = styled.div`
@@ -74,7 +70,10 @@ const RecentGamesContainer = styled.div`
   flex-direction: column;
 `;
 
-const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
+const UserProfile = () => {
+  const params = useParams();
+  const id = params?.id as string;
+
   // Use NestJS endpoints with React Query
   const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
   const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], 1, 10);
@@ -115,25 +114,4 @@ const UserProfile: React.FC<UserProfileProps> = ({ id }) => {
 
 export default UserProfile;
 
-export async function getServerSideProps({
-  req,
-  res,
-  params,
-}: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-  params: ParsedUrlQuery;
-}) {
-  const payload = getInfoFromCookies(req, res);
 
-  if (!payload) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
-  const { id } = params;
-  return { props: { role: payload.role || null, id } };
-}

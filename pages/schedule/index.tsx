@@ -5,8 +5,7 @@ import { Box, Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
-import { getInfoFromCookies } from "utils/cookies";
-import { ServerType } from "types/types";
+import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { GameWinner } from "types/game.types";
 import styled from "styled-components";
@@ -26,13 +25,7 @@ import {
   CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styled";
 
-interface ScheduleProps {
-  userId: string;
-  userRole: number;
-  initialTournaments: Tournament[];
-  initialSchedule: any;
-  isAdmin: boolean;
-}
+
 
 interface ResponsiveContainerProps {
   direction?: "row" | "column";
@@ -433,8 +426,6 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   );
 };
 
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
 
   if (!payload) {
     return {
