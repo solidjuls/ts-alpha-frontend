@@ -2497,19 +2497,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios-cache-interceptor@npm:^1.5.3":
-  version: 1.8.3
-  resolution: "axios-cache-interceptor@npm:1.8.3"
-  dependencies:
-    cache-parser: "npm:1.2.5"
-    fast-defer: "npm:1.1.8"
-    object-code: "npm:1.3.3"
-  peerDependencies:
-    axios: ^1
-  checksum: 10c0/a106b3525d54bab6658e4b7a77c3b963296d0c7c24863800f9b04d671c2173545f53b9d7369bb89a03506c38310ade048cdd7025a9e00422ab2e4826ac39b85b
-  languageName: node
-  linkType: hard
-
 "axios@npm:^1.7.5":
   version: 1.13.2
   resolution: "axios@npm:1.13.2"
@@ -2614,13 +2601,6 @@ __metadata:
     magicast:
       optional: true
   checksum: 10c0/a84d6cb5cb6171e9b5be67388b24c6945da8bf3d37b1e4db885ceb1db019da13b9af093d8bbed6b536fd9c4a9202a2ed8c14fb15d4d94fb2e5e7c83b6c88f05b
-  languageName: node
-  linkType: hard
-
-"cache-parser@npm:1.2.5":
-  version: 1.2.5
-  resolution: "cache-parser@npm:1.2.5"
-  checksum: 10c0/08ef9b465a0af87565f12448a2c250934f4c02f1247a9c519759139a0e2db5584f45ffa8401ce721f7e5a8f8ba1faf3ddc1e99c29e5e93aba01f7e1f4ee8ef9a
   languageName: node
   linkType: hard
 
@@ -3642,13 +3622,6 @@ __metadata:
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: 10c0/40dedc862eb8992c54579c66d914635afbec43350afbbe991235fdcb4e3a8d5af1b23ae7e79bef7d4882d0ecee06c3197488026998fb19f72dc95acff1d1b1d0
-  languageName: node
-  linkType: hard
-
-"fast-defer@npm:1.1.8":
-  version: 1.1.8
-  resolution: "fast-defer@npm:1.1.8"
-  checksum: 10c0/4537cf81ce3e1505adba01dfe232231271162c8365427b360e0e86c8e4bf65f08d9e6ced1bd063fbafb48376f2ff152d1cad3cb25237126492921a15ce203e88
   languageName: node
   linkType: hard
 
@@ -4891,13 +4864,6 @@ __metadata:
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: 10c0/1f4df9945120325d041ccf7b86f31e8bcc14e73d29171e37a7903050e96b81323784ec59f93f102ec635bcf6fa8034ba3ea0a8c7e69fa202b87ae3b6cec5a414
-  languageName: node
-  linkType: hard
-
-"object-code@npm:1.3.3":
-  version: 1.3.3
-  resolution: "object-code@npm:1.3.3"
-  checksum: 10c0/804650eb9b7f23f612c5ba7afbfccc0406f622d701491a690d0492f6e01252096cfba85186fd39883fda6b0e04d623aa8d9485395830223af2395df32d55a75e
   languageName: node
   linkType: hard
 
@@ -6185,7 +6151,6 @@ __metadata:
     "@types/node": "npm:20.14.12"
     "@types/styled-components": "npm:^5.1.34"
     axios: "npm:^1.7.5"
-    axios-cache-interceptor: "npm:^1.5.3"
     babel-plugin-styled-components: "npm:^2.1.4"
     bcryptjs: "npm:^2.4.3"
     cookie: "npm:^0.6.0"

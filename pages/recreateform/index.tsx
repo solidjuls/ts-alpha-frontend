@@ -1,20 +1,15 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { getInfoFromCookies } from "utils/cookies";
 import { GameRecreate, GameWinner } from "types/game.types";
 import { useSearchParams } from "next/navigation";
 import { tournamentStatus, userRoles } from "utils/constants";
-import { ServerType } from "types/types";
 import { useRouter } from "next/router";
 import { useRecreateGame } from "hooks/useRecreateGame";
 import { useAllUsers } from "hooks/useUsers";
 import { UsersListResponse } from "services/users.service";
 import { useTournamentsByStatus } from "hooks/useTournaments";
+import { useAuth } from "contexts/AuthProviderNew";
 import SubmitRecreateForm, { RecreateGameFormData } from "./SubmitRecreateForm";
-
-type SubmitFormProps = {
-  role: number;
-};
 
 const validateForm = (data: RecreateGameFormData) => {
   // Check required fields
@@ -43,10 +38,17 @@ const validateForm = (data: RecreateGameFormData) => {
   return true;
 };
 
-const RecreateFormContainer = ({ role }: SubmitFormProps) => {
+const RecreateFormContainer = () => {
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const recreateGameMutation = useRecreateGame();
+
+  // Check if user has SUPERADMIN role
+  if (!user || user.role !== userRoles.SUPERADMIN) {
+    router.push('/login');
+    return null;
+  }
 
   // React Query hooks for data fetching - fetch ALL users without pagination
   const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 2000) as {

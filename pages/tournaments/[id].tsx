@@ -505,9 +505,8 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
             <FormField>
               <UserTypeahead
                 labelText=""
-                users={usersForDropdown}
                 selectedItem={selectedUser}
-                onSelect={(item: DropdownItemType) => setSelectedUser(item?.value || "")}
+                onSelect={(item: DropdownItemType | null) => setSelectedUser(item?.value || "")}
                 onBlur={() => {}}
                 placeholder="Type user name or email..."
                 css={{ width: "100%" }}
