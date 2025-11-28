@@ -61,21 +61,21 @@ model game_results {
 }
 
 model game_results_modified_log {
-  id                                       BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
-  created_at                               DateTime?         @db.Timestamp(0)
-  updated_at                               DateTime?         @db.Timestamp(0)
-  gameId                                   BigInt            @db.UnsignedBigInt
-  usa_player_id                            BigInt            @db.UnsignedBigInt
-  ussr_player_id                           BigInt            @db.UnsignedBigInt
-  game_type                                Int?
-  game_code                                String            @db.VarChar(255)
-  reported_at                              DateTime          @db.Timestamp(0)
-  game_winner                              String            @db.VarChar(255)
-  end_turn                                 Int?              @db.UnsignedInt
-  end_mode                                 String?           @db.VarChar(255)
-  game_date                                DateTime          @db.Timestamp(0)
-  video1                                   String?           @db.VarChar(255)
-  reporter_id                              String?           @db.VarChar(255)
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+  gameId         BigInt    @db.UnsignedBigInt
+  usa_player_id  BigInt    @db.UnsignedBigInt
+  ussr_player_id BigInt    @db.UnsignedBigInt
+  game_type      Int?
+  game_code      String    @db.VarChar(255)
+  reported_at    DateTime  @db.Timestamp(0)
+  game_winner    String    @db.VarChar(255)
+  end_turn       Int?      @db.UnsignedInt
+  end_mode       String?   @db.VarChar(255)
+  game_date      DateTime  @db.Timestamp(0)
+  video1         String?   @db.VarChar(255)
+  reporter_id    String?   @db.VarChar(255)
 }
 
 model ratings_history {
@@ -104,7 +104,7 @@ model ratings_history {
 
 model users {
   id                                              BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
-  email                                           String?                   @unique(map: "users_email_unique") @db.VarChar(255)
+  email                                           String?                   @unique(map: "UQ_users_email") @db.VarChar(255)
   password                                        String?                   @db.VarChar(255)
   created_at                                      DateTime?                 @db.Timestamp(0)
   updated_at                                      DateTime?                 @db.Timestamp(0)
