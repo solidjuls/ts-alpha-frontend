@@ -18,17 +18,19 @@ export interface PlayerRatingListResponse {
 }
 
 export interface GetPlayerRatingsQueryDto {
-  // Pagination
+  // Pagination (legacy parameters)
   p?: string; // page
   pso?: string; // page size
-  
+
+  // Pagination (new parameters)
+  page?: string; // page number
+  pageSize?: string; // page size
+
   // Filters
   playerFilter?: string; // comma-separated player IDs
   countrySelected?: string; // country ID
   playdeck?: string; // playdek name filter
-  name?: string; // first name + last name search
-  federation?: string; // country name search
-  
+
   // Sorting
   orderBy?: 'rating' | 'name' | 'country';
   orderDirection?: 'asc' | 'desc';

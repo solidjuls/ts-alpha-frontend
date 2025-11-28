@@ -28,18 +28,18 @@ export class RatingController {
       const {
         p = '1',
         pso = '20',
+        page: newPage,
+        pageSize: newPageSize,
         playerFilter,
         countrySelected,
         playdeck,
-        name,
-        federation,
         orderBy = 'rating',
         orderDirection = 'desc',
       } = query;
 
-      // Parse parameters
-      const page = Number(p);
-      const pageSize = Number(pso);
+      // Parse parameters - support both legacy (p, pso) and new (page, pageSize) parameters
+      const page = Number(newPage || p);
+      const pageSize = Number(newPageSize || pso);
       const playerIds = playerFilter ? playerFilter.split(',').filter(id => id.trim()) : undefined;
 
       // Validate parameters
@@ -56,8 +56,6 @@ export class RatingController {
         playerIds,
         countryId: countrySelected,
         playdeckName: playdeck,
-        nameSearch: name,
-        federationSearch: federation,
         orderBy,
         orderDirection,
       });
