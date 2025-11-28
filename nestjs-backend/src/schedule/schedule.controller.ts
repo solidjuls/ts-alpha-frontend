@@ -314,7 +314,9 @@ console.log("parsedTournamentIds", parsedUserId, parsedTournamentIds);
     @CurrentUser() user: JwtPayloadDto,
   ) {
     try {
+      console.log(`CSV upload started by user ${user.id}, processing ${body.data.file.length} rows`);
       const result = await this.scheduleService.uploadCsvSchedule(body.data);
+      console.log(`CSV upload completed: ${result.created} created, ${result.errors.length} errors`);
       return {
         success: true,
         message: `Successfully created ${result.created} schedule entries`,
@@ -333,6 +335,11 @@ console.log("parsedTournamentIds", parsedUserId, parsedTournamentIds);
   @Get('health')
   @Public()
   getHealth() {
-    return { status: 'Schedule API is healthy', timestamp: new Date().toISOString() };
+    return {
+      status: 'Schedule API is healthy',
+      timestamp: new Date().toISOString(),
+      maxPayloadSize: '50mb',
+      csvUploadSupported: true
+    };
   }
 }

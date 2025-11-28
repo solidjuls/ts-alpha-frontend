@@ -92,6 +92,10 @@ class ScheduleService {
       headers: {
         'Content-Type': 'application/json',
       },
+      // Increase timeout and max content length for large CSV uploads
+      timeout: 300000, // 5 minutes
+      maxContentLength: 52428800, // 50MB
+      maxBodyLength: 52428800, // 50MB
     });
   }
 
