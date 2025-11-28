@@ -24,7 +24,7 @@ const Panel = styled.div`
   margin-bottom: 8px;
 `;
 
-const ManualScheduleSection = styled.div`
+const ScheduleSection = styled.div`
   margin-top: 16px;
   padding: 16px;
   border: 1px solid #ddd;
@@ -187,59 +187,40 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
       {checked && (
         <Panel>
           <CsvUploadButton tournament={tournament} />
-          <Checkbox
-            text="Show full schedule"
-            checked={showFullSchedule}
-            onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
-          />
-          <Checkbox
-            text="Show only pending games (without results)"
-            checked={showOnlyPending}
-            onCheckedChange={(checked) => onShowOnlyPendingChange?.(checked)}
-          />
-          <Flex>
-            <>
-              <UserTypeahead
-                labelText="Filter by Player"
-                selectedItem={selectedPlayer}
-                placeholder="Type the player name to filter schedule..."
-                css={{ width: '320px', marginRight: "8px" }}
-                onBlur={() => {
-                  setSelectedPlayer("");
-                  onPlayerSelect?.("");
-                }}
-                onSelect={(item) => {
-                  setSelectedPlayer(item?.value || "");
-                  onPlayerSelect?.(item?.value || "");
-                }}
-              />
-              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+          <ScheduleSection>
+            <SectionTitle>Filter schedule</SectionTitle>
+            <Checkbox
+              text="Show full schedule"
+              checked={showFullSchedule}
+              onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
+            />
+            <Checkbox
+              text="Show only pending games (without results)"
+              checked={showOnlyPending}
+              onCheckedChange={(checked) => onShowOnlyPendingChange?.(checked)}
+            />
+            <Flex>
+              <>
                 <UserTypeahead
-                  labelText="Remove Player"
-                  selectedItem={selectedPlayerToRemove}
-                  placeholder="Type the player name to remove..."
-                  css={{ width: '320px' }}
+                  labelText="Filter by Player"
+                  selectedItem={selectedPlayer}
+                  placeholder="Type the player name to filter schedule..."
+                  css={{ width: '320px', marginRight: "8px" }}
                   onBlur={() => {
-                    // Handle blur if needed
+                    setSelectedPlayer("");
+                    onPlayerSelect?.("");
                   }}
                   onSelect={(item) => {
-                    setSelectedPlayerToRemove(item?.value || "");
+                    setSelectedPlayer(item?.value || "");
+                    onPlayerSelect?.(item?.value || "");
                   }}
                 />
-                <RemoveButton
-                  onClick={handleRemovePlayer}
-                  disabled={!selectedPlayerToRemove || removePlayerMutation.isPending}
-                >
-                  {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove"}
-                </RemoveButton>
-              </div>
-            </>
-          </Flex>
-          <ReplacePlayers tournament={tournament} />
-
-          {/* Manual Schedule Creation Section */}
-          <ManualScheduleSection>
-            <SectionTitle>Create New Schedule</SectionTitle>
+                
+              </>
+            </Flex>
+          </ScheduleSection>
+          <ScheduleSection>
+            <SectionTitle>Update schedule</SectionTitle>
 
             <FormRow>
               <UserTypeahead
@@ -304,7 +285,31 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 {isCreatingSchedule ? <Spinner size="2" /> : "Create Schedule"}
               </Button>
             </FormRow>
-
+            <FormRow>
+              <ReplacePlayers tournament={tournament} />
+            </FormRow>
+            <FormRow>
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <UserTypeahead
+                  labelText="Remove Player"
+                  selectedItem={selectedPlayerToRemove}
+                  placeholder="Type the player name to remove..."
+                  css={{ width: '320px' }}
+                  onBlur={() => {
+                    // Handle blur if needed
+                  }}
+                  onSelect={(item) => {
+                    setSelectedPlayerToRemove(item?.value || "");
+                  }}
+                />
+                <RemoveButton
+                  onClick={handleRemovePlayer}
+                  disabled={!selectedPlayerToRemove || removePlayerMutation.isPending}
+                >
+                  {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove"}
+                </RemoveButton>
+              </div>
+            </FormRow>
             {scheduleMessage && (
               <Text
                 fontSize="small"
@@ -316,7 +321,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 {scheduleMessage}
               </Text>
             )}
-          </ManualScheduleSection>
+          </ScheduleSection>
         </Panel>
       )}
     </div>
