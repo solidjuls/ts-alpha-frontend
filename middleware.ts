@@ -60,7 +60,7 @@ export async function middleware(request: NextRequest) {
     try {
       const { payload } = await jwtVerify(
         token.value,
-        new TextEncoder().encode(process.env.TOKEN_SECRET),
+        new TextEncoder().encode(process.env.JWT_SECRET),
       );
 
       if (!allowedUsers.includes(payload.id as string)) {
@@ -93,12 +93,11 @@ export async function middleware(request: NextRequest) {
     // Verify token and get user info
     const { payload } = await jwtVerify(
       token.value,
-      new TextEncoder().encode(process.env.TOKEN_SECRET),
+      new TextEncoder().encode(process.env.JWT_SECRET),
     );
-
     const user = {
       id: payload.id as string,
-      email: payload.email as string,
+      email: payload.mail as string,
       role: payload.role as number,
       name: payload.name as string
     };
