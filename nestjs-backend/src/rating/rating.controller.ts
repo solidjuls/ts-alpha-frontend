@@ -33,7 +33,6 @@ export class RatingController {
         playerFilter,
         countrySelected,
         playdeck,
-        orderBy = 'rating',
         orderDirection = 'desc',
       } = query;
 
@@ -56,7 +55,6 @@ export class RatingController {
         playerIds,
         countryId: countrySelected,
         playdeckName: playdeck,
-        orderBy,
         orderDirection,
       });
 

@@ -144,7 +144,6 @@ export class RatingService {
     playerIds,
     countryId,
     playdeckName,
-    orderBy = 'rating',
     orderDirection = 'desc',
   }: {
     page: number;
@@ -152,7 +151,6 @@ export class RatingService {
     playerIds?: string[];
     countryId?: string;
     playdeckName?: string;
-    orderBy?: 'rating' | 'name' | 'country';
     orderDirection?: 'asc' | 'desc';
   }): Promise<PlayerRatingListResponse> {
     const offset = (page - 1) * pageSize;
@@ -224,19 +222,8 @@ export class RatingService {
       FROM get_all_player_rankings
     `;
 
-    // Add ORDER BY clause
-    switch (orderBy) {
-      case 'name':
-        sqlQuery += ` ORDER BY CONCAT(first_name, ' ', last_name) ${orderDirection.toUpperCase()}`;
-        break;
-      case 'country':
-        sqlQuery += ` ORDER BY country_name ${orderDirection.toUpperCase()}`;
-        break;
-      case 'rating':
-      default:
-        sqlQuery += ` ORDER BY rating ${orderDirection.toUpperCase()}`;
-        break;
-    }
+    // Add ORDER BY clause - always order by rating first, then by ranking
+    sqlQuery += ` ORDER BY rating ${orderDirection.toUpperCase()}, ranking ASC`;
 
     // Add pagination
     sqlQuery += ` LIMIT ? OFFSET ?`;
@@ -245,7 +232,6 @@ export class RatingService {
     try {
       // Execute the raw SQL query
       const results: any[] = await this.databaseService.$queryRawUnsafe(sqlQuery, ...queryParams);
-console.log("results", results);
       // Transform results to match the expected DTO structure
       const transformedResults: PlayerRatingDto[] = results.map((row) => ({
         id: row.id.toString(),

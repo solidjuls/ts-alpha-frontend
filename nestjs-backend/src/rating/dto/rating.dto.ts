@@ -32,6 +32,5 @@ export interface GetPlayerRatingsQueryDto {
   playdeck?: string; // playdek name filter
 
   // Sorting
-  orderBy?: 'rating' | 'name' | 'country';
   orderDirection?: 'asc' | 'desc';
 }
