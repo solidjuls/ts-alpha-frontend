@@ -5,6 +5,7 @@ import scheduleService, {
   AddScheduleParams,
   UpdateScheduleParams,
   ReplacePlayerParams,
+  RemovePlayerParams,
   UploadCsvScheduleParams,
   CsvUploadResponse
 } from '../services/schedule.service';
@@ -101,6 +102,19 @@ export const useReplacePlayer = () => {
 
   return useMutation({
     mutationFn: (params: ReplacePlayerParams) => scheduleService.replacePlayer(params),
+    onSuccess: () => {
+      // Invalidate and refetch schedule queries
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+  });
+};
+
+// Hook for removing player
+export const useRemovePlayer = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: RemovePlayerParams) => scheduleService.removePlayer(params),
     onSuccess: () => {
       // Invalidate and refetch schedule queries
       queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });

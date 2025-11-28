@@ -12,7 +12,7 @@ import { usersService } from 'services/users.service';
 import DateComponent from 'components/EditFormComponents/DateComponent';
 import { Input } from 'components/Input';
 import { Button } from 'components/Button';
-import { useAddSchedule } from 'hooks/useSchedule';
+import { useAddSchedule, useRemovePlayer } from 'hooks/useSchedule';
 import { Spinner } from '@radix-ui/themes';
 import Text from 'components/Text';
 
@@ -52,6 +52,21 @@ const GameCodeInput = styled(Input)`
   height: 35px;
 `;
 
+const RemoveButton = styled(Button)`
+  height: 35px;
+  background-color: #dc2626;
+  color: white;
+  margin-left: 8px;
+
+  &:hover {
+    background-color: #b91c1c;
+  }
+
+  &:disabled {
+    background-color: #9ca3af;
+  }
+`;
+
 interface ScheduleFilterProps {
   noSchedule: boolean;
   tournament: string;
@@ -87,6 +102,9 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   // Hook for adding schedule
   const addScheduleMutation = useAddSchedule();
 
+  // Hook for removing player
+  const removePlayerMutation = useRemovePlayer();
+
   // Fetch users for the tournament using React Query and NestJS backend
   const { data: users } = useQuery({
     queryKey: ['users', tournament],
@@ -99,6 +117,28 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   });
 
   // Users are now fetched directly by the UserTypeahead components
+
+  // Handle player removal
+  const handleRemovePlayer = async () => {
+    if (!selectedPlayerToRemove || !tournament) {
+      return;
+    }
+
+    try {
+      await removePlayerMutation.mutateAsync({
+        tournamentId: tournament,
+        playerId: selectedPlayerToRemove,
+      });
+
+      // Reset the selected player
+      setSelectedPlayerToRemove("");
+
+      // Call the parent callback if provided
+      onPlayerRemove?.(selectedPlayerToRemove);
+    } catch (error: any) {
+      console.error("Failed to remove player:", error);
+    }
+  };
 
   // Handle manual schedule creation
   const handleCreateSchedule = async () => {
@@ -173,19 +213,26 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   onPlayerSelect?.(item?.value || "");
                 }}
               />
-              <UserTypeahead
-                labelText="Remove Player"
-                selectedItem={selectedPlayerToRemove}
-                placeholder="Type the player name to remove..."
-                css={{ width: '320px' }}
-                onBlur={() => {
-                  // Handle blur if needed
-                }}
-                onSelect={(item) => {
-                  setSelectedPlayerToRemove(item?.value || "");
-                  onPlayerRemove?.(item?.value || "");
-                }}
-              />
+              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                <UserTypeahead
+                  labelText="Remove Player"
+                  selectedItem={selectedPlayerToRemove}
+                  placeholder="Type the player name to remove..."
+                  css={{ width: '320px' }}
+                  onBlur={() => {
+                    // Handle blur if needed
+                  }}
+                  onSelect={(item) => {
+                    setSelectedPlayerToRemove(item?.value || "");
+                  }}
+                />
+                <RemoveButton
+                  onClick={handleRemovePlayer}
+                  disabled={!selectedPlayerToRemove || removePlayerMutation.isPending}
+                >
+                  {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove"}
+                </RemoveButton>
+              </div>
             </>
           </Flex>
           <ReplacePlayers tournament={tournament} />

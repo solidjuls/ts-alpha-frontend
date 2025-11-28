@@ -57,6 +57,11 @@ export interface ReplacePlayerParams {
   newPlayerId: string;
 }
 
+export interface RemovePlayerParams {
+  tournamentId: string;
+  playerId: string;
+}
+
 export interface CsvScheduleRow {
   due_date: string;
   game_code: string;
@@ -142,6 +147,16 @@ class ScheduleService {
       data: {
         pold: params.oldPlayerId,
         pnew: params.newPlayerId,
+        t: Number(params.tournamentId)
+      }
+    });
+    return response.data;
+  }
+
+  async removePlayer(params: RemovePlayerParams): Promise<any> {
+    const response = await this.axiosInstance.patch('/schedule', {
+      data: {
+        u: Number(params.playerId),
         t: Number(params.tournamentId)
       }
     });

@@ -153,22 +153,22 @@ const PlayerInfoBox = ({
   return (
     <FlexRow>
       <PlayerInfoContainer>
-        <FlagIcon code={countryUsa} />
+        {countryUsa && <FlagIcon code={countryUsa} />}
         <Text
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
         >
-          {nameUsa}
+          {nameUsa || "No player assigned"}
         </Text>
       </PlayerInfoContainer>
       <span>vs</span>
       <PlayerInfoContainer style={{ justifyContent: "space-between" }}>
-        <FlagIcon code={countryUssr} />
+        {countryUssr && <FlagIcon code={countryUssr} />}
         <Text
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
         >
-          {nameUssr}
+          {nameUssr || "No player assigned"}
         </Text>
       </PlayerInfoContainer>
     </FlexRow>
@@ -316,8 +316,9 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   };
 
   const handlePlayerRemove = (playerId: string) => {
-    // Handle player removal logic here
-    console.log("Remove player:", playerId);
+    // The actual removal is handled by the ScheduleFilter component
+    // This callback is just for any additional logic if needed
+    console.log("Player removed:", playerId);
   };
 
   const handleShowFullScheduleChange = (showFull: boolean) => {
