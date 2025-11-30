@@ -414,10 +414,10 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
               isLoading={false}
             />
 
-            {scheduleData && scheduleData.totalPages > 1 && (
+            {scheduleData && scheduleTotalPages > 1 && (
               <Pagination
                 currentPage={currentPage.toString()}
-                totalPages={scheduleData.totalPages.toString()}
+                totalPages={scheduleTotalPages.toString()}
                 onPageChange={onPageChange}
               />
             )}
