@@ -65,7 +65,6 @@ export interface RemovePlayerParams {
 export interface CsvScheduleRow {
   due_date: string;
   game_code: string;
-  tournaments_id: string;
   usa_player_id: string;
   ussr_player_id: string;
 }

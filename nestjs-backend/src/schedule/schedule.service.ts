@@ -367,12 +367,12 @@ console.log("totalRows", userToFilter, tournament.map(t => Number(t)));
           continue;
         }
 
-        // Create schedule entry
+        // Create schedule entry using tournament parameter instead of CSV field
         await this.databaseService.schedule.create({
           data: {
             due_date: new Date(row.due_date),
             game_code: row.game_code,
-            tournaments_id: parseInt(row.tournaments_id),
+            tournaments_id: parseInt(tournament),
             usa_player_id: usaPlayerId,
             ussr_player_id: ussrPlayerId,
           }

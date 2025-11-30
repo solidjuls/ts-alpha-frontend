@@ -17,37 +17,36 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
   const uploadCsvMutation = useUploadCsvSchedule();
 
   const completeCSVSchema = (results: any) => {
-    // const expectedHeaders = [
-    //   "due_date",
-    //   "game_code",
-    //   "tournaments_id",
-    //   "usa_player_email",
-    //   "ussr_player_email"
-    // ];
-    // const headers = results.meta.fields;
+    const expectedHeaders = [
+      "due_date",
+      "game_code",
+      "usa_player_id",
+      "ussr_player_id"
+    ];
+    const headers = results.meta.fields;
 
-    // const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
-    // if (!isHeaderValid) {
-    //   setStatus("Invalid schema! Expected headers:", expectedHeaders, "but got:", headers);
-    //   return;
-    // }
+    const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
+    if (!isHeaderValid) {
+      setStatus(`❌ Invalid schema! Expected headers: ${expectedHeaders.join(', ')}, but got: ${headers?.join(', ') || 'none'}`);
+      return;
+    }
 
     let valid = true;
     results.data.forEach((row: any, i: number) => {
       // due_date should look like YYYY-MM-DD
       if (!/^\d{4}-\d{2}-\d{2}$/.test(row.due_date)) {
-        setStatus(`Row ${i + 2}: Invalid due_date ${row.due_date}`);
+        setStatus(`❌ Row ${i + 2}: Invalid due_date ${row.due_date}. Expected format: YYYY-MM-DD`);
         valid = false;
       }
-      // game_code should be 4 digits
+      // game_code should be 4 alphanumeric characters
       if (!/^[A-Za-z0-9]{4}$/.test(row.game_code)) {
-        setStatus(`Row ${i + 2}: Invalid game_code ${row.game_code}`);
+        setStatus(`❌ Row ${i + 2}: Invalid game_code ${row.game_code}. Expected 4 alphanumeric characters`);
         valid = false;
       }
       // User IDs should be numeric
       ["usa_player_id", "ussr_player_id"].forEach((field) => {
         if (!/^\d+$/.test(row[field])) {
-          setStatus(`Row ${i + 2}: Invalid user ID in ${field} ${row[field]}`);
+          setStatus(`❌ Row ${i + 2}: Invalid user ID in ${field}: ${row[field]}. Expected numeric value`);
           valid = false;
         }
       });
@@ -105,7 +104,8 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
     <Flex style={{ flexDirection: 'column'}}>
       <Title>Upload CSV Schedule</Title>
       <Span>1- Select a tournament from the dropdown</Span>
-      <Span>2- Upload a .csv file with the correct format (due_date,game_code,tournaments_id,usa_player_id,ussr_player_id)</Span>
+      <Span>2- Upload a .csv file with the correct format (due_date,game_code,usa_player_id,ussr_player_id)</Span>
+      <Span style={{ fontSize: '12px', color: '#666' }}>Note: Tournament ID is automatically set from the selected tournament</Span>
       <Flex style={{ margin: '8px 0 8px 0' }}>
         <FileInput
           type="file"
