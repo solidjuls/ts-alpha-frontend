@@ -129,7 +129,7 @@ const AboutPage = () => (
             <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
           </li>
           <li>
-            <strong>World Cup</strong> - The largest weekend tournament of the year, featuring an
+            <strong>King&apos;s Cup</strong> - The largest weekend tournament of the year, featuring an
             8-game Swiss format.
           </li>
           <li>
@@ -240,19 +240,35 @@ const AboutPage = () => (
         <p>
           Twilight Struggle has a STEEP learning curve. Watching gameplay videos is a great way to learn (you can see many of those videos in the next section), but the resources below may also be helpful.
         </p>
+        <h3>Strategy</h3>
         <dl>
-          <dt>
-            <Link href="https://ts-replayer.fly.dev/" target="_blank">Twilight Struggle Replay</Link>
-          </dt>
-          <dd>
-            A page created by <Link href="https://twilight-struggle.com/userprofile/3155">Joris Vandenbroeck</Link> to upload and visualize your game&apos;s log files. Just upload your log files and it will generate a beautiful chart of your game data.
-          </dd>
           <dt>
             <Link href="https://www.reddit.com/r/twilightstruggle" target="_blank">Twilight Struggle Reddit</Link>
           </dt>
           <dd>
             A great Reddit community that answers your questions about Twilight Struggle without snark or judgement (since we all know how hard this game is to learn).
           </dd>
+          <dt>
+            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
+          </dt>
+          <dd>
+            Twilight Strategy is a website and a great resource for beginners. While some of the strategies may be dated, the card descriptions and much of the other information are still helpful.
+          </dd>
+          <dt>
+            <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
+          </dt>
+          <dd>
+            A long compilation video of Legendary Tactics&apos; individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
+          </dd>
+          <dt>
+            <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
+          </dt>
+          <dd>
+            A synopsis of the more current strategy used by top-level Twilight Struggle players. This strategy was developed by members of the Chinese Twilight Struggle community and compiled by ITS community member <Link href="https://twilight-struggle.com/userprofile/2287">Kris Wei</Link>.
+          </dd>
+        </dl>
+        <h3>Tools and Resources</h3>
+        <dl>
           <dt>
             <Link href="https://david.mcwebsite.net/ts/" target="_blank">David McHealy&apos;s Card Tracker</Link>
           </dt>
@@ -267,7 +283,12 @@ const AboutPage = () => (
           <dd>
             A more recent card tracker for Twilight Struggle, created by a member of the ITS community.
           </dd>
-          
+          <dt>
+            <Link href="https://ts-replayer.fly.dev/" target="_blank">Twilight Struggle Replay</Link>
+          </dt>
+          <dd>
+            A page created by <Link href="https://twilight-struggle.com/userprofile/3155">Joris Vandenbroeck</Link> to upload and visualize your game&apos;s log files. Just upload your log files and it will generate a beautiful chart of your game data.
+          </dd>
           <dt>
             <Link href="https://www.gmtgames.com/p-927-twilight-struggle-deluxe-edition-8th-printing.aspx" target="_blank">
               GMT Twilight Struggle Page
@@ -284,24 +305,9 @@ const AboutPage = () => (
           <dd>
             Playdek is the most popular digital edition of Twilight Struggle. It is also the version used in ITS leagues.
           </dd>
-          <dt>
-            <Link href="https://twilightstrategy.com/" target="_blank">Twilight Strategy Guide</Link>
-          </dt>
-          <dd>
-            Twilight Strategy is a website and a great resource for beginners. While some of the strategies may be dated, the card descriptions and much of the other information are still helpful.
-          </dd>
-          <dt>
-            <Link href="https://www.youtube.com/watch?v=2Hnxkl0O68k" target="_blank">Legendary Tactics Twilight Struggle Strategy</Link>
-          </dt>
-          <dd>
-            A long (maybe the longest tabletop video of all-time) compilation video of Legendary Tactics&apos; individual Twilight Struggle card videos, featuring strategies that are somewhat more up-to-date than those on the Twilight Strategy website.
-          </dd>
-          <dt>
-            <Link href="https://maninmotiongoingnowhere.wordpress.com/2017/02/14/twilight-struggle-the-collected-musings-of-sankt/" target="_blank">Sankt Strategy</Link>
-          </dt>
-          <dd>
-            A synopsis of the more current strategy used by top-level Twilight Struggle players, developed by members of the Chinese Twilight Struggle community and compiled by ITS community member <Link href="https://twilight-struggle.com/userprofile/2287">Kris Wei</Link>.
-          </dd>
+          
+          
+          
         </dl>
       </Section>
       <Section>
@@ -333,6 +339,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1658">Bartosz Wróbel</Link> (Sparrov): <Link href="https://www.youtube.com/@SparrovTS/featured" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2953">Cole Jarvis</Link> (Cole_JW): <Link href="https://www.youtube.com/@ColeJ_23" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/1780">Craig Richards</Link> (Caecius): <Link href="https://www.twitch.tv/caecius" target="_blank" inactive>Twitch</Link> - <Link href="https://www.youtube.com/c/CaeciusG" target="_blank" inactive>YouTube</Link>
@@ -392,6 +401,9 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2235">Justin Nordstrom</Link> (Flour Power): <Link href="https://www.youtube.com/user/justnord2010" target="_blank" inactive>YouTube</Link>
           </li>
           <li>
+            <Link href="https://twilight-struggle.com/userprofile/3083">Hyonsoo Park</Link> (hiosjoa): <Link href="https://www.youtube.com/@hyonsoopark2832" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+          </li>
+          <li>
             <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
@@ -401,7 +413,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/2271">Kevin Gute</Link> (gute321): <Link href="https://www.twitch.tv/gute321" target="_blank">Twitch</Link> - <Link href="https://www.youtube.com/user/gute321" target="_blank">YouTube</Link>
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2356">Marc Nuño</Link> (AlfaMayor): <Link href="https://www.youtube.com/@AlfaMayor" target="_blank">Twitch</Link> <Image src="/flags/CAT.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2356">Marc Nuño</Link> (AlfaMayor): <Link href="https://www.youtube.com/@AlfaMayor" target="_blank">YouTube</Link> <Image src="/flags/CAT.png"  width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2415">Max Goldman</Link> (maxgolds): <Link href="https://www.twitch.tv/maxgolds12" target="_blank">Twitch</Link>
@@ -456,9 +468,6 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" inactive>YouTube</Link>
-          </li>
-          <li>
-            <Link href="https://twilight-struggle.com/userprofile/2781">Tomek Babicz</Link> (Pacynka): <Link href="https://www.youtube.com/@teoem_be" target="_blank">YouTube</Link> - <Image src="/flags/PL.png"  width={WIDTH} height={HEIGHT} />
           </li>
           <li>
             <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
