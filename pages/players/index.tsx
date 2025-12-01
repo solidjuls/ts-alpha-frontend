@@ -8,13 +8,14 @@ import { Pagination } from "components/Pagination";
 import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { getInfoFromCookies } from "utils/cookies";
-import { ServerType } from "types/types";
+import { DropdownItemType, ServerType } from "types/types";
 import CountriesTypeahead from "components/CountriesTypeahead";
 import { Input } from "components/Input";
 import { usePlayerRatings } from "hooks/useRating";
 // Countries hook is now used directly by the CountriesTypeahead component
 import { MultiSelectItemType } from "types/types";
 import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
+import { useAllUsers } from "hooks/useUsers";
 
 interface CardColumnProps {
   header: string;
@@ -162,17 +163,12 @@ const Players = () => {
     orderBy: 'rating',
     orderDirection: 'desc',
   });
-
-  // Get users from the rating results for the MultiSelect
-  const usersMemo = useMemo(() => {
-    if (playersData?.results) {
-      return playersData.results.map((player) => ({
-        code: player.id,
-        name: player.name
-      }));
-    }
-    return [];
-  }, [playersData]);
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000);
+ 
+  const userItems: DropdownItemType[] = usersData?.results?.map((user: any) => ({
+    code: user.id,
+    name: user?.name.trim(),
+  })) || [];
 
   const onPageChange = async (page: number) => {
     setCurrentPage(page);
@@ -195,7 +191,7 @@ const Players = () => {
               setPlayersSelected(value);
               setCurrentPage(1); // Reset to first page when filtering
             }}
-            items={usersMemo}
+            items={userItems}
             selectedValues={playersSelected as any}
             placeholder="Select Players..."
           />
