@@ -810,7 +810,7 @@ console.log("scheduleParsed", scheduleParsed);
     let standingPlayersCreated = 0;
     const standingErrors: string[] = [];
 
-    if (registeredUserIds.length >= 192) {
+    // if (registeredUserIds.length >= 192) {
       try {
         // Create 16 standings: 8 for Conference 1, 8 for Conference 2
         const standingIds: number[] = [];
@@ -876,7 +876,7 @@ console.log("scheduleParsed", scheduleParsed);
       } catch (error) {
         standingErrors.push(`Failed to create standings structure: ${error.message}`);
       }
-    }
+    // }
 
     console.log(`🎉 BULK REGISTRATION SUMMARY for Tournament ${tournamentId}:`);
     console.log(`   📊 Users: ${successCount}/${usersToRegister} registered successfully`);
