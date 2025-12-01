@@ -735,10 +735,10 @@ console.log("scheduleParsed", scheduleParsed);
       throw new Error('Tournament is not open for registration');
     }
 
-    // Generate 150 random unique user IDs from 1600-2800
+    // Generate 192 random unique user IDs from 1600-2800 (16 standings × 12 users each)
     const minUserId = 1600;
     const maxUserId = 2800;
-    const usersToRegister = 150;
+    const usersToRegister = 192; // 16 standings × 12 users each
     const totalUsers = maxUserId - minUserId + 1;
 
     const selectedUserIds = new Set<number>();
@@ -747,9 +747,13 @@ console.log("scheduleParsed", scheduleParsed);
       selectedUserIds.add(randomId);
     }
 
+    console.log(`🎯 Generated ${selectedUserIds.size} random user IDs for tournament ${tournamentId}:`);
+    console.log('Selected User IDs:', Array.from(selectedUserIds).sort((a, b) => a - b));
+
     let successCount = 0;
     let errorCount = 0;
     const errors: string[] = [];
+    const registeredUserIds: number[] = [];
 
     // Register users one by one
     for (const userId of selectedUserIds) {
@@ -790,6 +794,7 @@ console.log("scheduleParsed", scheduleParsed);
           }
         });
 
+        registeredUserIds.push(userId);
         successCount++;
       } catch (error) {
         errorCount++;
@@ -797,11 +802,95 @@ console.log("scheduleParsed", scheduleParsed);
       }
     }
 
+    console.log(`✅ Successfully registered ${successCount} users out of ${usersToRegister} attempted:`);
+    console.log('Registered User IDs:', registeredUserIds.sort((a, b) => a - b));
+
+    // Create standings and conferences structure
+    let standingsCreated = 0;
+    let standingPlayersCreated = 0;
+    const standingErrors: string[] = [];
+
+    if (registeredUserIds.length >= 192) {
+      try {
+        // Create 16 standings: 8 for Conference 1, 8 for Conference 2
+        const standingIds: number[] = [];
+
+        console.log(`🏆 Creating 16 standings for tournament ${tournamentId}...`);
+
+        for (let conference = 1; conference <= 2; conference++) {
+          for (let standing = 1; standing <= 8; standing++) {
+            const standingNumber = (conference - 1) * 8 + standing;
+
+            try {
+              const createdStanding = await this.databaseService.standings.create({
+                data: {
+                  tournaments_id: tournamentId,
+                  standing_name: `Standing ${standingNumber}`,
+                  secondary_name: `Conference ${conference}`
+                }
+              });
+
+              standingIds.push(createdStanding.id);
+              standingsCreated++;
+              console.log(`✅ Created Standing ${standingNumber} (Conference ${conference}) with ID: ${createdStanding.id}`);
+            } catch (error) {
+              standingErrors.push(`Failed to create Standing ${standingNumber}: ${error.message}`);
+              console.log(`❌ Failed to create Standing ${standingNumber}: ${error.message}`);
+            }
+          }
+        }
+
+        console.log(`🏆 Created ${standingsCreated} standings with IDs:`, standingIds);
+
+        // Assign 12 users to each standing
+        const shuffledUsers = [...registeredUserIds].sort(() => Math.random() - 0.5);
+
+        console.log(`👥 Assigning ${shuffledUsers.length} users to ${standingIds.length} standings (12 users per standing)...`);
+        console.log('Shuffled User Order:', shuffledUsers);
+
+        for (let i = 0; i < standingIds.length && i < 16; i++) {
+          const standingId = standingIds[i];
+          const startIndex = i * 12;
+          const endIndex = Math.min(startIndex + 12, shuffledUsers.length);
+          const usersForStanding = shuffledUsers.slice(startIndex, endIndex);
+
+          console.log(`📋 Assigning ${usersForStanding.length} users to Standing ID ${standingId}:`, usersForStanding);
+
+          for (const userId of usersForStanding) {
+            try {
+              await this.databaseService.standing_players.create({
+                data: {
+                  standing_id: standingId,
+                  user_id: BigInt(userId)
+                }
+              });
+              standingPlayersCreated++;
+            } catch (error) {
+              standingErrors.push(`Failed to assign user ${userId} to standing ${standingId}: ${error.message}`);
+              console.log(`❌ Failed to assign user ${userId} to standing ${standingId}: ${error.message}`);
+            }
+          }
+        }
+
+        console.log(`✅ Successfully assigned ${standingPlayersCreated} players to standings`);
+      } catch (error) {
+        standingErrors.push(`Failed to create standings structure: ${error.message}`);
+      }
+    }
+
+    console.log(`🎉 BULK REGISTRATION SUMMARY for Tournament ${tournamentId}:`);
+    console.log(`   📊 Users: ${successCount}/${usersToRegister} registered successfully`);
+    console.log(`   🏆 Standings: ${standingsCreated}/16 created successfully`);
+    console.log(`   👥 Player Assignments: ${standingPlayersCreated}/192 assigned successfully`);
+    console.log(`   ❌ Total Errors: ${errorCount + standingErrors.length}`);
+
     return {
       totalAttempted: usersToRegister,
       successCount,
       errorCount,
-      errors: errors.slice(0, 10) // Return first 10 errors to avoid huge response
+      standingsCreated,
+      standingPlayersCreated,
+      errors: [...errors, ...standingErrors].slice(0, 15) // Return first 15 errors to avoid huge response
     };
   }
 

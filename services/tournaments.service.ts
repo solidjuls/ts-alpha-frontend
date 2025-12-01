@@ -92,6 +92,8 @@ export interface BulkRegisterResponse {
   totalAttempted: number;
   successCount: number;
   errorCount: number;
+  standingsCreated: number;
+  standingPlayersCreated: number;
   errors: string[];
 }
 
