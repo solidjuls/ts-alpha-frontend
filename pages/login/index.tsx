@@ -192,6 +192,7 @@ const LoginFormComponent: React.FC = () => {
   };
 
   const errorMessage = validationError || loginMutation.error?.response?.data?.message || loginMutation.error?.message;
+  const isEmailNotVerified = loginMutation.error?.response?.data?.code === 'EMAIL_NOT_VERIFIED';
 
   return (
     <LoginForm onSubmit={handleSubmit}>
@@ -239,7 +240,18 @@ const LoginFormComponent: React.FC = () => {
         />
       </CheckboxContainer>
 
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage>
+          {errorMessage}
+          {isEmailNotVerified && (
+            <div style={{ marginTop: '10px' }}>
+              <Link href="/email-verify" style={{ color: '#3498db', textDecoration: 'underline' }}>
+                Click here to verify your email
+              </Link>
+            </div>
+          )}
+        </ErrorMessage>
+      )}
 
       <Button 
         type="submit" 
@@ -252,6 +264,12 @@ const LoginFormComponent: React.FC = () => {
       <ForgotPasswordLink>
         <Link href="/reset-password">
           Forgot your password?
+        </Link>
+      </ForgotPasswordLink>
+
+      <ForgotPasswordLink>
+        <Link href="/email-verify">
+          Need to verify your email?
         </Link>
       </ForgotPasswordLink>
 

@@ -81,6 +81,19 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
+export interface EmailVerifyRequest {
+  email: string;
+}
+
+export interface EmailVerifyConfirmRequest {
+  token: string;
+}
+
+export interface EmailVerifyResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface ProfileResponse {
   id: string;
   email: string;
@@ -128,6 +141,18 @@ export const authService = {
   // Create new user (for testing purposes)
   createUser: async (userData: CreateUserRequest): Promise<CreateUserResponse> => {
     const response = await authApi.post('/auth/create-user', userData);
+    return response.data;
+  },
+
+  // Request email verification
+  requestEmailVerification: async (data: EmailVerifyRequest): Promise<EmailVerifyResponse> => {
+    const response = await authApi.post('/auth/email-verify', data);
+    return response.data;
+  },
+
+  // Confirm email verification
+  confirmEmailVerification: async (data: EmailVerifyConfirmRequest): Promise<EmailVerifyResponse> => {
+    const response = await authApi.post('/auth/email-verify/confirm', data);
     return response.data;
   },
 

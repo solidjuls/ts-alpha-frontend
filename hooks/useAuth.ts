@@ -6,7 +6,9 @@ import authService, {
   LoginResponse,
   ResetPasswordRequest,
   CreateUserRequest,
-  RegisterRequest
+  RegisterRequest,
+  EmailVerifyRequest,
+  EmailVerifyConfirmRequest
 } from '../services/auth.service';
 
 // Query keys
@@ -152,10 +154,30 @@ export const useAuthHealth = () => {
   });
 };
 
+// Hook for email verification request mutation
+export const useEmailVerificationRequest = () => {
+  return useMutation({
+    mutationFn: (data: EmailVerifyRequest) => authService.requestEmailVerification(data),
+    onError: (error: any) => {
+      console.error('Email verification request failed:', error);
+    },
+  });
+};
+
+// Hook for email verification confirmation mutation
+export const useEmailVerificationConfirm = () => {
+  return useMutation({
+    mutationFn: (data: EmailVerifyConfirmRequest) => authService.confirmEmailVerification(data),
+    onError: (error: any) => {
+      console.error('Email verification confirmation failed:', error);
+    },
+  });
+};
+
 // Custom hook to check if user is authenticated
 export const useIsAuthenticated = () => {
   const { data: profile, isLoading, error } = useProfile();
-  
+
   return {
     isAuthenticated: !!profile && !error,
     isLoading,

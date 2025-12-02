@@ -13,6 +13,7 @@ import { CountriesModule } from './countries/countries.module';
 import { CitiesModule } from './cities/cities.module';
 import { RatingModule } from './rating/rating.module';
 import { StandingsModule } from './standings/standings.module';
+import { EmailModule } from './email/email.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
@@ -29,7 +30,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     CountriesModule,
     CitiesModule,
     RatingModule,
-    StandingsModule
+    StandingsModule,
+    EmailModule
   ],
   controllers: [AppController],
   providers: [

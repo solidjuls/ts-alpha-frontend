@@ -10,7 +10,6 @@ WITH ordered_player_ratings AS
 SELECT
     users.id,
     first_name,
-    name,
     last_name,
     last_login_at,
     tld_code,

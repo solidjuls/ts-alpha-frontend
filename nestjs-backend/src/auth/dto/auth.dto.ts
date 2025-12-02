@@ -69,3 +69,16 @@ export interface RegisterUserResponse {
     role: number;
   };
 }
+
+export interface EmailVerifyRequestDto {
+  email: string;
+}
+
+export interface EmailVerifyConfirmDto {
+  token: string;
+}
+
+export interface EmailVerifyResponse {
+  success: boolean;
+  message: string;
+}

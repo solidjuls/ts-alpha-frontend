@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Res, HttpCode, HttpStatus, Get, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, ImpersonateDto, ResetPasswordDto, CreateUserDto, RegisterUserDto } from './dto/auth.dto';
+import { LoginDto, ImpersonateDto, ResetPasswordDto, CreateUserDto, RegisterUserDto, EmailVerifyRequestDto, EmailVerifyConfirmDto } from './dto/auth.dto';
 import { Public, CurrentUser } from './decorators/auth.decorators';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -106,6 +106,20 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.authService.createUser(createUserDto);
+  }
+
+  @Public()
+  @Post('email-verify')
+  @HttpCode(HttpStatus.OK)
+  async requestEmailVerification(@Body() body: { email: string }) {
+    return this.authService.requestEmailVerification(body.email);
+  }
+
+  @Public()
+  @Post('email-verify/confirm')
+  @HttpCode(HttpStatus.OK)
+  async confirmEmailVerification(@Body() body: { token: string }) {
+    return this.authService.confirmEmailVerification(body.token);
   }
 
   @Public()
