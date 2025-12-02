@@ -67,15 +67,6 @@ export class AuthService {
       throw new UnauthorizedException("User doesn't exist.");
     }
 
-    // Check if target user's email is verified
-    if (!user.email_verified_at) {
-      throw new UnauthorizedException({
-        message: 'Target user email not verified',
-        code: 'EMAIL_NOT_VERIFIED',
-        error: 'Cannot impersonate a user whose email address has not been verified.'
-      });
-    }
-
     return this.generateAuthResponse(user);
   }
 
