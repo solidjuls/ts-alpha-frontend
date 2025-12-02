@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
-import { Spinner } from '@radix-ui/themes';
 
 import { Button } from 'components/Button';
 import Text from 'components/Text';
-import { useEmailVerificationConfirm } from '../../hooks/useAuth';
 
 // Styled Components
 const VerifyContainer = styled.div`
@@ -61,21 +59,6 @@ const ErrorBanner = styled.div`
   width: 100%;
 `;
 
-const LoadingBanner = styled.div`
-  background-color: #d1ecf1;
-  border: 1px solid #bee5eb;
-  color: #0c5460;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-`;
-
 const InfoText = styled(Text)`
   text-align: center;
   margin-bottom: 20px;
@@ -103,98 +86,33 @@ const StyledButton = styled(Button)`
   }
 `;
 
-interface VerificationState {
-  status: 'loading' | 'success' | 'error' | 'invalid';
+interface VerificationResult {
+  status: 'success' | 'error' | 'invalid';
   message: string;
 }
 
+interface EmailVerifyConfirmProps {
+  result: VerificationResult;
+}
+
 // Email Verification Confirmation Component
-const EmailVerifyConfirmComponent: React.FC = () => {
-  const router = useRouter();
-  const { token } = router.query;
-  const [verificationState, setVerificationState] = useState<VerificationState>({
-    status: 'loading',
-    message: 'Verifying your email address...'
-  });
-
-  const emailVerificationConfirmMutation = useEmailVerificationConfirm();
-
-  useEffect(() => {
-    const verifyEmail = async () => {
-      if (!token || typeof token !== 'string') {
-        setVerificationState({
-          status: 'invalid',
-          message: 'Invalid verification link. Please check your email and try again.'
-        });
-        return;
-      }
-
-      try {
-        const result = await emailVerificationConfirmMutation.mutateAsync({ token });
-
-        if (result.success) {
-          setVerificationState({
-            status: 'success',
-            message: result.message
-          });
-        } else {
-          setVerificationState({
-            status: 'error',
-            message: result.message
-          });
-        }
-      } catch (error: any) {
-        console.error('Email verification error:', error);
-
-        // Handle different error types
-        let errorMessage = 'An error occurred while verifying your email. Please try again later.';
-
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-
-        setVerificationState({
-          status: 'error',
-          message: errorMessage
-        });
-      }
-    };
-
-    // Only verify when we have the token and router is ready
-    if (router.isReady) {
-      verifyEmail();
-    }
-  }, [token, router.isReady, emailVerificationConfirmMutation]);
-
+const EmailVerifyConfirmComponent: React.FC<EmailVerifyConfirmProps> = ({ result }) => {
   const renderBanner = () => {
-    switch (verificationState.status) {
-      case 'loading':
-        return (
-          <LoadingBanner>
-            <Spinner size="3" />
-            {verificationState.message}
-          </LoadingBanner>
-        );
+    switch (result.status) {
       case 'success':
-        return <SuccessBanner>{verificationState.message}</SuccessBanner>;
+        return <SuccessBanner>{result.message}</SuccessBanner>;
       case 'error':
       case 'invalid':
-        return <ErrorBanner>{verificationState.message}</ErrorBanner>;
+        return <ErrorBanner>{result.message}</ErrorBanner>;
       default:
         return null;
     }
   };
 
   const renderActions = () => {
-    if (verificationState.status === 'loading') {
-      return null;
-    }
-
     return (
       <ActionButtons>
-        {verificationState.status === 'success' ? (
+        {result.status === 'success' ? (
           <>
             <Link href="/login">
               <StyledButton style={{ backgroundColor: '#16a34a' }}>
@@ -228,40 +146,101 @@ const EmailVerifyConfirmComponent: React.FC = () => {
   return (
     <VerifyCard>
       <Title>Email Verification</Title>
-      
+
       {renderBanner()}
-      
-      {verificationState.status === 'success' && (
+
+      {result.status === 'success' && (
         <InfoText>
           Welcome! Your email address has been confirmed. You can now access all features of your account.
         </InfoText>
       )}
-      
-      {(verificationState.status === 'error' || verificationState.status === 'invalid') && (
+
+      {(result.status === 'error' || result.status === 'invalid') && (
         <InfoText>
           If you continue to have problems, please contact support or try requesting a new verification email.
         </InfoText>
       )}
-      
+
       {renderActions()}
     </VerifyCard>
   );
 };
 
 // Main Email Verification Confirmation Page Component
-const EmailVerifyConfirmPage: React.FC = () => {
+const EmailVerifyConfirmPage: React.FC<EmailVerifyConfirmProps> = ({ result }) => {
   return (
     <>
       <Head>
         <title>Email Verification - Twilight Struggle</title>
         <meta name="description" content="Confirming your email verification" />
       </Head>
-      
+
       <VerifyContainer>
-        <EmailVerifyConfirmComponent />
+        <EmailVerifyConfirmComponent result={result} />
       </VerifyContainer>
     </>
   );
 };
 
 export default EmailVerifyConfirmPage;
+
+// Server-side verification - runs before page renders
+export const getServerSideProps: GetServerSideProps<EmailVerifyConfirmProps> = async (context) => {
+  const { token } = context.params!;
+
+  // Validate token parameter
+  if (!token || typeof token !== 'string') {
+    return {
+      props: {
+        result: {
+          status: 'invalid',
+          message: 'Invalid verification link. Please check your email and try again.'
+        }
+      }
+    };
+  }
+
+  try {
+    // Make API call to verify email
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api';
+    const response = await fetch(`${apiUrl}/auth/email-verify/confirm`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      return {
+        props: {
+          result: {
+            status: 'success',
+            message: data.message
+          }
+        }
+      };
+    } else {
+      return {
+        props: {
+          result: {
+            status: 'error',
+            message: data.message || 'An error occurred while verifying your email.'
+          }
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Email verification error:', error);
+    return {
+      props: {
+        result: {
+          status: 'error',
+          message: 'An error occurred while verifying your email. Please try again.'
+        }
+      }
+    };
+  }
+};
