@@ -124,9 +124,9 @@ export const gameSides: Array<DropdownItemType> = [
 ];
 
 export const userRoles = {
-  SUPERADMIN: 3,
+  SUPERADMIN: 1,
   ADMIN: 2,
-  PLAYER: 1,
+  PLAYER: 3,
 };
 
 export const platforms: Array<DropdownItemType> = [
