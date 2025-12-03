@@ -538,6 +538,7 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
       {/* Registered Players List */}
       <TournamentPlayersList
         tournamentId={tournament.id}
+        tournamentStatusId={tournament.status_id}
         onPlayerRemoved={() => refetch()}
         isUserAdmin={isUserAdmin}
       />
@@ -569,11 +570,4 @@ export async function getServerSideProps({ req, res }: ServerType) {
 
 export default TournamentDetail;
 
-// RTSL 2025 👽👹🤖👻 is coming.
-// 🗓 Season Dates: Jun 1 - Oct 31
-// 🎲 Playoff Dates:  Nov 1 - 30
-// 📝 Sign up now for 10 games in 5 months at your own schedule.
-// 🤝 Compete against players near your level!
-
-// Not registered yet?
-// https://forms.gle/XqkxktFYiGfvzC3R6
+// 

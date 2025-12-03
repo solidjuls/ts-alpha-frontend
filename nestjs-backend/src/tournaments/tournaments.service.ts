@@ -525,6 +525,19 @@ console.log("scheduleParsed", scheduleParsed);
     });
   }
 
+  async forfeitPlayer(tournamentId: number, registrationId: number): Promise<any> {
+    return await this.databaseService.tournament_registration.update({
+      where: {
+        id: registrationId,
+        tournamentId: tournamentId,
+      },
+      data: {
+        status: 'forfeited',
+        updated_at: new Date(),
+      }
+    });
+  }
+
   // Tournament Admin Management Methods
   async getTournamentAdmins(tournamentId: number, requestingUserRole?: number): Promise<any[]> {
     const admins = await this.databaseService.tournament_admins.findMany({

@@ -155,15 +155,21 @@ interface RegisteredPlayer {
 
 interface TournamentPlayersListProps {
   tournamentId: string;
+  tournamentStatusId?: number;
   onPlayerRemoved?: () => void;
   isUserAdmin: boolean
 }
 
 const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: TournamentPlayersListProps) => {
   const [removingPlayerId, setRemovingPlayerId] = useState<number | null>(null);
+  const [forfeitingPlayerId, setForfeitingPlayerId] = useState<number | null>(null);
 
   const { data: players, isLoading, refetch } = useRegisteredPlayers(parseInt(tournamentId));
   const unregisterMutation = useUnregisterFromTournament();
+  const forfeitMutation = useForfeitPlayer();
+
+  // Show Forfeit button when tournament status is 4 (started)
+  const showForfeitButton = tournamentStatusId === 4;
 
   const handleRemovePlayer = async (registrationId: number, tournamentId: string) => {
     if (!confirm(`Are you sure you want to remove this player from the tournament?`)) {
@@ -187,6 +193,28 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
     }
   };
 
+  const handleForfeitPlayer = async (registrationId: number, tournamentId: string) => {
+    if (!confirm(`Are you sure you want to forfeit this player from the tournament?`)) {
+      return;
+    }
+
+    setForfeitingPlayerId(registrationId);
+    try {
+      await forfeitMutation.mutateAsync({
+        tournamentId: Number(tournamentId),
+        registrationId: registrationId
+      });
+
+      refetch();
+      onPlayerRemoved?.();
+    } catch (error) {
+      console.error("Error forfeiting player:", error);
+      alert("Failed to forfeit player. Please try again.");
+    } finally {
+      setForfeitingPlayerId(null);
+    }
+  };
+
   if (isLoading) {
     return (
       <PlayersContainer>
@@ -199,7 +227,7 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
       </PlayersContainer>
     );
   }
-console.log("players", tournamentId)
+
   return (
     <PlayersContainer>
       <PlayersHeader>

@@ -193,7 +193,13 @@ class TournamentsService {
     return response.data;
   }
 
-
+  // PATCH /api/tournaments/:id/forfeit - Forfeit a player from tournament
+  async forfeitPlayer(tournamentId: number, registrationId: number): Promise<{ message: string }> {
+    const response = await this.axiosInstance.patch(`/tournaments/${tournamentId}/forfeit`, {
+      registrationId
+    });
+    return response.data;
+  }
 
   // PUT /api/tournaments - Update tournament details
   async updateTournament(data: UpdateTournamentRequest): Promise<any> {

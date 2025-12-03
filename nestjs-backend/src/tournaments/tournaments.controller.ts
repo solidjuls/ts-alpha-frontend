@@ -224,6 +224,40 @@ export class TournamentsController {
     }
   }
 
+  // PATCH /api/tournaments/:id/forfeit - Forfeit a player from tournament
+  @Patch(':id/forfeit')
+  async forfeitPlayer(
+    @Param('id') tournamentId: string,
+    @Body() body: { registrationId: number },
+    @CurrentUser() user: JwtPayloadDto,
+  ) {
+    try {
+      if (!tournamentId) {
+        throw new HttpException('Tournament ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      if (!body.registrationId) {
+        throw new HttpException('Registration ID is required', HttpStatus.BAD_REQUEST);
+      }
+
+      const result = await this.tournamentsService.forfeitPlayer(
+        parseInt(tournamentId),
+        body.registrationId
+      );
+
+      return {
+        message: 'Player has been forfeited from the tournament',
+        result
+      };
+    } catch (error) {
+      console.error("TOURNAMENT FORFEIT API Error:", error);
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // GET /api/tournaments/:id/admins - Get tournament admins
   @Get(':id/admins')
   async getTournamentAdmins(
