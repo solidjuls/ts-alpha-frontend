@@ -135,6 +135,18 @@ const RegisterButton = styled(Button)<RegisterButtonProps>`
   }
 `;
 
+interface WaitlistButtonProps {
+  $isOnWaitlist?: boolean;
+}
+
+const WaitlistButton = styled(Button)<WaitlistButtonProps>`
+  background-color: ${props => props.$isOnWaitlist ? '#dc2626' : '#f59e0b'};
+
+  &:hover {
+    background-color: ${props => props.$isOnWaitlist ? '#b91c1c' : '#d97706'};
+  }
+`;
+
 const EditButton = styled(Button)`
   background-color: #3b82f6;
 `;
@@ -283,6 +295,34 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   }, [tournament]);
 
   const isUserAdmin = userRole === userRoles.SUPERADMIN //||(tournament?.adminId && userId && tournament.adminId.includes(userId));
+
+  // Waitlist join/leave handler
+  const onWaitlistClick = async () => {
+    if (!tournament || !userId) return;
+
+    setIsWaitlistAction(true);
+    try {
+      if (isUserOnWaitlist) {
+        // Leave waitlist
+        await removeFromWaitlistMutation.mutateAsync({
+          tournamentId: parseInt(tournament.id),
+          data: { userId: userId.toString() }
+        });
+      } else {
+        // Join waitlist
+        await addToWaitlistMutation.mutateAsync({
+          tournamentId: parseInt(tournament.id),
+          data: { userId: userId.toString() }
+        });
+      }
+      refetchWaitlist();
+    } catch (e) {
+      console.error("Waitlist action error:", e);
+      alert("Failed to update waitlist status. Please try again.");
+    } finally {
+      setIsWaitlistAction(false);
+    }
+  };
 
   const onRegisterClick = async () => {
     if (!tournament || !userId || !email) {

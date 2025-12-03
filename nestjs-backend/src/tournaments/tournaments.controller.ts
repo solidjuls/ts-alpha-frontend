@@ -404,8 +404,11 @@ export class TournamentsController {
         throw new HttpException('User ID is required', HttpStatus.BAD_REQUEST);
       }
 
-      const result = await this.tournamentsService.addToWaitlist(tournamentId, userId);
-      return result;
+      await this.tournamentsService.addToWaitlist(tournamentId, userId);
+
+      return {
+        message: 'Successfully added to waitlist',
+      };
     } catch (error) {
       console.error("TOURNAMENT WAITLIST ADD API Error:", error);
       throw new HttpException(
