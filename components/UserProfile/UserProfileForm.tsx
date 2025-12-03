@@ -8,10 +8,8 @@ import Text from "components/Text";
 import { platforms, gameDurations } from "utils/constants";
 import CitiesTypeahead from "components/CitiesTypeahead";
 import CountriesTypeahead from "components/CountriesTypeahead";
-import { DropdownItemType } from "types/types";
 import { UserDetail, UpdateUserData, UpdatePasswordData } from "services/users.service";
 import { useUpdateUser, useUpdatePassword } from "hooks/useUsers";
-// Countries and cities hooks are now used directly by the typeahead components
 
 type UserProfileFormProps = {
   data: UserDetail;
@@ -19,7 +17,10 @@ type UserProfileFormProps = {
 
 // Form data interfaces
 interface UserProfileFormData {
-  name: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  playdek_name: string;
   phone: string;
   preferredGamingPlatform: string;
   preferredGameDuration: string;
@@ -60,14 +61,16 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
 
   // React Hook Form for user profile
   const {
-    register: registerProfile,
     handleSubmit: handleSubmitProfile,
-    formState: { errors: profileErrors },
+    formState,
     setValue: setProfileValue,
     watch: watchProfile,
   } = useForm<UserProfileFormData>({
     defaultValues: {
-      name: data.name || "",
+      firstName: data.first_name || "",
+      lastName: data.last_name || "",
+      email: data.email || "",
+      playdek_name: data.playdek_name || "",
       phone: data.phone_number || "",
       preferredGamingPlatform: data.preferred_gaming_platform || "",
       preferredGameDuration: data.preferred_game_duration || "",
@@ -76,11 +79,12 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
     },
   });
 
+  const profileErrors = formState.errors;
   // React Hook Form for password
   const {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
-    formState: { errors: passwordErrors },
+    formState: { errors: passwordErrors  },
     reset: resetPasswordForm,
     watch: watchPassword,
   } = useForm<PasswordFormData>();
@@ -98,9 +102,9 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
       setConfirmationMsg("");
 
       const updateData: UpdateUserData = {
-        firstName: formData.name.split(" ")[0] || "",
-        lastName: formData.name.split(" ").slice(1).join(" ") || "",
-        name: formData.name,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        playdek_name: formData.playdek_name,
         email: data.email,
         phone: formData.phone || undefined,
         preferredGamingPlatform: formData.preferredGamingPlatform || undefined,
@@ -139,7 +143,6 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
   // Loading states are now handled by individual typeahead components
 
   // Countries and cities are now fetched directly by the typeahead components
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       {/* Profile Update Form */}
@@ -147,23 +150,46 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
         <h2>Update Profile</h2>
 
         <EditTextComponent
+          labelText="First Name"
+          inputValue={watchProfile("firstName") || ""}
+          onInputValueChange={(value) => setProfileValue("firstName", value, { shouldValidate: true })}
+          css={{ width: inputWidth }}
+          error={!!profileErrors.firstName}
+          maxLength={100}
+        />
+        <EditTextComponent
+          labelText="Last Name"
+          inputValue={watchProfile("lastName") || ""}
+          onInputValueChange={(value) => setProfileValue("lastName", value, { shouldValidate: true })}
+          css={{ width: inputWidth }}
+          error={!!profileErrors.lastName}
+          maxLength={100}
+        />
+        <EditTextComponent
+          labelText="Email"
+          inputValue={watchProfile("email") || ""}
+          onInputValueChange={(value) => setProfileValue("email", value, { shouldValidate: true })}
+          css={{ width: inputWidth }}
+          error={!!profileErrors.email}
+          maxLength={100}
+        />
+
+        <EditTextComponent
           labelText="Playdek Name"
-          inputValue={watchProfile("playdek_name")}
-          onInputValueChange={(value) => setProfileValue("playdek_name", value)}
+          inputValue={watchProfile("playdek_name") || ""}
+          onInputValueChange={(value) => setProfileValue("playdek_name", value, { shouldValidate: true })}
           css={{ width: inputWidth }}
           error={!!profileErrors.playdek_name}
           maxLength={100}
-          {...registerProfile("playdek_name", { required: "Playdek name is required" })}
         />
 
         <EditTextComponent
           labelText="Phone"
-          inputValue={watchProfile("phone")}
+          inputValue={watchProfile("phone") || ""}
           onInputValueChange={(value) => setProfileValue("phone", value)}
           css={{ width: inputWidth }}
           error={!!profileErrors.phone}
           maxLength={20}
-          {...registerProfile("phone")}
         />
 
         <DropdownWithLabel
