@@ -4,7 +4,7 @@ import axios, { AxiosInstance } from 'axios';
 export interface Tournament {
   id: string;
   tournament_name: string;
-  status_id: number;
+  status_id: 1 | 2 | 3 | 4 | 5;
   waitlist: boolean;
   starting_date: Date | null;
   adminId: string[];

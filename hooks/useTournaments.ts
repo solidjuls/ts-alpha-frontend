@@ -102,7 +102,7 @@ export const useUpdateTournamentStatus = () => {
     mutationFn: (data: UpdateTournamentStatusRequest) => tournamentsService.updateTournamentStatus(data),
     onSuccess: (_, variables) => {
       // Invalidate specific tournament and lists
-      queryClient.invalidateQueries({ queryKey: tournamentKeys.detail(variables.id.toString()) });
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.detail(variables.tournamentId.toString()) });
       queryClient.invalidateQueries({ queryKey: tournamentKeys.lists() });
     },
     onError: (error: any) => {
