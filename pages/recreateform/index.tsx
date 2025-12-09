@@ -43,7 +43,7 @@ const RecreateFormContainer = () => {
   const recreateGameMutation = useRecreateGame();
 
   // React Query hooks for data fetching - fetch ALL users without pagination
-  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 2000) as {
+  const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 3000) as {
     data: UsersListResponse | undefined;
     isLoading: boolean;
   }; // Get first 1000 users

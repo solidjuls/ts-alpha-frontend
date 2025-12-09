@@ -4,9 +4,9 @@ import { jwtVerify } from "jose";
 
 // Define user roles
 const USER_ROLES = {
-  USER: 1,
+  USER: 3,
   ADMIN: 2,
-  SUPERADMIN: 3
+  SUPERADMIN: 1
 } as const;
 
 // Define protected routes and their required roles
