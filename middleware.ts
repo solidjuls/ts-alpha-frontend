@@ -103,7 +103,7 @@ export async function middleware(request: NextRequest) {
     };
 
     // Check if user has required role
-    if (requiredRole && user.role < requiredRole) {
+    if (requiredRole && user.role > requiredRole) {
       // Insufficient permissions, redirect to home
       return NextResponse.redirect(new URL('/', request.url));
     }
