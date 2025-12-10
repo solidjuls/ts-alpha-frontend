@@ -5,7 +5,7 @@ export interface StandingsResponse extends Array<PlayerStanding> {}
 
 // Create axios instance for NestJS backend
 const standingsApi = axios.create({
-  baseURL: 'http://localhost:4002/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

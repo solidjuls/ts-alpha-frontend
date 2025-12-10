@@ -12,7 +12,7 @@ export interface RecreateGameResponse {
 
 // Create axios instance for NestJS backend
 const recreateApi = axios.create({
-  baseURL: 'http://localhost:4002/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

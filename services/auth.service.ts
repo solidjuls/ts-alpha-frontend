@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance for NestJS backend
 const authApi = axios.create({
-  baseURL: 'http://localhost:4002/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
   withCredentials: true, // Important for HTTP-only cookies
   headers: {
     'Content-Type': 'application/json',
