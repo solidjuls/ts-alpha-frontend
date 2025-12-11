@@ -309,7 +309,7 @@ const Homepage: React.FC = () => {
 
     return filters;
   }, [playersSelected, tournamentSelected, videoSelected, currentPage]);
-console.log("gameFilters", playersSelected, gameFilters);
+
   const { data: gamesData, isLoading } = useGames(gameFilters);
 
   const onPageChange = (page: string) => {
@@ -324,7 +324,7 @@ console.log("gameFilters", playersSelected, gameFilters);
   };
 
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
-
+console.log("currentPage", currentPage, totalPages, gamesData?.results.length);
   return (
       <ContainerGameResults>
         <GlobalContainer>
@@ -343,8 +343,8 @@ console.log("gameFilters", playersSelected, gameFilters);
           />
           {!isLoading && gamesData && (
             <Pagination
-              currentPage={currentPage.toString()}
-              totalPages={totalPages.toString()}
+              currentPage={currentPage}
+              totalPages={totalPages}
               onPageChange={onPageChange}
             />
           )}
