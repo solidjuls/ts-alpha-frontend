@@ -19,6 +19,7 @@ import { useGames } from "hooks/useGames";
 import { GetGamesParams } from "services/games.service";
 import { Tournament } from "services/tournaments.service";
 import { User, UsersListResponse } from "services/users.service";
+import { MultiSelectItemType } from "types/types";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -139,14 +140,14 @@ const EmptyState = () => {
 
 type FilterUserProps = {
   users: User[];
-  selectedValues: string[];
-  setSelectedValues: (values: string[]) => void;
+  selectedValues: MultiSelectItemType[];
+  setSelectedValues: (values: MultiSelectItemType[]) => void;
 };
 
 type FilterTournamentProps = {
   tournaments: Tournament[];
-  selectedValues: string[];
-  setSelectedValues: (values: string[]) => void;
+  selectedValues: MultiSelectItemType[];
+  setSelectedValues: (values: MultiSelectItemType[]) => void;
 };
 
 const FilterUser: React.FC<FilterUserProps> = ({
@@ -165,13 +166,10 @@ const FilterUser: React.FC<FilterUserProps> = ({
         items={usersMemo}
         placeholder="Select Players (max 2)..."
         selectedValues={selectedValues}
-        setSelectedValues={(values: string) => {
-          // Handle the MultiSelect component's interface which passes a single string
-          // but we need to manage it as an array for our state
-          const valuesArray = Array.isArray(values) ? values : [values];
+        setSelectedValues={(values: MultiSelectItemType[]) => {
           // Limit to maximum 2 players
-          if (valuesArray.length <= 2) {
-            setSelectedValues(valuesArray);
+          if (values.length <= 2) {
+            setSelectedValues(values);
           }
         }}
         closeOnSelect={false}
@@ -208,10 +206,10 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
 };
 
 type FilterProps = {
-  playersSelected: string[];
-  setPlayersSelected: (values: string[]) => void;
-  tournamentSelected: string[];
-  setTournamentSelected: (values: string[]) => void;
+  playersSelected: MultiSelectItemType[];
+  setPlayersSelected: (values: MultiSelectItemType[]) => void;
+  tournamentSelected: MultiSelectItemType[];
+  setTournamentSelected: (values: MultiSelectItemType[]) => void;
   videoSelected: boolean;
   setVideoSelected: (value: boolean) => void;
   onClear: () => void;
@@ -231,9 +229,7 @@ const Filter: React.FC<FilterProps> = ({
 
   if (isLoadingTournament || isLoadingUsers) return null;
 
-  // Type cast tournaments to Tournament[] since we know it returns tournaments for this query
   const tournamentsList = tournaments as Tournament[];
-  // Type cast users data to get the results
   const usersResponse = usersData as UsersListResponse;
 
   return (
@@ -288,13 +284,11 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
 };
 
 const Homepage: React.FC = () => {
-  // Local state for filters
-  const [playersSelected, setPlayersSelected] = useState<string[]>([]);
-  const [tournamentSelected, setTournamentSelected] = useState<string[]>([]);
+  const [playersSelected, setPlayersSelected] = useState<MultiSelectItemType[]>([]);
+  const [tournamentSelected, setTournamentSelected] = useState<MultiSelectItemType[]>([]);
   const [videoSelected, setVideoSelected] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Build filters for API call
   const gameFilters: GetGamesParams = useMemo(() => {
     const filters: GetGamesParams = {
       p: currentPage,
@@ -302,11 +296,11 @@ const Homepage: React.FC = () => {
     };
 
     if (playersSelected.length > 0) {
-      filters.userFilter = playersSelected.join(',');
+      filters.userFilter = playersSelected.map(item => item.code).join(',');
     }
 
     if (tournamentSelected.length > 0) {
-      filters.toFilter = tournamentSelected.join(',');
+      filters.toFilter = tournamentSelected.map(item => item.code).join(',');
     }
 
     if (videoSelected) {
@@ -315,8 +309,7 @@ const Homepage: React.FC = () => {
 
     return filters;
   }, [playersSelected, tournamentSelected, videoSelected, currentPage]);
-
-  // Fetch games using React Query
+console.log("gameFilters", playersSelected, gameFilters);
   const { data: gamesData, isLoading } = useGames(gameFilters);
 
   const onPageChange = (page: string) => {

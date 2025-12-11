@@ -11,7 +11,7 @@ type MultiSelectComponentProps = {
   items: MultiSelectItemType[];
   placeholder: string;
   selectedValues: string[];
-  setSelectedValues: (value: string) => void;
+  setSelectedValues: (value: MultiSelectItemType[]) => void;
   filter?: boolean;
   closeOnSelect?: boolean;
   selectionLimit?: number;
