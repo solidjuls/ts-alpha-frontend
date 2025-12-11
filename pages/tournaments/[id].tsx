@@ -4,13 +4,14 @@ import styled from "styled-components";
 import { Button } from "components/Button";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
-import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styles";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { useParams, useRouter } from "next/navigation";
-import { TournamentsType } from "types/game.types";
+import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
+import { useTournamentsById, useRegisterForTournament, useUnregisterFromTournament, useRegisteredPlayers, useUpdateTournamentStatus, useBulkRegisterUsers, useGenerateRandomSchedule, useWaitlistPlayers, useAddToWaitlist, useRemoveFromWaitlist } from "hooks/useTournaments";
+import { useParams } from "next/navigation";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
-import { dateIntlFormatter } from "utils/dates";
-import { useSession } from "contexts/AuthProvider";
+import UserTypeahead from "components/UserTypeahead";
+import { DropdownItemType } from "types/types";
+import { dateFormat } from "utils/dates";
+import { useAuth } from "contexts/AuthProviderNew";
 import { getInfoFromCookies } from "utils/cookies";
 import { ServerType } from "types/types";
 import { MainLayout } from "components/Layout";
@@ -19,14 +20,13 @@ import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
 import { tournamentStatusHelpers, ACTION_TO_STATUS, ACTION_LABELS, TOURNAMENT_STATUS_NAMES } from "utils/tournamentStatus";
 
-const DescriptionBox = styled("div", {
-  marginTop: "8px",
-  padding: "12px",
-  backgroundColor: "#f8f9fa",
-  whiteSpace: 'pre-line',
-  borderRadius: "6px",
-  border: "1px solid #e9ecef"
-});
+const DescriptionBox = styled.div`
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+`;
 
 interface StatusTextProps {
   $type?: 'registered' | 'default' | 'admin';
@@ -178,123 +178,220 @@ const ActionButton = styled(Button)<{ $variant?: string }>`
   }};
 `;
 
-const ManualRegistrationInput = styled("input", {
-  padding: "8px 12px",
-  border: "1px solid #d1d5db",
-  borderRadius: "6px",
-  fontSize: "14px",
-  width: "250px",
-  "&:focus": {
-    outline: "none",
-    borderColor: "#3b82f6",
-    boxShadow: "0 0 0 3px rgba(59, 130, 246, 0.1)"
-  }
-});
+interface RegistrationActionSectionProps {
+  isUserRegistered: boolean;
+  isUserOnWaitlist: boolean;
+  showWaitlistButton: boolean;
+  isRegistering: boolean;
+  isWaitlistAction: boolean;
+  canRegister: boolean;
+  onRegisterClick: () => void;
+  onWaitlistClick: () => void;
+}
 
-const ManualRegistrationBox = styled("div", {
-  padding: "20px 24px",
-  borderTop: "1px solid #e9ecef",
-  backgroundColor: "#f8f9fa",
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px"
-});
+const RegistrationActionSection = ({
+  isUserRegistered,
+  isUserOnWaitlist,
+  showWaitlistButton,
+  isRegistering,
+  isWaitlistAction,
+  canRegister,
+  onRegisterClick,
+  onWaitlistClick,
+}: RegistrationActionSectionProps) => {
+
+  const getStatusText = () => {
+    if (isUserRegistered) {
+      return <StatusText $type="registered">✓ You are registered for this tournament</StatusText>;
+    }
+    if (isUserOnWaitlist) {
+      return <StatusText $type="default">You are on the waitlist for this tournament</StatusText>;
+    }
+    if (showWaitlistButton) {
+      return <StatusText $type="default">Registration closed. Join the waitlist</StatusText>;
+    }
+    return <StatusText $type="default">Click to register for this tournament</StatusText>;
+  };
+
+  const getWaitlistButtonLabel = () => {
+    if (isWaitlistAction) return <Spinner size="1" />;
+    if (isUserOnWaitlist) return "Leave Waitlist";
+    return "Join Waitlist";
+  };
+
+  const getRegisterButtonLabel = () => {
+    if (isRegistering) return <Spinner size="1" />;
+    if (isUserRegistered) return "Unregister";
+    return "Register";
+  };
+
+  if (showWaitlistButton) {
+    return (
+      <ActionSection>
+        <div>{getStatusText()}</div>
+        <WaitlistButton
+          onClick={onWaitlistClick}
+          disabled={isWaitlistAction}
+          $isOnWaitlist={isUserOnWaitlist}
+        >
+          {getWaitlistButtonLabel()}
+        </WaitlistButton>
+      </ActionSection>
+    );
+  }
+
+  if (!canRegister) return null;
+  
+  return (
+    <ActionSection>
+      <div>{getStatusText()}</div>
+      <RegisterButton
+        onClick={onRegisterClick}
+        disabled={isRegistering || (!isUserRegistered && !canRegister)}
+        $isRegistered={isUserRegistered}
+      >
+        {getRegisterButtonLabel()}
+      </RegisterButton>
+    </ActionSection>
+  );
+};
 
 interface TournamentDetailProps {
   userRole?: number;
 }
 
-const RegisterButtons = ({ registrationStatus, onRegisterClick, isRegistering }) => {
-  return <Box css={{
-            padding: "20px 24px",
-            borderTop: "1px solid #e9ecef",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
-            <div>
-              {isUserRegistered && (
-                <StatusText $type="registered">
-                  ✓ You are registered for this tournament
-                </StatusText>
-              )}
-              {!isUserRegistered && (
-                <StatusText $type="default">
-                  Click to register for this tournament
-                </StatusText>
-              )}
-            </div>
-
-            <RegisterButton
-              onClick={onRegisterClick}
-              disabled={isRegistering}
-              $isRegistered={isUserRegistered}
-            >
-              {isRegistering ? (
-                <Spinner size="1" />
-              ) : isUserRegistered ? (
-                "Unregister"
-              ) : (
-                "Register"
-              )}
-            </Button>
-          </Box>
-}
-const TournamentInfo = ({ tournament_name, statusName, adminName, starting_date, description }: TournamentsType) => {
-  return <Box css={{
-            display: "grid",
-            gap: "0.25rem",
-            maxWidth: "48rem",
-            gridTemplateColumns: "1fr 2fr",
-            padding: "24px 0 24px 24px",
-            alignItems: "left",
-            width: "100%",
-          }}>
-            <DisplayInfo label="Tournament Name" infoText={tournament_name || '-'} />
-            <DisplayInfo label="Status" infoText={statusName} />
-            <DisplayInfo label="Administrators" infoText={adminName} />
-            <DisplayInfo label="Starting Date" infoText={starting_date} />
-
-            {description && (
-              <Flex css={{ flexDirection: "column", gridColumn: "1 / -1" }}>
-                <StyledLabel>Description</StyledLabel>
-                <DescriptionBox>{description}</DescriptionBox>
-              </Flex>
-            )}
-          </Box>
-}
 const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   const { id } = useParams();
-  const router = useRouter();
-  const { id: userId, email } = useSession();
+  const { user } = useAuth();
+  const userId = user?.id;
+  const email = user?.email;
   const [isRegistering, setIsRegistering] = useState(false);
-  const [registrationStatus, setRegistrationStatus] = useState<'registered' | 'not_registered' | 'loading'>('not_registered');
+  const [isWaitlistAction, setIsWaitlistAction] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [manualRegistrationEmail, setManualRegistrationEmail] = useState("");
+  const [showManualRegistration, setShowManualRegistration] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<string>("");
   const [isManualRegistering, setIsManualRegistering] = useState(false);
-  const [isExportingCSV, setIsExportingCSV] = useState(false);
 
-  const URLparams = new URLSearchParams();
-  if (userId) URLparams.append("u", userId);
-  if (id) URLparams.append("id", id);
-
-  const { data, isLoading, refetch } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?${URLparams.toString()}`,
-  });
+  const { data, isLoading, refetch } = useTournamentsById([id as string]);
+  const registerMutation = useRegisterForTournament();
+  const unregisterMutation = useUnregisterFromTournament();
+  const updateStatusMutation = useUpdateTournamentStatus();
+  const bulkRegisterMutation = useBulkRegisterUsers();
+  const generateScheduleMutation = useGenerateRandomSchedule();
+  const addToWaitlistMutation = useAddToWaitlist();
+  const removeFromWaitlistMutation = useRemoveFromWaitlist();
 
   const tournament = data?.[0];
 
-  // Check if user is registered for this tournament
-  useEffect(() => {
-    if (tournament && userId && email) {
-      // Check if user is already registered by checking tournament registrations
-      // This would typically be done by checking the user's registered tournaments
-      // For now, we'll assume not registered - this should be implemented with proper API call
-      setRegistrationStatus(tournament?.registered ? 'registered' : 'not_registered');
-    }
-  }, [tournament]);
+  // Waitlist players query - only fetch when tournament has waitlist enabled
+  const { data: waitlistPlayers, refetch: refetchWaitlist } = useWaitlistPlayers(
+    tournament ? parseInt(tournament.id) : 0
+  );
 
-  const isUserAdmin = userRole === userRoles.SUPERADMIN //||(tournament?.adminId && userId && tournament.adminId.includes(userId));
+  // Get tournament status information
+  const currentStatus = (tournament?.status_id || 1) as 1 | 2 | 3 | 4 | 5;
+  const tournamentStatusName = tournamentStatusHelpers.getStatusName(currentStatus);
+  const availableActions = tournamentStatusHelpers.getAvailableActions(currentStatus);
+  const canRegister = tournamentStatusHelpers.canRegister(currentStatus);
+  console.log("canRegister", canRegister);
+  const canWaitlistRegister = tournamentStatusHelpers.canWaitlistRegister(currentStatus, tournament?.waitlist || false);
+  const canEdit = tournamentStatusHelpers.canEdit(currentStatus);
+
+  // Check if should show waitlist button instead of register (status 3 or 4 with waitlist enabled)
+  const showWaitlistButton = tournament?.waitlist && (currentStatus === 3 || currentStatus === 4);
+
+  const handleTournamentAction = async (action: keyof typeof ACTION_TO_STATUS) => {
+    if (!tournament) return;
+
+    try {
+      const nextStatus = tournamentStatusHelpers.getNextStatus(action);
+      await updateStatusMutation.mutateAsync({
+        tournamentId: parseInt(tournament.id),
+        status: nextStatus
+      });
+      refetch()
+    } catch (error) {
+      console.error(`Failed to execute ${action}:`, error);
+    }
+  };
+
+  const handleGenerateSchedule = async () => {
+    if (!tournament) return;
+
+    try {
+      console.log('Starting random schedule generation...');
+      const result = await generateScheduleMutation.mutateAsync(parseInt(tournament.id));
+
+      console.log('Schedule generation completed:', result);
+      alert(`Schedule generation completed!\nTotal schedules: ${result.totalSchedules}\nSuccessful: ${result.successCount}\nFailed: ${result.errorCount}\nGenerated pairs: ${result.generatedPairs}`);
+
+      refetch();
+    } catch (error) {
+      console.error('Failed to generate schedule:', error);
+      alert('Failed to generate schedule. Please try again.');
+    }
+  };
+
+  // Bulk register 192 random users (IDs 1600-2800) with standings structure via backend
+  const handleBulkRegister = async () => {
+    console.log('tournament', tournament);
+    if (!tournament) return;
+
+    try {
+      console.log('Starting bulk registration of 192 random users with standings...');
+      const result = await bulkRegisterMutation.mutateAsync(parseInt(tournament.id));
+
+      console.log('Bulk registration completed:', result);
+      alert(`Bulk registration completed!\n` +
+        `Users registered: ${result.successCount}/${result.totalAttempted}\n` +
+        `Standings created: ${result.standingsCreated}\n` +
+        `Players assigned to standings: ${result.standingPlayersCreated}\n` +
+        `Errors: ${result.errorCount}`);
+
+      // Refresh the tournament data
+      refetch();
+    } catch (error) {
+      console.error('Failed to perform bulk registration:', error);
+      alert('Failed to perform bulk registration. Please try again.');
+    }
+  };
+
+  // Get registered players to check if current user is registered
+  const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
+    tournament ? parseInt(tournament.id) : 0
+  );
+
+  const isUserRegistered = userId ? registeredPlayers?.some(player =>
+    player.email === email || player.userId === userId.toString()
+  ) : false;
+
+  // Check if user is on the waitlist
+  const isUserOnWaitlist = userId ? waitlistPlayers?.some(player =>
+    player.userId === userId.toString()
+  ) : false;
+
+  const isUserAdmin = tournament?.adminId && userId && tournament.adminId.includes(userId);
+
+  // Manual registration function
+  const onManualRegisterClick = async () => {
+    if (!tournament || !selectedUser) return;
+
+    setIsManualRegistering(true);
+    try {
+      await registerMutation.mutateAsync({
+        id: parseInt(tournament.id),
+        userId: selectedUser
+      });
+      setSelectedUser("");
+      setShowManualRegistration(false);
+      // The registered players will be refetched automatically due to React Query cache invalidation
+    } catch (e) {
+      console.error("Manual registration error:", e);
+      alert("Failed to register user. Please try again.");
+    } finally {
+      setIsManualRegistering(false);
+    }
+  };
 
   // Waitlist join/leave handler
   const onWaitlistClick = async () => {
@@ -325,26 +422,24 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   };
 
   const onRegisterClick = async () => {
-    if (!tournament || !userId || !email) {
-      router.push("/login");
-      return;
-    }
+    if (!tournament || !userId || !email) return;
 
     setIsRegistering(true);
     try {
-      if (registrationStatus === 'registered') {
-        await getAxiosInstance().delete(`/api/game/tournaments/registration`, {
-          data: { tournamentId: tournament.id, userEmail: email }
+      if (isUserRegistered) {
+        // Unregister logic - use userId to find and remove registration
+        await unregisterMutation.mutateAsync({
+          tournamentId: parseInt(tournament.id),
+          userId: userId.toString()
         });
-        setRegistrationStatus('not_registered');
       } else {
-        await getAxiosInstance().post('/api/game/tournaments', {
-          id: tournament.id,
-          userEmail: email
+        // Register logic - use userId
+        await registerMutation.mutateAsync({
+          id: parseInt(tournament.id),
+          userId: userId.toString()
         });
-        setRegistrationStatus('registered');
       }
-      router.refresh()
+      refetch();
     } catch (e) {
       console.error("Registration error:", e);
     } finally {
@@ -352,182 +447,151 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
     }
   };
 
-  const onManualRegisterClick = async () => {
-    if (!tournament || !manualRegistrationEmail.trim()) {
-      return;
-    }
-
-    setIsManualRegistering(true);
-    try {
-      await getAxiosInstance().post('/api/game/tournaments', {
-        id: tournament.id,
-        userEmail: manualRegistrationEmail.trim()
-      });
-      setManualRegistrationEmail("");
-      alert(`Successfully registered ${manualRegistrationEmail} for the tournament!`);
-      router.refresh()
-    } catch (e) {
-      console.error("Manual registration error:", e);
-      alert(`Failed to register ${manualRegistrationEmail}. Please check if the email is valid and the user exists.`);
-    } finally {
-      setIsManualRegistering(false);
-    }
-  };
-
-  const onExportCSV = async () => {
-    if (!tournament) {
-      return;
-    }
-
-    setIsExportingCSV(true);
-    try {
-      // Fetch registered players with detailed information
-      const response = await getAxiosInstance().get(`/api/game/tournaments?id=${tournament.id}&players=true`);
-      const registeredPlayers = response.data || [];
-
-      if (registeredPlayers.length === 0) {
-        alert("No registered players found for this tournament.");
-        return;
-      }
-
-      // Create CSV content
-      const csvHeaders = ["Name", "Email", "User ID", "Rating", "Phone Number", "Country Code", "Registered At", "Playdeck Name"];
-      const csvRows = registeredPlayers.map(player => [
-        player.name || "",
-        player.email || "",
-        player.userId || "",
-        player.rating || "",
-        player.phoneNumber || "",
-        player.countryCode || "",
-        player.registeredAt || "",
-        player.playdeckName || "",
-      ]);
-
-      // Combine headers and rows
-      const csvContent = [csvHeaders, ...csvRows]
-        .map(row => row.map(field => `"${field}"`).join(","))
-        .join("\n");
-
-      // Create and download the file
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `tournament_${tournament.id}_registered_players.csv`);
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      alert(`Successfully exported ${registeredPlayers.length} registered players to CSV!`);
-    } catch (e) {
-      console.error("CSV export error:", e);
-      alert("Failed to export registered players. Please try again.");
-    } finally {
-      setIsExportingCSV(false);
-    }
-  };
-
-  if (isLoading) return <Spinner size="3" />;
+  if (isLoading || (tournament && playersLoading)) {
+    return <Spinner size="3" />;
+  }
 
   if (!tournament) {
     return (
-      <DetailContainer>
-        <Box css={{ textAlign: "center", padding: "40px" }}>
-          Tournament not found
-        </Box>
-      </DetailContainer>
+        <DetailContainer>
+          <NotFoundContainer>
+            Tournament not found
+          </NotFoundContainer>
+        </DetailContainer>
     );
   }
 
   const adminsFormatted = tournament?.adminName?.length > 0 ? tournament?.adminName.join(", ") : '-';
-  const dateFormatted = tournament?.starting_date ? dateIntlFormatter(new Date(tournament.starting_date)) : '-';
-  const statusName = getTournamentStatusNames(tournament?.status_id);
+  const dateFormatted = tournament?.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-';
+  const statusName = TOURNAMENT_STATUS_NAMES[tournament?.status_id];
 
-  // Admin Mode - Show tournament info with admin controls (to be implemented)
+  if (!isUserAdmin) {
+    return (
+        <DetailContainer>
+          <TournamentCard>
+            <TournamentGrid>
+              <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
+              <DisplayInfo label="Status" infoText={statusName} />
+              <DisplayInfo label="Administrators" infoText={adminsFormatted} />
+              <DisplayInfo label="Starting Date" infoText={dateFormatted} />
+
+              {tournament.description && (
+                <DescriptionContainer>
+                  <StyledLabel>Description</StyledLabel>
+                  <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
+                </DescriptionContainer>
+              )}
+            </TournamentGrid>
+
+            <RegistrationActionSection
+              isUserRegistered={!!isUserRegistered}
+              isUserOnWaitlist={!!isUserOnWaitlist}
+              showWaitlistButton={!!showWaitlistButton}
+              isRegistering={isRegistering}
+              isWaitlistAction={isWaitlistAction}
+              canRegister={canRegister}
+              onRegisterClick={onRegisterClick}
+              onWaitlistClick={onWaitlistClick}
+            />
+          </TournamentCard>
+
+          <TournamentPlayersList
+            tournamentId={tournament.id}
+            tournamentStatusId={tournament.status_id}
+            onPlayerRemoved={() => refetch()}
+          />
+
+          {tournament.waitlist && (
+            <TournamentWaitlist
+              tournamentId={tournament.id}
+              userRole={userRole || 1}
+              onPlayerRemoved={() => refetch()}
+            />
+          )}
+        </DetailContainer>
+    );
+  }
+
   return (
     <DetailContainer>
-      <div style={{
-        border: "solid 1px lightgray",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-        borderRadius: "8px",
-        backgroundColor: "white",
-      }}>
-        <TournamentInfo tournament_name={tournament.tournament_name} statusName={statusName} adminName={adminsFormatted} starting_date={dateFormatted} description={tournament.description} />
-        {tournament?.status_id === 4 && <RegisterButtons registrationStatus={registrationStatus} onRegisterClick={onRegisterClick} isRegistering={isRegistering} />}
+      <TournamentCard>
+        <TournamentGrid>
+          <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
+          <DisplayInfo label="Status" infoText={statusName} />
+          <DisplayInfo label="Can Register" infoText={canRegister ? 'Yes' : 'No'} />
+          <DisplayInfo label="Waitlist Enabled" infoText={tournament?.waitlist ? 'Yes' : 'No'} />
+          <DisplayInfo label="Administrators" infoText={adminsFormatted} />
+          <DisplayInfo label="Starting Date" infoText={dateFormatted} />
 
-        {isUserAdmin && (
-          <>
-            <Box css={{
-            padding: "20px 24px",
-            borderTop: "1px solid #e9ecef",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}>
-            <StatusText type="admin">
-              Admin Mode - Tournament Management
-            </StatusText>
+          {tournament.description && (
+            <DescriptionContainer>
+              <StyledLabel>Description</StyledLabel>
+              <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
+            </DescriptionContainer>
+          )}
+        </TournamentGrid>
+        <RegistrationActionSection
+          isUserRegistered={!!isUserRegistered}
+          isUserOnWaitlist={!!isUserOnWaitlist}
+          showWaitlistButton={!!showWaitlistButton}
+          isRegistering={isRegistering}
+          isWaitlistAction={isWaitlistAction}
+          canRegister={canRegister}
+          onRegisterClick={onRegisterClick}
+          onWaitlistClick={onWaitlistClick}
+        />
+        <ActionSection>
+          <StatusText $type="admin">
+            Admin Mode - Tournament Management
+          </StatusText>
 
-            <Flex css={{ gap: "12px" }}>
-              <Button
-                css={{ backgroundColor: "#3b82f6" }}
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? "Cancel Edit" : "Edit Tournament"}
-              </Button>
-              <Button
-                css={{
-                  backgroundColor: "#059669",
-                  "&:hover": {
-                    backgroundColor: "#047857"
-                  }
-                }}
-                onClick={onExportCSV}
-                disabled={isExportingCSV}
-              >
-                {isExportingCSV ? (
-                  <Spinner size="1" />
-                ) : (
-                  "Export CSV"
-                )}
-              </Button>
-            </Flex>
-          </Box>
+          <ButtonGroup>
+            <EditButton onClick={() => setIsEditing(!isEditing)}>
+              {isEditing ? "Cancel Edit" : "Edit Tournament"}
+            </EditButton>
+            <ManualRegisterButton onClick={() => setShowManualRegistration(!showManualRegistration)}>
+              {showManualRegistration ? "Cancel" : "Register User"}
+            </ManualRegisterButton>
 
-          {/* Manual Registration Section */}
-          <ManualRegistrationBox>
-            <StatusText type="admin">
-              Manual Player Registration
-            </StatusText>
-            <Flex css={{ gap: "12px", alignItems: "center" }}>
-              <ManualRegistrationInput
-                type="email"
-                placeholder="Enter player email address"
-                value={manualRegistrationEmail}
-                onChange={(e) => setManualRegistrationEmail(e.target.value)}
-                disabled={isManualRegistering}
-              />
-              <Button
-                css={{
-                  backgroundColor: "#16a34a",
-                  "&:hover": {
-                    backgroundColor: "#15803d"
-                  }
-                }}
-                onClick={onManualRegisterClick}
-                disabled={isManualRegistering || !manualRegistrationEmail.trim()}
+            {/* Tournament Action Buttons */}
+            {availableActions.map((action) => (
+              <ActionButton
+                key={action}
+                $variant={action.toLowerCase().replace('_', '-') as any}
+                onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
+                disabled={updateStatusMutation.isPending}
               >
-                {isManualRegistering ? (
-                  <Spinner size="1" />
-                ) : (
-                  "Register Player"
-                )}
-              </Button>
-            </Flex>
-          </ManualRegistrationBox>
-          </>
-        )}
+                {updateStatusMutation.isPending ? 'Processing...' : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
+              </ActionButton>
+            ))}
+
+            <ActionButton
+              $variant={tournament?.waitlist ? "waitlist-enabled" : "waitlist-disabled"}
+              onClick={() => console.log('Waitlist toggle not implemented yet')}
+            >
+              {tournament?.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
+            </ActionButton>
+
+            {/* Bulk Registration Button */}
+            <ActionButton
+              $variant="bulk-register"
+              onClick={handleBulkRegister}
+              disabled={bulkRegisterMutation.isPending || !canRegister}
+            >
+              {bulkRegisterMutation.isPending ? 'Registering...' : 'Register 192 Users + Create Standings'}
+            </ActionButton>
+
+            {/* Generate Random Schedule Button */}
+            <ActionButton
+              $variant="generate-schedule"
+              onClick={handleGenerateSchedule}
+              disabled={generateScheduleMutation.isPending}
+            >
+              {generateScheduleMutation.isPending ? 'Generating...' : 'Generate Random Schedule'}
+            </ActionButton>
+          </ButtonGroup>
+        </ActionSection>
+      </TournamentCard>
 
       {/* Manual Registration Form */}
       {showManualRegistration && (
@@ -569,22 +633,28 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
           tournament={tournament as any}
           onSave={() => {
             setIsEditing(false);
-            router.refresh()
+            refetch();
           }}
           onCancel={() => setIsEditing(false)}
         />
       )}
-      </Box>
+
       {/* Registered Players List */}
       <TournamentPlayersList
         tournamentId={tournament.id}
         tournamentStatusId={tournament.status_id}
         onPlayerRemoved={() => refetch()}
-        isUserAdmin={isUserAdmin}
       />
-      
+
+      {/* Tournament Waitlist - Show if waitlist is enabled */}
+      {tournament.waitlist && (
+        <TournamentWaitlist
+          tournamentId={tournament.id}
+          userRole={userRole || 1}
+          onPlayerRemoved={() => refetch()}
+        />
+      )}
     </DetailContainer>
-    </MainLayout>
   );
 };
 

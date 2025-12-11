@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Button } from "components/Button";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
-import { useRegisteredPlayers, useUnregisterFromTournament } from "hooks/useTournaments";
-import { styled } from "stitches.config";
-import { UnstyledLink } from "pages/players";
+import { useRegisteredPlayers, useUnregisterFromTournament, useForfeitPlayer } from "hooks/useTournaments";
+import styled from "styled-components";
 
 const PlayersContainer = styled.div`
   margin-top: 24px;
@@ -19,21 +18,12 @@ const PlayersHeader = styled.div`
   border-radius: 8px 8px 0 0;
 `;
 
-const PlayerRow = styled("div", {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "12px 20px",
-  borderBottom: "1px solid #f1f3f4",
-  
-  "&:last-child": {
-    borderBottom: "none",
-  },
-  
-  // "&:hover": {
-  //   backgroundColor: "#f8f9fa",
-  // },
-});
+const PlayerRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f1f3f4;
 
   &:last-child {
     border-bottom: none;
@@ -142,25 +132,23 @@ const RemoveButton = styled(Button)`
   }
 `;
 
-interface RegisteredPlayer {
-  registrationId: number;
-  email: string;
-  status: string;
-  rating: string;
-  registeredAt: Date;
-  userId?: string;
-  name: string;
-  countryCode?: string;
-}
+const ForfeitButton = styled(Button)`
+  background-color: #f59e0b;
+  font-size: 12px;
+  padding: 6px 12px;
+
+  &:hover {
+    background-color: #d97706;
+  }
+`;
 
 interface TournamentPlayersListProps {
   tournamentId: string;
   tournamentStatusId?: number;
   onPlayerRemoved?: () => void;
-  isUserAdmin: boolean
 }
 
-const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: TournamentPlayersListProps) => {
+const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemoved }: TournamentPlayersListProps) => {
   const [removingPlayerId, setRemovingPlayerId] = useState<number | null>(null);
   const [forfeitingPlayerId, setForfeitingPlayerId] = useState<number | null>(null);
 
@@ -245,28 +233,31 @@ const TournamentPlayersList = ({ tournamentId, onPlayerRemoved, isUserAdmin }: T
           {players.map((player) => (
             <PlayerRow key={player.registrationId}>
               <PlayerInfo>
-                <Flex css={{ gap: 4 }}>
-                  <PlayerName><UnstyledLink href={`/userprofile/${player.userId}`}>{player.name}</UnstyledLink></PlayerName>
-                  <PlayerName>{player.rating}</PlayerName>
-                </Flex>
-                {isUserAdmin && <PlayerEmail>{player.email}</PlayerEmail>}
+                <PlayerName>{player.name}</PlayerName>
+                <PlayerEmail>{player.email}</PlayerEmail>
               </PlayerInfo>
-              
-              {isUserAdmin && (
-                <Flex css={{ alignItems: "center", gap: "12px" }}>
-                <Button
-                  css={{ 
-                    backgroundColor: "#dc2626", 
-                    fontSize: "12px", 
-                    padding: "6px 12px",
-                    "&:hover": { backgroundColor: "#b91c1c" }
-                  }}
-                  disabled={removingPlayerId === player.registrationId}
-                  onClick={() => handleRemovePlayer(player.registrationId, tournamentId)}
-                >
-                  {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
-                </Button>
-              </Flex>)}
+
+              <PlayerActionsContainer>
+                <StatusBadge $status={player.status as any}>
+                  {player.status}
+                </StatusBadge>
+
+                {showForfeitButton ? (
+                  <ForfeitButton
+                    disabled={forfeitingPlayerId === player.registrationId || player.status === 'forfeited'}
+                    onClick={() => handleForfeitPlayer(player.registrationId, tournamentId)}
+                  >
+                    {forfeitingPlayerId === player.registrationId ? "Forfeiting..." : "Forfeit"}
+                  </ForfeitButton>
+                ) : (
+                  <RemoveButton
+                    disabled={removingPlayerId === player.registrationId}
+                    onClick={() => handleRemovePlayer(player.registrationId, tournamentId)}
+                  >
+                    {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
+                  </RemoveButton>
+                )}
+              </PlayerActionsContainer>
             </PlayerRow>
           ))}
         </PlayersListContainer>

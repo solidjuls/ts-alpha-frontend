@@ -236,7 +236,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
       </PlayerInfo>
       <CheckOpponentProfileCell>
         <UnstyledLink href={`/userprofile/${opponentId}`}>
-          <Text fontSize="small">Opponent Profile</Text>
+          <Text fontSize="small">Opponent profile</Text>
         </UnstyledLink>
       </CheckOpponentProfileCell>
       <DueDateCell>
@@ -292,27 +292,47 @@ const SchedulePanel = ({
   );
 };
 
-const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tournamentsRegistered, userId }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { items, status, filters, currentPage, totalPages } = useSelector(
-    (state: RootState) => state.scheduleList,
-  );
+const Schedule = () => {
+  const { user } = useAuth();
+  const userId = user?.id || "";
+  const userRole = user?.role || userRoles.PLAYER;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUserId, setSelectedUserId] = useState(userId);
+  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [showFullSchedule, setShowFullSchedule] = useState(false);
+  const [showOnlyPending, setShowOnlyPending] = useState(false);
 
-  useEffect(() => {
-    if (tournamentsRegistered?.length > 0) {
-      // dispatch(setTournamentFilter(tournamentsRegistered?.[0]?.value))
-      dispatch(
-        fetchScheduleList({
-          isSuperAdmin,
-          tournaments: [tournamentsRegistered?.[0] as string],
-          userId,
-        }),
-      );
-    }
-  }, [filters, currentPage, dispatch]);
+  // Only fetch schedules when tournament changes or filters change (not for initial load)
+  // const shouldFetchSchedule = currentPage !== 1 ||
+  //   selectedTournament !== initialTournaments[0] ||
+  //   showFullSchedule ||
+  //   showOnlyPending;
+  
+  // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
+  
+  const { data: dataSchedule, isLoading, error } = useSchedules({
+    userId: showFullSchedule ? undefined : selectedUserId,
+    tournamentId: selectedTournament?.id || "",
+    page: currentPage,
+    pageSize: 20,
+    onlyPending: showOnlyPending,
+    orderBy: 'dueDate',
+    orderDirection: 'asc'
+  });
+  
+  if (isLoading) return <div>Loading tournaments...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-  const onPageChange = async (page: string) => {
-    dispatch(setCurrentPage(page));
+  const scheduleData = dataSchedule?.results;
+  const scheduleTotalPages = dataSchedule?.totalPages;
+  const availableTournaments = dataSchedule?.userTournaments;
+  const currentTournament = selectedTournament || availableTournaments?.find(t => t.id === dataSchedule?.defaultTournament);
+  const isUserAdminForTournament = currentTournament?.adminId?.includes(userId);
+
+  console.log("scheduleData", isUserAdminForTournament, currentTournament);
+  const handlePlayerSelect = (playerId: string) => {
+    setSelectedUserId(playerId);
+    setCurrentPage(1); // Reset to first page when changing player
   };
 
   const handlePlayerRemove = (playerId: string) => {
@@ -364,48 +384,49 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
   }
   return (
     <>
-      <h1>My Schedule</h1>
-      <ResponsiveContainer
-        direction={{
-          "@initial": "row",
-          "@sm": "column",
-        }}
-      >
-        <Flex css={{ flexDirection: "column", width: "100%", gap: "4px", marginTop: "16px" }}>
-          {/* <Flex css={{ flexDirection: 'row', width: "100%", gap: "4px" }}>
-                <DropdownWithLabel
-                  labelText="typeOfGame"
-                  key="gameType"
-                  items={tournamentsRegistered}
-                  selectedItem={filters.tournamentSelected}
-                  placeholder="Select tournament"
-                  height="270px"
-                  width='320px'
-                  onSelect={(value) =>  {
-                    dispatch(fetchScheduleList({isSuperAdmin, tournaments: [value], userId}))
-                  }}
-                />
-              </Flex> */}
+      <Head>
+        <title>My Schedule - Twilight Struggle</title>
+        <meta
+          name="description"
+          content="View your tournament schedule and upcoming games in Twilight Struggle competitions."
+        />
+        <link rel="icon" href="/ts-icon.webp" />
+      </Head>
+        <ResponsiveContainer>
+          <Flex style={{ flexDirection: "column", width: "100%", gap: "4px", marginTop: "16px" }}>
+            <h1>My Schedule</h1>
 
-          {isSuperAdmin && (
-            <ScheduleFilter
-              noSchedule={!data?.results || data.results.length === 0}
-              tournament={selectedTournament}
-              onPlayerSelect={handlePlayerSelect}
-              onPlayerRemove={handlePlayerRemove}
-              onShowFullScheduleChange={handleShowFullScheduleChange}
-              onShowOnlyPendingChange={handleShowOnlyPendingChange}
-              showFullSchedule={showFullSchedule}
-              showOnlyPending={showOnlyPending}
-            />
-          )}
-          
-          <SchedulePanel 
-            data={data?.results} 
-            userId={userId} 
-            isAdmin={tournamentsAdmin.length > 0} 
-            isLoading={isLoading} 
-          />
+            {/* Tournament Tabs */}
+            {availableTournaments.length > 0 && (
+              <TabContainer>
+                {availableTournaments.map((tournament, index: number) => (
+                  <TabButton
+                    key={tournament.id}
+                    $active={activeTabButton(tournament, index)}
+                    onClick={() => {
+                      setSelectedTournament(tournament);
+                      setCurrentPage(1);
+                    }}
+                  >
+                    {tournament.tournament_name}
+                  </TabButton>
+                ))}
+              </TabContainer>
+            )}
+
+            {/* Admin Controls */}
+            {isUserAdminForTournament && currentTournament && (
+              <ScheduleFilter
+                noSchedule={!scheduleData || scheduleData.length === 0}
+                tournament={currentTournament.id}
+                onPlayerSelect={handlePlayerSelect}
+                onPlayerRemove={handlePlayerRemove}
+                onShowFullScheduleChange={handleShowFullScheduleChange}
+                onShowOnlyPendingChange={handleShowOnlyPendingChange}
+                showFullSchedule={showFullSchedule}
+                showOnlyPending={showOnlyPending}
+              />
+            )}
 
             <SchedulePanel
               data={scheduleData}
@@ -428,35 +449,5 @@ const Schedule: React.FC<ScheduleProps> = ({ isSuperAdmin, tournamentsAdmin, tou
 };
 
 
-  if (!payload) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: "/login",
-      },
-    };
-  }
-
-  try {
-    // Get token from cookies
-    const token = req.cookies.token;
-
-  const leagueTypesAdmin: DropdownItemType[] =
-    tournaments?.data
-      ?.filter((item: TournamentsType) => payload?.tournamentsAdmin.includes(Number(item.id)))
-      .map((item: TournamentsType) => ({
-        value: item.id.toString(),
-        text: item.tournament_name,
-      })) || [];
-
-  const tournamentsRegistered = await getTournamentsRegistered(payload?.mail);
-  // const leagueTypesRegistered: DropdownItemType[] = tournaments?.data?.filter((item: TournamentsType) => tournamentsRegistered?.map(item => item.tournamentId).includes(item.id)).map((item: TournamentsType) => ({
-  //   value: item.id.toString(),
-  //   text: item.tournament_name,
-  // })) || []
-  console.log("payload", payload);
-
-  return { props: { isSuperAdmin: payload?.role === userRoles.SUPERADMIN, tournamentsRegistered: tournamentsRegistered?.map(item => item.tournamentId), tournamentsAdmin: leagueTypesAdmin, userId: payload?.id } };
-}
 
 export default Schedule;

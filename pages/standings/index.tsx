@@ -4,42 +4,18 @@ import { FlagIcon } from "components/FlagIcon";
 import { useState } from "react";
 import { useStandings, PlayerStanding } from "hooks/useStandings";
 
-const headerColor = {
-  backgroundColor: "rgb(28, 69, 135)",
-  color: "white",
-};
+// Using PlayerStanding type from the hook
 
-const headerForfeitColor = {
-  backgroundColor: "red",
-  color: "white",
-};
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+`;
 
-type Player = {
-  userId: string;
-  name: string;
-  secondaryName?: string;
-  standingName: string;
-  tldCode: string;
-  gamesWon: number;
-  gamesLost: number;
-  gamesTied: number;
-  winRate: number;
-  sos: number;
-};
-
-const PageHeader = styled("h1", {
-  textAlign: "center",
-  borderBottom: "solid 1px $greyLight",
-});
-const StyledTable = styled("table", {
-  borderCollapse: "collapse",
-  marginBottom: "8px",
-});
-
-const StyledHeading = styled("thead", {
-  fontWeight: "bold",
-  ...headerColor,
-});
+const PageHeader = styled.h1`
+  text-align: center;
+  border-bottom: solid 1px #e5e7eb;
+`;
 
 const StyledTable = styled.table`
   border-collapse: collapse;
@@ -144,26 +120,26 @@ const WidePlayerCell = styled(StyledCell)`
 type Division = "TORUN" | "SEATTLE";
 
 const Standings = () => {
-  const [selectedDivision, setSelectedDivision] = useState<Division>("SEATTLE");
+  const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
 
   const {
     data: standings,
-    refetch,
-  } = useFetchInitialData<Player[]>({
-    url: `/api/standings?id=318&division=${selectedDivision}`,
+    isLoading,
+    error,
+  } = useStandings({
+    tournamentId: "3",
+    division: selectedDivision
   });
+
   const handleDivisionChange = (division: Division) => {
     setSelectedDivision(division);
   };
 
-  // Refetch data when division changes
-  useEffect(() => {
-    refetch();
-  }, [selectedDivision]);
-
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading standings</div>;
   if (!standings) return null;
 
-  const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
+  const grouped = standings.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
     return acc;
@@ -177,7 +153,6 @@ const Standings = () => {
       return b.sos - a.sos;
     });
   }
-// grouped["Forfeit"];
 
   return (
     <PageContainer>
@@ -199,76 +174,59 @@ const Standings = () => {
       </TabContainer>
 
       {/* Standings Tables */}
-      <Flex css={{ flexDirection: "row", flexWrap: "wrap", gap: "16px" }}>
-        {Object.entries(grouped).map(([standingName, players]) => {
-          if (standingName === "Forfeit") return null;
-
-          return (
-            <Flex
-              key={standingName}
-              css={{ flexDirection: "column", borderRadius: "8px", padding: "8px" }}
-            >
-              <Text
-                strong="bold"
-                css={{
-                  ...headerColor,
-                  // borderLeft: "1px solid black",
-                  margin: 0,
-                  textAlign: "center",
-                }}
-              >
-                {standingName}
-              </Text>
-              <StyledTable>
-                <StyledHeading>
-                  <tr>
-                    <StyledHeaderCell css={{ width: "40px" }}>Rank</StyledHeaderCell>
-                    <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
-                      Player Name
-                    </StyledHeaderCell>
-                    <StyledHeaderCell>W-L-T</StyledHeaderCell>
-                    <StyledHeaderCell>Win%</StyledHeaderCell>
-                    <StyledHeaderCell>SoS</StyledHeaderCell>
-                  </tr>
-                </StyledHeading>
-                <tbody>
-                  {players.map((player, index) => (
-                    <tr key={player.userId}>
-                      <StyledCell css={{ borderLeft: "solid 1px black" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {index + 1}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell>
-                        <Flex css={{ alignItems: "center", gap: "4px" }}>
-                          {player.tldCode && <FlagIcon code={player.tldCode} />}
-                          <Text fontSize="small">{player.name}</Text>
-                        </Flex>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small">
-                          {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {`${(player.winRate * 100).toFixed(0)}%`}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {`${(player.sos * 100).toFixed(0)}%`}
-                        </Text>
-                      </StyledCell>
-                    </tr>
-                  ))}
-                </tbody>
-              </StyledTable>
-            </Flex>
-          );
-        })}
-      </Flex>
-    </Flex>
+      <StandingsContainer>
+        {Object.entries(grouped).map(([standingName, players]) => (
+        <StandingGroup key={standingName}>
+          <StandingTitle strong="bold">
+            {standingName}
+          </StandingTitle>
+          <StyledTable>
+            <StyledHeading>
+              <tr>
+                <WideRankCell as="th">Rank</WideRankCell>
+                <WidePlayerCell as="th">Player Name</WidePlayerCell>
+                <StyledHeaderCell>W-L-T</StyledHeaderCell>
+                <StyledHeaderCell>Win%</StyledHeaderCell>
+                <StyledHeaderCell>SoS</StyledHeaderCell>
+              </tr>
+            </StyledHeading>
+            <tbody>
+              {players.map((player, index) => (
+                <PlayerRow key={player.userId}>
+                  <RankCell>
+                    <Text fontSize="small" style={{ textAlign: "center" }}>
+                      {index+1}
+                    </Text>
+                  </RankCell>
+                  <StyledCell>
+                    <PlayerInfoContainer>
+                      {player.tldCode && <FlagIcon code={player.tldCode} />}
+                      <Text fontSize="small">{player.name}</Text>
+                    </PlayerInfoContainer>
+                  </StyledCell>
+                  <StatCell>
+                    <Text fontSize="small">
+                      {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                    </Text>
+                  </StatCell>
+                  <StatCell>
+                    <Text fontSize="small" style={{ textAlign: "center" }}>
+                      {`${(player.winRate*100).toFixed(0)}%`}
+                    </Text>
+                  </StatCell>
+                  <StatCell>
+                    <Text fontSize="small" style={{ textAlign: "center" }}>
+                      {`${(player.sos*100).toFixed(0)}%`}
+                    </Text>
+                  </StatCell>
+                </PlayerRow>
+              ))}
+            </tbody>
+          </StyledTable>
+        </StandingGroup>
+      ))}
+      </StandingsContainer>
+    </PageContainer>
   );
 };
 

@@ -284,6 +284,48 @@ const LoginFormComponent: React.FC = () => {
 const LogoutComponent: React.FC<{ userName: string }> = ({ userName }) => {
   const logoutMutation = useLogout();
 
+  const handleLogout = async () => {
+    try {
+      await logoutMutation.mutateAsync();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  return (
+    <LoginForm>
+      <WelcomeText>Hi {userName}!</WelcomeText>
+      
+      <Button 
+        onClick={handleLogout}
+        disabled={logoutMutation.isPending}
+        style={{ width: '100%' }}
+      >
+        {logoutMutation.isPending ? <Spinner size="3" /> : 'Sign out'}
+      </Button>
+      
+      {logoutMutation.error && (
+        <ErrorMessage>
+          {logoutMutation.error?.response?.data?.message || 'Logout failed'}
+        </ErrorMessage>
+      )}
+    </LoginForm>
+  );
+};
+
+// Main Login Page Component
+const LoginPage: React.FC = () => {
+  const router = useRouter();
+  const { isAuthenticated, isLoading, user } = useIsAuthenticated();
+
+  if (isLoading) {
+    return (
+      <LoginContainer>
+        <Spinner size="3" />
+      </LoginContainer>
+    );
+  }
+
   return (
     <>
       <Head>

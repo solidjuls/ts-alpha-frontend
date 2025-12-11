@@ -1,7 +1,7 @@
 import { Spinner } from "@radix-ui/themes";
 import styled from "styled-components";
 import { getInfoFromCookies } from "utils/cookies";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { useTournamentsByStatus } from "hooks/useTournaments";
 import {
   getTournamentStatusNames,
   tournamentStatus,
@@ -189,8 +189,8 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   const dateFormatted = tournament.starting_date
     ? dateFormat(new Date(tournament.starting_date))
     : "-";
-  const statusName = getTournamentStatusNames(tournament.status_id);
-  const statusVariant = getVariant(tournament.status_id);
+  const statusName = getTournamentStatusNames(tournament.status_id as TournamentStatusType);
+  const statusVariant = getVariant(tournament.status_id as TournamentStatusType);
 
   const onClick = () => {
     router.push(`/tournaments/${tournament.id}`);
@@ -210,9 +210,12 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
 };
 
 const Tournaments = ({ role } : { role: number }) => {
-  const { data, isLoading } = useFetchInitialData<TournamentsType[]>({
-    url: `/api/game/tournaments?status=${tournamentStatus["open"]},${tournamentStatus["registrationOpen"]}`,
-  });
+  const { data, isLoading } = useTournamentsByStatus([
+    tournamentStatus["initial"],
+    tournamentStatus["ongoing"],
+    tournamentStatus["registrationClosed"],
+    tournamentStatus["registrationOpen"]
+  ]);
 
   if (isLoading) return <Spinner size="3" />;
 
