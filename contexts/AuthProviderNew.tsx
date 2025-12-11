@@ -20,7 +20,7 @@ interface AuthProviderProps {
 
 export const AuthProviderNew: React.FC<AuthProviderProps> = ({ children }) => {
   const { isAuthenticated, isLoading, user } = useIsAuthenticated();
-
+console.log("isAuthenticated", isAuthenticated, isLoading, user);
   const value: AuthContextType = {
     isAuthenticated,
     isLoading,
