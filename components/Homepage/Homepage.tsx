@@ -13,14 +13,12 @@ import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
 import { Button } from "components/Button";
 import { Checkbox } from "components/Checkbox";
-import { MultiSelectItemType } from "types/types";
 import { useAllUsers } from "hooks/useUsers";
 import { useTournaments } from "hooks/useTournaments";
 import { useGames } from "hooks/useGames";
 import { GetGamesParams } from "services/games.service";
 import { Tournament } from "services/tournaments.service";
 import { User, UsersListResponse } from "services/users.service";
-import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 
 type ResultsPanelProps = {
   data: Game[];
@@ -30,6 +28,16 @@ type ResultsPanelProps = {
 const ResponsiveText = styled(Text)`
   @media (max-width: 640px) {
     display: none;
+  }
+`;
+
+const ContainerGameResults = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
   }
 `;
 
@@ -219,7 +227,7 @@ const Filter: React.FC<FilterProps> = ({
   onClear,
 }) => {
   const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "1,2,3,4" });
-  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000); // Get all users for filtering
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000);
 
   if (isLoadingTournament || isLoadingUsers) return null;
 
@@ -325,33 +333,31 @@ const Homepage: React.FC = () => {
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
 
   return (
-    <ResponsiveContainer>
-      <GlobalContainer>
-        <Filter
-          playersSelected={playersSelected}
-          setPlayersSelected={setPlayersSelected}
-          tournamentSelected={tournamentSelected}
-          setTournamentSelected={setTournamentSelected}
-          videoSelected={videoSelected}
-          setVideoSelected={setVideoSelected}
-          onClear={onClear}
-        />
-        <ResultsPanel
-          data={gamesData?.results || []}
-          isLoading={isLoading}
-        />
-        {!isLoading && gamesData && (
-          <Pagination
-            currentPage={currentPage.toString()}
-            totalPages={totalPages.toString()}
-            onPageChange={onPageChange}
+      <ContainerGameResults>
+        <GlobalContainer>
+          <Filter
+            playersSelected={playersSelected}
+            setPlayersSelected={setPlayersSelected}
+            tournamentSelected={tournamentSelected}
+            setTournamentSelected={setTournamentSelected}
+            videoSelected={videoSelected}
+            setVideoSelected={setVideoSelected}
+            onClear={onClear}
           />
-        )}
-      </GlobalContainer>
-      <div>
+          <ResultsPanel
+            data={gamesData?.results || []}
+            isLoading={isLoading}
+          />
+          {!isLoading && gamesData && (
+            <Pagination
+              currentPage={currentPage.toString()}
+              totalPages={totalPages.toString()}
+              onPageChange={onPageChange}
+            />
+          )}
+        </GlobalContainer>
         <TopPlayerRating />
-      </div>
-    </ResponsiveContainer>
+      </ContainerGameResults>
   );
 };
 

@@ -104,7 +104,7 @@ const ContentSection = styled.section`
   width: 100%;
   background: white;
   border-radius: 8px;
-  padding: ${props => props.theme.space.large};
+  padding: ${props => props.theme.space.small};
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid ${props => props.theme.colors.greyLight};
   

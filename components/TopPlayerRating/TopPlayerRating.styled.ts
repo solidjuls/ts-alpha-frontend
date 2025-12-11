@@ -4,12 +4,12 @@ import Text from "components/Text";
 export const SidePanelStyled = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   background-color: #f8f9fa;
   margin: 0 12px 0 12px;
   padding: 12px;
   border-radius: 12px;
-  width: 240px;
+  width: 350px;
+  max-height: 270px;
 `;
 
 export const UserContainer = styled.div`
@@ -27,7 +27,6 @@ export const UserInfo = styled.div`
 export const PlayersContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
 `;
 
 export const TitleText = styled(Text)`
