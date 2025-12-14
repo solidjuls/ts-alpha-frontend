@@ -39,8 +39,6 @@ export const LogoSpan = styled.span`
 
 export const Banner = styled.div`
   width: 100%;
-  position: relative;
-  overflow: hidden;
   margin-bottom: 8px;
   @media (max-width: 768px) {
     height: 120px;

@@ -120,6 +120,7 @@ const StyledItem = styled(Item)`
   align-items: center;
   justify-content: space-between;
   position: relative;
+  z-index: 100;
 
   &:focus {
     outline: none;
