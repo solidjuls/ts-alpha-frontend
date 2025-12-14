@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Navigation } from "components/Sidebar/Sidebar";
-import { Container, Main, StyledFooter, LogoSpan } from './Layout.styled';
+import { Container, Main, StyledFooter, LogoSpan, Banner, BannerImage } from './Layout.styled';
 
 export const Footer = () => {
   return (
@@ -28,6 +28,9 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Container>
       <Navigation />
+      <Banner>
+        <BannerImage src="/menu-image.jpeg" alt="Twilight Struggle Banner" />
+      </Banner>
       <Main>{children}</Main>
       {/* <Footer /> */}
     </Container>
