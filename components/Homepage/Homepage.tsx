@@ -36,7 +36,7 @@ const ContainerGameResults = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-
+  background-color: transparent;
   @media (max-width: 640px) {
     flex-direction: column;
   }
@@ -324,7 +324,7 @@ const Homepage: React.FC = () => {
   };
 
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
-console.log("currentPage", currentPage, totalPages, gamesData?.results.length);
+
   return (
       <ContainerGameResults>
         <GlobalContainer>

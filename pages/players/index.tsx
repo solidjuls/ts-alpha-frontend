@@ -39,6 +39,15 @@ interface ResultsPanelProps {
   isLoading?: boolean;
 }
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+`;
+
 const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
@@ -100,6 +109,10 @@ const StyledCardRow = styled.div`
   border-radius: 6px;
   border: solid 1px ${props => props.theme?.colors?.greyLight || '#e0e0e0'};
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+`;
+
+const FilterPanelStyled = styled(FilterPanel)`
+    max-width: 988px;
 `;
 
 const CardColumn: React.FC<CardColumnProps> = ({ header, value, countryCode }) => {
@@ -182,9 +195,9 @@ const Players = () => {
   );
 
   return (
-      <ResponsiveContainer>
+      <Container>
         <h1>Players list</h1>
-        <FilterPanel>
+        <FilterPanelStyled>
           <MultiSelect
             setSelectedValues={(value: any) => {
               setPlayersSelected(value);
@@ -227,7 +240,7 @@ const Players = () => {
               }
             }}
           />
-        </FilterPanel>
+        </FilterPanelStyled>
         <ResultsStyleWrapper>
           <ResultsPanel
             data={playersData?.results || []}
@@ -242,7 +255,7 @@ const Players = () => {
             onPageChange={onPageChange}
           />
         )}
-      </ResponsiveContainer>
+      </Container>
   );
 };
 

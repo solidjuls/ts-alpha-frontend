@@ -11,7 +11,6 @@ import "styles/date.css";
 import "styles/stylesGlobal.css";
 import "@radix-ui/themes/styles.css";
 
-import { Provider } from "react-redux";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
