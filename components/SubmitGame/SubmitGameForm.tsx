@@ -50,7 +50,7 @@ const SubmitButton = styled(Button)`
   font-size: 18px;
 `;
 
-const dropdownWidth = "370px";
+const dropdownWidth = "390px";
 
 type SubmitGameFormProps = {
   control: Control<SubmitGameFormData>;

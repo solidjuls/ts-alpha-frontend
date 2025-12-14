@@ -64,6 +64,7 @@ console.log("selectedItemParsed", users, selectedItem);
         onSelect={(value) => onSelect(value || null)}
         selectedValue={selectedItemParsed}
         onBlur={onBlur}
+        css={css}
         {...rest}
       >
         <Typeahead.Input

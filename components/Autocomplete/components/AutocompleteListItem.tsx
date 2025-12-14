@@ -13,7 +13,7 @@ const Item = styled.div<ItemProps>`
   display: block;
   line-height: 1;
   color: ${props => props.theme?.colors?.textDark || '#333'};
-  font-size: ${props => props.theme?.fontSizes?.fontSizeS || '14px'};
+  font-size: ${props => props.theme.fontSizes.fontSizeM || '14px'};
   padding: 4px 8px;
   background-color: ${props => {
     if (props.$color === 'lightgray') return 'darkBlue';

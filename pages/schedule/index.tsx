@@ -253,18 +253,21 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
   );
 };
 
-const SchedulePanel = ({ 
-  data, 
-  isAdmin, 
-  userId, 
-  isLoading 
-}: { 
-  data: ScheduleItem[] | undefined; 
-  userId: string; 
-  isAdmin: boolean; 
+const SchedulePanel = ({
+  data,
+  isAdmin,
+  userId,
+  isLoading,
+  isFetching = false
+}: {
+  data: ScheduleItem[] | undefined;
+  userId: string;
+  isAdmin: boolean;
   isLoading: boolean;
+  isFetching?: boolean;
 }) => {
-  if (isLoading) {
+  // Show full loading state only on initial load (no data yet)
+  if (isLoading && !data) {
     return (
       <LoadingContainer>
         <CenteredResultsWrapper>
@@ -285,7 +288,12 @@ const SchedulePanel = ({
   }
 
   return (
-    <ResultsStyleWrapper>
+    <ResultsStyleWrapper style={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity 0.2s' }}>
+      {isFetching && (
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+          <Spinner />
+        </div>
+      )}
       {data.map((schedule, index) => (
         <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />
       ))}
@@ -311,7 +319,7 @@ const Schedule = () => {
   
   // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
   
-  const { data: dataSchedule, isLoading, error } = useSchedules({
+  const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
     userId: showFullSchedule ? undefined : selectedUserId,
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
@@ -320,8 +328,6 @@ const Schedule = () => {
     orderBy: 'dueDate',
     orderDirection: 'asc'
   });
-  
-  if (error) return <div>Error: {error.message}</div>;
 
   const scheduleData = dataSchedule?.results;
   const scheduleTotalPages = dataSchedule?.totalPages;
@@ -354,27 +360,6 @@ const Schedule = () => {
   const onPageChange = (page: string) => {
     setCurrentPage(parseInt(page));
   };
-
-  if (error) {
-    return (
-      <>
-        <Head>
-          <title>My Schedule - Twilight Struggle</title>
-          <meta
-            name="description"
-            content="View your tournament schedule and upcoming games in Twilight Struggle competitions."
-          />
-          <link rel="icon" href="/ts-icon.webp" />
-        </Head>
-        <MainLayout>
-          <div>
-            <h1>My Schedule</h1>
-            <div>Error loading schedule: {error.message}</div>
-          </div>
-        </MainLayout>
-      </>
-    );
-  }
 
   const activeTabButton = (tournament, index) => {
     if (currentTournament) {
@@ -428,17 +413,24 @@ const Schedule = () => {
               />
             )}
 
+            {error && (
+              <div style={{ color: 'red', padding: '16px' }}>
+                Error loading schedule: {error.message}
+              </div>
+            )}
+
             <SchedulePanel
               data={scheduleData}
               userId={userId}
               isAdmin={isUserAdminForTournament}
-              isLoading={isLoading}
+              isLoading={isLoading && !dataSchedule}
+              isFetching={isFetching}
             />
 
             {scheduleData && scheduleTotalPages > 1 && (
               <Pagination
-                currentPage={currentPage.toString()}
-                totalPages={scheduleTotalPages.toString()}
+                currentPage={currentPage}
+                totalPages={scheduleTotalPages}
                 onPageChange={onPageChange}
               />
             )}

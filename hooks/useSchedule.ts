@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions, keepPreviousData } from '@tanstack/react-query';
 import scheduleService, {
   ScheduleListResponse,
   GetScheduleParams,
@@ -25,13 +25,13 @@ export const SCHEDULE_QUERY_KEYS = {
 // Hook for getting schedules with filters
 export const useSchedules = (
   params: GetScheduleParams = {},
-  options?: UseQueryOptions<ScheduleListResponse, Error>
+  options?: Omit<UseQueryOptions<ScheduleListResponse, Error>, 'queryKey' | 'queryFn'>
 ) => {
   return useQuery({
     queryKey: SCHEDULE_QUERY_KEYS.list(params),
     queryFn: () => scheduleService.getSchedules(params),
     staleTime: 2 * 60 * 1000, // 2 minutes
-    keepPreviousData: true, // Keep previous data while loading new page
+    placeholderData: keepPreviousData, // Keep previous data while loading new data (React Query v5)
     ...options,
   });
 };
@@ -41,14 +41,14 @@ export const useSchedulesByUser = (
   userId: string,
   page: number = 1,
   pageSize: number = 20,
-  options?: UseQueryOptions<ScheduleListResponse, Error>
+  options?: Omit<UseQueryOptions<ScheduleListResponse, Error>, 'queryKey' | 'queryFn'>
 ) => {
   return useQuery({
     queryKey: SCHEDULE_QUERY_KEYS.byUser(userId, page, pageSize),
     queryFn: () => scheduleService.getSchedulesByUser(userId, page, pageSize),
     enabled: !!userId,
     staleTime: 2 * 60 * 1000, // 2 minutes
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     ...options,
   });
 };
@@ -58,14 +58,14 @@ export const useSchedulesByTournament = (
   tournamentId: string,
   page: number = 1,
   pageSize: number = 20,
-  options?: UseQueryOptions<ScheduleListResponse, Error>
+  options?: Omit<UseQueryOptions<ScheduleListResponse, Error>, 'queryKey' | 'queryFn'>
 ) => {
   return useQuery({
     queryKey: SCHEDULE_QUERY_KEYS.byTournament(tournamentId, page, pageSize),
     queryFn: () => scheduleService.getSchedulesByTournament(tournamentId, page, pageSize),
     enabled: !!tournamentId,
     staleTime: 2 * 60 * 1000, // 2 minutes
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     ...options,
   });
 };

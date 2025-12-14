@@ -17,6 +17,7 @@ type TypeaheadProps = {
   error?: boolean;
   id?: string;
   resetOnSelect?: boolean;
+  css?: any;
 };
 
 const Typeahead: React.FC<TypeaheadProps> & {
@@ -34,6 +35,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
   error,
   id,
   resetOnSelect,
+  css,
 }) => {
   const [value, setValue] = useState<DropdownItemType | null | undefined>(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
@@ -93,7 +95,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
       manageState(changes, actions);
     }
   };
-
+  console.log("css", css);
   return (
     <Downshift
       selectedItem={value}
@@ -109,10 +111,11 @@ const Typeahead: React.FC<TypeaheadProps> & {
         isOpen,
         highlightedIndex,
       }) => (
-        <Box
+        <div
           {...getRootProps(undefined, undefined)}
-          css={{
+          style={{
             display: "block",
+            ...css,
           }}
         >
           <AutocompleteProvider
@@ -129,7 +132,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
           >
             {children}
           </AutocompleteProvider>
-        </Box>
+        </div>
       )}
     </Downshift>
   );

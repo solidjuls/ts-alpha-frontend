@@ -43,19 +43,16 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
     setInput(localInput);
   };
 
-  // Transform users data to DropdownItemType format
   const userItems: DropdownItemType[] = usersData?.results?.map((user: any) => ({
     value: user.id,
     text: user?.name.trim(),
   })) || [];
 
-  // Client-side filtering for better UX (in addition to server-side search)
   const filteredUsers = userItems.filter((user) => {
     if (!input || input.length < minChars) return true; // Show all if no input or below min chars
     return user.text?.toLowerCase().includes(input.toLowerCase());
   });
 
-  // Find selected item
   const selectedItemParsed = userItems.find((user) => 
     user.value === selectedItem?.toString()
   ) || null;
@@ -69,6 +66,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
         onSelect={(value) => onSelect(value || null)}
         selectedValue={selectedItemParsed}
         onBlur={onBlur}
+        css={css}
         {...rest}
       >
         <Typeahead.Input
@@ -90,13 +88,6 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
                 <div>{text}</div>
               </Typeahead.Item>
             ))}
-          </Typeahead.List>
-        )}
-        {isLoading && (
-          <Typeahead.List css={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
-              Loading users...
-            </div>
           </Typeahead.List>
         )}
         {!isLoading && input.length >= minChars && filteredUsers.length === 0 && (

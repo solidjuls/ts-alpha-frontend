@@ -48,7 +48,7 @@ const SubmitButton = styled(Button)`
   font-size: 18px;
 `;
 
-const dropdownWidth = "370px";
+const dropdownWidth = "390px";
 
 // Define the form data interface
 export interface RecreateGameFormData {

@@ -2,7 +2,6 @@ import { Root, Trigger, Content, Item } from "@radix-ui/react-dropdown-menu";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import styled from "styled-components";
 import { Box, Span } from "components/Atoms";
-import { blackA } from "@radix-ui/colors";
 import { DropdownItemType } from "types/types";
 
 const StyledItem = styled(Item)`
