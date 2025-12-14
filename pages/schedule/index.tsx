@@ -321,7 +321,6 @@ const Schedule = () => {
     orderDirection: 'asc'
   });
   
-  if (isLoading) return <div>Loading tournaments...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   const scheduleData = dataSchedule?.results;
@@ -398,7 +397,7 @@ const Schedule = () => {
             <h1>My Schedule</h1>
 
             {/* Tournament Tabs */}
-            {availableTournaments.length > 0 && (
+            {availableTournaments?.length > 0 && (
               <TabContainer>
                 {availableTournaments.map((tournament, index: number) => (
                   <TabButton
@@ -433,7 +432,7 @@ const Schedule = () => {
               data={scheduleData}
               userId={userId}
               isAdmin={isUserAdminForTournament}
-              isLoading={false}
+              isLoading={isLoading}
             />
 
             {scheduleData && scheduleTotalPages > 1 && (

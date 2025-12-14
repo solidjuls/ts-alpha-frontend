@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import { createAuthenticatedAxios } from 'utils/api';
 
 export interface ScheduleItem {
   id: string;
@@ -85,19 +86,9 @@ class ScheduleService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Increase timeout and max content length for large CSV uploads
-      timeout: 300000, // 5 minutes
-      maxContentLength: 52428800, // 50MB
-      maxBodyLength: 52428800, // 50MB
-    });
+    this.axiosInstance = createAuthenticatedAxios()
   }
-
+  
   async getSchedules(params: GetScheduleParams = {}): Promise<ScheduleListResponse> {
     const queryParams = new URLSearchParams();
 
