@@ -36,6 +36,7 @@ const ContainerGameResults = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  max-width: 1100px;
   background-color: transparent;
   @media (max-width: 640px) {
     flex-direction: column;

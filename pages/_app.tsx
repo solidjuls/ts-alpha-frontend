@@ -34,9 +34,9 @@ function App({ Component, pageProps }: AppProps) {
           <StyledThemeProvider theme={theme}>
             {/* @ts-ignore */}
             <Theme>
-              <MainLayout>
+              <Layout>
                 <Component {...pageProps} />
-              </MainLayout>
+              </Layout>
             </Theme>
           </StyledThemeProvider>
         </IntlContextProvider>

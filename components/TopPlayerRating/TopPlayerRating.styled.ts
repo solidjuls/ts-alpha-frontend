@@ -4,7 +4,7 @@ import Text from "components/Text";
 export const SidePanelStyled = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: #f8f9fa;
+  background-color: white;
   margin: 0 12px 0 12px;
   padding: 12px;
   border-radius: 12px;
