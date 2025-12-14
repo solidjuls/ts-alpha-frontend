@@ -12,10 +12,8 @@ import { useRecreateGame } from "hooks/useRecreateGame";
 import { UsersListResponse } from "services/users.service";
 import { Tournament } from "services/tournaments.service";
 import SubmitGameForm from "components/SubmitGame/SubmitGameForm";
-
-type SubmitGameProps = {
-  role: number;
-};
+import ProtectedRoute from "components/ProtectedRoute";
+import { userRoles } from "utils/constants";
 
 export interface SubmitGameFormData {
   gameWinner: GameWinner | "";
@@ -39,7 +37,7 @@ const getTournamentIdFromURL = (id: string | undefined) => {
   return []
 }
 
-const SubmitGameContainer = ({ role }: SubmitGameProps) => {
+const SubmitGameContainer = () => {
   const { user } = useAuth();
   const router = useRouter();
   
@@ -274,8 +272,11 @@ const SubmitGameContainer = ({ role }: SubmitGameProps) => {
       ussrPlayerName={ussrPlayerName}
     />
   );
-};
+};// Wrap with ProtectedRoute - requires logged in user
+const SubmitGamePage = () => (
+  <ProtectedRoute requiredRole={userRoles.PLAYER}>
+    <SubmitGameContainer />
+  </ProtectedRoute>
+);
 
-
-
-export default SubmitGameContainer;
+export default SubmitGamePage;

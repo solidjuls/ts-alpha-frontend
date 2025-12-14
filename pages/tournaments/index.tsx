@@ -1,6 +1,5 @@
 import { Spinner } from "@radix-ui/themes";
 import styled from "styled-components";
-import { getInfoFromCookies } from "utils/cookies";
 import { useTournamentsByStatus } from "hooks/useTournaments";
 import {
   getTournamentStatusNames,
@@ -8,7 +7,6 @@ import {
   TournamentStatusType,
   userRoles,
 } from "utils/constants";
-import { ServerType } from "types/types";
 import Text from "components/Text";
 import { Button } from "components/Button";
 import { Tournament } from "services/tournaments.service";
@@ -16,6 +14,7 @@ import { UnstyledLink } from "components/Schedule/Schedule.styled";
 import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
 import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
+import { useIsAuthenticated } from "hooks/useAuth";
 
 // Tournament Table Styles
 const TournamentTable = styled.table`
@@ -209,7 +208,10 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   );
 };
 
-const Tournaments = ({ role } : { role: number }) => {
+const Tournaments = () => {
+  const { user } = useIsAuthenticated();
+  const role = user?.role ?? null;
+
   const { data, isLoading } = useTournamentsByStatus([
     tournamentStatus["initial"],
     tournamentStatus["ongoing"],
@@ -262,18 +264,4 @@ const Tournaments = ({ role } : { role: number }) => {
   );
 };
 //status={getVariant(item.status_id)}
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
-
-  // if (!payload || payload?.role !== userRoles.SUPERADMIN) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-  return { props: { role: payload?.role || null } };
-}
-
 export default Tournaments;

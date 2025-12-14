@@ -7,8 +7,7 @@ import Link from "next/link";
 import { Pagination } from "components/Pagination";
 import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
-import { getInfoFromCookies } from "utils/cookies";
-import { DropdownItemType, ServerType } from "types/types";
+import { DropdownItemType } from "types/types";
 import CountriesTypeahead from "components/CountriesTypeahead";
 import { Input } from "components/Input";
 import { usePlayerRatings } from "hooks/useRating";
@@ -246,10 +245,5 @@ const Players = () => {
       </ResponsiveContainer>
   );
 };
-
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
-  return { props: { role: payload?.role || null } };
-}
 
 export default Players;

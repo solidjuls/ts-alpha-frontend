@@ -425,7 +425,7 @@ const RegisterFormComponent: React.FC = () => {
       </Button>
 
       <LoginLink>
-        Already have an account? <Link href="/login-new">Sign in here</Link>
+        Already have an account? <Link href="/login">Sign in here</Link>
       </LoginLink>
     </RegisterForm>
   );

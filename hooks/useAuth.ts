@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import authService, {
   LoginRequest,
   ImpersonateRequest,
@@ -10,6 +11,7 @@ import authService, {
   EmailVerifyRequest,
   EmailVerifyConfirmRequest
 } from '../services/auth.service';
+import { getToken, getUserFromToken, removeToken, isTokenExpired, UserPayload } from '../utils/cookies';
 
 // Query keys
 export const authKeys = {
@@ -18,14 +20,39 @@ export const authKeys = {
   health: () => [...authKeys.all, 'health'] as const,
 };
 
-// Hook for getting user profile
+// Hook for getting user profile from localStorage token
 export const useProfile = () => {
-  return useQuery({
-    queryKey: authKeys.profile(),
-    queryFn: authService.getProfile,
-    retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const [user, setUser] = useState<UserPayload | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = getToken();
+
+    if (!token) {
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    // Check if token is expired
+    if (isTokenExpired(token)) {
+      removeToken();
+      setUser(null);
+      setIsLoading(false);
+      return;
+    }
+
+    // Decode token to get user info
+    const userFromToken = getUserFromToken();
+    setUser(userFromToken);
+    setIsLoading(false);
+  }, []);
+
+  return {
+    data: user,
+    isLoading,
+    error: null,
+  };
 };
 
 // Hook for login mutation
@@ -176,11 +203,22 @@ export const useEmailVerificationConfirm = () => {
 
 // Custom hook to check if user is authenticated
 export const useIsAuthenticated = () => {
-  const { data: profile, isLoading, error } = useProfile();
+  const { data: profile, isLoading } = useProfile();
 
   return {
-    isAuthenticated: !!profile && !error,
+    isAuthenticated: !!profile,
     isLoading,
     user: profile,
   };
+};
+
+// Hook to get current user info synchronously (for components that need immediate access)
+export const useCurrentUser = (): UserPayload | null => {
+  const [user, setUser] = useState<UserPayload | null>(null);
+
+  useEffect(() => {
+    setUser(getUserFromToken());
+  }, []);
+
+  return user;
 };

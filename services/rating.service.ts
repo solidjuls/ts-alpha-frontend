@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import { createAuthenticatedAxios } from '../utils/api';
 
 // Player rating interfaces
 export interface PlayerRatingDto {
@@ -36,13 +37,7 @@ class RatingService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.axiosInstance = createAuthenticatedAxios();
   }
 
   async getPlayerRatings(params: GetPlayerRatingsParams = {}): Promise<PlayerRatingListResponse> {

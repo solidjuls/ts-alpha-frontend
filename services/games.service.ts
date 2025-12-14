@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api';
+import { createAuthenticatedAxios } from '../utils/api';
 
 export interface GameRating {
   rating: number;
@@ -77,13 +75,7 @@ class GamesService {
   private axiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: API_BASE_URL,
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.axiosInstance = createAuthenticatedAxios();
   }
 
   async getGames(params: GetGamesParams = {}): Promise<GameListResponse> {

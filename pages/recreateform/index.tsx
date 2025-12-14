@@ -2,13 +2,14 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { GameRecreate, GameWinner } from "types/game.types";
 import { useSearchParams } from "next/navigation";
-import { tournamentStatus } from "utils/constants";
+import { tournamentStatus, userRoles } from "utils/constants";
 import { useRouter } from "next/router";
 import { useRecreateGame } from "hooks/useRecreateGame";
 import { useAllUsers } from "hooks/useUsers";
 import { UsersListResponse } from "services/users.service";
 import { useTournamentsByStatus } from "hooks/useTournaments";
 import SubmitRecreateForm, { RecreateGameFormData } from "components/RecreateForm/SubmitRecreateForm";
+import ProtectedRoute from "components/ProtectedRoute";
 
 const validateForm = (data: RecreateGameFormData) => {
   // Check required fields
@@ -159,8 +160,11 @@ const RecreateFormContainer = () => {
       watch={watch}
     />
   );
-};
+};// Wrap with ProtectedRoute - requires SUPERADMIN role
+const RecreateFormPage = () => (
+  <ProtectedRoute requiredRole={userRoles.SUPERADMIN}>
+    <RecreateFormContainer />
+  </ProtectedRoute>
+);
 
-
-
-export default RecreateFormContainer;
+export default RecreateFormPage;

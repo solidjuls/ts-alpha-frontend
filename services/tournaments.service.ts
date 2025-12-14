@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import { createAuthenticatedAxios } from '../utils/api';
 
 // Tournament interfaces
 export interface Tournament {
@@ -120,13 +121,7 @@ class TournamentsService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.axiosInstance = createAuthenticatedAxios();
   }
 
   // GET /api/tournaments - Get tournaments by status or ID

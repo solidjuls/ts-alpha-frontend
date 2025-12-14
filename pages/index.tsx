@@ -1,10 +1,11 @@
 import Head from "next/head";
-import type { NextApiRequest, NextApiResponse } from "next";
-import { getInfoFromCookies } from "utils/cookies";
 import Homepage from "components/Homepage";
-import { ServerType } from "types/types";
+import { useIsAuthenticated } from "hooks/useAuth";
 
-export default function Home({ role }: { role: number }) {
+export default function Home() {
+  const { user } = useIsAuthenticated();
+  const role = user?.role ?? null;
+
   return (
     <>
       <Head>
@@ -18,9 +19,4 @@ export default function Home({ role }: { role: number }) {
       <Homepage role={role} />
     </>
   );
-}
-
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
-  return { props: { role: payload?.role || null } };
 }

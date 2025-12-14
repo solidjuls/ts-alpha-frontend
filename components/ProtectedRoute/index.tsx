@@ -14,7 +14,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRole,
-  redirectTo = '/login-new',
+  redirectTo = '/login',
   fallback,
 }) => {
   const router = useRouter();

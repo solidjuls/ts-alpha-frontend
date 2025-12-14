@@ -17,6 +17,7 @@ import { ScheduleItem } from "services/schedule.service";
 import { Tournament } from "services/tournaments.service";
 import { userRoles } from "utils/constants";
 import { MainLayout } from "components/Layout";
+import ProtectedRoute from "components/ProtectedRoute";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -446,8 +447,11 @@ const Schedule = () => {
         </ResponsiveContainer>
     </>
   );
-};
+};// Wrap with ProtectedRoute - requires logged in user
+const SchedulePage = () => (
+  <ProtectedRoute requiredRole={userRoles.PLAYER}>
+    <Schedule />
+  </ProtectedRoute>
+);
 
-
-
-export default Schedule;
+export default SchedulePage;

@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import { createAuthenticatedAxios } from '../utils/api';
 
 // City interfaces
 export interface City {
@@ -10,13 +11,7 @@ class CitiesService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.axiosInstance = createAuthenticatedAxios();
   }
 
   async getCities(searchQuery?: string): Promise<City[]> {

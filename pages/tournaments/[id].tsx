@@ -6,19 +6,18 @@ import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
 import { useTournamentsById, useRegisterForTournament, useUnregisterFromTournament, useRegisteredPlayers, useUpdateTournamentStatus, useBulkRegisterUsers, useGenerateRandomSchedule, useWaitlistPlayers, useAddToWaitlist, useRemoveFromWaitlist } from "hooks/useTournaments";
-import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { getTournamentStatusNames, userRoles } from "utils/constants";
 import UserTypeahead from "components/UserTypeahead";
 import { DropdownItemType } from "types/types";
 import { dateFormat } from "utils/dates";
 import { useAuth } from "contexts/AuthProviderNew";
-import { getInfoFromCookies } from "utils/cookies";
-import { ServerType } from "types/types";
 import { MainLayout } from "components/Layout";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
 import { tournamentStatusHelpers, ACTION_TO_STATUS, ACTION_LABELS, TOURNAMENT_STATUS_NAMES } from "utils/tournamentStatus";
+import { useIsAuthenticated } from "hooks/useAuth";
 
 const DescriptionBox = styled.div`
   margin-top: 8px;
@@ -256,13 +255,12 @@ const RegistrationActionSection = ({
   );
 };
 
-interface TournamentDetailProps {
-  userRole?: number;
-}
-
-const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
-  const { id } = useParams();
+const TournamentDetail = () => {
+  const router = useRouter();
+  const { id } = router.query;
   const { user } = useAuth();
+  const { user: authUser } = useIsAuthenticated();
+  const userRole = authUser?.role ?? userRoles.PLAYER;
   const userId = user?.id;
   const email = user?.email;
   const [isRegistering, setIsRegistering] = useState(false);
@@ -658,26 +656,4 @@ const TournamentDetail = ({ userRole }: TournamentDetailProps) => {
   );
 };
 
-// Add server-side props to determine user role
-export async function getServerSideProps({ req, res }: ServerType) {
-  const payload = getInfoFromCookies(req, res);
-
-  // if (!payload) {
-  //   return {
-  //     redirect: {
-  //       permanent: false,
-  //       destination: "/login",
-  //     },
-  //   };
-  // }
-
-  return {
-    props: {
-      userRole: payload?.role || null
-    }
-  };
-}
-
 export default TournamentDetail;
-
-// 

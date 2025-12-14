@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
+import { createAuthenticatedAxios } from '../utils/api';
 
 // User interfaces
 export interface User {
@@ -78,13 +79,7 @@ class UsersService {
   private axiosInstance: AxiosInstance;
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    this.axiosInstance = createAuthenticatedAxios();
   }
 
   // Get all users with optional filters

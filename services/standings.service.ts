@@ -1,16 +1,10 @@
-import axios from 'axios';
 import { PlayerStanding } from '../hooks/useStandings';
+import { createAuthenticatedAxios } from '../utils/api';
 
 export interface StandingsResponse extends Array<PlayerStanding> {}
 
-// Create axios instance for NestJS backend
-const standingsApi = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// Create axios instance for NestJS backend with auth
+const standingsApi = createAuthenticatedAxios();
 
 class StandingsService {
   async getStandings(tournamentId: string, division?: string): Promise<StandingsResponse> {

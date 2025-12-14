@@ -1,13 +1,39 @@
 import axios from 'axios';
+import { getToken, setToken, removeToken } from '../utils/cookies';
 
 // Create axios instance for NestJS backend
 const authApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
-  withCredentials: true, // Important for HTTP-only cookies
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Add request interceptor to attach Authorization header
+authApi.interceptors.request.use(
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor to handle 401 errors
+authApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token is invalid or expired, remove it
+      removeToken();
+    }
+    return Promise.reject(error);
+  }
+);
 
 export interface LoginRequest {
   mail: string;
@@ -19,6 +45,7 @@ export interface ImpersonateRequest {
 }
 
 export interface LoginResponse {
+  token: string;
   name: string;
   email: string;
   id: string;
@@ -105,13 +132,27 @@ export const authService = {
   // Login user
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     const response = await authApi.post('/auth/login', credentials);
-    return response.data;
+    const data = response.data;
+
+    // Save token to localStorage
+    if (data.token) {
+      setToken(data.token);
+    }
+
+    return data;
   },
 
   // Impersonate user (superadmin only)
   impersonate: async (data: ImpersonateRequest): Promise<LoginResponse> => {
     const response = await authApi.post('/auth/impersonate', data);
-    return response.data;
+    const responseData = response.data;
+
+    // Save token to localStorage
+    if (responseData.token) {
+      setToken(responseData.token);
+    }
+
+    return responseData;
   },
 
   // Register new user
@@ -122,8 +163,17 @@ export const authService = {
 
   // Logout user
   logout: async (): Promise<{ success: boolean }> => {
-    const response = await authApi.post('/auth/logout');
-    return response.data;
+    // Remove token from localStorage
+    removeToken();
+
+    // Optionally call backend to invalidate session (if needed)
+    try {
+      await authApi.post('/auth/logout');
+    } catch {
+      // Ignore errors - token is already removed locally
+    }
+
+    return { success: true };
   },
 
   // Get current user profile
