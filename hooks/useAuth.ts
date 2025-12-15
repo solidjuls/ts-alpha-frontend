@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import authService, {
   LoginRequest,
   ImpersonateRequest,
-  LoginResponse,
   ResetPasswordRequest,
   CreateUserRequest,
   RegisterRequest,
@@ -61,22 +60,11 @@ export const useProfile = () => {
 
 // Hook for login mutation
 export const useLogin = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
   return useMutation({
     mutationFn: (credentials: LoginRequest) => authService.login(credentials),
-    onSuccess: (data: LoginResponse) => {
-      // Update the profile cache with the login response
-      queryClient.setQueryData(authKeys.profile(), {
-        id: data.id,
-        email: data.email,
-        name: data.name,
-        role: data.role,
-      });
-
-      // Redirect to home page
-      router.push('/');
+    onSuccess: () => {
+      // Force a full page reload to reset all auth state
+      window.location.href = '/';
     },
     onError: (error: any) => {
       console.error('Login failed:', error);
@@ -126,17 +114,11 @@ export const useRegister = () => {
 
 // Hook for logout mutation
 export const useLogout = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
   return useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
-      // Clear all auth-related cache
-      queryClient.removeQueries({ queryKey: authKeys.all });
-      
-      // Redirect to login page
-      router.push('/login');
+      // Force a full page reload to reset all auth state
+      window.location.href = '/login';
     },
     onError: (error: any) => {
       console.error('Logout failed:', error);
