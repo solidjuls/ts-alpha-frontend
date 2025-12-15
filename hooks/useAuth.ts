@@ -36,7 +36,6 @@ export const useProfile = () => {
 
     // Check if token is expired
     if (isTokenExpired(token)) {
-      debugger
       removeToken();
       setUser(null);
       setIsLoading(false);

@@ -181,7 +181,6 @@ interface RegistrationActionSectionProps {
   isUserRegistered: boolean;
   isUserOnWaitlist: boolean;
   showWaitlistButton: boolean;
-  isRegistering: boolean;
   isWaitlistAction: boolean;
   canRegister: boolean;
   onRegisterClick: () => void;
@@ -192,7 +191,6 @@ const RegistrationActionSection = ({
   isUserRegistered,
   isUserOnWaitlist,
   showWaitlistButton,
-  isRegistering,
   isWaitlistAction,
   canRegister,
   onRegisterClick,
@@ -219,7 +217,7 @@ const RegistrationActionSection = ({
   };
 
   const getRegisterButtonLabel = () => {
-    if (isRegistering) return <Spinner size="1" />;
+    // No spinner - using optimistic updates for instant feedback
     if (isUserRegistered) return "Unregister";
     return "Register";
   };
@@ -262,8 +260,9 @@ const TournamentDetail = () => {
   const userRole = authUser?.role ?? userRoles.PLAYER;
   const userId = user?.id;
   const email = user?.email;
-  const [isRegistering, setIsRegistering] = useState(false);
   const [isWaitlistAction, setIsWaitlistAction] = useState(false);
+  // Optimistic state for registration - null means use server state
+  const [optimisticRegistered, setOptimisticRegistered] = useState<boolean | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showManualRegistration, setShowManualRegistration] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string>("");
@@ -358,9 +357,12 @@ const TournamentDetail = () => {
     tournament ? parseInt(tournament.id) : 0
   );
 
-  const isUserRegistered = userId ? registeredPlayers?.some(player =>
+  const isUserRegisteredFromServer = userId ? registeredPlayers?.some(player =>
     player.email === email || player.userId === userId.toString()
   ) : false;
+
+  // Use optimistic state if available, otherwise use server state
+  const isUserRegistered = optimisticRegistered !== null ? optimisticRegistered : isUserRegisteredFromServer;
 
   // Check if user is on the waitlist
   const isUserOnWaitlist = userId ? waitlistPlayers?.some(player =>
@@ -421,9 +423,13 @@ const TournamentDetail = () => {
   const onRegisterClick = async () => {
     if (!tournament || !userId) return;
 
-    setIsRegistering(true);
+    const wasRegistered = isUserRegistered;
+
+    // Optimistically update the UI immediately
+    setOptimisticRegistered(!wasRegistered);
+
     try {
-      if (isUserRegistered) {
+      if (wasRegistered) {
         // Unregister logic - use userId to find and remove registration
         await unregisterMutation.mutateAsync({
           tournamentId: parseInt(tournament.id),
@@ -436,11 +442,13 @@ const TournamentDetail = () => {
           userId: userId.toString()
         });
       }
-      refetch();
+      // Refetch to sync with server, then clear optimistic state
+      await refetch();
+      setOptimisticRegistered(null);
     } catch (e) {
       console.error("Registration error:", e);
-    } finally {
-      setIsRegistering(false);
+      // Revert optimistic update on error
+      setOptimisticRegistered(null);
     }
   };
 
@@ -484,7 +492,6 @@ const TournamentDetail = () => {
               isUserRegistered={!!isUserRegistered}
               isUserOnWaitlist={!!isUserOnWaitlist}
               showWaitlistButton={!!showWaitlistButton}
-              isRegistering={isRegistering}
               isWaitlistAction={isWaitlistAction}
               canRegister={canRegister}
               onRegisterClick={onRegisterClick}
@@ -532,7 +539,6 @@ const TournamentDetail = () => {
           isUserRegistered={!!isUserRegistered}
           isUserOnWaitlist={!!isUserOnWaitlist}
           showWaitlistButton={!!showWaitlistButton}
-          isRegistering={isRegistering}
           isWaitlistAction={isWaitlistAction}
           canRegister={canRegister}
           onRegisterClick={onRegisterClick}

@@ -163,7 +163,6 @@ export const authService = {
 
   // Logout user
   logout: async (): Promise<{ success: boolean }> => {
-    debugger
     removeToken();
 
     // Optionally call backend to invalidate session (if needed)
