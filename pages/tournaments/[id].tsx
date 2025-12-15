@@ -575,24 +575,6 @@ const TournamentDetail = () => {
             >
               {tournament?.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
             </ActionButton>
-
-            {/* Bulk Registration Button */}
-            <ActionButton
-              $variant="bulk-register"
-              onClick={handleBulkRegister}
-              disabled={bulkRegisterMutation.isPending || !canRegister}
-            >
-              {bulkRegisterMutation.isPending ? 'Registering...' : 'Register 192 Users + Create Standings'}
-            </ActionButton>
-
-            {/* Generate Random Schedule Button */}
-            <ActionButton
-              $variant="generate-schedule"
-              onClick={handleGenerateSchedule}
-              disabled={generateScheduleMutation.isPending}
-            >
-              {generateScheduleMutation.isPending ? 'Generating...' : 'Generate Random Schedule'}
-            </ActionButton>
           </ButtonGroup>
         </ActionSection>
       </TournamentCard>
