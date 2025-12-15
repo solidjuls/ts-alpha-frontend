@@ -90,7 +90,7 @@ const Items = ({ role }: any) => {
 
 const HorizontalNavigation = () => {
   const { user } = useAuth();
-console.log("user", user);
+
   return (
     <HorizontalNavigationLayout>
       <HorizontalItemsContainer>

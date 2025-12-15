@@ -19,13 +19,14 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useIsAuthenticated();
-
+console.log("isAuthenticated", user, isAuthenticated);
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
+      debugger
       router.push(redirectTo);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
-
+debugger
   // Show loading state
   if (isLoading) {
     return fallback || (
@@ -37,6 +38,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Not authenticated
   if (!isAuthenticated) {
+    debugger
     return fallback || (
       <ErrorContainer>
         <ErrorTitle>Authentication Required</ErrorTitle>
@@ -47,6 +49,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check role requirement
   if (requiredRole && user && user.role > requiredRole) {
+    debugger
     return fallback || (
       <ErrorContainer>
         <ErrorTitle>Access Denied</ErrorTitle>

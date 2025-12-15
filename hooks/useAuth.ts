@@ -25,7 +25,7 @@ export const useProfile = () => {
   const [user, setUser] = useState<UserPayload | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const checkToken = () => {
     const token = getToken();
 
     if (!token) {
@@ -36,6 +36,7 @@ export const useProfile = () => {
 
     // Check if token is expired
     if (isTokenExpired(token)) {
+      debugger
       removeToken();
       setUser(null);
       setIsLoading(false);
@@ -46,6 +47,10 @@ export const useProfile = () => {
     const userFromToken = getUserFromToken();
     setUser(userFromToken);
     setIsLoading(false);
+  };
+
+  useEffect(() => {
+    checkToken();
   }, []);
 
   return {
@@ -82,22 +87,11 @@ export const useLogin = () => {
 
 // Hook for impersonate mutation
 export const useImpersonate = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
   return useMutation({
     mutationFn: (data: ImpersonateRequest) => authService.impersonate(data),
-    onSuccess: (data: LoginResponse) => {
-      // Update the profile cache with the impersonated user response
-      queryClient.setQueryData(authKeys.profile(), {
-        id: data.id,
-        email: data.email,
-        name: data.name,
-        role: data.role,
-      });
-
-      // Redirect to home page
-      router.push('/');
+    onSuccess: () => {
+      // Force a full page reload to reset all auth state
+      window.location.href = '/';
     },
     onError: (error: any) => {
       console.error('Impersonate failed:', error);

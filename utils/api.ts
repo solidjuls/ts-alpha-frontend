@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import { getToken, removeToken } from './cookies';
+import { getToken } from './cookies';
 
 /**
  * Create an axios instance with authentication interceptor
@@ -31,18 +31,10 @@ export const createAuthenticatedAxios = (baseURL?: string): AxiosInstance => {
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
+      // Log 401 errors but don't automatically remove token
+      // The token might be valid but the user just doesn't have permission for this endpoint
       if (error.response?.status === 401) {
-        // Token is invalid or expired, remove it
-        removeToken();
-        
-        // Optionally redirect to login
-        if (typeof window !== 'undefined') {
-          // Only redirect if we're on a protected page
-          const publicPaths = ['/login', '/register', '/reset-password', '/maintenance'];
-          if (!publicPaths.some(path => window.location.pathname.startsWith(path))) {
-            window.location.href = '/login';
-          }
-        }
+        console.warn('401 Unauthorized:', error.config?.url);
       }
       return Promise.reject(error);
     }

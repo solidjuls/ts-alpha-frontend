@@ -246,7 +246,6 @@ const RegistrationActionSection = ({
       <div>{getStatusText()}</div>
       <RegisterButton
         onClick={onRegisterClick}
-        disabled={isRegistering || (!isUserRegistered && !canRegister)}
         $isRegistered={isUserRegistered}
       >
         {getRegisterButtonLabel()}
@@ -420,7 +419,7 @@ const TournamentDetail = () => {
   };
 
   const onRegisterClick = async () => {
-    if (!tournament || !userId || !email) return;
+    if (!tournament || !userId) return;
 
     setIsRegistering(true);
     try {
@@ -497,6 +496,7 @@ const TournamentDetail = () => {
             tournamentId={tournament.id}
             tournamentStatusId={tournament.status_id}
             onPlayerRemoved={() => refetch()}
+            isAdmin={!!isUserAdmin}
           />
 
           {tournament.waitlist && (
@@ -642,6 +642,7 @@ const TournamentDetail = () => {
         tournamentId={tournament.id}
         tournamentStatusId={tournament.status_id}
         onPlayerRemoved={() => refetch()}
+        isAdmin={!!isUserAdmin}
       />
 
       {/* Tournament Waitlist - Show if waitlist is enabled */}

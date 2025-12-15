@@ -146,9 +146,10 @@ interface TournamentPlayersListProps {
   tournamentId: string;
   tournamentStatusId?: number;
   onPlayerRemoved?: () => void;
+  isAdmin?: boolean;
 }
 
-const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemoved }: TournamentPlayersListProps) => {
+const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemoved, isAdmin = false }: TournamentPlayersListProps) => {
   const [removingPlayerId, setRemovingPlayerId] = useState<number | null>(null);
   const [forfeitingPlayerId, setForfeitingPlayerId] = useState<number | null>(null);
 
@@ -237,27 +238,25 @@ const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemov
                 <PlayerEmail>{player.email}</PlayerEmail>
               </PlayerInfo>
 
-              <PlayerActionsContainer>
-                <StatusBadge $status={player.status as any}>
-                  {player.status}
-                </StatusBadge>
-
-                {showForfeitButton ? (
-                  <ForfeitButton
-                    disabled={forfeitingPlayerId === player.registrationId || player.status === 'forfeited'}
-                    onClick={() => handleForfeitPlayer(player.registrationId, tournamentId)}
-                  >
-                    {forfeitingPlayerId === player.registrationId ? "Forfeiting..." : "Forfeit"}
-                  </ForfeitButton>
-                ) : (
-                  <RemoveButton
-                    disabled={removingPlayerId === player.registrationId}
-                    onClick={() => handleRemovePlayer(player.registrationId, tournamentId)}
-                  >
-                    {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
-                  </RemoveButton>
-                )}
-              </PlayerActionsContainer>
+              {isAdmin && (
+                <PlayerActionsContainer>
+                  {showForfeitButton ? (
+                    <ForfeitButton
+                      disabled={forfeitingPlayerId === player.registrationId || player.status === 'forfeited'}
+                      onClick={() => handleForfeitPlayer(player.registrationId, tournamentId)}
+                    >
+                      {forfeitingPlayerId === player.registrationId ? "Forfeiting..." : "Forfeit"}
+                    </ForfeitButton>
+                  ) : (
+                    <RemoveButton
+                      disabled={removingPlayerId === player.registrationId}
+                      onClick={() => handleRemovePlayer(player.registrationId, tournamentId)}
+                    >
+                      {removingPlayerId === player.registrationId ? "Removing..." : "Remove"}
+                    </RemoveButton>
+                  )}
+                </PlayerActionsContainer>
+              )}
             </PlayerRow>
           ))}
         </PlayersListContainer>

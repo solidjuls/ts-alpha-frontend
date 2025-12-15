@@ -209,13 +209,19 @@ export const gameDurations: Array<DropdownItemType> = [
 
 export const getTournamentStatusNames = (status_id: TournamentStatusType) => {
   if (status_id === 1) {
-    return "Open";
+    return "Initial";
   }
   if (status_id === 2) {
-    return "Closed";
+    return "Registration Open";
+  }
+  if (status_id === 3) {
+    return "Registration Closed";
   }
   if (status_id === 4) {
-    return "Registration Open";
+    return "Ongoing";
+  }
+  if (status_id === 5) {
+    return "Closed";
   }
   return "Unknown";
 }

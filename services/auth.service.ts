@@ -27,9 +27,9 @@ authApi.interceptors.request.use(
 authApi.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Log 401 errors but don't automatically remove token
     if (error.response?.status === 401) {
-      // Token is invalid or expired, remove it
-      removeToken();
+      console.warn('401 Unauthorized on auth API:', error.config?.url);
     }
     return Promise.reject(error);
   }
@@ -163,7 +163,7 @@ export const authService = {
 
   // Logout user
   logout: async (): Promise<{ success: boolean }> => {
-    // Remove token from localStorage
+    debugger
     removeToken();
 
     // Optionally call backend to invalidate session (if needed)
