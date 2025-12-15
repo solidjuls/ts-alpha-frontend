@@ -3,18 +3,20 @@ import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { useState } from "react";
 import { useStandings, PlayerStanding } from "hooks/useStandings";
+import { Spinner } from "@radix-ui/themes";
 
 // Using PlayerStanding type from the hook
 
 const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   padding: 8px;
+  width: 100%;
 `;
 
 const PageHeader = styled.h1`
   text-align: center;
-  border-bottom: solid 1px #e5e7eb;
 `;
 
 const StyledTable = styled.table`
@@ -32,13 +34,13 @@ const StyledHeaderCell = styled.th`
   font-size: 12px;
   text-align: left;
   padding: 0 0 0 4px;
-  border-bottom: solid 1px black;
-  border-left: solid 1px black;
+  border: solid 1px black;
 `;
 
 const StyledCell = styled.td`
   padding: 0 0 0 4px;
   border: solid 1px black;
+  font-size: 12px;
 `;
 
 const TabContainer = styled.div`
@@ -75,6 +77,27 @@ const StandingsContainer = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   gap: 16px;
+  position: relative;
+`;
+
+interface LoadingOverlayProps {
+  $isVisible: boolean;
+}
+
+const LoadingOverlay = styled.div<LoadingOverlayProps>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
+  transition: opacity 0.2s ease;
+  z-index: 10;
 `;
 
 const StandingGroup = styled.div`
@@ -124,10 +147,10 @@ const Standings = () => {
 
   const {
     data: standings,
-    isLoading,
+    isFetching,
     error,
   } = useStandings({
-    tournamentId: "3",
+    tournamentId: "318",
     division: selectedDivision
   });
 
@@ -135,11 +158,9 @@ const Standings = () => {
     setSelectedDivision(division);
   };
 
-  if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading standings</div>;
-  if (!standings) return null;
 
-  const grouped = standings.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
+  const grouped = standings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
     return acc;
@@ -173,58 +194,62 @@ const Standings = () => {
         </TabButton>
       </TabContainer>
 
-      {/* Standings Tables */}
       <StandingsContainer>
-        {Object.entries(grouped).map(([standingName, players]) => (
-        <StandingGroup key={standingName}>
-          <StandingTitle strong="bold">
-            {standingName}
-          </StandingTitle>
-          <StyledTable>
-            <StyledHeading>
-              <tr>
-                <WideRankCell as="th">Rank</WideRankCell>
-                <WidePlayerCell as="th">Player Name</WidePlayerCell>
-                <StyledHeaderCell>W-L-T</StyledHeaderCell>
-                <StyledHeaderCell>Win%</StyledHeaderCell>
-                <StyledHeaderCell>SoS</StyledHeaderCell>
-              </tr>
-            </StyledHeading>
-            <tbody>
-              {players.map((player, index) => (
-                <PlayerRow key={player.userId}>
-                  <RankCell>
-                    <Text fontSize="small" style={{ textAlign: "center" }}>
-                      {index+1}
-                    </Text>
-                  </RankCell>
-                  <StyledCell>
-                    <PlayerInfoContainer>
-                      {player.tldCode && <FlagIcon code={player.tldCode} />}
-                      <Text fontSize="small">{player.name}</Text>
-                    </PlayerInfoContainer>
-                  </StyledCell>
-                  <StatCell>
-                    <Text fontSize="small">
-                      {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                    </Text>
-                  </StatCell>
-                  <StatCell>
-                    <Text fontSize="small" style={{ textAlign: "center" }}>
-                      {`${(player.winRate*100).toFixed(0)}%`}
-                    </Text>
-                  </StatCell>
-                  <StatCell>
-                    <Text fontSize="small" style={{ textAlign: "center" }}>
-                      {`${(player.sos*100).toFixed(0)}%`}
-                    </Text>
-                  </StatCell>
-                </PlayerRow>
-              ))}
-            </tbody>
-          </StyledTable>
-        </StandingGroup>
-      ))}
+        {/* Loading overlay - shows on top of existing content during refetch */}
+        <LoadingOverlay $isVisible={isFetching}>
+          <Spinner size="3" />
+        </LoadingOverlay>
+
+        {grouped && Object.entries(grouped).map(([standingName, players]) => (
+          <StandingGroup key={standingName}>
+            <StandingTitle strong="bold">
+              {standingName}
+            </StandingTitle>
+            <StyledTable>
+              <StyledHeading>
+                <tr>
+                  <WideRankCell as="th">Rank</WideRankCell>
+                  <WidePlayerCell as="th">Player Name</WidePlayerCell>
+                  <StyledHeaderCell>W-L-T</StyledHeaderCell>
+                  <StyledHeaderCell>Win%</StyledHeaderCell>
+                  <StyledHeaderCell>SoS</StyledHeaderCell>
+                </tr>
+              </StyledHeading>
+              <tbody>
+                {players.map((player, index) => (
+                  <PlayerRow key={player.userId}>
+                    <RankCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {index+1}
+                      </Text>
+                    </RankCell>
+                    <StyledCell>
+                      <PlayerInfoContainer>
+                        {player.tldCode && <FlagIcon code={player.tldCode} />}
+                        <Text fontSize="small">{player.name}</Text>
+                      </PlayerInfoContainer>
+                    </StyledCell>
+                    <StatCell>
+                      <Text fontSize="small">
+                        {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                      </Text>
+                    </StatCell>
+                    <StatCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {`${(player.winRate*100).toFixed(0)}%`}
+                      </Text>
+                    </StatCell>
+                    <StatCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {`${(player.sos*100).toFixed(0)}%`}
+                      </Text>
+                    </StatCell>
+                  </PlayerRow>
+                ))}
+              </tbody>
+            </StyledTable>
+          </StandingGroup>
+        ))}
       </StandingsContainer>
     </PageContainer>
   );

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { standingsService } from '../services/standings.service';
 
 export interface PlayerStanding {
@@ -26,6 +26,7 @@ export const useStandings = ({ tournamentId, division }: StandingsQueryParams) =
     enabled: !!tournamentId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,
+    placeholderData: keepPreviousData, // Keep previous data while fetching new data
   });
 };
 
