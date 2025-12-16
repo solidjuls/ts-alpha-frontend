@@ -31,6 +31,7 @@ export interface ScheduleListResponse {
 export interface GetScheduleParams {
   userId?: string;
   tournamentId?: string;
+  a?: number;
   page?: number;
   pageSize?: number;
   onlyPending?: boolean;
@@ -94,6 +95,7 @@ class ScheduleService {
 
     if (params.userId) queryParams.append('userId', params.userId);
     if (params.tournamentId) queryParams.append('tournamentId', params.tournamentId);
+    if (params.a) queryParams.append('a', params.a.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
     if (params.onlyPending) queryParams.append('onlyPending', 'true');

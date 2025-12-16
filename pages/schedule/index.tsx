@@ -306,7 +306,7 @@ const Schedule = () => {
   const userId = user?.id || "";
   const userRole = user?.role || userRoles.PLAYER;
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedUserId, setSelectedUserId] = useState(userId);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
   const [showOnlyPending, setShowOnlyPending] = useState(false);
@@ -320,7 +320,8 @@ const Schedule = () => {
   // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
   
   const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
-    userId: showFullSchedule ? undefined : selectedUserId,
+    userId: selectedUserId,
+    a: Number(showFullSchedule),
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
     pageSize: 20,
@@ -336,6 +337,14 @@ const Schedule = () => {
   const isUserAdminForTournament = currentTournament?.adminId?.includes(userId);
 
   console.log("scheduleData", isUserAdminForTournament, currentTournament);
+
+  const clearLocalState = () => {
+    setSelectedUserId(null);
+    setShowFullSchedule(false);
+    setShowOnlyPending(false);
+    setCurrentPage(1);
+  }
+
   const handlePlayerSelect = (playerId: string) => {
     setSelectedUserId(playerId);
     setCurrentPage(1); // Reset to first page when changing player
@@ -390,7 +399,7 @@ const Schedule = () => {
                     $active={activeTabButton(tournament, index)}
                     onClick={() => {
                       setSelectedTournament(tournament);
-                      setCurrentPage(1);
+                      clearLocalState();
                     }}
                   >
                     {tournament.tournament_name}
