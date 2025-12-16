@@ -10,6 +10,8 @@ import { Game as ServiceGame } from "services/games.service";
 import { Game as ComponentGame, GameWinner } from "types/game.types";
 import styled from "styled-components";
 import { useParams } from "next/navigation";
+import ProtectedRoute from "components/ProtectedRoute";
+import { userRoles } from "utils/constants";
 
 // Convert service Game type to component Game type
 const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentGame => ({
@@ -110,6 +112,11 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+// Wrap with ProtectedRoute - requires logged in user
+const UserProfilePage = () => (
+  <ProtectedRoute requiredRole={userRoles.PLAYER}>
+    <UserProfile />
+  </ProtectedRoute>
+);
 
-
+export default UserProfilePage;
