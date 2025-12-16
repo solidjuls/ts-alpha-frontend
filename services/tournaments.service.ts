@@ -17,7 +17,9 @@ export interface Tournament {
 
 export interface RegisteredPlayer {
   registrationId: number;
-  email: string; // Will be empty string for non-admin users
+  email: string;
+  phoneNumber: string;
+  playdekName: string;
   status: string;
   registeredAt: Date;
   userId?: string;

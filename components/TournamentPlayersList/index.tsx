@@ -207,7 +207,7 @@ const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemov
 
   const exportDataCSV = (data?: RegisteredPlayer[]) => {
     if (!data) return;
-    const headers = ['email', 'name', 'countryCode', 'rating', 'registeredAt', 'userId'];
+    const headers = ['email', 'name', 'countryCode', 'rating', 'phoneNumber', 'playdekName','registeredAt', 'userId'];
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + data.map((d: any) => headers.map((h: any) => d[h]).join(",")).join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
