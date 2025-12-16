@@ -12,7 +12,7 @@ export const Input = styled.input`
   line-height: 1;
   border: ${props => props.border === "error" ? "solid 1px red" : "1px solid #ced4da"};
   color: black;
-
+  width: ${props => props.width || "100%"};
   margin: ${props => {
     switch (props.margin) {
       case "xxl":

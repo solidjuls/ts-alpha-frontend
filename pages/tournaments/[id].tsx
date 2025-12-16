@@ -311,47 +311,6 @@ const TournamentDetail = () => {
     }
   };
 
-  const handleGenerateSchedule = async () => {
-    if (!tournament) return;
-
-    try {
-      console.log('Starting random schedule generation...');
-      const result = await generateScheduleMutation.mutateAsync(parseInt(tournament.id));
-
-      console.log('Schedule generation completed:', result);
-      alert(`Schedule generation completed!\nTotal schedules: ${result.totalSchedules}\nSuccessful: ${result.successCount}\nFailed: ${result.errorCount}\nGenerated pairs: ${result.generatedPairs}`);
-
-      refetch();
-    } catch (error) {
-      console.error('Failed to generate schedule:', error);
-      alert('Failed to generate schedule. Please try again.');
-    }
-  };
-
-  // Bulk register 192 random users (IDs 1600-2800) with standings structure via backend
-  const handleBulkRegister = async () => {
-    console.log('tournament', tournament);
-    if (!tournament) return;
-
-    try {
-      console.log('Starting bulk registration of 192 random users with standings...');
-      const result = await bulkRegisterMutation.mutateAsync(parseInt(tournament.id));
-
-      console.log('Bulk registration completed:', result);
-      alert(`Bulk registration completed!\n` +
-        `Users registered: ${result.successCount}/${result.totalAttempted}\n` +
-        `Standings created: ${result.standingsCreated}\n` +
-        `Players assigned to standings: ${result.standingPlayersCreated}\n` +
-        `Errors: ${result.errorCount}`);
-
-      // Refresh the tournament data
-      refetch();
-    } catch (error) {
-      console.error('Failed to perform bulk registration:', error);
-      alert('Failed to perform bulk registration. Please try again.');
-    }
-  };
-
   // Get registered players to check if current user is registered
   const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
     tournament ? parseInt(tournament.id) : 0
@@ -599,7 +558,7 @@ const TournamentDetail = () => {
                 onSelect={(item: DropdownItemType | null) => setSelectedUser(item?.value || "")}
                 onBlur={() => {}}
                 placeholder="Type user name or email..."
-                css={{ width: "100%" }}
+                css={{ width: '390px' }}
                 error={false}
               />
             </FormField>

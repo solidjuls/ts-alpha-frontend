@@ -25,7 +25,6 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
   onSelect,
   placeholder,
   onBlur,
-  css,
   error = false,
   debounceTime = 300,
   minChars = 1,
@@ -66,7 +65,6 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
         onSelect={(value) => onSelect(value || null)}
         selectedValue={selectedItemParsed}
         onBlur={onBlur}
-        css={css}
         {...rest}
       >
         <Typeahead.Input

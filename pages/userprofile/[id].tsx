@@ -44,8 +44,6 @@ const UserProfileContent: React.FC<UserDetail> = (data) => (
   </>
 );
 
-
-
 // Styled components for the profile layout
 const ProfileContainer = styled.div`
   display: grid;
