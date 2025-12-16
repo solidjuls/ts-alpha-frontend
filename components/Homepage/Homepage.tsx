@@ -226,7 +226,7 @@ const Filter: React.FC<FilterProps> = ({
   onClear,
 }) => {
   const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "1,2,3,4" });
-  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000);
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 2000);
 
   if (isLoadingTournament || isLoadingUsers) return null;
 

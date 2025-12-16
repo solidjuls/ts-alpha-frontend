@@ -95,7 +95,7 @@ const TournamentWaitlist: React.FC<TournamentWaitlistProps> = ({
   const [selectedUser, setSelectedUser] = useState<DropdownItemType | null>(null);
   
   const { data: waitlistPlayers, isLoading } = useWaitlistPlayers(parseInt(tournamentId));
-  const { data: usersData } = useAllUsers(1, 100);
+  const { data: usersData } = useAllUsers(1, 2000);
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
 

@@ -1,16 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   usersService,
-  User,
-  UserDetail,
-  UsersListResponse,
   GetUsersParams,
   CreateUserData,
   UpdateUserData,
   UpdatePasswordData,
 } from '../services/users.service';
 
-// Query keys for cache management
 export const USERS_QUERY_KEYS = {
   all: ['users'] as const,
   lists: () => [...USERS_QUERY_KEYS.all, 'list'] as const,

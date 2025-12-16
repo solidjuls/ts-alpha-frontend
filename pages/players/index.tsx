@@ -175,7 +175,7 @@ const Players = () => {
     orderBy: 'rating',
     orderDirection: 'desc',
   });
-  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 1000);
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 2000);
  
   const userItems: DropdownItemType[] = usersData?.results?.map((user: any) => ({
     code: user.id,

@@ -3,6 +3,7 @@ import { Button } from "components/Button";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
 import { useRegisteredPlayers, useUnregisterFromTournament, useForfeitPlayer } from "hooks/useTournaments";
 import styled from "styled-components";
+import { RegisteredPlayer } from "services/tournaments.service";
 
 const PlayersContainer = styled.div`
   margin-top: 24px;
@@ -204,6 +205,18 @@ const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemov
     }
   };
 
+  const exportDataCSV = (data?: RegisteredPlayer[]) => {
+    if (!data) return;
+    const headers = ['email', 'name', 'countryCode', 'rating', 'registeredAt', 'userId'];
+    const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + data.map((d: any) => headers.map((h: any) => d[h]).join(",")).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `tournament_${tournamentId}.csv`);
+    document.body.appendChild(link);
+    link.click();
+  };
+
   if (isLoading) {
     return (
       <PlayersContainer>
@@ -222,6 +235,7 @@ const TournamentPlayersList = ({ tournamentId, tournamentStatusId, onPlayerRemov
       <PlayersHeader>
         <HeaderFlex>
           <StyledLabel>Registered Players ({players?.length || 0})</StyledLabel>
+          {isAdmin && <Button onClick={() => exportDataCSV(players)}>Export CSV</Button>}
         </HeaderFlex>
       </PlayersHeader>
 
