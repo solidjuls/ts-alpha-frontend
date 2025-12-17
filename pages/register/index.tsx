@@ -72,7 +72,7 @@ const FormFieldHalf = styled.div`
 `;
 
 const StyledInput = styled(Input)`
-  width: 100%;
+  width: ${props => props.width || "100%"};
   margin-top: 5px;
 `;
 
@@ -253,6 +253,7 @@ const RegisterFormComponent: React.FC = () => {
           <StyledInput
             type="text"
             id="firstName"
+            width="170px"
             value={formData.firstName}
             onChange={(e) => handleInputChange('firstName', e.target.value)}
             disabled={registerMutation.isPending}
@@ -267,6 +268,7 @@ const RegisterFormComponent: React.FC = () => {
           <StyledInput
             type="text"
             id="lastName"
+            width="170px"
             value={formData.lastName}
             onChange={(e) => handleInputChange('lastName', e.target.value)}
             disabled={registerMutation.isPending}
