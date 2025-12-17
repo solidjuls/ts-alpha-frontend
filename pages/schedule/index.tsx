@@ -26,8 +26,6 @@ import {
   CheckOpponentProfileCell,
 } from "components/Schedule/Schedule.styled";
 
-
-
 interface ResponsiveContainerProps {
   direction?: "row" | "column";
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, Box, Span } from "components/Atoms";
 import Text from "components/Text";
 import DayPickerInput from "react-day-picker/DayPickerInput";
@@ -24,9 +24,14 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   gameDate,
   scheduleId,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    typeof dueDate === "string" ? new Date(dueDate) : dueDate,
-  );
+  const initialDate = typeof dueDate === "string" ? new Date(dueDate) : dueDate
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+
+  useEffect(() => {
+    if(typeof dueDate === "string") {
+      setSelectedDate(new Date(dueDate));
+    }
+  }, [dueDate]);
 
   const updateScheduleMutation = useUpdateSchedule();
 
@@ -42,7 +47,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
       console.error('Error updating schedule due date:', error);
     }
   };
-  // bg={color} px={3} py={1} borderRadius="md".   gap={2}
+
   const RenderLabelContent = ({
     description,
     date,

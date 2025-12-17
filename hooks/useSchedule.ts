@@ -30,7 +30,9 @@ export const useSchedules = (
   return useQuery({
     queryKey: SCHEDULE_QUERY_KEYS.list(params),
     queryFn: () => scheduleService.getSchedules(params),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 0, // Always refetch - no caching
+    gcTime: 0, // Don't keep in cache (formerly cacheTime in v4)
+    refetchOnMount: 'always', // Always refetch when component mounts
     placeholderData: keepPreviousData, // Keep previous data while loading new data (React Query v5)
     ...options,
   });
