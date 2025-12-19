@@ -31,7 +31,7 @@ const UserProfileContent: React.FC<UserDetail> = (data) => (
   <>
     <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name || "-"} />
-    <DisplayInfo label="Playdek" infoText={data?.name} />
+    <DisplayInfo label="Playdek" infoText={data?.playdek_name || "-"} />
     <DisplayInfo label="Location" infoText={data?.cities?.name || "-"} />
     <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform || "-"} />
     <DisplayInfo label="Email" infoText={data?.email} />
