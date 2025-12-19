@@ -65,6 +65,10 @@ const FlexContainer = styled.div`
   height: 100%;
 `;
 
+const StyledInput = styled(Input)`
+  margin-left: 20px
+`;
+
 export const UnstyledLink = styled(Link)`
   all: unset;
   cursor: pointer;
@@ -113,6 +117,10 @@ const StyledCardRow = styled.div`
 
 const FilterPanelStyled = styled(FilterPanel)`
     max-width: 988px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
 `;
 
 const CardColumn: React.FC<CardColumnProps> = ({ header, value, countryCode }) => {
@@ -207,10 +215,10 @@ const Players = () => {
             selectedValues={playersSelected as any}
             placeholder="Select Players..."
           />
-          <div style={{ width: "300px", height: "40px" }}>
+          <div style={{ width: "250px", height: "40px" }}>
             <CountriesTypeahead
               placeholder="Type the federation name..."
-              css={{ width: "100%", height: "100%" }}
+              width="300px"
               onSelect={(value) => {
                 if (value) {
                   setCountriesSelected(value.value || "");
@@ -226,9 +234,10 @@ const Players = () => {
               listWidth="320px"
             />
           </div>
-          <Input
+          <StyledInput
             type="text"
             value={playdeckValue}
+            width="300px"
             placeholder="Type the Playdek name"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setPlaydeckValue(event.target.value)
