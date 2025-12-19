@@ -1,144 +1,154 @@
 import { FormattedMessage, useIntl } from "react-intl";
-import { styled, keyframes } from "@stitches/react";
+import styled, { keyframes } from "styled-components";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { blackA } from "@radix-ui/colors";
 import { TriangleDownIcon } from "@radix-ui/react-icons";
 import { Root, Trigger, Content, Item, Arrow, Separator } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useSession } from "contexts/AuthProvider";
+import { useLogout } from "hooks/useAuth";
 import Text from "components/Text";
 import { Box } from "components/Atoms";
 
-const styledItemStyles = {
-  fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
-  fontSize: "$2",
-  lineHeight: "1",
-  color: "$textDark",
-  cursor: "pointer",
-  borderRadius: "$1",
-  margin: 5,
-  height: 25,
-  padding: "0 5px",
-  paddingLeft: 25,
-  transition: "all 50ms",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  position: "relative",
+const StyledAvatar = styled(AvatarPrimitive.Root)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  overflow: hidden;
+  user-select: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 100%;
+  background-color: ${blackA.blackA3};
+`;
 
-  "&:focus": {
-    outline: "none",
-    backgroundColor: "darkBlue",
-    color: "$textLight",
-  },
-};
+const StyledImage = styled(AvatarPrimitive.Image)`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+`;
 
-const StyledAvatar = styled(AvatarPrimitive.Root, {
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  verticalAlign: "middle",
-  overflow: "hidden",
-  userSelect: "none",
-  width: 45,
-  height: 45,
-  borderRadius: "100%",
-  backgroundColor: blackA.blackA3,
-});
+const StyledTrigger = styled(Trigger)`
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+`;
 
-const StyledImage = styled(AvatarPrimitive.Image, {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  borderRadius: "inherit",
-});
+const StyledTriangleDownIcon = styled(TriangleDownIcon)`
+  color: black;
+`;
 
-const StyledTrigger = styled(Trigger, {
-  padding: "0px",
-  backgroundColor: "transparent",
-  border: "none",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-});
+const slideUpAndFade = keyframes`
+  0% { opacity: 0; transform: translateY(2px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
 
-const StyledTriangleDownIcon = styled(TriangleDownIcon, {
-  color: "black",
-});
+const slideRightAndFade = keyframes`
+  0% { opacity: 0; transform: translateX(-2px); }
+  100% { opacity: 1; transform: translateX(0); }
+`;
 
-const slideUpAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateY(2px)" },
-  "100%": { opacity: 1, transform: "translateY(0)" },
-});
+const slideDownAndFade = keyframes`
+  0% { opacity: 0; transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
 
-const slideRightAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateX(-2px)" },
-  "100%": { opacity: 1, transform: "translateX(0)" },
-});
+const slideLeftAndFade = keyframes`
+  0% { opacity: 0; transform: translateX(2px); }
+  100% { opacity: 1; transform: translateX(0); }
+`;
 
-const slideDownAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateY(-2px)" },
-  "100%": { opacity: 1, transform: "translateY(0)" },
-});
+const StyledArrow = styled(Arrow)`
+  fill: white;
+`;
 
-const slideLeftAndFade = keyframes({
-  "0%": { opacity: 0, transform: "translateX(2px)" },
-  "100%": { opacity: 1, transform: "translateX(0)" },
-});
+const StyledSeparator = styled(Separator)`
+  height: 1px;
+  background-color: #24292f;
+`;
 
-const StyledArrow = styled(Arrow, {
-  fill: "white",
-});
+const StyledText = styled(Text)`
+  display: flex;
+  cursor: pointer;
+  font-weight: 600;
+  color: black;
 
-const StyledSeparator = styled(Separator, {
-  height: 1,
-  backgroundColor: "#24292f",
-});
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
 
-const StyledText = styled(Text, {
-  display: "flex",
-  cursor: "pointer",
-  fontWeight: "600",
-  color: "black",
-  "@sm": {
-    display: "none",
-  },
-});
+const StyledContent = styled(Content)`
+  min-width: 120px;
+  border-radius: 6px;
+  padding: 5px;
+  background-color: var(--gray-200);
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
 
-const StyledContent = styled(Content, {
-  minWidth: 120,
-  borderRadius: 6,
-  padding: 5,
-  backgroundColor: "var(--gray-200)",
-  boxShadow:
-    "0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2)",
-  "@media (prefers-reduced-motion: no-preference)": {
-    animationDuration: "400ms",
-    animationTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)",
-    willChange: "transform, opacity",
-    '&[data-state="open"]': {
-      '&[data-side="top"]': { animationName: slideDownAndFade },
-      '&[data-side="right"]': { animationName: slideLeftAndFade },
-      '&[data-side="bottom"]': { animationName: slideUpAndFade },
-      '&[data-side="left"]': { animationName: slideRightAndFade },
-    },
-  },
-});
+  @media (prefers-reduced-motion: no-preference) {
+    animation-duration: 400ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
 
-const StyledItem = styled(Item, { ...styledItemStyles });
+    &[data-state="open"] {
+      &[data-side="top"] { animation-name: ${slideDownAndFade}; }
+      &[data-side="right"] { animation-name: ${slideLeftAndFade}; }
+      &[data-side="bottom"] { animation-name: ${slideUpAndFade}; }
+      &[data-side="left"] { animation-name: ${slideRightAndFade}; }
+    }
+  }
+`;
+
+const StyledItem = styled(Item)`
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+  font-size: ${props => props.theme.fontSizes.fontSizeM};
+  line-height: 1;
+  color: ${props => props.theme.colors.textDark};
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 5px;
+  height: 25px;
+  padding: 0 5px;
+  padding-left: 25px;
+  transition: all 50ms;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 100;
+
+  &:focus {
+    outline: none;
+    background-color: darkBlue;
+    color: ${props => props.theme.colors.textLight};
+  }
+`;
+
+const FlexContainer = styled(Box)`
+  display: flex;
+  flex-direction: row;
+`;
+
+const StyledTextWithMargin = styled(StyledText)`
+  margin-right: 12px;
+`;
 
 const UserAvatar = ({ name }: { name: string }) => {
   const intl = useIntl();
   const router = useRouter();
-  const { logout } = useSession();
+  const logoutMutation = useLogout();
   return (
-    <Box css={{ display: "flex", flexDirection: "row" }}>
+    <FlexContainer>
       <Root>
         <StyledTrigger>
-          <StyledText css={{ marginRight: "12px" }}>
+          <StyledTextWithMargin>
             {`${intl.formatMessage({ id: "greeting" })} ${name}`}
-          </StyledText>
+          </StyledTextWithMargin>
           {/* <StyledAvatar>
             <StyledImage src="https://pbs.twimg.com/profile_images/1361968864171618316/T8jfJHNo_400x400.jpg"></StyledImage>
           </StyledAvatar> */}
@@ -147,9 +157,11 @@ const UserAvatar = ({ name }: { name: string }) => {
         <StyledContent align="end">
           <StyledItem
             onClick={async () => {
-              if (logout) {
-                await logout();
+              try {
+                await logoutMutation.mutateAsync();
                 router.push("/");
+              } catch (error) {
+                console.error('Logout failed:', error);
               }
             }}
           >
@@ -159,7 +171,7 @@ const UserAvatar = ({ name }: { name: string }) => {
           <StyledArrow offset={30} />
         </StyledContent>
       </Root>
-    </Box>
+    </FlexContainer>
   );
 };
 

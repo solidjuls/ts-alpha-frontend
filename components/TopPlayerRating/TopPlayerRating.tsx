@@ -1,20 +1,27 @@
-import { styled } from "stitches.config";
-import { Box } from "components/Atoms";
 import Text from "components/Text";
-import { User } from "components/User";
+import { FlagIcon } from "components/FlagIcon";
 import { SkeletonPlayers } from "components/Skeletons";
-import useFetchInitialData from "hooks/useFetchInitialData";
+import { usePlayerRatings } from "hooks/useRating";
+import { UserType } from "types/user.types";
+import {
+  SidePanelStyled,
+  UserContainer,
+  UserInfo,
+  PlayersContainer,
+  TitleText
+} from './TopPlayerRating.styled';
 
-const SidePanelStyled = styled("div", {
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-  backgroundColor: "$infoForm",
-  margin: "0 12px 0 12px",
-  padding: "12px",
-  borderRadius: "12px",
-  width: "240px",
-});
+const User = ({ name, rating, countryCode }: UserType) => {
+  return (
+    <UserContainer>
+      <UserInfo>
+        <FlagIcon code={countryCode} />
+        <Text>{name}</Text>
+      </UserInfo>
+      <Text>{rating}</Text>
+    </UserContainer>
+  );
+};
 
 const Announcement = () => {
   return (
@@ -25,27 +32,44 @@ const Announcement = () => {
 };
 
 const TopPlayerRating = () => {
-  const { data, isLoading } = useFetchInitialData({ url: "/api/rating?p=1&pso=5" });
-  if (!data) return null;
+  const {
+    data: playersData,
+    isLoading,
+    error
+  } = usePlayerRatings({
+    page: 1,
+    pageSize: 5,
+    orderBy: 'rating',
+    orderDirection: 'desc',
+  });
+
+  if (error) {
+    return (
+      <SidePanelStyled>
+        <TitleText strong="bold">
+          Top Players
+        </TitleText>
+        <Text>Error loading top players</Text>
+      </SidePanelStyled>
+    );
+  }
 
   return (
     <SidePanelStyled>
-      <Text
-        css={{
-          textAlign: "center",
-          fontSize: "20px",
-          borderBottom: "solid 1px $greyLight",
-        }}
-        strong="bold"
-      >
+      <TitleText strong="bold">
         Top Players
-      </Text>
+      </TitleText>
       {isLoading && <SkeletonPlayers />}
-      <Box>
-        {data.results?.map((item, index) => (
-          <User key={index} name={item.name} rating={item.rating} countryCode={item.countryCode} />
+      <PlayersContainer>
+        {playersData?.results?.map((player) => (
+          <User
+            key={player.id}
+            name={player.name}
+            rating={player.rating}
+            countryCode={player.countryCode || ''}
+          />
         ))}
-      </Box>
+      </PlayersContainer>
     </SidePanelStyled>
   );
 };

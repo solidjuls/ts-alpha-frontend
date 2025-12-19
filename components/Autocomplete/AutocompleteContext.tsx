@@ -2,12 +2,24 @@ import { GetInputPropsOptions } from "downshift";
 import React, { createContext, useContext, ReactNode } from "react";
 
 interface AutocompleteContextType {
+  isOpen?: boolean;
+  id?: string;
+  error?: boolean;
   getInputProps: <T>(options?: T) => T & GetInputPropsOptions;
-  openMenu: () => void;
+  getToggleButtonProps?: <T>(options?: T) => T;
+  getMenuProps?: <T>(options?: T) => T;
+  getItemProps?: <T>(options?: T) => T;
+  highlightedIndex?: number;
+  openMenu?: () => void;
 }
 
 const defaultContextValue: AutocompleteContextType = {
+  isOpen: false,
   getInputProps: () => ({}),
+  getToggleButtonProps: () => ({}),
+  getMenuProps: () => ({}),
+  getItemProps: () => ({}),
+  highlightedIndex: -1,
   openMenu: () => {},
 };
 

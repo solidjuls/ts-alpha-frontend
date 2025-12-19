@@ -25,7 +25,7 @@ const EditTextComponent = ({
         type="text"
         id="video1"
         maxLength={maxLength}
-        defaultValue={inputValue}
+        value={inputValue}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           onInputValueChange(event.target.value)
         }

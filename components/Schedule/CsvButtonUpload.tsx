@@ -1,48 +1,52 @@
 import { Button } from "components/Button";
 import { useRouter } from 'next/router'
 import { useState } from "react";
-import getAxiosInstance from "utils/axios";
 import Papa from 'papaparse'
 import { FileInput, Title } from "./styles";
 import { Flex, Span } from "components/Atoms";
+import { useUploadCsvSchedule } from "hooks/useSchedule";
+import { CsvScheduleRow } from "services/schedule.service";
+import { Spinner } from "@radix-ui/themes";
 
 export default function CsvUploadButton({ tournament } : { tournament: string }) {
   const router = useRouter()
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<CsvScheduleRow[] | null>(null);
   const [status, setStatus] = useState("");
 
-  const completeCSVSchema = (results) => {
-    // const expectedHeaders = [
-    //   "due_date",
-    //   "game_code",
-    //   "tournaments_id",
-    //   "usa_player_email",
-    //   "ussr_player_email"
-    // ];
-    // const headers = results.meta.fields;
+  // React Query mutation for CSV upload
+  const uploadCsvMutation = useUploadCsvSchedule();
 
-    // const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
-    // if (!isHeaderValid) {
-    //   setStatus("Invalid schema! Expected headers:", expectedHeaders, "but got:", headers);
-    //   return;
-    // }
+  const completeCSVSchema = (results: any) => {
+    const expectedHeaders = [
+      "due_date",
+      "game_code",
+      "usa_player_id",
+      "ussr_player_id"
+    ];
+    const headers = results.meta.fields;
+
+    const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
+    if (!isHeaderValid) {
+      setStatus(`❌ Invalid schema! Expected headers: ${expectedHeaders.join(', ')}, but got: ${headers?.join(', ') || 'none'}`);
+      return;
+    }
 
     let valid = true;
-    results.data.forEach((row, i) => {
+    results.data.forEach((row: any, i: number) => {
       // due_date should look like YYYY-MM-DD
       if (!/^\d{4}-\d{2}-\d{2}$/.test(row.due_date)) {
-        setStatus(`Row ${i + 2}: Invalid due_date ${row.due_date}`);
+        setStatus(`❌ Row ${i + 2}: Invalid due_date ${row.due_date}. Expected format: YYYY-MM-DD`);
         valid = false;
       }
-      // game_code should be 4 digits
+      // game_code should be 4 alphanumeric characters
       if (!/^[A-Za-z0-9]{4}$/.test(row.game_code)) {
-        setStatus(`Row ${i + 2}: Invalid game_code ${row.game_code}`);
+        setStatus(`❌ Row ${i + 2}: Invalid game_code ${row.game_code}. Expected 4 alphanumeric characters`);
         valid = false;
       }
-      // Emails should be valid format
-      ["usa_player_email", "ussr_player_email"].forEach((field) => {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(row[field])) {
-          setStatus(`Row ${i + 2}: Invalid email in ${field} ${row[field]}`);
+      // User IDs should be numeric
+      ["usa_player_id", "ussr_player_id"].forEach((field) => {
+        if (!/^\d+$/.test(row[field])) {
+          setStatus(`❌ Row ${i + 2}: Invalid user ID in ${field}: ${row[field]}. Expected numeric value`);
           valid = false;
         }
       });
@@ -75,40 +79,45 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
 
     setStatus("Uploading...");
 
-    const response = await getAxiosInstance().post(
-        "/api/schedule/upload-csv",
-        {
-            data: {
-                file,
-                tournament: 318
-            }
-        },
-    )
-    if (response.status === 200) {
-      router.reload()
-    } else if (response.status === 500) {
-      setStatus("❌ Upload failed.");
+    try {
+      const result = await uploadCsvMutation.mutateAsync({
+        file,
+        tournament
+      });
+
+      if (result.success) {
+        setStatus(`✅ ${result.message}`);
+        if (result.errors.length > 0) {
+          setStatus(prev => `${prev}\n⚠️ Warnings:\n${result.errors.join('\n')}`);
+        }
+        // Reload the page to show updated schedule
+        setTimeout(() => router.reload(), 2000);
+      } else {
+        setStatus("❌ Upload failed.");
+      }
+    } catch (error: any) {
+      setStatus(`❌ Upload failed: ${error?.response?.data?.message || error.message || 'Unknown error'}`);
     }
-    // return valid error codes. Users should be all registered, tournament should exist
   };
 
   return (
-    <Flex css={{ flexDirection: 'column'}}>
+    <Flex style={{ flexDirection: 'column'}}>
       <Title>Upload CSV Schedule</Title>
       <Span>1- Select a tournament from the dropdown</Span>
-      <Span>2- Upload a .csv file with the correct format (due_date,game_code,tournaments_id,usa_player_email,ussr_player_email)</Span>
-      <Flex css={{ margin: '8px 0 8px 0' }}>
+      <Span>2- Upload a .csv file with the correct format (due_date,game_code,usa_player_id,ussr_player_id)</Span>
+      <Span style={{ fontSize: '12px', color: '#666' }}>Note: Tournament ID is automatically set from the selected tournament</Span>
+      <Flex style={{ margin: '8px 0 8px 0' }}>
         <FileInput
           type="file"
           accept=".csv"
           onChange={handleChange}
-          css={{ pointerEvents: !tournament ? 'none' : 'unset' }}
+          style={{ pointerEvents: !tournament ? 'none' : 'unset' }}
         />
         <Button
           onClick={handleUpload}
-          disabled={!file}
+          disabled={!file || uploadCsvMutation.isPending}
         >
-          Upload CSV
+          {uploadCsvMutation.isPending ? <Spinner size="2" /> : "Upload CSV"}
         </Button>
         <p>{status}</p>
       </Flex>

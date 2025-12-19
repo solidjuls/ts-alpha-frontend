@@ -1,46 +1,9 @@
 import React from "react";
-import { styled } from "stitches.config";
 import Image from "next/image";
-import { Box, Span } from "components/Atoms";
 import { Navigation } from "components/Sidebar/Sidebar";
+import { Container, Main, StyledFooter, LogoSpan, Banner, BannerImage } from './Layout.styled';
 
-const containerStyles = {
-  display: "flex",
-  flexDirection: "column",
-  minHeight: "100vh",
-  width: "100%",
-  height: "100%",
-};
-const contentStyles = {
-  display: "flex",
-  flexGrow: "1",
-};
-
-const Main = styled("main", {
-  alignItems: "center",
-  flexDirection: "column",
-  display: "flex",
-  backgroundColor: "var(--surface-ground)",
-});
-
-const StyledFooter = styled("footer", {
-  display: "flex",
-  padding: "2rem 0",
-  borderTop: "1px solid #eaeaea",
-  justifyContent: "center",
-  alignItems: "center",
-  ["footer a"]: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexGrow: 1,
-  },
-});
-const logoCss = {
-  height: "1em",
-  marginLeft: "0.5rem",
-};
-const Footer = () => {
+export const Footer = () => {
   return (
     <StyledFooter>
       <a
@@ -49,21 +12,28 @@ const Footer = () => {
         rel="noopener noreferrer"
       >
         Powered by{" "}
-        <Span css={logoCss}>
+        <LogoSpan>
           <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </Span>
+        </LogoSpan>
       </a>
     </StyledFooter>
   );
 };
 
-const Layout = ({ children }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+}
+
+const Layout = ({ children }: LayoutProps) => {
   return (
-    <Box css={containerStyles}>
+    <Container>
       <Navigation />
-      <Main css={contentStyles}>{children}</Main>
+      <Banner>
+        <BannerImage src="/menu-image.jpeg" alt="Twilight Struggle Banner" />
+      </Banner>
+      <Main>{children}</Main>
       {/* <Footer /> */}
-    </Box>
+    </Container>
   );
 };
 

@@ -1,31 +1,24 @@
 "use client";
-import { useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
+import styled from "styled-components";
 import { FlagIcon } from "components/FlagIcon";
-import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
-import { Game, TournamentsType } from "types/game.types";
+import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
-import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink } from "./Homepage.styles";
+import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer } from "./Homepage.styled";
 import MultiSelect from "components/MultiSelect";
-import useFetchInitialData from "hooks/useFetchInitialData";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
-import { styled } from "stitches.config";
 import { Button } from "components/Button";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../redux/store";
-import {
-  fetchGameList,
-  setClearFilter,
-  setCurrentPage,
-  setPlayersFilter,
-  setTournamentFilter,
-  setVideoFilter,
-} from "../../redux/gameListSlice";
 import { Checkbox } from "components/Checkbox";
-import { UserType } from "types/user.types";
+import { useAllUsers } from "hooks/useUsers";
+import { useTournaments } from "hooks/useTournaments";
+import { useGames } from "hooks/useGames";
+import { GetGamesParams } from "services/games.service";
+import { Tournament } from "services/tournaments.service";
+import { User, UsersListResponse } from "services/users.service";
 import { MultiSelectItemType } from "types/types";
 
 type ResultsPanelProps = {
@@ -33,11 +26,22 @@ type ResultsPanelProps = {
   isLoading?: boolean;
 };
 
-const responsive = {
-  "@sm": {
-    display: "none",
-  },
-};
+const ResponsiveText = styled(Text)`
+  @media (max-width: 640px) {
+    display: none;
+  }
+`;
+
+const ContainerGameResults = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1100px;
+  background-color: transparent;
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+`;
 
 const PlayerInfoBox = ({
   usaPlayer,
@@ -50,9 +54,9 @@ const PlayerInfoBox = ({
   "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode"
 >) => {
   return (
-    <Box css={{ display: "flex", flexDirection: "row" }}>
-      <Box
-        css={{
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      <div
+        style={{
           display: "flex",
           margin: "0 8px 0 8px",
           flexDirection: "row",
@@ -64,10 +68,10 @@ const PlayerInfoBox = ({
         <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USA" ? "bold" : undefined}>
           {usaPlayer}
         </Text>
-      </Box>
+      </div>
       <span>vs</span>
-      <Box
-        css={{
+      <div
+        style={{
           display: "flex",
           margin: "0 8px 0 8px",
           flexDirection: "row",
@@ -79,30 +83,30 @@ const PlayerInfoBox = ({
         <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USSR" ? "bold" : undefined}>
           {ussrPlayer}
         </Text>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 const ResultRow = ({ game }: { game: Game }) => {
   return (
     <PlayerInfo>
-      <Flex
-        css={{
+      <div
+        style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           margin: "0 0 0 8px",
         }}
       >
-        <Text fontSize="small" css={{ alignSelf: "center", ...responsive }}>
+        <ResponsiveText fontSize="small" style={{ alignSelf: "center" }}>
           {`Game #${game.id}`}
-        </Text>
-        <Text fontSize="small" css={{ alignSelf: "center", marginLeft: 4, ...responsive }}>
-          {game.gameType}
-        </Text>
+        </ResponsiveText>
+        <ResponsiveText fontSize="small" style={{ alignSelf: "center", marginLeft: 4 }}>
+          {game.tournamentName}
+        </ResponsiveText>
         <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
-      </Flex>
+      </div>
 
       <PlayerInfoBox
         usaCountryCode={game.usaCountryCode}
@@ -119,8 +123,8 @@ const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() 
 
 const EmptyState = () => {
   return (
-    <Box
-      css={{
+    <div
+      style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -128,25 +132,26 @@ const EmptyState = () => {
         height: "320px",
       }}
     >
-      <Text css={{ fontSize: "20px" }} strong="bold">
+      <Text style={{ fontSize: "20px" }} strong="bold">
         No games
       </Text>
-    </Box>
+    </div>
   );
 };
 
 type FilterUserProps = {
-  users: UserType[];
+  users: User[];
   selectedValues: MultiSelectItemType[];
+  setSelectedValues: (values: MultiSelectItemType[]) => void;
 };
 
 type FilterTournamentProps = {
-  tournaments: TournamentsType[];
+  tournaments: Tournament[];
   selectedValues: MultiSelectItemType[];
+  setSelectedValues: (values: MultiSelectItemType[]) => void;
 };
 
 const FilterUser: React.FC<FilterUserProps> = ({
-  onFilterChange,
   users,
   selectedValues,
   setSelectedValues,
@@ -157,17 +162,24 @@ const FilterUser: React.FC<FilterUserProps> = ({
   );
 
   return (
-    <Box css={{ margin: "4px" }}>
+    <div style={{ margin: "4px" }}>
       <MultiSelect
         items={usersMemo}
-        placeholder="Select Players..."
+        placeholder="Select Players (max 2)..."
         selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
+        setSelectedValues={(values: MultiSelectItemType[]) => {
+          // Limit to maximum 2 players
+          if (values.length <= 2) {
+            setSelectedValues(values);
+          }
+        }}
         closeOnSelect={false}
+        selectionLimit={2}
       />
-    </Box>
+    </div>
   );
 };
+
 const FilterTournament: React.FC<FilterTournamentProps> = ({
   tournaments,
   selectedValues,
@@ -179,77 +191,74 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
   );
 
   return (
-    <Box css={{ margin: "4px" }}>
+    <div style={{ margin: "4px" }}>
       <MultiSelect
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
         selectedValues={selectedValues}
-        setSelectedValues={setSelectedValues}
+        setSelectedValues={(values: string) => {
+          const valuesArray = Array.isArray(values) ? values : [values];
+          setSelectedValues(valuesArray);
+        }}
         closeOnSelect={false}
       />
-    </Box>
+    </div>
   );
 };
 
-const Filter = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { data: tournaments, isLoading: isLoadingTournament } = useFetchInitialData<
-    TournamentsType[]
-  >({
-    url: "/api/game/tournaments",
-    cacheId: "tournaments-list",
-  });
-  const { data: users, isLoading: isLoadingUsers } = useFetchInitialData<UserType[]>({
-    url: "/api/user",
-    cacheId: "user-list",
-  });
-  const { filters } = useSelector((state: RootState) => state.gameList);
-  const { playersSelected, tournamentSelected, videoSelected } = filters;
+type FilterProps = {
+  playersSelected: MultiSelectItemType[];
+  setPlayersSelected: (values: MultiSelectItemType[]) => void;
+  tournamentSelected: MultiSelectItemType[];
+  setTournamentSelected: (values: MultiSelectItemType[]) => void;
+  videoSelected: boolean;
+  setVideoSelected: (value: boolean) => void;
+  onClear: () => void;
+};
 
-  const onClear = () => {
-    dispatch(setClearFilter());
-  };
-  // --blue-50: #f4fafe;
-  // --blue-100: #cae6fc;
-  // --blue-200: #a0d2fa;
-  // --blue-300: #75bef8;
-  // --blue-400: #4baaf5;
-  // --blue-500: #2196f3;
-  // --blue-600: #1c80cf;
-  // --blue-700: #1769aa;
-  // --blue-800: #125386;
+const Filter: React.FC<FilterProps> = ({
+  playersSelected,
+  setPlayersSelected,
+  tournamentSelected,
+  setTournamentSelected,
+  videoSelected,
+  setVideoSelected,
+  onClear,
+}) => {
+  const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "4,5" });
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 2000);
 
   if (isLoadingTournament || isLoadingUsers) return null;
+
+  const tournamentsList = tournaments as Tournament[];
+  const usersResponse = usersData as UsersListResponse;
+
   return (
     <FilterPanel>
-      {users && (
+      {usersResponse?.results && (
         <FilterUser
-          users={users}
+          users={usersResponse.results}
           selectedValues={playersSelected}
-          setSelectedValues={(value) => {
-            dispatch(setPlayersFilter(value));
-          }}
-          closeOnSelect={false}
+          setSelectedValues={setPlayersSelected}
         />
       )}
-      {tournaments && (
+      {tournamentsList && (
         <FilterTournament
-          tournaments={tournaments}
+          tournaments={tournamentsList}
           selectedValues={tournamentSelected}
-          setSelectedValues={(value) => dispatch(setTournamentFilter(value))}
-          closeOnSelect={false}
+          setSelectedValues={setTournamentSelected}
         />
       )}
       <Checkbox
         text="Games with videos"
-        onCheckedChange={() => dispatch(setVideoFilter(!videoSelected))}
+        onCheckedChange={() => setVideoSelected(!videoSelected)}
         checked={videoSelected}
       />
-      <Flex>
-        <Button css={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
+      <div style={{ display: "flex" }}>
+        <Button style={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
           Clear
         </Button>
-      </Flex>
+      </div>
     </FilterPanel>
   );
 };
@@ -257,11 +266,11 @@ const Filter = () => {
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
-      <Flex css={{ width: "100%" }}>
-        <StyledResultsPanel css={{ justifyContent: "center", alignItems: "center" }}>
+      <div style={{ display: 'flex', width: "100%" }}>
+        <StyledResultsPanel style={{ justifyContent: "center", alignItems: "center" }}>
           <Spinner />
         </StyledResultsPanel>
-      </Flex>
+      </div>
     );
   }
   return (
@@ -275,64 +284,74 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
   );
 };
 
-const ResponsiveContainer = styled("div", {
-  display: "flex",
-  flexDirection: "row",
-  width: "100%",
-  maxWidth: "1100px",
-  variants: {
-    direction: {
-      row: {
-        flexDirection: "row",
-      },
-      column: {
-        flexDirection: "column",
-      },
-    },
-  },
-});
-
 const Homepage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { items, status, filters, currentPage, totalPages } = useSelector(
-    (state: RootState) => state.gameList,
-  );
+  const [playersSelected, setPlayersSelected] = useState<MultiSelectItemType[]>([]);
+  const [tournamentSelected, setTournamentSelected] = useState<MultiSelectItemType[]>([]);
+  const [videoSelected, setVideoSelected] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  useEffect(() => {
-    dispatch(fetchGameList());
-  }, [filters, currentPage, dispatch]);
+  const gameFilters: GetGamesParams = useMemo(() => {
+    const filters: GetGamesParams = {
+      p: currentPage,
+      pageSize: 20,
+    };
 
-  const onPageChange = async (page: string) => {
-    dispatch(setCurrentPage(page));
+    if (playersSelected.length > 0) {
+      filters.userFilter = playersSelected.map(item => item.code).join(',');
+    }
+
+    if (tournamentSelected.length > 0) {
+      filters.toFilter = tournamentSelected.map(item => item.code).join(',');
+    }
+
+    if (videoSelected) {
+      filters.video = true;
+    }
+
+    return filters;
+  }, [playersSelected, tournamentSelected, videoSelected, currentPage]);
+
+  const { data: gamesData, isLoading } = useGames(gameFilters);
+
+  const onPageChange = (page: string) => {
+    setCurrentPage(Number(page));
   };
 
+  const onClear = () => {
+    setPlayersSelected([]);
+    setTournamentSelected([]);
+    setVideoSelected(false);
+    setCurrentPage(1);
+  };
+
+  const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
+
   return (
-    <ResponsiveContainer
-      direction={{
-        "@initial": "row",
-        "@sm": "column",
-      }}
-    >
-      <Flex css={{ flexDirection: "column", width: "100%" }}>
-        <Filter />
-        <ResultsPanel
-          data={items.results}
-          isLoading={status === "loading"}
-          // dateValue={dateValue}
-          // onClickDay={onClickDay}
-        />
-        {!(status === "loading") && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
+      <ContainerGameResults>
+        <GlobalContainer>
+          <Filter
+            playersSelected={playersSelected}
+            setPlayersSelected={setPlayersSelected}
+            tournamentSelected={tournamentSelected}
+            setTournamentSelected={setTournamentSelected}
+            videoSelected={videoSelected}
+            setVideoSelected={setVideoSelected}
+            onClear={onClear}
           />
-        )}
-      </Flex>
-      <Box>
+          <ResultsPanel
+            data={gamesData?.results || []}
+            isLoading={isLoading}
+          />
+          {!isLoading && gamesData && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={onPageChange}
+            />
+          )}
+        </GlobalContainer>
         <TopPlayerRating />
-      </Box>
-    </ResponsiveContainer>
+      </ContainerGameResults>
   );
 };
 

@@ -1,122 +1,166 @@
-import { Flex } from "components/Atoms";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import { styled } from "stitches.config";
+import styled from "styled-components";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useStandings, PlayerStanding } from "hooks/useStandings";
+import { Spinner } from "@radix-ui/themes";
 
-const headerColor = {
-  backgroundColor: "rgb(28, 69, 135)",
-  color: "white",
-};
+// Using PlayerStanding type from the hook
 
-const headerForfeitColor = {
-  backgroundColor: "red",
-  color: "white",
-};
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 8px;
+  width: 100%;
+`;
 
-type Player = {
-  userId: string;
-  name: string;
-  secondaryName?: string;
-  standingName: string;
-  tldCode: string;
-  gamesWon: number;
-  gamesLost: number;
-  gamesTied: number;
-  winRate: number;
-  sos: number;
-};
+const PageHeader = styled.h1`
+  text-align: center;
+`;
 
-const PageHeader = styled("h1", {
-  textAlign: "center",
-  borderBottom: "solid 1px $greyLight",
-});
-const StyledTable = styled("table", {
-  borderCollapse: "collapse",
-  marginBottom: "8px",
-});
+const StyledTable = styled.table`
+  border-collapse: collapse;
+  margin-bottom: 8px;
+`;
 
-const StyledHeading = styled("thead", {
-  fontWeight: "bold",
-  ...headerColor,
-});
+const StyledHeading = styled.thead`
+  font-weight: bold;
+  background-color: rgb(28, 69, 135);
+  color: white;
+`;
 
-const StyledHeaderCell = styled("th", {
-  fontSize: "12px",
-  textAlign: "left",
-  padding: "0 0 0 4px",
-  borderBottom: "solid 1px black",
-  borderLeft: "solid 1px black",
-});
+const StyledHeaderCell = styled.th`
+  font-size: 12px;
+  text-align: left;
+  padding: 0 0 0 4px;
+  border: solid 1px black;
+`;
 
-const StyledCell = styled("td", {
-  padding: "0 0 0 4px",
-  border: "solid 1px black",
-});
+const StyledCell = styled.td`
+  padding: 0 0 0 4px;
+  border: solid 1px black;
+  font-size: 12px;
+`;
 
-const TabContainer = styled("div", {
-  display: "flex",
-  marginBottom: "16px",
-  borderRadius: "8px",
-  overflow: "hidden",
-  border: "1px solid #ccc",
-  width: "fit-content",
-});
+const TabContainer = styled.div`
+  display: flex;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  width: fit-content;
+`;
 
-const TabButton = styled("button", {
-  padding: "12px 24px",
-  border: "none",
-  backgroundColor: "#f5f5f5",
-  color: "#666",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "600",
-  transition: "all 0.2s ease",
-  outline: "none",
+interface TabButtonProps {
+  $active?: boolean;
+}
 
-  "&:hover": {
-    backgroundColor: "#e0e0e0",
-  },
+const TabButton = styled.button<TabButtonProps>`
+  padding: 12px 24px;
+  border: none;
+  background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#f5f5f5'};
+  color: ${props => props.$active ? 'white' : '#666'};
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  outline: none;
 
-  variants: {
-    active: {
-      true: {
-        backgroundColor: "rgb(28, 69, 135)",
-        color: "white",
-        "&:hover": {
-          backgroundColor: "rgb(28, 69, 135)",
-        },
-      },
-    },
-  },
-});
+  &:hover {
+    background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#e0e0e0'};
+  }
+`;
+
+const StandingsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  position: relative;
+`;
+
+interface LoadingOverlayProps {
+  $isVisible: boolean;
+}
+
+const LoadingOverlay = styled.div<LoadingOverlayProps>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${props => props.$isVisible ? 1 : 0};
+  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
+  transition: opacity 0.2s ease;
+  z-index: 10;
+`;
+
+const StandingGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  padding: 8px;
+`;
+
+const StandingTitle = styled(Text)`
+  background-color: rgb(28, 69, 135);
+  color: white;
+  margin: 0;
+  text-align: center;
+`;
+
+const PlayerRow = styled.tr``;
+
+const RankCell = styled(StyledCell)`
+  border-left: solid 1px black;
+`;
+
+const PlayerInfoContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const StatCell = styled(StyledCell)`
+  border-left: solid 1px black;
+  width: 50px;
+`;
+
+const WideRankCell = styled(RankCell)`
+  width: 40px;
+`;
+
+const WidePlayerCell = styled(StyledCell)`
+  padding-left: 40px;
+  width: 200px;
+`;
 
 type Division = "TORUN" | "SEATTLE";
 
 const Standings = () => {
-  const [selectedDivision, setSelectedDivision] = useState<Division>("SEATTLE");
+  const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
 
   const {
     data: standings,
-    isLoading,
+    isFetching,
     error,
-    refetch,
-  } = useFetchInitialData<Player[]>({
-    url: `/api/standings?id=318&division=${selectedDivision}`,
+  } = useStandings({
+    tournamentId: "318",
+    division: selectedDivision
   });
+
   const handleDivisionChange = (division: Division) => {
     setSelectedDivision(division);
   };
 
-  // Refetch data when division changes
-  useEffect(() => {
-    refetch();
-  }, [selectedDivision]);
+  if (error) return <div>Error loading standings</div>;
 
-  if (!standings) return null;
-
-  const grouped = standings.reduce<Record<string, Player[]>>((acc, player) => {
+  const grouped = standings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
     return acc;
@@ -130,98 +174,84 @@ const Standings = () => {
       return b.sos - a.sos;
     });
   }
-// grouped["Forfeit"];
 
   return (
-    <Flex css={{ flexDirection: "column", padding: "8px" }}>
+    <PageContainer>
       {/* Division Filter Tabs */}
       <PageHeader>Standings</PageHeader>
       <TabContainer>
         <TabButton
-          active={selectedDivision === "TORUN"}
+          $active={selectedDivision === "TORUN"}
           onClick={() => handleDivisionChange("TORUN")}
         >
           TORUN
         </TabButton>
         <TabButton
-          active={selectedDivision === "SEATTLE"}
+          $active={selectedDivision === "SEATTLE"}
           onClick={() => handleDivisionChange("SEATTLE")}
         >
           SEATTLE
         </TabButton>
       </TabContainer>
 
-      {/* Standings Tables */}
-      <Flex css={{ flexDirection: "row", flexWrap: "wrap", gap: "16px" }}>
-        {Object.entries(grouped).map(([standingName, players]) => {
-          if (standingName === "Forfeit") return null;
+      <StandingsContainer>
+        {/* Loading overlay - shows on top of existing content during refetch */}
+        <LoadingOverlay $isVisible={isFetching}>
+          <Spinner size="3" />
+        </LoadingOverlay>
 
-          return (
-            <Flex
-              key={standingName}
-              css={{ flexDirection: "column", borderRadius: "8px", padding: "8px" }}
-            >
-              <Text
-                strong="bold"
-                css={{
-                  ...headerColor,
-                  // borderLeft: "1px solid black",
-                  margin: 0,
-                  textAlign: "center",
-                }}
-              >
-                {standingName}
-              </Text>
-              <StyledTable>
-                <StyledHeading>
-                  <tr>
-                    <StyledHeaderCell css={{ width: "40px" }}>Rank</StyledHeaderCell>
-                    <StyledHeaderCell css={{ paddingLeft: "40px", width: "200px" }}>
-                      Player Name
-                    </StyledHeaderCell>
-                    <StyledHeaderCell>W-L-T</StyledHeaderCell>
-                    <StyledHeaderCell>Win%</StyledHeaderCell>
-                    <StyledHeaderCell>SoS</StyledHeaderCell>
-                  </tr>
-                </StyledHeading>
-                <tbody>
-                  {players.map((player, index) => (
-                    <tr key={player.userId}>
-                      <StyledCell css={{ borderLeft: "solid 1px black" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {index + 1}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell>
-                        <Flex css={{ alignItems: "center", gap: "4px" }}>
-                          {player.tldCode && <FlagIcon code={player.tldCode} />}
-                          <Text fontSize="small">{player.name}</Text>
-                        </Flex>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small">
-                          {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {`${(player.winRate * 100).toFixed(0)}%`}
-                        </Text>
-                      </StyledCell>
-                      <StyledCell css={{ borderLeft: "solid 1px black", width: "50px" }}>
-                        <Text fontSize="small" css={{ textAlign: "center" }}>
-                          {`${(player.sos * 100).toFixed(0)}%`}
-                        </Text>
-                      </StyledCell>
-                    </tr>
-                  ))}
-                </tbody>
-              </StyledTable>
-            </Flex>
-          );
-        })}
-      </Flex>
-    </Flex>
+        {grouped && Object.entries(grouped).map(([standingName, players]) => (
+          <StandingGroup key={standingName}>
+            <StandingTitle strong="bold">
+              {standingName}
+            </StandingTitle>
+            <StyledTable>
+              <StyledHeading>
+                <tr>
+                  <WideRankCell as="th">Rank</WideRankCell>
+                  <WidePlayerCell as="th">Player Name</WidePlayerCell>
+                  <StyledHeaderCell>W-L-T</StyledHeaderCell>
+                  <StyledHeaderCell>Win%</StyledHeaderCell>
+                  <StyledHeaderCell>SoS</StyledHeaderCell>
+                </tr>
+              </StyledHeading>
+              <tbody>
+                {players.map((player, index) => (
+                  <PlayerRow key={player.userId}>
+                    <RankCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {index+1}
+                      </Text>
+                    </RankCell>
+                    <StyledCell>
+                      <PlayerInfoContainer>
+                        {player.tldCode && <FlagIcon code={player.tldCode} />}
+                        <Text fontSize="small">{player.name}</Text>
+                      </PlayerInfoContainer>
+                    </StyledCell>
+                    <StatCell>
+                      <Text fontSize="small">
+                        {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                      </Text>
+                    </StatCell>
+                    <StatCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {`${(player.winRate*100).toFixed(0)}%`}
+                      </Text>
+                    </StatCell>
+                    <StatCell>
+                      <Text fontSize="small" style={{ textAlign: "center" }}>
+                        {`${(player.sos*100).toFixed(0)}%`}
+                      </Text>
+                    </StatCell>
+                  </PlayerRow>
+                ))}
+              </tbody>
+            </StyledTable>
+          </StandingGroup>
+        ))}
+      </StandingsContainer>
+    </PageContainer>
   );
 };
 

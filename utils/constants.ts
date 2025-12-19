@@ -90,9 +90,11 @@ export const endType: Array<DropdownItemType> = [
 
 export type TournamentStatusType = (typeof tournamentStatus)[keyof typeof tournamentStatus];
 export const tournamentStatus = {
-  open: 1,
-  closed: 2,
-  registrationOpen: 4,
+  initial: 1,
+  registrationClosed: 3,
+  registrationOpen: 2,
+  ongoing: 4,
+  closed: 5,
 } as const;
 
 export const gameWinningOptions: Array<DropdownItemType> = [
@@ -122,9 +124,9 @@ export const gameSides: Array<DropdownItemType> = [
 ];
 
 export const userRoles = {
-  SUPERADMIN: 3,
+  SUPERADMIN: 1,
   ADMIN: 2,
-  PLAYER: 1,
+  PLAYER: 3,
 };
 
 export const platforms: Array<DropdownItemType> = [
@@ -207,13 +209,19 @@ export const gameDurations: Array<DropdownItemType> = [
 
 export const getTournamentStatusNames = (status_id: TournamentStatusType) => {
   if (status_id === 1) {
-    return "Open";
+    return "Initial";
   }
   if (status_id === 2) {
-    return "Closed";
+    return "Registration Open";
+  }
+  if (status_id === 3) {
+    return "Registration Closed";
   }
   if (status_id === 4) {
-    return "Registration Open";
+    return "Ongoing";
+  }
+  if (status_id === 5) {
+    return "Closed";
   }
   return "Unknown";
 }

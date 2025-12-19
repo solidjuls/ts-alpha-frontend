@@ -6,12 +6,10 @@ import { DetailContainer } from "components/DetailContainer"
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import DateComponent from "components/EditFormComponents/DateComponent";
 import { EditTextAreaComponent } from "components/EditFormComponents/EditTextArea";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import UserTypeahead from "pages/submitform/UserTypeahead";
-import getAxiosInstance from "utils/axios";
+// Users are now fetched directly by the UserTypeahead component
+import { useCreateTournament } from "hooks/useTournaments";
+import UserTypeahead from "components/UserTypeahead";
 import { TournamentCreateState } from "types/game.types";
-import { DropdownItemType } from "types/types";
-import { UserType } from "types/user.types";
 import { tournamentStatus } from "utils/constants";
 import { useRouter } from "next/router";
 
@@ -57,16 +55,11 @@ const getInitialState = () => {
 const TournamentCreate = () => {
   const router = useRouter();
   const [form, setForm] = useState<TournamentCreateState>(() => getInitialState());
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
-    url: "/api/user",
-    cacheId: "user-list",
-  });
-
-  if (!users) return null
+  // React Query hooks
+  const createTournamentMutation = useCreateTournament();
 
   const validated = () => {
     let submit = true;
@@ -99,46 +92,73 @@ const TournamentCreate = () => {
     });
   };
 
+  const handleSubmit = async () => {
+    if (!validated()) return;
+
+    try {
+      await createTournamentMutation.mutateAsync({
+        tournamentName: form.tournamentName.value || "",
+        status: Number(form.statusId.value),
+        admins: form.admins.value || undefined,
+        startingDate: form.startingDate.value,
+        description: form.description.value || undefined,
+      });
+
+      setConfirmationMsg("Tournament created correctly");
+      router.push("/tournaments");
+    } catch (error: any) {
+      setErrorMsg(error?.response?.data?.message || error?.message || "Failed to create tournament");
+    }
+  };
+
   const statusIds = Object.entries(tournamentStatus).map(([key, value]) => ({
     value: value.toString(),
     text: key,
   }));
-    const usersParsed: DropdownItemType[] =
-      users?.map((item) => ({
-        value: item.id,
-        text: item.name,
-      })) || [];
+
+  // Users are now fetched directly by the UserTypeahead component
   const formattedDate = form?.startingDate.value ? new Date(form?.startingDate.value) : new Date()
 
-  return      <DetailContainer>
+  return (
+    <DetailContainer>
+      {confirmationMsg && (
+        <div style={{ color: 'green', marginBottom: '16px', textAlign: 'center' }}>
+          {confirmationMsg}
+        </div>
+      )}
+      {errorMsg && (
+        <div style={{ color: 'red', marginBottom: '16px', textAlign: 'center' }}>
+          {errorMsg}
+        </div>
+      )}
       <Form css={formStyles} onSubmit={(e) => e.preventDefault()}>
         <EditTextComponent
           labelText="tournamentName"
-          inputValue={form?.tournamentName.value}
+          inputValue={form?.tournamentName.value || ""}
           onInputValueChange={(value) => onInputValueChange("tournamentName", value)}
           css={{ width: inputWidth }}
           error={form?.tournamentName.error}
+          maxLength={100}
         />
         <DropdownWithLabel
           labelText="statusId"
           items={statusIds}
           error={form?.statusId?.error}
           css={{ width: inputWidth }}
-          selectedItem={form.statusId?.value}
+          selectedItem={form.statusId?.value || ""}
           placeholder="Status Id"
           onSelect={(value: string) => onInputValueChange("statusId", value)}
         />
         <UserTypeahead
           labelText="admins"
-          selectedItem={form.admins.value}
+          selectedItem={form.admins.value || ""}
           error={form.admins.error}
-          users={usersParsed}
           placeholder="Type the admin name..."
           css={{ width: dropdownWidth }}
           onBlur={() => {
             onInputValueChange("admins", "");
           }}
-          onSelect={(value: DropdownItemType) =>
+          onSelect={(value) =>
             onInputValueChange("admins", value?.value || "")
           }
         />
@@ -146,45 +166,25 @@ const TournamentCreate = () => {
           labelText="startingDate"
           inputValue={formattedDate}
           onInputValueChange={(value) => onInputValueChange("startingDate", value)}
-          error={form?.startingDate.error}
         />
         <EditTextAreaComponent
           labelText="tournamentDescription"
-          inputValue={form?.description.value}
+          inputValue={form?.description.value || ""}
           onInputValueChange={(value) => onInputValueChange("description", value)}
           css={{ width: "500px", height: "200px" }}
           error={form?.description.error}
+          maxLength={1000}
         />
         <Button
-          disabled={isSubmitting}
+          disabled={createTournamentMutation.isPending}
           css={{ width: "200px", fontSize: "18px" }}
-          onClick={async () => {
-            if (validated()) {
-              try {
-                setIsSubmitting(true);
-                // @ts-ignore
-                await getAxiosInstance().patch("/api/game/tournaments", {
-                  name: form?.tournamentName.value,
-                  status: form?.statusId.value,
-                  admins: form.admins.value,
-                  startingDate: form?.startingDate.value,
-                  description: form?.description.value
-                });
-                setConfirmationMsg("Tournament created correctly");
-                router.push("/tournaments");
-              } catch (e) {
-                setErrorMsg(e?.response?.data);
-              } finally {
-                setIsSubmitting(false);
-              }
-            }
-          }}
+          onClick={handleSubmit}
         >
-          {isSubmitting ? <Spinner size="3" /> : "Submit"}
+          {createTournamentMutation.isPending ? <Spinner size="3" /> : "Submit"}
         </Button>
       </Form>
     </DetailContainer>
-        
-}
+  );
+};
 
 export default TournamentCreate

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, Box, Span } from "components/Atoms";
 import Text from "components/Text";
 import DayPickerInput from "react-day-picker/DayPickerInput";
@@ -6,7 +6,7 @@ import "react-day-picker/lib/style.css";
 import { Button } from "components/Button";
 import { format as formatDate } from "date-fns";
 import { dateFormat } from "utils/dates";
-import getAxiosInstance from "utils/axios";
+import { useUpdateSchedule } from "hooks/useSchedule";
 import { Spinner } from "@radix-ui/themes";
 
 interface DueDateDisplayProps {
@@ -24,28 +24,30 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   gameDate,
   scheduleId,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    typeof dueDate === "string" ? new Date(dueDate) : dueDate,
-  );
-  const [loading, setLoading] = useState(false);
+  const initialDate = typeof dueDate === "string" ? new Date(dueDate) : dueDate
+  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+
+  useEffect(() => {
+    if(typeof dueDate === "string") {
+      setSelectedDate(new Date(dueDate));
+    }
+  }, [dueDate]);
+
+  const updateScheduleMutation = useUpdateSchedule();
 
   const handleSave = async () => {
-    // if (!onSaveDate) return;
     if (!selectedDate) return;
 
-    setLoading(true);
     try {
-      await getAxiosInstance().post("/api/schedule/", {
-        data: {
-          due_date: selectedDate,
-          id: scheduleId,
-        },
+      await updateScheduleMutation.mutateAsync({
+        id: scheduleId,
+        dueDate: selectedDate.toISOString(),
       });
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error updating schedule due date:', error);
     }
   };
-  // bg={color} px={3} py={1} borderRadius="md".   gap={2}
+
   const RenderLabelContent = ({
     description,
     date,
@@ -54,15 +56,15 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
     date: string | Date;
   }) => (
     <>
-      <Text fontSize="small" css={{ marginLeft: 4 }}>
+      <Text fontSize="small" style={{ marginLeft: 4 }}>
         {description}
       </Text>
-      <Span css={{ margin: "0 4px 0 4px" }}>{formatDate(new Date(date), "yyyy/MM/dd")}</Span>
+      <Span style={{ margin: "0 4px 0 4px" }}>{formatDate(new Date(date), "yyyy/MM/dd")}</Span>
     </>
   );
   const renderLabel = (color: string) => (
     <Flex
-      css={{
+      style={{
         display: "flex",
         flexDirection: "column",
         width: "140px",
@@ -78,7 +80,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
 
   if (admin) {
     return (
-      <Flex css={{ align: "center" }}>
+      <Flex style={{ alignItems: "center" }}>
         <DayPickerInput
           value={selectedDate}
           format="YYYY/MM/DD"
@@ -94,8 +96,11 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
             todayButton: "Today",
           }}
         />
-        <Button onClick={handleSave}>
-          {loading ? <Spinner size="3" /> : "OK"}
+        <Button
+          onClick={handleSave}
+          disabled={updateScheduleMutation.isPending}
+        >
+          {updateScheduleMutation.isPending ? <Spinner size="3" /> : "OK"}
         </Button>
       </Flex>
     );

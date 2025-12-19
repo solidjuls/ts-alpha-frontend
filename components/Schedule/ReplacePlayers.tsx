@@ -1,73 +1,69 @@
 import { Flex, Span } from "components/Atoms";
 import { Button } from "components/Button";
-import useFetchInitialData from "hooks/useFetchInitialData";
-import UserTypeahead from "pages/submitform/UserTypeahead"
+import UserTypeahead from "components/UserTypeahead"
 import { useState } from "react";
-import { DropdownItemType } from "types/types";
-import { UserType } from "types/user.types";
-import getAxiosInstance from "utils/axios";
-import { Title, titleStyles } from "./styles";
+import { useReplacePlayer } from "hooks/useSchedule";
+import { Title } from "./styles";
 
 interface ReplacePlayersProps {
   tournament: string | undefined
 }
-
-const styles = { width: '200px', margin: '4px' }
 
 const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [oldUser, setOldUser] = useState("")
   const [newUser, setNewUser] = useState("")
   const [responseMessage, setResponseMessage] = useState("")
 
-  const { data: users, isLoading: loadingUsers } = useFetchInitialData<UserType[]>({
-    url: `/api/user?t=${tournament}`,
-    cacheId: "user-list",
-  });
-
-  if(loadingUsers) return null
-
-  const usersParsed: DropdownItemType[] =
-    users?.map((item) => ({
-      value: item.id,
-      text: item.name,
-    })) || [];
+  const replacePlayerMutation = useReplacePlayer();
 
   const updatePlayers = async () => {
-    const updated = await getAxiosInstance().patch('/api/schedule', {
-      data: {
-        pold:oldUser,
-        pnew:newUser,
-        t:tournament
-      }})
+    if (!tournament || !oldUser || !newUser) return;
 
-    setResponseMessage(`${updated?.data?.count} players have been updated`)
+    try {
+      const result = await replacePlayerMutation.mutateAsync({
+        tournamentId: tournament,
+        oldPlayerId: oldUser,
+        newPlayerId: newUser
+      });
+
+      // The backend returns an object with updatedUSA, updatedUSSR, updatedStandings
+      const totalUpdated = (result.updatedUSA?.count || 0) + (result.updatedUSSR?.count || 0);
+      setResponseMessage(`${totalUpdated} schedule entries have been updated`);
+    } catch (error) {
+      console.error('Error replacing players:', error);
+      setResponseMessage('Error updating players. Please try again.');
+    }
   }
-  return <Flex css={{ flexDirection: 'column' }}>
+  return <Flex style={{ flexDirection: 'column' }}>
           <Title>Replace Players</Title>
-          <Flex css={{ marginBottom: '16px'}}>
+          <Flex style={{ marginBottom: '16px', gap: '4px'}}>
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
-              users={usersParsed}
               placeholder="Player to replace..."
-              css={styles}
+              width="240px"
               onBlur={() => setOldUser("")}
-              onSelect={(value: DropdownItemType) =>
+              onSelect={(value) =>
                 setOldUser(value?.value as string)
               }
             />
             <UserTypeahead
               labelText="newPlayer"
               selectedItem={newUser}
-              users={usersParsed}
               placeholder="Type the new player..."
-              css={styles}
+              width="240px"
               onBlur={() => setNewUser("")}
-              onSelect={(value: DropdownItemType) =>
+              onSelect={(value) =>
                 setNewUser(value?.value as string)
               }
             />
-            <Button css={{ height: "40px", alignSelf: 'self-end' }} disabled={!oldUser || !newUser || !tournament} onClick={updatePlayers}>Update</Button>
+            <Button
+              style={{ height: "40px", alignSelf: 'flex-end' }}
+              disabled={!oldUser || !newUser || !tournament || replacePlayerMutation.isPending}
+              onClick={updatePlayers}
+            >
+              {replacePlayerMutation.isPending ? 'Updating...' : 'Update'}
+            </Button>
           </Flex>
         <Span>{responseMessage}</Span>
       </Flex>

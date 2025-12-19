@@ -16,6 +16,7 @@ module.exports = {
     videoLink3: "Video Link 3",
     mail: "Email",
     password: "Password",
+    confirmPassword: "Confirm Password",
     userMail: "Email",
     updatePwdProfile: "Password",
     updatePwdProfileButton: "Update",

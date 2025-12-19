@@ -3,7 +3,6 @@ import { useDebounce } from "use-debounce";
 import Downshift, { ControllerStateAndHelpers, StateChangeOptions } from "downshift";
 import { AutocompleteInput, AutocompleteList, AutocompleteListItem } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
-import { Box } from "components/Atoms";
 import { DropdownItemType } from "types/types";
 
 type TypeaheadProps = {
@@ -14,9 +13,11 @@ type TypeaheadProps = {
   selectedValue: DropdownItemType | null | undefined;
   children: ReactNode;
   onBlur?: () => void;
+  width?: string;
   error?: boolean;
   id?: string;
   resetOnSelect?: boolean;
+  css?: any;
 };
 
 const Typeahead: React.FC<TypeaheadProps> & {
@@ -34,6 +35,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
   error,
   id,
   resetOnSelect,
+  css,
 }) => {
   const [value, setValue] = useState<DropdownItemType | null | undefined>(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,10 +111,11 @@ const Typeahead: React.FC<TypeaheadProps> & {
         isOpen,
         highlightedIndex,
       }) => (
-        <Box
+        <div
           {...getRootProps(undefined, undefined)}
-          css={{
+          style={{
             display: "block",
+            ...css,
           }}
         >
           <AutocompleteProvider
@@ -129,7 +132,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
           >
             {children}
           </AutocompleteProvider>
-        </Box>
+        </div>
       )}
     </Downshift>
   );

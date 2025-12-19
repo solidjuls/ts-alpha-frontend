@@ -3,8 +3,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Label } from "components/Label";
 import { Box } from "components/Atoms";
 
-const PaginationComponent = ({ currentPage, totalPages, onPageChange }) => {
-  const handlePageChange = (page) => {
+interface PaginationComponentProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+const PaginationComponent: React.FC<PaginationComponentProps> = ({ currentPage, totalPages, onPageChange }) => {
+  const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       onPageChange(page);
     }

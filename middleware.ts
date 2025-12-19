@@ -2,41 +2,66 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
+/**
+ * Middleware for Next.js
+ *
+ * NOTE: Since we're using localStorage for JWT storage (not cookies),
+ * middleware cannot verify authentication for protected routes.
+ *
+ * Route protection is handled client-side using:
+ * - useIsAuthenticated() hook
+ * - ProtectedRoute component
+ *
+ * This middleware only handles:
+ * - Maintenance mode (using Authorization header from requests)
+ */
+
 export async function middleware(request: NextRequest) {
   const maintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
-  if (!maintenanceMode) return NextResponse.next();
+  // Handle maintenance mode
+  if (maintenanceMode) {
+    const allowedUsers = (process.env.NEXT_PUBLIC_ALLOWED_USERS || "").split(",");
 
-  const allowedUsers = (process.env.NEXT_PUBLIC_ALLOWED_USERS || "").split(",");
-  const token = request?.cookies.get("token");
+    // Try to get token from Authorization header
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
-  if (maintenanceMode && !token) return NextResponse.redirect(new URL("/maintenance", request.url));
-
-  if (!token) return NextResponse.next();
-
-  try {
-    const { payload } = await jwtVerify(
-      token.value,
-      new TextEncoder().encode(process.env.TOKEN_SECRET),
-    );
-
-    if (allowedUsers.includes(payload.id)) {
+    if (!token) {
+      // For page requests without token, redirect to maintenance
+      if (!request.nextUrl.pathname.startsWith('/api') &&
+          request.nextUrl.pathname !== '/maintenance' &&
+          request.nextUrl.pathname !== '/login') {
+        return NextResponse.redirect(new URL("/maintenance", request.url));
+      }
       return NextResponse.next();
     }
-  } catch (error: unknown) {
-    console.log("token expired from middleware");
-    return NextResponse.redirect(new URL("/login", request.url));
+
+    try {
+      const { payload } = await jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.JWT_SECRET),
+      );
+
+      if (!allowedUsers.includes(payload.id as string)) {
+        if (!request.nextUrl.pathname.startsWith('/api') &&
+            request.nextUrl.pathname !== '/maintenance') {
+          return NextResponse.redirect(new URL("/maintenance", request.url));
+        }
+      }
+    } catch (error: unknown) {
+      console.log("token verification failed in middleware");
+      // Token is invalid, but let the request through
+      // Client-side will handle the auth state
+    }
   }
 
-  // If maintenance mode is enabled and the user is not already on the maintenance page
-  if (maintenanceMode && !request.nextUrl.pathname.startsWith("/maintenance")) {
-    return NextResponse.redirect(new URL("/maintenance", request.url));
-  }
-
-  // Continue to the requested route
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/", "/players", "/submitform", "/recreateform", "/schedule", "/submit-schedule", "/userprofile/:id*", "/games/:id*"],
+  matcher: [
+    // Match all paths except static files and api routes
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
 };

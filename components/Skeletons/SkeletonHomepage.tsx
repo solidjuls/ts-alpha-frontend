@@ -1,19 +1,18 @@
-import { styled } from "stitches.config";
-import { Box } from "components/Atoms";
+import styled from "styled-components";
 
-const Body = styled("div", {
-  display: "flex",
-  flexWrap: "wrap",
-  margin: "8px 16px",
-});
+const Body = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px 16px;
+`;
 
-const BodyRow = styled("div", {
-  borderRadius: "2px",
-  height: "12px",
-  marginBottom: "8px",
-  width: "100%",
-  backgroundColor: "$skeletonColorPrimary",
-});
+const BodyRow = styled.div`
+  border-radius: 2px;
+  height: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+  background-color: #e5e7eb;
+`;
 
 const SkeletonPlayers = () => (
   <>
@@ -26,6 +25,7 @@ const SkeletonPlayers = () => (
     </Body>
   </>
 );
+
 const SkeletonHomepage = () => (
   <>
     <Body>

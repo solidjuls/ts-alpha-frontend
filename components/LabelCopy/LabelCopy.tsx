@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Wrapper } from "./LabelCopy.styles";
+import { Wrapper } from "./LabelCopy.styled";
 import { Button } from "components/Button";
 
 interface LabelCopyProps {

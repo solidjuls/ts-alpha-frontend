@@ -32,7 +32,7 @@ export type User = {
   id: string;
   first_name: string;
   last_name: string;
-  name: string;
+  playdek_name: string;
   email: string;
   phone_number: string;
   last_login_at: Date;
@@ -59,7 +59,7 @@ export interface TournamentCreateState {
 }
 
 export type UserCreateState = {
-  name: SubmitFormValue<string>;
+  playdek_name: SubmitFormValue<string>;
   preferredGamingPlatform: SubmitFormValue<string>;
   preferredGameDuration: SubmitFormValue<string>;
   city: SubmitFormValue<string>;
@@ -78,7 +78,8 @@ export type Game = {
   ussrPlayerId: bigint;
   usaRatingDifference: number;
   ussrRatingDifference: number;
-  gameType: string;
+  tournamentId: string;
+  tournamentName: string;
   game_code: string;
   reported_at: Date;
   gameWinner: GameWinner;
@@ -103,7 +104,7 @@ export type GameAPIResponseType = {
 export const zGameAPI = z.object({
   gameWinner: z.enum(["1", "2", "3"]),
   gameCode: z.string(),
-  gameType: z.string(),
+  tournamentId: z.string(),
   usaPlayerId: z.string(),
   ussrPlayerId: z.string(),
   endTurn: z.string(),
