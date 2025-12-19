@@ -36,7 +36,6 @@ const Typeahead: React.FC<TypeaheadProps> & {
   id,
   resetOnSelect,
   css,
-  width = "370px",
 }) => {
   const [value, setValue] = useState<DropdownItemType | null | undefined>(selectedValue);
   const [searchTerm, setSearchTerm] = useState("");
@@ -116,7 +115,6 @@ const Typeahead: React.FC<TypeaheadProps> & {
           {...getRootProps(undefined, undefined)}
           style={{
             display: "block",
-            width,
             ...css,
           }}
         >

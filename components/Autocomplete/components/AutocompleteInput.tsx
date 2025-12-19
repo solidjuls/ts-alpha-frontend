@@ -10,6 +10,7 @@ type AutocompleteInputProps = {
 };
 const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
   label,
+  width,
   resetIcon = "ShapeCrossCircle",
   placeholder,
   error,
@@ -28,6 +29,7 @@ const AutocompleteInput: React.FC<AutocompleteInputProps> = ({
         // resetIcon={resetIcon}
         // icon=""
         {...rest}
+        width={width}
         border={error ? "error" : undefined}
       />
     </div>

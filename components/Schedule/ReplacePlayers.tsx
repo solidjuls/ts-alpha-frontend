@@ -9,8 +9,6 @@ interface ReplacePlayersProps {
   tournament: string | undefined
 }
 
-const styles = { width: '200px', margin: '4px' }
-
 const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   const [oldUser, setOldUser] = useState("")
   const [newUser, setNewUser] = useState("")
@@ -38,12 +36,12 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   }
   return <Flex style={{ flexDirection: 'column' }}>
           <Title>Replace Players</Title>
-          <Flex style={{ marginBottom: '16px'}}>
+          <Flex style={{ marginBottom: '16px', gap: '4px'}}>
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
               placeholder="Player to replace..."
-              css={styles}
+              width="240px"
               onBlur={() => setOldUser("")}
               onSelect={(value) =>
                 setOldUser(value?.value as string)
@@ -53,7 +51,7 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
               labelText="newPlayer"
               selectedItem={newUser}
               placeholder="Type the new player..."
-              css={styles}
+              width="240px"
               onBlur={() => setNewUser("")}
               onSelect={(value) =>
                 setNewUser(value?.value as string)

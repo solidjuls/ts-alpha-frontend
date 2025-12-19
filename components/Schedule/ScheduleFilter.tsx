@@ -227,7 +227,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 labelText="USA Player"
                 selectedItem={usaPlayer}
                 placeholder="Select USA player..."
-                css={{ width: '200px' }}
+                width='200px'
                 onBlur={() => {}}
                 onSelect={(item) => {
                   setUsaPlayer(item?.value || "");
@@ -239,7 +239,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 labelText="USSR Player"
                 selectedItem={ussrPlayer}
                 placeholder="Select USSR player..."
-                css={{ width: '200px' }}
+                width='200px'
                 onBlur={() => {}}
                 onSelect={(item) => {
                   setUssrPlayer(item?.value || "");
@@ -248,8 +248,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
               />
 
               <Box>
-                <Text fontSize="small" css={{ marginBottom: '4px', display: 'block' }}>
-                  Game Code (Optional)
+                <Text style={{ marginBottom: '4px', display: 'block' }}>
+                  Game Code
                 </Text>
                 <GameCodeInput
                   type="text"
@@ -258,7 +258,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   maxLength={4}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setGameCode(e.target.value);
-                    setScheduleMessage(""); // Clear any error messages
+                    setScheduleMessage("");
                   }}
                 />
               </Box>
@@ -268,14 +268,14 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 inputValue={dueDate}
                 onInputValueChange={(value: Date) => {
                   setDueDate(value);
-                  setScheduleMessage(""); // Clear any error messages
+                  setScheduleMessage("");
                 }}
               />
 
               <Button
                 onClick={handleCreateSchedule}
                 disabled={isCreatingSchedule || !usaPlayer || !ussrPlayer || !dueDate}
-                css={{
+                style={{
                   height: '35px',
                   backgroundColor: '#10b981',
                   '&:hover': { backgroundColor: '#059669' },
@@ -294,7 +294,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   labelText="Remove Player"
                   selectedItem={selectedPlayerToRemove}
                   placeholder="Type the player name to remove..."
-                  css={{ width: '320px' }}
+                  width='270px'
                   onBlur={() => {
                     // Handle blur if needed
                   }}
