@@ -82,7 +82,7 @@ const SubmitGameForm = ({
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
       <Banner>
-        <b>Reminder:</b> Results for <b>ITSL Season 15</b> must be submitted through the{" "}
+        <b>Reminder:</b> If You don&apos;t see Your tournament here then please report through the{" "}
         <Link href="/schedule">my schedule</Link> page
       </Banner>
       <FormContainer>
