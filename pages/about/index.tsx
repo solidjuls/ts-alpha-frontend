@@ -89,7 +89,7 @@ const AboutPage = () => (
             divisions.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1aJCCk4sGkTTB0caYjvz0-coSHyKVz4UI5RNo6MF-0OY/">RTSL</Link> - A four-tiered league with relegation/promotion each season
+            <Link href="https://docs.google.com/spreadsheets/d/1r-Ye05_jEk4BjsbubSl6F-AXKKZHIed0l7ZGXA_WdfA/">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
@@ -127,7 +127,7 @@ const AboutPage = () => (
               <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link> and <Link href="https://twilight-struggle.com/userprofile/2535">Pavel Lobatsevich</Link></li>
               <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
               <li>Greek League</li>
-              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
+              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link> and <Link href="https://twilight-struggle.com/userprofile/1600">Andrea Mancuso</Link></li>
               <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link></li>
               <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link></li>
               <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link></li>
@@ -374,7 +374,7 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/3083">Hyonsoo Park</Link> (hiosjoa): <Link href="https://www.youtube.com/@hyonsoopark2832" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" $inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2137">Jie Huang</Link> (MDZZ): <Link href="https://space.bilibili.com/1626326/lists/976714?type=series" target="_blank" $inactive>Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
@@ -438,6 +438,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" $inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2781">Tomasz Babicz</Link> (Pacynka): <Link href="https://www.youtube.com/@teoem_be" target="_blank">YouTube</Link>
           </li>
           <li>
             <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
