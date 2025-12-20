@@ -37,3 +37,4 @@ yarn-error.log*
 
 # python junk
 *.pyc
+yarn.lock
