@@ -72,6 +72,18 @@ const StyledInput = styled(Input)`
 export const UnstyledLink = styled(Link)`
   all: unset;
   cursor: pointer;
+
+  /* Inherit global link colors */
+  color: inherit;
+
+  /* Explicitly remove underline */
+  text-decoration: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
 `;
 
 const ResultsStyleWrapper = styled.div`

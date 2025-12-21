@@ -68,7 +68,18 @@ export const FilterPanel = styled.div`
 `;
 
 export const UnstyledLink = styled(Link)`
-  all: unset; /* Unset all styles */
-  display: inline; /* Reset to inline display */
-  cursor: pointer; /* Set cursor to pointer */
+  all: unset;
+  cursor: pointer;
+
+  /* Inherit global link colors */
+  color: inherit;
+
+  /* Explicitly remove underline */
+  text-decoration: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
 `;
