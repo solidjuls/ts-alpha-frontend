@@ -99,14 +99,7 @@ const Table = styled.table`
 `;
 
 const Link = styled.a`
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: bold;
-
-  &:hover {
-    text-decoration: underline;
-    color: #1d4ed8;
-  }
+  color: inherit;
 `;
 
 const PlayerCellContainer = styled.div`

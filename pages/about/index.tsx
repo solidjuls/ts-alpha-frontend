@@ -42,21 +42,15 @@ const List = styled.ul`
   padding-left: 32px;
 `;
 
-interface LinkProps {
-  $inactive?: boolean;
-}
-
-const Link = styled.a<LinkProps>`
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: bold;
-  text-decoration: ${props => props.$inactive ? 'line-through' : 'none'};
-
-  &:hover {
-    text-decoration: underline;
-    color: #1d4ed8;
-  }
+const Link = styled.a<{ $inactive?: boolean }>`
+  ${({ $inactive }) =>
+    $inactive &&
+    `
+      text-decoration: line-through;
+      opacity: 0.6;
+    `}
 `;
+
 
 const AboutPage = () => (
     <Main>
@@ -372,6 +366,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/3083">Hyonsoo Park</Link> (hiosjoa): <Link href="https://www.youtube.com/@hyonsoopark2832" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/3168">Hyungyu Sung</Link> (making_chem): <Link href="https://www.youtube.com/@49dhehe" target="_blank">YouTube</Link>
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" $inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />

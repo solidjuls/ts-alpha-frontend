@@ -72,8 +72,19 @@ export const HorizontalNavigationLayout = styled(Flex)`
 
 export const UnstyledLink = styled(Link)`
   all: unset;
-  display: inline;
   cursor: pointer;
+
+  /* Inherit global link colors */
+  color: inherit;
+
+  /* Explicitly remove underline */
+  text-decoration: none;
+
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
 `;
 
 export const StyledContent = styled(Content)`
@@ -128,7 +139,6 @@ export const HorizontalNavText = styled(Text)`
   border-top: solid 1px rgba(255,255,255,.15);
   background-color: var(--gray-200);
   cursor: pointer;
-  color: black;
   padding: 8px 12px;
   margin: 0;
   font-weight: bold;
