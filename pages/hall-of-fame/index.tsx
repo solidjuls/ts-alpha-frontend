@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
+import { useHallOfFame } from "hooks/useHallOfFame";
+import { Spinner } from "@radix-ui/themes";
 
 const PageContainer = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -169,6 +171,17 @@ const rtslData = [
 ];
 
 export default function HallOfFamePage() {
+  const { data: hallOfFameData, isLoading, error } = useHallOfFame();
+
+  useEffect(() => {
+    if (hallOfFameData) {
+      console.log('Hall of Fame API Response:', hallOfFameData);
+    }
+    if (error) {
+      console.log('Hall of Fame API Error:', error);
+    }
+  }, [hallOfFameData, error]);
+
   const renderTable = (data: any[]) => (
     <Table>
       <thead>
@@ -188,19 +201,22 @@ export default function HallOfFamePage() {
             </td>
             <td data-label="Players">{s.players}</td>
             <td data-label="Winner">
-              <PlayerCell flag={s.flag1} name={s.winner} id={s.winnerID} />
+              <PlayerCell flag={s.flag1} name={s.winner?.name} id={s.winnerID} />
             </td>
             <td data-label="Second">
-              <PlayerCell flag={s.flag2} name={s.second} id={s.secondID} />
+              <PlayerCell flag={s.flag2} name={s.second?.name} id={s.secondID} />
             </td>
             <td data-label="Third">
-              <PlayerCell flag={s.flag3} name={s.third} id={s.thirdID} />
+              <PlayerCell flag={s.flag3} name={s.third?.name} id={s.thirdID} />
             </td>
           </tr>
         ))}
       </tbody>
     </Table>
   );
+
+  if (isLoading) return <Spinner size="3" />;
+  if (error || !hallOfFameData) return <div>Error loading hall of fame</div>;
 
   return (
     <PageContainer>
@@ -209,13 +225,13 @@ export default function HallOfFamePage() {
       </Header>
       <p>The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestiguous Twilight Struggle leagues.<br/>Placing in the top three of one of these leagues puts players amongst the best in the world.</p>
       <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
-      <TableContainer>{renderTable(itslData)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.itsl)}</TableContainer>
 
       <Subtitle>Online Twilight Struggle League (OTSL)</Subtitle>
-      <TableContainer>{renderTable(otslData)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.otsl)}</TableContainer>
 
       <Subtitle>Royale Twilight Struggle League (RTSL)</Subtitle>
-      <TableContainer>{renderTable(rtslData)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.rtsl)}</TableContainer>
     </PageContainer>
   );
 }
