@@ -219,6 +219,7 @@ const Players = () => {
             <CountriesTypeahead
               placeholder="Type the federation name..."
               width="300px"
+              filter="filter"
               onSelect={(value) => {
                 if (value) {
                   setCountriesSelected(value.value || "");
@@ -238,6 +239,7 @@ const Players = () => {
             type="text"
             value={playdeckValue}
             width="300px"
+            filter="filter"
             placeholder="Type the Playdek name"
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setPlaydeckValue(event.target.value)
