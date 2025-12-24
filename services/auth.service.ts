@@ -108,6 +108,17 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
+export interface ResetPasswordConfirmRequest {
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ResetPasswordConfirmResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface EmailVerifyRequest {
   email: string;
 }
@@ -184,6 +195,12 @@ export const authService = {
   // Request password reset
   resetPasswordRequest: async (data: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
     const response = await authApi.post('/auth/reset-password-request', data);
+    return response.data;
+  },
+
+  // Confirm password reset (set new password)
+  resetPasswordConfirm: async (data: ResetPasswordConfirmRequest): Promise<ResetPasswordConfirmResponse> => {
+    const response = await authApi.post('/auth/reset-password', data);
     return response.data;
   },
 

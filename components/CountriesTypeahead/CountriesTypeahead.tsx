@@ -28,6 +28,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
   debounceTime = 300,
   minChars = 3,
   listWidth = "320px",
+  filter,
   ...rest
 }) => {
   const [input, setInput] = useState("");
@@ -69,6 +70,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
           label={labelText}
           error={error}
           placeholder={placeholder}
+          filter={filter}
         />
         {filteredCountries.length > 0 && (
           <Typeahead.List css={{ width: listWidth }}>
