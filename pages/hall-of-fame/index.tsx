@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
+import { useHallOfFame } from "hooks/useHallOfFame";
+import { Spinner } from "@radix-ui/themes";
 
 const PageContainer = styled.div`
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -28,9 +30,22 @@ const Subtitle = styled.h2`
   color: #1f2937;
 `;
 
+const RegionalSubtitle = styled.h2`
+  margin-top: 2rem;
+  margin-left: 2rem;
+  color: #1f2937;
+`;
+
 const TableContainer = styled.div`
   width: 100%;
   margin-bottom: 2rem;
+  overflow-x: auto;
+`;
+
+const RegionalTableContainer = styled.div`
+  width: 95%;
+  margin-bottom: 2rem;
+  margin-left: 2rem;
   overflow-x: auto;
 `;
 
@@ -99,7 +114,14 @@ const Table = styled.table`
 `;
 
 const Link = styled.a`
-  color: inherit;
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+    color: #1d4ed8;
+  }
 `;
 
 const PlayerCellContainer = styled.div`
@@ -115,51 +137,19 @@ const PlayerCell = ({ flag, name, id }: { flag?: string; name: string; id?: numb
   </PlayerCellContainer>
 );
 
-interface HallOfFameEntry {
-  id: number;
-  season: number | string;
-  players: number;
-  link?: string;
-  flag1?: string;
-  flag2?: string;
-  flag3?: string;
-  winner: { id: number; name: string };
-  second: { id: number; name: string };
-  third?: { id: number; name: string };
-}
 export default function HallOfFamePage() {
-  const [itslData, setItslData] = useState<HallOfFameEntry[]>([]);
-  const [otslData, setOtslData] = useState<HallOfFameEntry[]>([]);
-  const [rtslData, setRtslData] = useState<HallOfFameEntry[]>([]);
+  const { data: hallOfFameData, isLoading, error } = useHallOfFame();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        // You can add query params like ?league=ITSL
-        const [itslRes, otslRes, rtslRes] = await Promise.all([
-          fetch("/api/hall-of-fame?league=itsl"),
-          fetch("/api/hall-of-fame?league=otsl"),
-          fetch("/api/hall-of-fame?league=rtsl"),
-        ]);
-
-        const [itsl, otsl, rtsl] = await Promise.all([
-          itslRes.json(),
-          otslRes.json(),
-          rtslRes.json(),
-        ]);
-
-        setItslData(itsl);
-        setOtslData(otsl);
-        setRtslData(rtsl);
-      } catch (err) {
-        console.error("Failed to fetch Hall of Fame data", err);
-      }
+    if (hallOfFameData) {
+      console.log('Hall of Fame API Response:', hallOfFameData);
     }
+    if (error) {
+      console.log('Hall of Fame API Error:', error);
+    }
+  }, [hallOfFameData, error]);
 
-    fetchData();
-  }, []);
-
-  const renderTable = (data: HallOfFameEntry[]) => (
+  const renderTable = (data: any[]) => (
     <Table>
       <thead>
         <tr>
@@ -171,18 +161,20 @@ export default function HallOfFamePage() {
         </tr>
       </thead>
       <tbody>
-        {data?.map((s) => (
-          <tr key={s.id}>
-            <td data-label="Season">{s.link ? <Link href={s.link}>{s.season}</Link> : s.season}</td>
+        {data.map((s) => (
+          <tr key={s.season}>
+            <td data-label="Season">
+              {s.link ? <Link href={s.link}>{s.season}</Link> : s.season}
+            </td>
             <td data-label="Players">{s.players}</td>
             <td data-label="Winner">
-              <PlayerCell flag={s.flag1} name={s.winner.name} id={s.winner.id} />
+              <PlayerCell flag={s.flag1} name={s.winner?.name} id={s.winnerID} />
             </td>
             <td data-label="Second">
-              {s.second && <PlayerCell flag={s.flag2} name={s.second.name} id={s.second.id} />}
+              <PlayerCell flag={s.flag2} name={s.second?.name} id={s.secondID} />
             </td>
             <td data-label="Third">
-              {s.third && <PlayerCell flag={s.flag3} name={s.third.name} id={s.third.id} />}
+              <PlayerCell flag={s.flag3} name={s.third?.name} id={s.thirdID} />
             </td>
           </tr>
         ))}
@@ -190,24 +182,78 @@ export default function HallOfFamePage() {
     </Table>
   );
 
+  if (isLoading) return <Spinner size="3" />;
+  if (error || !hallOfFameData) return <div>Error loading hall of fame</div>;
+
   return (
     <PageContainer>
-    <Header>
-      <Title>Hall of Fame</Title>
-    </Header>
-    <p>
-      The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestigious Twilight Struggle leagues.
-      Placing in the top three of one of these leagues puts players amongst the best in the world.
-    </p>
+      <Header>
+        <Title>Hall of Fame</Title>
+      </Header>
+      <p>The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestigious Twilight Struggle leagues. Placing in the top three of one of these leagues puts players amongst the best in the world.</p>
+      <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
+      <TableContainer>{renderTable(hallOfFameData.itsl)}</TableContainer>
 
-    <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
-    <TableContainer>{renderTable(itslData)}</TableContainer>
+      <Subtitle>Online Twilight Struggle League (OTSL)</Subtitle>
+      <TableContainer>{renderTable(hallOfFameData.otsl)}</TableContainer>
 
-    <Subtitle>Online Twilight Struggle League (OTSL)</Subtitle>
-    <TableContainer>{renderTable(otslData)}</TableContainer>
+      <Subtitle>Royale Twilight Struggle League (RTSL)</Subtitle>
+      <TableContainer>{renderTable(hallOfFameData.rtsl)}</TableContainer>
 
-    <Subtitle>Royale Twilight Struggle League (RTSL)</Subtitle>
-    <TableContainer>{renderTable(rtslData)}</TableContainer>
+      <Subtitle>Champions League</Subtitle>
+      <p>The Champions League is an invite-only tournament inspired by UEFA, featuring winners of regional tournaments as well as the ITSL, OTSL, and RTSL.</p>
+      <TableContainer>{renderTable(hallOfFameData.cl)}</TableContainer>
+
+      <Subtitle>Asynchronous Leagues (RATS)</Subtitle>
+      <p>Not everyone has the ability to play live Twilight Struggle games so there are a variety of asynchronous leagues all under the RATS banner to cater to asynchronous players.</p>
+      <TableContainer>{renderTable(hallOfFameData.rats)}</TableContainer>
+
+      <Subtitle>Regional Leagues</Subtitle>
+      <p>Regional leagues are generally restricted to players who have a connection to a certain region. You can reach out to the organizers of a regional league you are interested in from our <Link href="/about">About Page</Link> to see if you are eligible.</p>
+      <RegionalSubtitle>Atlantic (US) League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.atlantic)}</RegionalTableContainer>
+      <RegionalSubtitle>Basque League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.basque)}</RegionalTableContainer>
+      <RegionalSubtitle>Belgium League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.belgium)}</RegionalTableContainer>
+      <RegionalSubtitle>Canadian League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.canadian)}</RegionalTableContainer>
+      <RegionalSubtitle>Catalan League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.catalan)}</RegionalTableContainer>
+      <RegionalSubtitle>Chinese League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.chinese)}</RegionalTableContainer>
+      <RegionalSubtitle>Dutch League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.dutch)}</RegionalTableContainer>
+      <RegionalSubtitle>East European League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.eeu)}</RegionalTableContainer>
+      <RegionalSubtitle>French League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.french)}</RegionalTableContainer>
+      <RegionalSubtitle>Greek League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.greek)}</RegionalTableContainer>
+      <RegionalSubtitle>Hong Kong League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.hongKong)}</RegionalTableContainer>
+      <RegionalSubtitle>Israeli League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.israel)}</RegionalTableContainer>
+      <RegionalSubtitle>Italian League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.italian)}</RegionalTableContainer>
+      <RegionalSubtitle>Korean League (KTSL)</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.korean)}</RegionalTableContainer>
+      <RegionalSubtitle>Midwest (US) League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.midwest)}</RegionalTableContainer>
+      <RegionalSubtitle>Nordic League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.nordic)}</RegionalTableContainer>
+      <RegionalSubtitle>Polish League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.polish)}</RegionalTableContainer>
+      <RegionalSubtitle>Portuguese League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.portuguese)}</RegionalTableContainer>
+      <RegionalSubtitle>Southern (US) League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.southern)}</RegionalTableContainer>
+      <RegionalSubtitle>Liga de Federaciones de Twilight Struggle (LFTS)</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.spanish)}</RegionalTableContainer>
+      <RegionalSubtitle>UK League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.uk)}</RegionalTableContainer>
+      <RegionalSubtitle>Western (US) League</RegionalSubtitle>
+      <RegionalTableContainer>{renderTable(hallOfFameData.western)}</RegionalTableContainer>
     </PageContainer>
   );
 }
