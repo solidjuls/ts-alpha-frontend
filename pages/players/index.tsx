@@ -158,25 +158,22 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
 };
 
 
-
 const Players = () => {
-  // Local state for filters
   const [currentPage, setCurrentPage] = useState(1);
   const [playersSelected, setPlayersSelected] = useState<MultiSelectItemType[]>([]);
   const [countriesSelected, setCountriesSelected] = useState<string>("");
   const [playdeckInput, setPlaydeckInput] = useState("");
   const [playdeckValue, setPlaydeckValue] = useState("");
 
-  // Countries are now fetched directly by the CountriesTypeahead component
+  const pageSize = (playersSelected.length > 0 || countriesSelected) ? undefined : 20;
 
-  // Use React Query for player ratings
   const {
     data: playersData,
     isLoading: isLoadingPlayers,
     error: playersError,
   } = usePlayerRatings({
     page: currentPage,
-    pageSize: 20,
+    pageSize,
     playerFilter: playersSelected.length > 0 ? playersSelected.map(p => p.code) : undefined,
     countrySelected: countriesSelected || undefined,
     playdeck: playdeckInput || undefined,
