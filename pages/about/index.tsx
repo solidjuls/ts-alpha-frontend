@@ -42,21 +42,15 @@ const List = styled.ul`
   padding-left: 32px;
 `;
 
-interface LinkProps {
-  $inactive?: boolean;
-}
-
-const Link = styled.a<LinkProps>`
-  color: #3b82f6;
-  text-decoration: none;
-  font-weight: bold;
-  text-decoration: ${props => props.$inactive ? 'line-through' : 'none'};
-
-  &:hover {
-    text-decoration: underline;
-    color: #1d4ed8;
-  }
+const Link = styled.a<{ $inactive?: boolean }>`
+  ${({ $inactive }) =>
+    $inactive &&
+    `
+      text-decoration: line-through;
+      opacity: 0.6;
+    `}
 `;
+
 
 const AboutPage = () => (
     <Main>
@@ -89,14 +83,14 @@ const AboutPage = () => (
             divisions.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1aJCCk4sGkTTB0caYjvz0-coSHyKVz4UI5RNo6MF-0OY/">RTSL</Link> - A four-tiered league with relegation/promotion each season
+            <Link href="https://tiny.cc/RTSL" target="_blank">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the top players competing for the championship at the end.
+            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing" target="_blank">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the top players competing for the championship at the end.
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
+            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing" target="_blank">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
           </li>
           <li>
             <strong>King&apos;s Cup</strong> - The largest weekend tournament of the year, featuring an
@@ -109,10 +103,10 @@ const AboutPage = () => (
             <strong>Convention</strong> - A yearly in-person two-day event held in various cities.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
+            <Link target="_blank" href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
+            <Link target="_blank" href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
             featuring winners of regional and grand tournaments.
           </li>
           <li>
@@ -127,7 +121,7 @@ const AboutPage = () => (
               <li>Eastern European League - <Link href="https://twilight-struggle.com/userprofile/2281">Konstantin Zakharov</Link> and <Link href="https://twilight-struggle.com/userprofile/2535">Pavel Lobatsevich</Link></li>
               <li>French League - <Link href="https://twilight-struggle.com/userprofile/1928">Franck Rondepierre</Link></li>
               <li>Greek League</li>
-              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link></li>
+              <li>Italian League - <Link href="https://twilight-struggle.com/userprofile/1597">Andrea Ciappi</Link> and <Link href="https://twilight-struggle.com/userprofile/1600">Andrea Mancuso</Link></li>
               <li>Korean Twilight Struggle League (KTSL) - <Link href="https://twilight-struggle.com/userprofile/2853">Youngbae Park</Link></li>
               <li>Liga de Federaciones de Twilight Struggle (LFTS) - <Link href="https://twilight-struggle.com/userprofile/2084">Jarib Flores</Link></li>
               <li>Midwest League (US) - <Link href="https://twilight-struggle.com/userprofile/1844">Derek Miller</Link></li>
@@ -176,7 +170,7 @@ const AboutPage = () => (
       <Section>
         <Subtitle>ITS Community</Subtitle>
         <p>
-          Most of our communication happens on <Link href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
+          Most of our communication happens on <Link target="_blank" href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
           games via email.
         </p>
         <p>
@@ -374,7 +368,10 @@ const AboutPage = () => (
             <Link href="https://twilight-struggle.com/userprofile/3083">Hyonsoo Park</Link> (hiosjoa): <Link href="https://www.youtube.com/@hyonsoopark2832" target="_blank">YouTube</Link> <Image src="/flags/KR.png"  width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
           </li>
           <li>
-            <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+            <Link href="https://twilight-struggle.com/userprofile/3168">Hyungyu Sung</Link> (making_chem): <Link href="https://www.youtube.com/@49dhehe" target="_blank">YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2579">Itshu Nakashima</Link> (Graphene): <Link href="https://v.douyu.com/author/08AeOjpM1wqL" target="_blank" $inactive>Douyu</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2137">Jie Huang</Link> (MDZZ): <Link href="https://space.bilibili.com/1626326/lists/976714?type=series" target="_blank" $inactive>Bilibili</Link> <Image src="/flags/CN.png"  width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
@@ -438,6 +435,9 @@ const AboutPage = () => (
           </li>
           <li>
             <Link href="https://twilight-struggle.com/userprofile/2769">Tin Sum Cheng</Link> (tscheng): <Link href="https://www.youtube.com/user/s081023" target="_blank" $inactive>YouTube</Link>
+          </li>
+          <li>
+            <Link href="https://twilight-struggle.com/userprofile/2781">Tomasz Babicz</Link> (Pacynka): <Link href="https://www.youtube.com/@teoem_be" target="_blank">YouTube</Link>
           </li>
           <li>
             <strong>Twilight Struggle Club</strong>: <Link href="https://www.youtube.com/@twilightstruggleclub" target="_blank">YouTube</Link> <Image src="/flags/RU.png"  width={WIDTH} height={HEIGHT} alt="Russian Speaker" />

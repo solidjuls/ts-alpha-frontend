@@ -8,7 +8,7 @@ import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as
 import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
 import "primeicons/primeicons.css"; // PrimeIcons CSS
 import "styles/date.css";
-import "styles/stylesGlobal.css";
+import GlobalStyles from "styles/globalStyles";
 import "@radix-ui/themes/styles.css";
 
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
@@ -35,6 +35,7 @@ function App({ Component, pageProps }: AppProps) {
             {/* @ts-ignore */}
             <Theme>
               <Layout>
+                <GlobalStyles/>
                 <Component {...pageProps} />
               </Layout>
             </Theme>

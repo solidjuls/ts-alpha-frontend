@@ -35,6 +35,11 @@ interface StyledLinkProps {
 
 const StyledLink = styled(Link)<StyledLinkProps>`
   text-decoration: none;
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
+  }
   color: Black;
 
   ${props => props.borderBottom === "usa" && `
