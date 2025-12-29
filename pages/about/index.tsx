@@ -83,7 +83,7 @@ const AboutPage = () => (
             divisions.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1r-Ye05_jEk4BjsbubSl6F-AXKKZHIed0l7ZGXA_WdfA/">RTSL</Link> - A four-tiered league with relegation/promotion each season
+            <Link href="https://tiny.cc/RTSL">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
