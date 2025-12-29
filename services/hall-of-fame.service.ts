@@ -1,6 +1,5 @@
 import { createAuthenticatedAxios } from '../utils/api';
 
-// API response format (snake_case from backend)
 export interface HallOfFameApiEntry {
   season: string;
   league_type: string;
@@ -17,7 +16,6 @@ export interface HallOfFameApiEntry {
   third_id?: number;
 }
 
-// Frontend format (camelCase)
 export interface HallOfFameEntry {
   season: string;
   league_type: string;
@@ -35,12 +33,11 @@ export interface HallOfFameEntry {
 }
 
 export interface HallOfFameResponse {
-  itsl: HallOfFameEntry[];
-  otsl: HallOfFameEntry[];
-  rtsl: HallOfFameEntry[];
+  ITSL: HallOfFameEntry[];
+  OTSL: HallOfFameEntry[];
+  RTSL: HallOfFameEntry[];
 }
 
-// Create axios instance for NestJS backend with auth
 const hallOfFameApi = createAuthenticatedAxios();
 
 const mapApiEntryToEntry = (apiEntry: HallOfFameApiEntry): HallOfFameEntry => ({
@@ -61,30 +58,33 @@ const mapApiEntryToEntry = (apiEntry: HallOfFameApiEntry): HallOfFameEntry => ({
 
 const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse => {
   const grouped: HallOfFameResponse = {
-    itsl: [],
-    otsl: [],
-    rtsl: [],
+    ITSL: [],
+    OTSL: [],
+    RTSL: [],
   };
+
+  const leagueTypes = entries.map((entry) => entry.league_type);
+  const uniqueLeagueTypes = leagueTypes.filter((item, index) => leagueTypes.indexOf(item) === index);
 
   entries.forEach((apiEntry) => {
     const entry = mapApiEntryToEntry(apiEntry);
-    const leagueType = entry.league_type?.toUpperCase();
-    if (leagueType === 'ITSL') {
-      grouped.itsl.push(entry);
-    } else if (leagueType === 'OTSL') {
-      grouped.otsl.push(entry);
-    } else if (leagueType === 'RTSL') {
-      grouped.rtsl.push(entry);
+    const leagueType = entry.league_type;
+    if (uniqueLeagueTypes.includes(leagueType)) {
+      if (!grouped[leagueType as keyof HallOfFameResponse]) {
+        grouped[leagueType as keyof HallOfFameResponse] = [];
+      }
+      grouped[leagueType as keyof HallOfFameResponse].push(entry);
     }
   });
 
   // Sort each league by season (string representing year)
+
   const sortBySeason = (a: HallOfFameEntry, b: HallOfFameEntry) =>
     a.season.localeCompare(b.season, undefined, { numeric: true });
 
-  grouped.itsl.sort(sortBySeason);
-  grouped.otsl.sort(sortBySeason);
-  grouped.rtsl.sort(sortBySeason);
+  uniqueLeagueTypes.forEach((leagueType) => {
+    grouped[leagueType.toLowerCase() as keyof HallOfFameResponse]?.sort(sortBySeason);
+  });
 
   return grouped;
 };

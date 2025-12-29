@@ -182,13 +182,20 @@ export default function HallOfFamePage() {
       </Header>
       <p>The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestiguous Twilight Struggle leagues.<br/>Placing in the top three of one of these leagues puts players amongst the best in the world.</p>
       <Subtitle>International Twilight Struggle League (ITSL)</Subtitle>
-      <TableContainer>{renderTable(hallOfFameData.itsl)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.ITSL)}</TableContainer>
 
       <Subtitle>Online Twilight Struggle League (OTSL)</Subtitle>
-      <TableContainer>{renderTable(hallOfFameData.otsl)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.OTSL)}</TableContainer>
 
       <Subtitle>Royale Twilight Struggle League (RTSL)</Subtitle>
-      <TableContainer>{renderTable(hallOfFameData.rtsl)}</TableContainer>
+      <TableContainer>{renderTable(hallOfFameData.RTSL)}</TableContainer>
+
+      {Object.keys(hallOfFameData).filter((leagueType) => !['ITSL', 'OTSL', 'RTSL'].includes(leagueType)).map((leagueType) => (
+        <div key={leagueType}>
+          <Subtitle>{leagueType} League</Subtitle>
+          <TableContainer>{renderTable(hallOfFameData[leagueType])}</TableContainer>
+        </div>
+      ))}
     </PageContainer>
   );
 }
