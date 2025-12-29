@@ -83,14 +83,14 @@ const AboutPage = () => (
             divisions.
           </li>
           <li>
-            <Link href="https://tiny.cc/RTSL">RTSL</Link> - A four-tiered league with relegation/promotion each season
+            <Link href="https://tiny.cc/RTSL" target="_blank">RTSL</Link> - A four-tiered league with relegation/promotion each season
             (formerly the Reddit tournament).
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the top players competing for the championship at the end.
+            <Link href="https://docs.google.com/spreadsheets/d/1VG6d0s1NEP5CufFsa8wjwZfK6tcvpzuJzYxtsFIX98s/edit?usp=sharing" target="_blank">Evergreen Cup</Link> - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the top players competing for the championship at the end.
           </li>
           <li>
-            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
+            <strong>RATS</strong> - A series of asynchronous leagues (<Link href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing" target="_blank">RATS League</Link>, <Link href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185">RATS 7D</Link>, <Link href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817">RATS Swiss</Link>, <Link href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874">RATS Cup</Link>, <Link href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing">RATS Double Elimination</Link>).
           </li>
           <li>
             <strong>King&apos;s Cup</strong> - The largest weekend tournament of the year, featuring an
@@ -103,10 +103,10 @@ const AboutPage = () => (
             <strong>Convention</strong> - A yearly in-person two-day event held in various cities.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
+            <Link target="_blank" href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=446700816#gid=446700816">Nations Cup</Link> / <Link href="https://docs.google.com/spreadsheets/d/1Lbg7YN8YCI0lXoqlNI2_C1D6EUyl3y_7xABpp2IVuAk/edit?gid=1173919445#gid=1173919445">US Cup</Link> - Regional team tournaments.
           </li>
           <li>
-            <Link href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
+            <Link target="_blank" href="https://docs.google.com/spreadsheets/d/1zHJoK051Z01fQpmVEtvDhz2ZiwUEGSmJ80QhTZKoYS8/">Champions League</Link> - An invite-only tournament inspired by UEFA,
             featuring winners of regional and grand tournaments.
           </li>
           <li>
@@ -170,7 +170,7 @@ const AboutPage = () => (
       <Section>
         <Subtitle>ITS Community</Subtitle>
         <p>
-          Most of our communication happens on <Link href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
+          Most of our communication happens on <Link target="_blank" href="https://chat.whatsapp.com/FkFFVR3D2KrEPtHWtmtufD?mode=r_t">WhatsApp</Link> and <Link href="https://discord.gg/ZVCQJDxdnb" target="_blank">Discord</Link>, but players can also set up
           games via email.
         </p>
         <p>
