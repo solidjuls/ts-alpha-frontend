@@ -5,6 +5,7 @@ import authService, {
   LoginRequest,
   ImpersonateRequest,
   ResetPasswordRequest,
+  ResetPasswordConfirmRequest,
   CreateUserRequest,
   RegisterRequest,
   EmailVerifyRequest,
@@ -126,15 +127,15 @@ export const useLogout = () => {
   });
 };
 
-// Hook for password reset request
-export const useResetPasswordRequest = () => {
-  return useMutation({
-    mutationFn: (data: ResetPasswordRequest) => authService.resetPasswordRequest(data),
-    onError: (error: any) => {
-      console.error('Password reset request failed:', error);
-    },
-  });
-};
+// // Hook for password reset request
+// export const useResetPasswordRequest = () => {
+//   return useMutation({
+//     mutationFn: (data: ResetPasswordRequest) => authService.resetPasswordRequest(data),
+//     onError: (error: any) => {
+//       console.error('Password reset request failed:', error);
+//     },
+//   });
+// };
 
 // Hook for creating user (for testing)
 export const useCreateUser = () => {
@@ -172,6 +173,26 @@ export const useEmailVerificationConfirm = () => {
     mutationFn: (data: EmailVerifyConfirmRequest) => authService.confirmEmailVerification(data),
     onError: (error: any) => {
       console.error('Email verification confirmation failed:', error);
+    },
+  });
+};
+
+// Hook for password reset request mutation
+export const useResetPasswordRequest = () => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordRequest) => authService.resetPasswordRequest(data),
+    onError: (error: any) => {
+      console.error('Password reset request failed:', error);
+    },
+  });
+};
+
+// Hook for password reset confirmation mutation
+export const useResetPasswordConfirm = () => {
+  return useMutation({
+    mutationFn: (data: ResetPasswordConfirmRequest) => authService.resetPasswordConfirm(data),
+    onError: (error: any) => {
+      console.error('Password reset confirmation failed:', error);
     },
   });
 };

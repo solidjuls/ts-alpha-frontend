@@ -43,7 +43,7 @@ class RatingService {
   async getPlayerRatings(params: GetPlayerRatingsParams = {}): Promise<PlayerRatingListResponse> {
     const {
       page = 1,
-      pageSize = 20,
+      pageSize,
       playerFilter,
       countrySelected,
       playdeck,
@@ -53,12 +53,14 @@ class RatingService {
       orderDirection = 'desc',
     } = params;
 
-    // Build query parameters
     const queryParams = new URLSearchParams();
     queryParams.append('p', page.toString());
-    queryParams.append('pso', pageSize.toString());
     queryParams.append('orderBy', orderBy);
     queryParams.append('orderDirection', orderDirection);
+
+    if (pageSize) {
+      queryParams.append('pso', pageSize.toString());
+    }
 
     if (playerFilter && playerFilter.length > 0) {
       queryParams.append('playerFilter', playerFilter.join(','));
