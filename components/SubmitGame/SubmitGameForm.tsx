@@ -51,6 +51,7 @@ const SubmitButton = styled(Button)`
 `;
 
 const dropdownWidth = "390px";
+const typeaheadWidth = "370px";
 
 type SubmitGameFormProps = {
   control: Control<SubmitGameFormData>;
@@ -209,6 +210,7 @@ const SubmitGameForm = ({
                   selectedItem={field.value}
                   error={!!errors.opponentWas}
                   placeholder="Type the opponent name..."
+                  width={typeaheadWidth}
                   css={{ width: dropdownWidth }}
                   onBlur={() => {
                     // Don't clear on blur for react-hook-form

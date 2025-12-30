@@ -10,6 +10,7 @@ export interface CountriesTypeaheadProps {
   onSelect: (value: DropdownItemType | null) => void;
   placeholder: string;
   onBlur?: () => void;
+  width?: string;
   css?: any;
   error?: boolean;
   debounceTime?: number;
@@ -27,7 +28,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
   error = false,
   debounceTime = 300,
   minChars = 3,
-  listWidth = "320px",
+  listWidth = "270px",
   filter,
   ...rest
 }) => {
@@ -64,7 +65,8 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
         onSelect={(value) => onSelect(value || null)}
         selectedValue={selectedItemParsed}
         onBlur={onBlur}
-        {...rest}
+        css={css}
+        //{...rest}
       >
         <Typeahead.Input
           label={labelText}

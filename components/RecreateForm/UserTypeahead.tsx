@@ -54,7 +54,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
       setInput(selectedItemParsed.text || "");
     }
   }, [selectedItemParsed]);
-console.log("selectedItemParsed", users, selectedItem);
+
   return (
     <WithLabel labelText={labelText}>
       <Typeahead
