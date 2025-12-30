@@ -62,27 +62,18 @@ export const isTokenExpired = (token: string): boolean => {
   try {
     const base64Payload = token.split('.')[1];
     if (!base64Payload) {
-      console.log('isTokenExpired: No payload in token');
       return true;
     }
 
     const payload = JSON.parse(atob(base64Payload));
     if (!payload.exp) {
-      console.log('isTokenExpired: No exp in payload, token is valid');
       return false; // No expiration
     }
 
     const isExpired = Date.now() >= payload.exp * 1000;
-    console.log('isTokenExpired:', {
-      exp: payload.exp,
-      expDate: new Date(payload.exp * 1000).toISOString(),
-      now: Date.now(),
-      nowDate: new Date().toISOString(),
-      isExpired
-    });
+
     return isExpired;
   } catch (e) {
-    console.log('isTokenExpired: Error parsing token', e);
     return true;
   }
 };

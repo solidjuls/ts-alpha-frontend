@@ -66,13 +66,14 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
         selectedValue={selectedItemParsed}
         onBlur={onBlur}
         css={css}
-        //{...rest}
+        {...rest}
       >
         <Typeahead.Input
           label={labelText}
           error={error}
           placeholder={placeholder}
           filter={filter}
+          {...rest}
         />
         {filteredCountries.length > 0 && (
           <Typeahead.List css={{ width: listWidth }}>

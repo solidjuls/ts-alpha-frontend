@@ -69,6 +69,7 @@ const CitiesTypeahead: React.FC<CitiesTypeaheadProps> = ({
           label={labelText}
           error={error}
           placeholder={placeholder}
+          {...rest}
         />
         {filteredCities.length > 0 && (
           <Typeahead.List css={{ width: listWidth }}>

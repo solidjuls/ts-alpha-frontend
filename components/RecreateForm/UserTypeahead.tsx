@@ -12,6 +12,7 @@ export interface UserTypeaheadProps {
   css?: any;
   error?: boolean;
   debounceTime?: number;
+  width?: string;
   minChars?: number;
   listWidth?: string;
   users: DropdownItemType[]; // Users passed as prop instead of API call
@@ -71,6 +72,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
           label={labelText}
           error={error}
           placeholder={placeholder}
+          {...rest}
         />
         {filteredUsers.length > 0 && (
           <Typeahead.List css={{ width: listWidth }}>
