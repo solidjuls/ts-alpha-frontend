@@ -112,7 +112,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
         highlightedIndex,
       }) => (
         <div
-          {...getRootProps(undefined, undefined)}
+          {...getRootProps({ refKey: 'ref' }, { suppressRefError: true })}
           style={{
             display: "block",
             ...css,
