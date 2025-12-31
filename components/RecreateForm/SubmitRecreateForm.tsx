@@ -49,6 +49,7 @@ const SubmitButton = styled(Button)`
 `;
 
 const dropdownWidth = "390px";
+const typeaheadWidth = "350px";
 
 // Define the form data interface
 export interface RecreateGameFormData {
@@ -132,6 +133,7 @@ const SubmitRecreateForm = ({
               selectedItem={field.value || null}
               error={!!errors.usaPlayerId}
               placeholder="Type USA player name..."
+              width={typeaheadWidth}
               css={{ width: dropdownWidth }}
               users={users}
               onSelect={(selectedItem: DropdownItemType | null) => {
@@ -152,6 +154,7 @@ const SubmitRecreateForm = ({
               error={!!errors.ussrPlayerId}
               placeholder="Type USSR player name..."
               css={{ width: dropdownWidth }}
+              width={typeaheadWidth}
               users={users}
               onSelect={(selectedItem: DropdownItemType | null) => {
                 field.onChange(selectedItem?.value || "");

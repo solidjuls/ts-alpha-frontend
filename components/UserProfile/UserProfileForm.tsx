@@ -35,7 +35,7 @@ interface PasswordFormData {
 }
 
 const inputWidth = "300px";
-const dropdownWidth = "300px";
+const dropdownWidth = "322px";
 
 const formStyles = {
   alignItems: "center",
@@ -197,6 +197,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           placeholder="Select preferred gaming platform"
           items={platforms}
           error={!!profileErrors.preferredGamingPlatform}
+          width={dropdownWidth}
           css={{ width: dropdownWidth }}
           selectedItem={watchedPlatform}
           onSelect={(value: string) => setProfileValue("preferredGamingPlatform", value)}
@@ -206,6 +207,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Preferred Game Duration"
           placeholder="Select preferred game duration"
           items={gameDurations}
+          width={dropdownWidth}
           error={!!profileErrors.preferredGameDuration}
           css={{ width: dropdownWidth }}
           selectedItem={watchedDuration}
@@ -218,6 +220,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           error={!!profileErrors.city}
           placeholder="Type the city name..."
           css={{ width: "300px" }}
+          width={dropdownWidth}
           listWidth="500px"
           onBlur={() => {}}
           onSelect={(value) => setProfileValue("city", value?.value ? Number(value.value) : null)}
@@ -229,6 +232,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           error={!!profileErrors.country}
           placeholder="Type the country name..."
           css={{ width: "300px" }}
+          width={dropdownWidth}
           listWidth="320px"
           onBlur={() => {}}
           onSelect={(value) => setProfileValue("country", value?.value ? Number(value.value) : null)}

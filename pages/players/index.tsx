@@ -228,6 +228,7 @@ const Players = () => {
             <CountriesTypeahead
               placeholder="Type the federation name..."
               width="300px"
+              css={{ width: '340px' }}
               filter="filter"
               onSelect={(value) => {
                 if (value) {
@@ -241,7 +242,6 @@ const Players = () => {
               selectedItem={countriesSelected || ""}
               labelText=""
               error={false}
-              listWidth="320px"
             />
           </div>
           <StyledInput
