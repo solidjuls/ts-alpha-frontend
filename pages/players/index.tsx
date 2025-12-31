@@ -213,7 +213,7 @@ const Players = () => {
 
   return (
       <Container>
-        <h1>Players list</h1>
+        <h2>Player List</h2>
         <FilterPanelStyled>
           <MultiSelect
             setSelectedValues={(value: any) => {

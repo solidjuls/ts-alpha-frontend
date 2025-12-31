@@ -386,7 +386,7 @@ const Schedule = () => {
       </Head>
         <ResponsiveContainer>
           <Flex style={{ flexDirection: "column", width: "100%", gap: "4px", marginTop: "16px" }}>
-            <h1>My Schedule</h1>
+            <h2>My Schedule</h2>
 
             {/* Tournament Tabs */}
             {availableTournaments?.length > 0 && (

@@ -227,7 +227,7 @@ const Tournaments = () => {
 
         <ResponsiveContainer>
           <HeaderContainer>
-            <h1 style={{ fontWeight: "600" }}>Tournaments</h1>
+            <h2>Tournaments</h2>
           </HeaderContainer>
           {role === userRoles.SUPERADMIN && (
             <Button style={{ marginLeft: "16px", width: "180px" }}>
