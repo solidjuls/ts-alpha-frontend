@@ -1,13 +1,12 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
-import styled from "styled-components";
 import { FlagIcon } from "components/FlagIcon";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
-import { PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer } from "./Homepage.styled";
+import { ContainerGameResults, ResponsiveText, PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer, NumericText } from "./Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
@@ -26,22 +25,6 @@ type ResultsPanelProps = {
   isLoading?: boolean;
 };
 
-const ResponsiveText = styled(Text)`
-  @media (max-width: 640px) {
-    display: none;
-  }
-`;
-
-const ContainerGameResults = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 1100px;
-  background-color: transparent;
-  @media (max-width: 640px) {
-    flex-direction: column;
-  }
-`;
 
 const PlayerInfoBox = ({
   usaPlayer,
@@ -99,13 +82,13 @@ const ResultRow = ({ game }: { game: Game }) => {
           margin: "0 0 0 8px",
         }}
       >
-        <ResponsiveText fontSize="small" style={{ alignSelf: "center" }}>
+        <NumericText>
           {`Game #${game.id}`}
-        </ResponsiveText>
-        <ResponsiveText fontSize="small" style={{ alignSelf: "center", marginLeft: 4 }}>
+        </NumericText>
+        <ResponsiveText>
           {game.tournamentName}
         </ResponsiveText>
-        <Text fontSize="small">{dateFormat(new Date(game?.gameDate))}</Text>
+        <NumericText>{dateFormat(new Date(game?.gameDate))}</NumericText>
       </div>
 
       <PlayerInfoBox
@@ -119,8 +102,6 @@ const ResultRow = ({ game }: { game: Game }) => {
   );
 };
 
-const formatDateToString = (date: Date) => `${date.getDate()}/${date.getMonth() + 1}`;
-
 const EmptyState = () => {
   return (
     <div
@@ -132,8 +113,8 @@ const EmptyState = () => {
         height: "320px",
       }}
     >
-      <Text style={{ fontSize: "20px" }} strong="bold">
-        No games
+      <Text style={{ fontSize: "20px" }}>
+        No Games
       </Text>
     </div>
   );
@@ -162,10 +143,10 @@ const FilterUser: React.FC<FilterUserProps> = ({
   );
 
   return (
-    <div style={{ margin: "4px" }}>
+    <div>
       <MultiSelect
         items={usersMemo}
-        placeholder="Select Players (max 2)..."
+        placeholder="Select Players..."
         selectedValues={selectedValues}
         setSelectedValues={(values: MultiSelectItemType[]) => {
           // Limit to maximum 2 players
@@ -191,7 +172,7 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
   );
 
   return (
-    <div style={{ margin: "4px" }}>
+    <div>
       <MultiSelect
         items={tournamentsMemo}
         placeholder="Select Tournaments..."
@@ -226,7 +207,7 @@ const Filter: React.FC<FilterProps> = ({
   onClear,
 }) => {
   const { data: tournaments, isLoading: isLoadingTournament } = useTournaments({ status: "4,5" });
-  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 2000);
+  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 3000);
 
   if (isLoadingTournament || isLoadingUsers) return null;
 
@@ -250,7 +231,7 @@ const Filter: React.FC<FilterProps> = ({
         />
       )}
       <Checkbox
-        text="Games with videos"
+        text="Games with Videos"
         onCheckedChange={() => setVideoSelected(!videoSelected)}
         checked={videoSelected}
       />

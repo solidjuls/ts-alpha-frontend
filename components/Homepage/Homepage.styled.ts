@@ -1,5 +1,26 @@
 import Link from "next/link";
 import styled from "styled-components";
+import Text from "components/Text";
+
+export const ResponsiveText = styled(Text)`
+  font-size: small;
+  align-self: center;
+  margin-left: 4;
+  @media (max-width: 1000px) {
+    display: none;
+  }
+`;
+
+export const ContainerGameResults = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 1100px;
+  background-color: transparent;
+  @media (max-width: 1000px) {
+    flex-direction: column;
+  }
+`;
 
 export const GlobalContainer = styled.div`
   display: flex;
@@ -7,18 +28,22 @@ export const GlobalContainer = styled.div`
   width: 100%;
 `;
 
-const borderStyle = "solid 1px #e5e7eb";
-
 export const PlayerInfo = styled.div`
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  /* border-bottom: ${borderStyle}; */
-  padding: 4px;
-  margin-bottom: 4px;
-  border-width: 1px;
-  border-radius: 6px;
-  border: solid 1px #e5e7eb;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--alt-text);
+    background-color: var(--ussr);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
 `;
 
 export const StyledCardRow = styled.div`
@@ -31,15 +56,14 @@ export const StyledCardRow = styled.div`
   padding-bottom: 4px;
   border-width: 1px;
   border-radius: 6px;
-  border: solid 1px #e5e7eb;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 `;
 
 export const StyledResultsPanel = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  background-color: #f8f9fa;
+  color: var(--primary-text);
+  background-color: var(--bg-card);
   border: solid 1px transparent;
   border-radius: 12px;
   flex-grow: 1;
@@ -54,14 +78,14 @@ export const FilterPanel = styled.div`
   gap: 5px;
   width: 100%;
   max-width: 1000px;
-  background-color: white;
+  color: var(--primary-text);
+  background-color: var(--bg-card);
+  border: solid 1px var(--border);
   border-radius: 8px;
-  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1), 0 0 6px 1px rgba(0, 0, 0, 0.05);
   padding: 8px;
   margin: 0 0 8px 0;
-  border-bottom: ${borderStyle};
 
-  @media (max-width: 640px) {
+  @media (max-width: 1000px) {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -69,10 +93,6 @@ export const FilterPanel = styled.div`
 
 export const UnstyledLink = styled(Link)`
   all: unset;
-  cursor: pointer;
-
-  /* Inherit global link colors */
-  color: inherit;
 
   /* Explicitly remove underline */
   text-decoration: none;
@@ -82,4 +102,11 @@ export const UnstyledLink = styled(Link)`
   &:active {
     text-decoration: none;
   }
+`;
+
+export const NumericText = styled.span`
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  font-size: small;
 `;

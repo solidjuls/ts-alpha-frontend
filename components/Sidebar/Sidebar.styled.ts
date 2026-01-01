@@ -40,8 +40,7 @@ export const Flex = styled.div<FlexProps>`
 export const StyledText = styled(Text)`
   display: flex;
   cursor: pointer;
-  font-weight: 600;
-  color: black;
+  color: var(--primary-text);
   
   ${media.sm} {
     display: none;
@@ -49,7 +48,7 @@ export const StyledText = styled(Text)`
 `;
 
 export const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon)`
-  color: black;
+  color: var(--primary-text);
   
   ${media.sm} {
     width: 25px;
@@ -62,7 +61,7 @@ export const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon)`
 
 export const HorizontalNavigationLayout = styled(Flex)`
   justify-content: space-between;
-  background-color: var(--gray-200);
+  background-color: var(--bg-card);
   width: 100%;
   
   ${media.sm} {
@@ -72,10 +71,8 @@ export const HorizontalNavigationLayout = styled(Flex)`
 
 export const UnstyledLink = styled(Link)`
   all: unset;
-  cursor: pointer;
-
-  /* Inherit global link colors */
-  color: inherit;
+  color: var(--primary-text);
+  font-weight: 600;
 
   /* Explicitly remove underline */
   text-decoration: none;
@@ -83,6 +80,7 @@ export const UnstyledLink = styled(Link)`
   &:hover,
   &:focus,
   &:active {
+    color: var(--ussr);
     text-decoration: none;
   }
 `;
@@ -116,7 +114,7 @@ export const VerticalSidebarLayout = styled(Flex)`
 
 export const NavigationContainer = styled.div`
   display: flex;
-  background-color: var(--gray-200);
+  background-color: var(--bg-card);
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -130,26 +128,23 @@ export const HorizontalItemsContainer = styled.div`
 `;
 
 export const VerticalNavigationContainer = styled(Flex)`
-  background-color: #E2E8F0;
+  background-color: var(--bg-card);
   flex-direction: column;
   align-items: flex-start;
 `;
 
 export const HorizontalNavText = styled(Text)`
-  border-top: solid 1px rgba(255,255,255,.15);
-  background-color: var(--gray-200);
+  background-color: var(--bg-card);
   cursor: pointer;
   padding: 8px 12px;
   margin: 0;
-  font-weight: bold;
 `;
 
 export const SidebarNavText = styled(Text)`
   border-top: solid 1px rgba(255,255,255,.15);
-  background-color: #24292f;
-  color: white;
+  background-color: var(--bg-card);
+  color: var(--primary-text);
   cursor: pointer;
   padding: 8px 16px;
   margin: 0;
-  font-weight: bold;
 `;

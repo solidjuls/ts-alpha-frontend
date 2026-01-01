@@ -6,6 +6,7 @@ import { MultiSelectItemType } from "types/types";
 const StyledMultiSelect = styled(MultiSelect)`
   width: 250px;
   padding: 0;
+  background-color: var(--bg-card);
 `
 type MultiSelectComponentProps = {
   items: MultiSelectItemType[];

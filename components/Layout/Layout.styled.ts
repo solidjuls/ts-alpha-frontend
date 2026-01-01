@@ -4,6 +4,7 @@ export const Container = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-main);
 `;
 
 export const Main = styled.main`
@@ -48,8 +49,6 @@ export const BannerTitle = styled.h1`
   font-weight: 700;
   letter-spacing: 0.04em;
   text-align: center;
-
-  /* Cold War–appropriate restraint */
   text-transform: uppercase;
 `;
 
@@ -57,7 +56,7 @@ export const StyledFooter = styled.footer`
   text-align: center;
   padding: 1rem;
   font-size: 0.85rem;
-  color: #6b7280; /* neutral gray */
+  color: var(--muted-text); /* neutral gray */
   }
 `;
 
