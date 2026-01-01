@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 export const StyledDetailContainer = styled.div`
-  background-color: white;
+  background-color: var(--bg-card);
+  color: var(--primary-text);
   padding: 24px 12px;
   width: 100%;
   max-width: 52rem;
