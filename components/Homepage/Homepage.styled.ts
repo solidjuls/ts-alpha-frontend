@@ -77,6 +77,7 @@ export const FilterPanel = styled.div`
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 10px;
 
   ${media.md} {
     flex-direction: column;
