@@ -169,14 +169,23 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
 
   const deleteGameMutation = useDeleteGame();
 
-  const deleteGame = async () => {
-    try {
-      await deleteGameMutation.mutateAsync(id);
-      setDeleteSuccessMessage(true);
-    } catch (error) {
-      console.error("Error deleting game:", error);
-    }
-  };
+const deleteGame = async () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this game? This action cannot be undone."
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    await deleteGameMutation.mutateAsync(id);
+    setDeleteSuccessMessage(true);
+  } catch (error) {
+    console.error("Error Deleting Game:", error);
+  }
+};
+
 
   const generateText = () => {
     let winnerName = "";
@@ -213,7 +222,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
           previousRating={data.ratingsUSA.previousRating}
           countryCode={data.usaCountryCode}
         />
-        <Text fontSize="small">vs</Text>
+        <Text>vs</Text>
         <PlayerName
           playerName={data.ussrPlayer}
           userId={data.ussrPlayerId}
@@ -251,7 +260,7 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
               <Link
                 target="_blank"
                 href={data.videoURL}
-                rel="noopener noreferrer"
+                rel="noopener"
               >
                 Link to Video
               </Link>
