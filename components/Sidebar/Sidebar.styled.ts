@@ -1,150 +1,147 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Link from "next/link";
 import Text from "components/Text";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { Content } from "@radix-ui/react-dropdown-menu";
 import { media } from "../../theme";
 
-// Keyframes for animations
-const slideUpAndFade = keyframes`
-  0% { opacity: 0; transform: translateY(2px); }
-  100% { opacity: 1; transform: translateY(0); }
-`;
-
-const slideRightAndFade = keyframes`
-  0% { opacity: 0; transform: translateX(-2px); }
-  100% { opacity: 1; transform: translateX(0); }
-`;
-
-const slideDownAndFade = keyframes`
-  0% { opacity: 0; transform: translateY(-2px); }
-  100% { opacity: 1; transform: translateY(0); }
-`;
-
-const slideLeftAndFade = keyframes`
-  0% { opacity: 0; transform: translateX(2px); }
-  100% { opacity: 1; transform: translateX(0); }
-`;
-
-// Styled components
-interface FlexProps {
-  $display?: "none";
-}
-
-export const Flex = styled.div<FlexProps>`
-  display: ${props => props.$display === "none" ? "none" : "flex"};
-  flex-direction: row;
+/* Flexible row container */
+export const Flex = styled.div`
+  display: flex;
   align-items: center;
 `;
 
-export const StyledText = styled(Text)`
-  display: flex;
-  cursor: pointer;
-  color: var(--primary-text);
-  
-  ${media.sm} {
-    display: none;
-  }
-`;
-
-export const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon)`
-  color: var(--primary-text);
-  
-  ${media.sm} {
-    width: 25px;
-    height: 25px;
-    display: flex;
-    justify-content: flex-start;
-    cursor: pointer;
-  }
-`;
-
-export const HorizontalNavigationLayout = styled(Flex)`
-  justify-content: space-between;
-  background-color: var(--bg-card);
+/* Top-level nav bar */
+export const NavigationContainer = styled.nav`
+  position: relative;
   width: 100%;
-  
-  ${media.sm} {
+  height: 50px;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 0 16px;
+
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+`;
+
+/* Desktop navigation (hidden on small screens) */
+export const HorizontalNavigationLayout = styled(Flex)`
+  flex: 1;
+  justify-content: space-between;
+  gap: 8px;
+
+  ${media.lg} {
     display: none;
   }
 `;
 
+/* Container for the group of nav items */
+export const HorizontalItemsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+`;
+
+/* Text inside nav items */
+export const HorizontalNavText = styled(Text)`
+  padding: 8px 12px;
+  margin: 0;
+  font-weight: 600;
+  color: var(--primary-text);
+  border-radius: 4px;
+
+  /* Subtle hover, no underline per style guide */
+  &:hover {
+    color: var(--ussr);
+    background-color: var(--bg-main);
+  }
+`;
+
+/* Link that uses global link colors but removes underline */
 export const UnstyledLink = styled(Link)`
   all: unset;
-  color: var(--primary-text);
-  font-weight: 600;
-
-  /* Explicitly remove underline */
+  cursor: pointer;
+  color: inherit;
   text-decoration: none;
 
   &:hover,
   &:focus,
   &:active {
-    color: var(--ussr);
     text-decoration: none;
   }
 `;
 
-export const StyledContent = styled(Content)`
-  min-width: 120px;
-  border-radius: 6px;
-  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35), 0px 10px 20px -15px rgba(22, 23, 24, 0.2);
-  
-  @media (prefers-reduced-motion: no-preference) {
-    animation-duration: 400ms;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform, opacity;
-    
-    &[data-state="open"] {
-      &[data-side="top"] { animation-name: ${slideDownAndFade}; }
-      &[data-side="right"] { animation-name: ${slideLeftAndFade}; }
-      &[data-side="bottom"] { animation-name: ${slideUpAndFade}; }
-      &[data-side="left"] { animation-name: ${slideRightAndFade}; }
-    }
-  }
-`;
-
-export const VerticalSidebarLayout = styled(Flex)`
+/* Mobile bar (hamburger + brand) – hidden on desktop */
+export const VerticalSidebarLayout = styled.div`
   display: none;
-  
-  ${media.sm} {
+
+  ${media.lg} {
+    position: relative;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 `;
 
-export const NavigationContainer = styled.div`
-  display: flex;
-  background-color: var(--bg-card);
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  height: 50px;
-  width: 100%;
-`;
-
-export const HorizontalItemsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-export const VerticalNavigationContainer = styled(Flex)`
-  background-color: var(--bg-card);
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-export const HorizontalNavText = styled(Text)`
-  background-color: var(--bg-card);
-  cursor: pointer;
-  padding: 8px 12px;
-  margin: 0;
-`;
-
-export const SidebarNavText = styled(Text)`
-  border-top: solid 1px rgba(255,255,255,.15);
-  background-color: var(--bg-card);
+/* Mobile “brand” / title on the left (optional) */
+export const MobileBrand = styled(Text)`
+  font-weight: 700;
   color: var(--primary-text);
+`;
+
+/* Hamburger button on the right */
+export const MobileMenuButton = styled.button`
+  border: none;
+  background: transparent;
+  padding: 4px;
   cursor: pointer;
-  padding: 8px 16px;
-  margin: 0;
+  display: flex;
+  align-items: center;
+
+  color: var(--primary-text);
+`;
+
+export const StyledHamburgerMenuIcon = styled(HamburgerMenuIcon)`
+  width: 24px;
+  height: 24px;
+`;
+
+/* Slide-down mobile menu */
+export const MobileMenu = styled.nav`
+  position: absolute;
+  top: 50px;           /* just below the nav bar */
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+  gap: 4px;
+
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+
+  /* On mobile, make the items stack vertically */
+  ${HorizontalItemsContainer} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+`;
+
+/* Optional: wrapper for the mobile auth row (Sign In / Sign Out) */
+export const MobileAuthRow = styled(Flex)`
+  padding: 4px 8px;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+`;
+
+/* Kept for compatibility, though you may not need it now */
+export const StyledText = styled(Text)`
+  font-weight: 600;
+  color: var(--primary-text);
 `;

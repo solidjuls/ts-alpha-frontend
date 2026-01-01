@@ -6,7 +6,7 @@ import { TopPlayerRating } from "components/TopPlayerRating";
 import { Game } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
-import { ContainerGameResults, ResponsiveText, PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer, NumericText } from "./Homepage.styled";
+import { ContainerGameResults, ResponsiveText, PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer, MonoText } from "./Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
@@ -82,13 +82,13 @@ const ResultRow = ({ game }: { game: Game }) => {
           margin: "0 0 0 8px",
         }}
       >
-        <NumericText>
-          {`Game #${game.id}`}
-        </NumericText>
         <ResponsiveText>
-          {game.tournamentName}
+          {`Game #${game.id}`}
         </ResponsiveText>
-        <NumericText>{dateFormat(new Date(game?.gameDate))}</NumericText>
+        <MonoText>
+          {game.tournamentName}
+        </MonoText>
+        <MonoText>{dateFormat(new Date(game?.gameDate))}</MonoText>
       </div>
 
       <PlayerInfoBox
@@ -235,11 +235,9 @@ const Filter: React.FC<FilterProps> = ({
         onCheckedChange={() => setVideoSelected(!videoSelected)}
         checked={videoSelected}
       />
-      <div style={{ display: "flex" }}>
-        <Button style={{ width: "80px", fontSize: "16px" }} onClick={onClear}>
-          Clear
-        </Button>
-      </div>
+      <Button onClick={onClear}>
+        Clear
+      </Button>
     </FilterPanel>
   );
 };

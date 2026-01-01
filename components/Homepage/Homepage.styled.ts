@@ -1,12 +1,13 @@
 import Link from "next/link";
 import styled from "styled-components";
 import Text from "components/Text";
+import { media } from "../../theme";
 
 export const ResponsiveText = styled(Text)`
   font-size: small;
   align-self: center;
   margin-left: 4;
-  @media (max-width: 1000px) {
+  ${media.md} {
     display: none;
   }
 `;
@@ -15,9 +16,9 @@ export const ContainerGameResults = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
-  max-width: 1100px;
+
   background-color: transparent;
-  @media (max-width: 1000px) {
+  ${media.md} {
     flex-direction: column;
   }
 `;
@@ -73,21 +74,13 @@ export const StyledResultsPanel = styled.div`
 
 export const FilterPanel = styled.div`
   display: flex;
-  flex-direction: row;
+  gap: 12px;
   align-items: center;
-  gap: 5px;
-  width: 100%;
-  max-width: 1000px;
-  color: var(--primary-text);
-  background-color: var(--bg-card);
-  border: solid 1px var(--border);
-  border-radius: 8px;
-  padding: 8px;
-  margin: 0 0 8px 0;
+  flex-wrap: wrap;
 
-  @media (max-width: 1000px) {
+  ${media.md} {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
 `;
 
@@ -104,7 +97,7 @@ export const UnstyledLink = styled(Link)`
   }
 `;
 
-export const NumericText = styled.span`
+export const MonoText = styled.span`
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;

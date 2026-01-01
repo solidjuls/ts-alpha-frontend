@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { media } from "../../theme";
 
 export const SidePanelStyled = styled.div`
   color: var(--primary-text);
@@ -11,6 +12,10 @@ export const SidePanelStyled = styled.div`
   border-radius: 12px;
   width: 350px;
   max-height: 225px;
+
+  ${media.md} {
+    width: 100%;
+  }
 `;
 
 export const UserContainer = styled.div`

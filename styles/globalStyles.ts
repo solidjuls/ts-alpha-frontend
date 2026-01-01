@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { media } from "theme";
 
 const GlobalStyles = createGlobalStyle`
   :root {
@@ -335,6 +336,17 @@ const GlobalStyles = createGlobalStyle`
       border-color: var(--usa);
       box-shadow: 0 0 0 2px rgba(52, 95, 100, 0.2);
     }
+
+  /* ============================
+    Mobile Styles
+  ============================ */ 
+    ${media.md} {
+      button {
+        width: 100%;
+      }
+    }
 `;
+
+
 
 export default GlobalStyles;

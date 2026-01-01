@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const SignOutButton = styled.button`
   all: unset;
   cursor: pointer;
-  color: var(--alt-text);
+  color: var(--primary-text);
   font-weight: 600;
 
   /* Explicitly remove underline */
