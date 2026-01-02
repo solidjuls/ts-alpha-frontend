@@ -11,7 +11,7 @@ import { Game as ComponentGame, GameWinner } from "types/game.types";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
-import { ProfileContainer, RecentGamesContainer } from "../../styles/userprofile.styles";
+import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../styles/userprofile.styles";
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 
@@ -33,7 +33,10 @@ const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentG
 
 const UserProfileContent: React.FC<UserDetail> = (data) => (
   <>
-    <DisplayInfo label="Player's Name" infoText={`${data?.first_name} ${data?.last_name}`} />
+    <ProfileHeading>
+      {`${data?.first_name} ${data?.last_name}`}
+    </ProfileHeading>
+
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name || "-"} />
     <DisplayInfo label="Playdek" infoText={data?.playdek_name || "-"} />
     <DisplayInfo label="Location" infoText={data?.cities?.name || "-"} />
@@ -56,8 +59,7 @@ const UserProfile = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
-  const { data: gamesData, isLoading: gamesLoading, error: gamesError } =
-    useGamesByUsers([id], currentPage, PAGE_SIZE);
+  const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], currentPage, PAGE_SIZE);
 
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / PAGE_SIZE) : 1;
 

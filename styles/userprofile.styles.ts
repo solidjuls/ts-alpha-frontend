@@ -21,3 +21,17 @@ export const RecentGamesContainer = styled.div`
   margin: 32px 0 0 0;
   flex-direction: column;
 `;
+
+export const ProfileHeading = styled.h2`
+  grid-column: 1 / -1;   /* spans ALL grid columns */
+  width: 100%;
+  margin: 0 0 16px 0;
+  font-weight: 600;
+  color: var(--primary-text);
+
+  span {
+    color: var(--muted-text);
+    font-weight: 400;
+    font-size: medium;
+  }
+`;

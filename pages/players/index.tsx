@@ -1,20 +1,29 @@
-import { useState, useMemo } from "react";
+"use client";
 
-import styled from "styled-components";
+import { useState } from "react";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
-import Link from "next/link";
 import { Pagination } from "components/Pagination";
-import { FilterPanel } from "components/Homepage/Homepage.styled";
 import MultiSelect from "components/MultiSelect";
-import { DropdownItemType } from "types/types";
+import { DropdownItemType, MultiSelectItemType } from "types/types";
 import CountriesTypeahead from "components/CountriesTypeahead";
-import { Input } from "components/Input";
 import { usePlayerRatings } from "hooks/useRating";
-// Countries hook is now used directly by the CountriesTypeahead component
-import { MultiSelectItemType } from "types/types";
-import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 import { useAllUsers } from "hooks/useUsers";
+import {
+  Container,
+  FlexContainer,
+  FlexColumn,
+  FlexRow,
+  StyledInput,
+  UnstyledLink,
+  FilterPanelStyled,
+  ResultsStyleWrapper,
+  StyledResultsPanel,
+  StyledCardRow,
+  PageTitle,
+  StyledText,
+  TextHeader
+} from "styles/players.styles";
 
 interface CardColumnProps {
   header: string;
@@ -39,106 +48,10 @@ interface ResultsPanelProps {
   isLoading?: boolean;
 }
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-`;
-
-const FlexColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const FlexRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-`;
-
-const StyledInput = styled(Input)`
-  margin-left: 20px
-`;
-
-export const UnstyledLink = styled(Link)`
-  all: unset;
-  cursor: pointer;
-
-  /* Inherit global link colors */
-  color: inherit;
-
-  /* Explicitly remove underline */
-  text-decoration: none;
-
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none;
-  }
-`;
-
-const ResultsStyleWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  background-color: ${props => props.theme?.colors?.infoForm || '#f8f9fa'};
-  border: solid 1px transparent;
-  border-radius: 12px;
-  flex-grow: 1;
-  margin-bottom: 12px;
-  width: 100%;
-  max-width: 1000px;
-  height: 500px;
-`;
-
-export const StyledResultsPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: ${props => props.theme?.colors?.infoForm || '#f8f9fa'};
-  border: solid 1px transparent;
-  border-radius: 12px;
-  flex-grow: 1;
-  margin-bottom: 12px;
-  height: 500px;
-  overflow-y: scroll;
-`;
-
-const StyledCardRow = styled.div`
-  display: grid;
-  gap: 1rem;
-  margin: 4px;
-  grid-template-columns: min-content 3fr min-content;
-  padding-inline-start: 8px;
-  padding-inline-end: 8px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-width: 1px;
-  border-radius: 6px;
-  border: solid 1px ${props => props.theme?.colors?.greyLight || '#e0e0e0'};
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-`;
-
-const FilterPanelStyled = styled(FilterPanel)`
-    max-width: 988px;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 8px;
-`;
-
 const CardColumn: React.FC<CardColumnProps> = ({ header, value, countryCode }) => {
   return (
     <FlexColumn>
-      <Text fontSize="small">{header}</Text>
+      <TextHeader>{header}</TextHeader>
       <FlexRow>
         {countryCode && <FlagIcon code={countryCode} />}
         <Text fontSize="medium">{value}</Text>
@@ -151,7 +64,9 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ data }) => {
   return (
     <FlexContainer>
       <StyledResultsPanel>
-        {data?.map((player: any, index: number) => <PlayerRow key={index} index={index} player={player} />)}
+        {data?.map((player: any, index: number) => (
+          <PlayerRow key={index} index={index} player={player} />
+        ))}
       </StyledResultsPanel>
     </FlexContainer>
   );
@@ -160,15 +75,14 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ data }) => {
 const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
   return (
     <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
-      <StyledCardRow>
-        <CardColumn header="Rank:" value={player.rank} />
-        <CardColumn header="Player:" value={player.name} countryCode={player.countryCode} />
-        <CardColumn header="Rating:" value={player.rating} />
+      <StyledCardRow className="card card--clickable">
+        <CardColumn header="Rank" value={player.rank} />
+        <CardColumn header="Player" value={player.name} countryCode={player.countryCode} />
+        <CardColumn header="Rating" value={player.rating} />
       </StyledCardRow>
     </UnstyledLink>
   );
 };
-
 
 const Players = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -177,105 +91,132 @@ const Players = () => {
   const [playdeckInput, setPlaydeckInput] = useState("");
   const [playdeckValue, setPlaydeckValue] = useState("");
 
-  const pageSize = (playersSelected.length > 0 || countriesSelected) ? undefined : 20;
+
+
+// Treat any filter as "show all results" (no pagination)
+const isFiltered =
+  playersSelected.length > 0 ||
+  !!countriesSelected ||
+  !!playdeckInput;
+
+const pageSize = isFiltered ? undefined : 20;
+
+
+
 
   const {
     data: playersData,
     isLoading: isLoadingPlayers,
     error: playersError,
   } = usePlayerRatings({
-    page: currentPage,
+    page: isFiltered ? undefined : currentPage,
     pageSize,
-    playerFilter: playersSelected.length > 0 ? playersSelected.map(p => p.code) : undefined,
+    playerFilter: playersSelected.length > 0 ? playersSelected.map((p) => p.code) : undefined,
     countrySelected: countriesSelected || undefined,
     playdeck: playdeckInput || undefined,
-    orderBy: 'rating',
-    orderDirection: 'desc',
+    orderBy: "rating",
+    orderDirection: "desc",
   });
-  const { data: usersData, isLoading: isLoadingUsers } = useAllUsers(1, 2000);
- 
-  const userItems: DropdownItemType[] = usersData?.results?.map((user: any) => ({
-    code: user.id,
-    name: user?.name.trim(),
-  })) || [];
+
+  const { data: usersData } = useAllUsers(1, 3000);
+
+  const totalPages = playersData?.totalPages ?? 1;
+
+const paginationVisibility = !isFiltered && totalPages > 1;
+
+  const userItems: DropdownItemType[] =
+    usersData?.results?.map((user: any) => ({
+      code: user.id,
+      name: user?.name.trim(),
+    })) || [];
 
   const onPageChange = async (page: number) => {
     setCurrentPage(page);
   };
 
-  // Loading states are now handled by individual components
 
-  const paginationVisibility = !(
-    playersSelected?.length !== 0 ||
-    countriesSelected?.length !== 0 ||
-    playdeckInput
-  );
+  if (playersError) {
+    return (
+      <Container>
+        <PageTitle>Player List</PageTitle>
+        <StyledText>There was an error loading the player list.</StyledText>
+      </Container>
+    );
+  }
 
   return (
-      <Container>
-        <h2>Player List</h2>
-        <FilterPanelStyled>
-          <MultiSelect
-            setSelectedValues={(value: any) => {
-              setPlayersSelected(value);
-              setCurrentPage(1); // Reset to first page when filtering
-            }}
-            items={userItems}
-            selectedValues={playersSelected as any}
-            placeholder="Select Players..."
-          />
-          <div style={{ width: "250px", height: "40px" }}>
-            <CountriesTypeahead
-              placeholder="Type the federation name..."
-              width="300px"
-              css={{ width: '340px' }}
-              filter="filter"
-              onSelect={(value) => {
-                if (value) {
-                  setCountriesSelected(value.value || "");
-                  setCurrentPage(1); // Reset to first page when filtering
-                }
-              }}
-              onBlur={() => {
-                setCountriesSelected("");
-              }}
-              selectedItem={countriesSelected || ""}
-              labelText=""
-              error={false}
-            />
-          </div>
-          <StyledInput
-            type="text"
-            value={playdeckValue}
-            width="300px"
+    <Container>
+      <PageTitle>Player List</PageTitle>
+
+      <FilterPanelStyled>
+        {/* Player multi-select */}
+        <MultiSelect
+          setSelectedValues={(value: any) => {
+            setPlayersSelected(value);
+            setCurrentPage(1);
+          }}
+          items={userItems}
+          selectedValues={playersSelected as any}
+          placeholder="Select Players..."
+        />
+
+        {/* Federation typeahead */}
+        <div style={{ minWidth: "240px" }}>
+          <CountriesTypeahead
+            placeholder="Type the Federation Name..."
+            width="100%"
             filter="filter"
-            placeholder="Type the Playdek name"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-              setPlaydeckValue(event.target.value)
-            }
-            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
-              if (event.key === "Enter") {
-                setPlaydeckInput(playdeckValue);
-                setCurrentPage(1); // Reset to first page when filtering
+            onSelect={(value) => {
+              if (value) {
+                setCountriesSelected(value.value || "");
+              } else {
+                setCountriesSelected("");
               }
+              setCurrentPage(1);
             }}
+            onBlur={() => {
+              // Keep selected filter; remove this if you truly want to clear on blur
+            }}
+            selectedItem={countriesSelected || ""}
+            labelText=""
+            error={false}
+            listWidth="320px"
           />
-        </FilterPanelStyled>
-        <ResultsStyleWrapper>
-          <ResultsPanel
-            data={playersData?.results || []}
-            onPageChange={onPageChange}
-            isLoading={isLoadingPlayers}
-          />
-        </ResultsStyleWrapper>
-        {paginationVisibility && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={playersData?.totalPages || 1}
-            onPageChange={onPageChange}
-          />
-        )}
-      </Container>
+        </div>
+
+        {/* Playdek input */}
+        <StyledInput
+          type="text"
+          value={playdeckValue}
+          placeholder="Type the Playdek Name..."
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setPlaydeckValue(event.target.value)
+          }
+          onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+            if (event.key === "Enter") {
+              setPlaydeckInput(playdeckValue);
+              setCurrentPage(1);
+            }
+          }}
+        />
+      </FilterPanelStyled>
+
+      <ResultsStyleWrapper>
+        <ResultsPanel
+          data={playersData?.results || []}
+          onPageChange={onPageChange}
+          isLoading={isLoadingPlayers}
+        />
+      </ResultsStyleWrapper>
+
+      {paginationVisibility && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
+    </Container>
   );
 };
 

@@ -1,9 +1,11 @@
+// Typeahead.tsx
 import React, { ReactNode, useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import Downshift, { ControllerStateAndHelpers, StateChangeOptions } from "downshift";
 import { AutocompleteInput, AutocompleteList, AutocompleteListItem } from "./components";
 import { AutocompleteProvider } from "./AutocompleteContext";
 import { DropdownItemType } from "types/types";
+import styled from "styled-components";
 
 type TypeaheadProps = {
   debounceTime: number;
@@ -17,8 +19,14 @@ type TypeaheadProps = {
   error?: boolean;
   id?: string;
   resetOnSelect?: boolean;
-  css?: any;
+  css?: React.CSSProperties;
 };
+
+const TypeaheadRoot = styled.div`
+  display: block;
+  font-family: var(--font-body);
+  color: var(--primary-text);
+`;
 
 const Typeahead: React.FC<TypeaheadProps> & {
   Input: typeof AutocompleteInput;
@@ -45,7 +53,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
     if (debouncedTerm) {
       onChange(debouncedTerm);
     }
-  }, [debouncedTerm]);
+  }, [debouncedTerm, onChange]);
 
   useEffect(() => {
     if (selectedValue?.text && selectedValue?.text !== value?.text) {
@@ -53,21 +61,17 @@ const Typeahead: React.FC<TypeaheadProps> & {
     }
   }, [selectedValue, value]);
 
-  /**
-   * State machine for the downshift component, here the state of the component can be managed in any way. Details explained here: https://github.com/downshift-js/downshift#onstatechange
-   * @param {object} changes - Possible values: {highlightedIndex: number, inputValue: string, isOpen: boolean, selectedItem: any, type: statechangetypes}. https://github.com/downshift-js/downshift#statechangetypes
-   */
   const manageState = (
     changes: StateChangeOptions<DropdownItemType>,
     actions: ControllerStateAndHelpers<DropdownItemType>,
   ) => {
-    if (changes.hasOwnProperty("selectedItem")) {
+    if (Object.prototype.hasOwnProperty.call(changes, "selectedItem")) {
       if (changes.selectedItem) {
         !resetOnSelect && setValue(changes.selectedItem);
         onSelect(changes.selectedItem);
         resetOnSelect && actions.clearSelection();
       }
-    } else if (changes.hasOwnProperty("inputValue")) {
+    } else if (Object.prototype.hasOwnProperty.call(changes, "inputValue")) {
       if (changes?.inputValue?.length === 0) {
         onBlur && onBlur();
         setValue(null);
@@ -111,10 +115,9 @@ const Typeahead: React.FC<TypeaheadProps> & {
         isOpen,
         highlightedIndex,
       }) => (
-        <div
-          {...getRootProps({ refKey: 'ref' }, { suppressRefError: true })}
+        <TypeaheadRoot
+          {...getRootProps(undefined, undefined)}
           style={{
-            display: "block",
             ...css,
           }}
         >
@@ -132,7 +135,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
           >
             {children}
           </AutocompleteProvider>
-        </div>
+        </TypeaheadRoot>
       )}
     </Downshift>
   );
