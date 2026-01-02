@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import { GameWinner } from "types/game.types";
 import { DropdownItemType } from "types/types";
-
 import { useAuth } from "contexts/AuthProviderNew";
 import { useAllUsers } from "hooks/useUsers";
 import { useOngoingTournamentsWithoutSchedule, useTournamentsById } from "hooks/useTournaments";
@@ -165,7 +164,7 @@ const SubmitGameContainer = () => {
 
     // Check if video URL is valid (if provided)
     if (data.video1 && !isValidURL(data.video1)) {
-      setError("video1", { type: "manual", message: "Invalid URL format" });
+      setError("video1", { type: "manual", message: "Invalid URL Format" });
       isValid = false;
     }
 
@@ -173,15 +172,15 @@ const SubmitGameContainer = () => {
     if (!data.usaPlayerId && !data.ussrPlayerId) {
       // Check if opponent is not the same as current user
       if (data.opponentWas === user?.id) {
-        setError("opponentWas", { type: "manual", message: "You cannot play against yourself" });
+        setError("opponentWas", { type: "manual", message: "You Cannot Play Against Yourself" });
         isValid = false;
       }
     }
 
     // Validate end turn and end mode combinations
     if (data.endMode === "Final Scoring" && data.endTurn !== "11") {
-      setError("endTurn", { type: "manual", message: "Final Scoring must be on turn 11" });
-      setError("endMode", { type: "manual", message: "Final Scoring must be on turn 11" });
+      setError("endTurn", { type: "manual", message: "Final Scoring Must Be On Turn 11" });
+      setError("endMode", { type: "manual", message: "Final Scoring Must Be On Turn 11" });
       isValid = false;
     }
 
@@ -190,20 +189,20 @@ const SubmitGameContainer = () => {
       data.endMode !== "Final Scoring" &&
       data.endMode !== "Europe Control"
     ) {
-      setError("endTurn", { type: "manual", message: "Turn 11 can only end with Final Scoring or Europe Control" });
-      setError("endMode", { type: "manual", message: "Turn 11 can only end with Final Scoring or Europe Control" });
+      setError("endTurn", { type: "manual", message: "Turn 11 Can Only End with Final Scoring or Europe Control" });
+      setError("endMode", { type: "manual", message: "Turn 11 Can Only End with Final Scoring or Europe Control" });
       isValid = false;
     }
 
     // Wargames can only be used if turn 8, 9, 10
     if (data.endMode === "Wargames" && !["8", "9", "10"].includes(data.endTurn)) {
-      setError("endTurn", { type: "manual", message: "Wargames can only end on turns 8, 9, or 10" });
+      setError("endTurn", { type: "manual", message: "Wargames Can Only End on Turns 8, 9, or 10" });
       isValid = false;
     }
 
     // Cuban Missile Crisis cannot be on turns 1, 2, 3
     if (data.endMode === "Cuban Missile Crisis" && ["1", "2", "3"].includes(data.endTurn)) {
-      setError("endTurn", { type: "manual", message: "Cuban Missile Crisis cannot end on turns 1, 2, or 3" });
+      setError("endTurn", { type: "manual", message: "Cuban Missile Crisis Cannot End on Turns 1, 2, or 3" });
       isValid = false;
     }
 
@@ -212,7 +211,7 @@ const SubmitGameContainer = () => {
 
   const onSubmit = async (data: SubmitGameFormData) => {
     if (!user?.id && !isRecreateMode) {
-      setError("root", { type: "manual", message: "Error submitting your result. Refresh the page and try again" });
+      setError("root", { type: "manual", message: "Error submitting your result. Refresh the page and try again." });
       return;
     }
 

@@ -2,53 +2,20 @@ import React from "react";
 import { Control, FieldErrors, UseFormHandleSubmit, UseFormWatch } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import Text from "components/Text";
-import TextComponent from "./TextComponent";
 import { gameWinningOptions, endType, turns, gameSides } from "utils/constants";
-import { Button } from "components/Button";
-import { Box, Form } from "components/Atoms";
 import UserTypeahead from "components/UserTypeahead";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
 import { SubmitGameFormData } from "pages/submit-game/index";
-import styled from "styled-components";
 import Link from "next/link";
-
-const Banner = styled.div`
-  align-items: flex-start;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid hsl(210 20% 85%);
-  box-shadow: 0 6px 18px rgba(15,15,15,0.04);
-  max-width: 100%;
-  margin-bottom: 12px;
-  background-color: hsl(210 20% 97%);
-  color: hsl(210 30% 8%);
-`;
-
-const StyledForm = styled(Form)`
-  align-items: center;
-  background-color: white;
-  width: 640px;
-  align-self: center;
-  padding: 12px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const FormContainer = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
-`;
-
-const SubmitButton = styled(Button)`
-  width: 200px;
-  font-size: 18px;
-`;
+import { 
+  Banner,
+  StyledForm,
+  FormContainer,
+  SubmitButton,
+  SizedText
+ } from "./SubmitGameForm.styled";
 
 const dropdownWidth = "390px";
 const typeaheadWidth = "370px";
@@ -83,21 +50,19 @@ const SubmitGameForm = ({
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
       <Banner>
-        <b>Reminder:</b> If You don&apos;t see Your tournament here then please report through the{" "}
-        <Link href="/schedule">my schedule</Link> page
+        <span>Reminder:</span> If you don&apos;t see your tournament here, please report through the <Link href="/schedule">My Schedule</Link> page.
       </Banner>
       <FormContainer>
         <Controller
           name="gameCode"
           control={control}
-          rules={{ required: "Game code is required" }}
+          rules={{ required: "Game Code is Required" }}
           render={({ field }) => (
-            <TextComponent
+            <SizedText $variant="small"
               labelText="checkID"
               inputValue={field.value}
-              placeholder="Game id"
+              placeholder="Game ID"
               onInputValueChange={field.onChange}
-              css={{ width: "80px" }}
               error={!!errors.gameCode}
               key="checkID"
             />
@@ -111,13 +76,12 @@ const SubmitGameForm = ({
               control={control}
               rules={{ required: "Tournament is required" }}
               render={({ field }) => (
-                <TextComponent
+                <SizedText
                   labelText="typeOfGame"
                   key="gameType"
                   inputValue={field.value}
-                  placeholder="Select tournament"
+                  placeholder="Select Tournament"
                   error={!!errors.tournamentId}
-                  css={{ width: "250px" }}
                   onInputValueChange={() => {}} // Read-only
                   disabled
                 />
@@ -127,12 +91,11 @@ const SubmitGameForm = ({
               name="usaPlayerId"
               control={control}
               render={({ field }) => (
-                <TextComponent
+                <SizedText
                   labelText="USA Player"
                   inputValue={usaPlayerName}
                   placeholder="USA Player"
                   onInputValueChange={() => {}} // Read-only
-                  css={{ width: "250px" }}
                   key="usaPlayerId"
                   disabled
                   error={false}
@@ -144,12 +107,11 @@ const SubmitGameForm = ({
               name="ussrPlayerId"
               control={control}
               render={({ field }) => (
-                <TextComponent
+                <SizedText
                   labelText="USSR Player"
                   inputValue={ussrPlayerName}
                   placeholder="USSR Player"
                   onInputValueChange={() => {}} // Read-only
-                  css={{ width: "250px" }}
                   key="ussrPlayerId"
                   disabled
                   error={false}
@@ -172,8 +134,7 @@ const SubmitGameForm = ({
                   key="gameType"
                   items={leagueTypes}
                   selectedItem={field.value}
-                  placeholder="Select tournament"
-                  height="270px"
+                  placeholder="Select Tournament"
                   error={!!errors.tournamentId}
                   css={{ width: dropdownWidth }}
                   onSelect={field.onChange}
@@ -188,7 +149,7 @@ const SubmitGameForm = ({
               render={({ field }) => (
                 <DropdownWithLabel
                   labelText="PlayedAs"
-                  placeholder="I played as..."
+                  placeholder="My Side"
                   items={gameSides}
                   selectedItem={field.value}
                   selectedValueProperty="value"
@@ -203,7 +164,7 @@ const SubmitGameForm = ({
             <Controller
               name="opponentWas"
               control={control}
-              rules={{ required: "Please select your opponent" }}
+              rules={{ required: "My Opponent" }}
               render={({ field }) => (
                 <UserTypeahead
                   labelText="opponentWas"
@@ -231,7 +192,7 @@ const SubmitGameForm = ({
           render={({ field }) => (
             <DropdownWithLabel
               labelText="gameWinner"
-              placeholder="Game winner"
+              placeholder="Game Winner"
               items={gameWinningOptions}
               selectedItem={field.value}
               selectedValueProperty="value"
@@ -269,7 +230,7 @@ const SubmitGameForm = ({
           render={({ field }) => (
             <DropdownWithLabel
               labelText="endType"
-              placeholder="Victory type"
+              placeholder="Victory Type"
               items={endType}
               error={!!errors.endMode}
               css={{ width: dropdownWidth }}
@@ -283,10 +244,10 @@ const SubmitGameForm = ({
           name="video1"
           control={control}
           render={({ field }) => (
-            <TextComponent
+            <SizedText
               labelText="videoLink1"
               inputValue={field.value}
-              placeholder="Link to the video..."
+              placeholder="Link to the Video..."
               error={!!errors.video1}
               css={{ width: dropdownWidth }}
               onInputValueChange={field.onChange}
