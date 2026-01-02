@@ -14,11 +14,12 @@ import {
   StyledForm,
   FormContainer,
   SubmitButton,
-  SizedText
+  SizedText,
+  StyledController
  } from "./SubmitGameForm.styled";
 
 const dropdownWidth = "390px";
-const typeaheadWidth = "370px";
+const typeaheadWidth = "250px";
 
 type SubmitGameFormProps = {
   control: Control<SubmitGameFormData>;

@@ -31,7 +31,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
   minChars = 1,
   listWidth = "100%",
   pageSize = 100,
-  width,
+  width = "250px",
   ...rest
 }) => {
   const [input, setInput] = useState("");
@@ -93,8 +93,8 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
         )}
         {!isLoading && input.length >= minChars && filteredUsers.length === 0 && (
           <Typeahead.List style={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
-              No users found
+            <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)' }}>
+              No Users Found
             </div>
           </Typeahead.List>
         )}

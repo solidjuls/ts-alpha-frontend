@@ -103,13 +103,22 @@ export const StyledSpan = styled(Span)`
 `;
 
 export const DynamicStyledTrigger = styled(StyledTrigger)<{ width: string }>`
-  width: ${({ width }) => width};
+    width: 100%;
+    max-width: ${({ width }) => width};
+    min-width: 250px;
 `;
 
 export const DynamicStyledContent = styled(StyledContent)<{
   maxHeight?: string;
-  width: string;
+  width: string; // (can leave for now so you don't have to touch callers)
 }>`
   max-height: ${({ maxHeight }) => maxHeight || "auto"};
-  width: ${({ width }) => width};
+
+  /* Match the trigger width (responsive) */
+  width: var(--radix-popper-anchor-width);
+  min-width: var(--radix-popper-anchor-width);
+
+  /* Never exceed viewport */
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
 `;

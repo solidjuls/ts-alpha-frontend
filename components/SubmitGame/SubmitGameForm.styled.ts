@@ -47,4 +47,5 @@ export const SubmitButton = styled(Button)`
 export const SizedText = styled(TextComponent)<{ $variant?: "small" }>`
   width: ${({ $variant }) => ($variant === "small" ? "80px" : "250px")};
   color: var(--primary-text);
+  border-color: var(--border);
 `;

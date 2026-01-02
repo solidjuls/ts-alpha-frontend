@@ -26,7 +26,7 @@ const DropdownMenu = ({
   onSelect,
   error,
   height = undefined,
-  width = "390px",
+  width = "500px",
 }: DropdownMenuProps) => {
   let selectedItemMapped = items.find(
     (item) => item.value?.toLowerCase() === selectedItem?.toLowerCase(),
