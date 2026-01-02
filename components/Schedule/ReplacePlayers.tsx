@@ -3,7 +3,7 @@ import { Button } from "components/Button";
 import UserTypeahead from "components/UserTypeahead"
 import { useState } from "react";
 import { useReplacePlayer } from "hooks/useSchedule";
-import { Title } from "./styles";
+import { Title } from "./CsvButtonUpload.styled";
 
 interface ReplacePlayersProps {
   tournament: string | undefined

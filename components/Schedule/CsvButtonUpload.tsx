@@ -2,7 +2,7 @@ import { Button } from "components/Button";
 import { useRouter } from 'next/router'
 import { useState } from "react";
 import Papa from 'papaparse'
-import { FileInput, Title } from "./styles";
+import { FileInput, Title } from "./CsvButtonUpload.styled";
 import { Flex, Span } from "components/Atoms";
 import { useUploadCsvSchedule } from "hooks/useSchedule";
 import { CsvScheduleRow } from "services/schedule.service";

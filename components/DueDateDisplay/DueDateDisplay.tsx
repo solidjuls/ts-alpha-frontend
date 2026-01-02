@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Flex, Box, Span } from "components/Atoms";
+import { Flex } from "components/Atoms";
 import Text from "components/Text";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import "react-day-picker/lib/style.css";
@@ -8,6 +8,7 @@ import { format as formatDate } from "date-fns";
 import { dateFormat } from "utils/dates";
 import { useUpdateSchedule } from "hooks/useSchedule";
 import { Spinner } from "@radix-ui/themes";
+import { DateSpan } from "./DueDateDisplay.styled";
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
@@ -44,7 +45,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
         dueDate: selectedDate.toISOString(),
       });
     } catch (error) {
-      console.error('Error updating schedule due date:', error);
+      console.error('Error Updating Schedule Due Date:', error);
     }
   };
 
@@ -59,7 +60,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
       <Text fontSize="small" style={{ marginLeft: 4 }}>
         {description}
       </Text>
-      <Span style={{ margin: "0 4px 0 4px" }}>{formatDate(new Date(date), "yyyy/MM/dd")}</Span>
+      <DateSpan>{formatDate(new Date(date), "yyyy/MM/dd")}</DateSpan>
     </>
   );
   const renderLabel = (color: string) => (
@@ -100,17 +101,17 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
           onClick={handleSave}
           disabled={updateScheduleMutation.isPending}
         >
-          {updateScheduleMutation.isPending ? <Spinner size="3" /> : "OK"}
+          {updateScheduleMutation.isPending ? <Spinner size="3" /> : "Update"}
         </Button>
       </Flex>
     );
   }
 
   if (gamePlayed) {
-    return renderLabel("rgba(144, 238, 144, 0.4)"); // soft green
+    return renderLabel("var(--usa)"); 
   }
 
-  return renderLabel("rgba(255, 99, 71, 0.3)"); // soft red
+  return renderLabel("var(--ussr)"); 
 };
 
 export { DueDateDisplay };

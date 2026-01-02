@@ -35,7 +35,7 @@ import {
   AdminButton,
   LabelCopyBox,
   NumericText
- } from "../../styles/games.styles";
+ } from "../../styles/games.styled";
 
 type GameProps = {
   gameId: string;

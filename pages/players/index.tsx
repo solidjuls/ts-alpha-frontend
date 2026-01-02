@@ -23,7 +23,7 @@ import {
   PageTitle,
   StyledText,
   TextHeader
-} from "styles/players.styles";
+} from "styles/players.styled";
 
 interface CardColumnProps {
   header: string;

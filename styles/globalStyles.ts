@@ -9,6 +9,9 @@ const GlobalStyles = createGlobalStyle`
     --usa: #345f64;
     --usa-alt: #365f65;
     --ussr: #b12335;
+    --usa-half: rgba(34, 95, 64, 0.5);
+    --ussr-half: rgba(177, 35, 53, 0.5);
+    --ussr-quarter: rgba(177, 35, 53, 0.25) ;
 
     /* ============================
        Text

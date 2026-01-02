@@ -11,7 +11,7 @@ import { Game as ComponentGame, GameWinner } from "types/game.types";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
-import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../styles/userprofile.styles";
+import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../styles/userprofile.styled";
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 

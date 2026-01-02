@@ -1,14 +1,14 @@
 import "react-day-picker/lib/style.css";
 import React, { useState } from "react";
 import Head from "next/head";
-import { Box, Flex } from "components/Atoms";
+import { Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
+import Link from "next/link";
 import { FlagIcon } from "components/FlagIcon";
 import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { GameWinner } from "types/game.types";
-import styled from "styled-components";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
@@ -16,7 +16,6 @@ import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
 import { Tournament } from "services/tournaments.service";
 import { userRoles } from "utils/constants";
-import { MainLayout } from "components/Layout";
 import ProtectedRoute from "components/ProtectedRoute";
 import {
   PlayerInfo,
@@ -24,86 +23,18 @@ import {
   DueDateCell,
   UnstyledLink,
   CheckOpponentProfileCell,
+  ResponsiveContainer,
+  LoadingContainer,
+  CenteredResultsWrapper,
+  TabContainer,
+  TabButton,
+  ColumnUnstyledLink,
+  TournamentInfoFlex,
+  TournamentText,
+  FlexRow,
+  PlayerInfoContainer,
+  PageTitle
 } from "components/Schedule/Schedule.styled";
-
-interface ResponsiveContainerProps {
-  direction?: "row" | "column";
-}
-
-const ResponsiveContainer = styled.div<ResponsiveContainerProps>`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1100px;
-`;
-
-const FlexRow = styled(Flex)`
-  display: flex;
-  flex-direction: row;
-`;
-
-const PlayerInfoContainer = styled(Box)`
-  display: flex;
-  margin: 0 8px 0 8px;
-  flex-direction: row;
-  line-height: 1;
-  align-items: center;
-`;
-
-const TournamentInfoFlex = styled(Flex)`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin: 0 0 0 8px;
-`;
-
-const LoadingContainer = styled(Flex)`
-  width: 100%;
-`;
-
-const CenteredResultsWrapper = styled(ResultsStyleWrapper)`
-  justify-content: center;
-  align-items: center;
-`;
-
-const TournamentText = styled(Text)`
-  align-self: center;
-  margin-left: 4px;
-`;
-
-const ColumnUnstyledLink = styled(UnstyledLink)`
-  display: flex;
-  flex-direction: column;
-`;
-
-const TabContainer = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  width: fit-content;
-`;
-
-interface TabButtonProps {
-  $active?: boolean;
-}
-
-const TabButton = styled.button<TabButtonProps>`
-  padding: 12px 24px;
-  border: none;
-  background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#f5f5f5'};
-  color: ${props => props.$active ? 'white' : '#666'};
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  outline: none;
-
-  &:hover {
-    background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#e0e0e0'};
-  }
-`;
 
 const generateQueryParams = ({
   id,
@@ -157,7 +88,7 @@ const PlayerInfoBox = ({
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
         >
-          {nameUsa || "No player assigned"}
+          {nameUsa || "No Player Assigned"}
         </Text>
       </PlayerInfoContainer>
       <span>vs</span>
@@ -167,7 +98,7 @@ const PlayerInfoBox = ({
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
         >
-          {nameUssr || "No player assigned"}
+          {nameUssr || "No Player Assigned"}
         </Text>
       </PlayerInfoContainer>
     </FlexRow>
@@ -219,7 +150,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
           })}
         >
           <TournamentInfoFlex>
-            <TournamentText fontSize="small">
+            <TournamentText>
               {schedule.tournamentName}
             </TournamentText>
           </TournamentInfoFlex>
@@ -279,7 +210,7 @@ const SchedulePanel = ({
     return (
       <LoadingContainer>
         <CenteredResultsWrapper>
-          You do not have a schedule available. Report your results using the submit form
+          You do not have a schedule available. Report your results using the <Link href="/submit-game">Submit Form</Link>.
         </CenteredResultsWrapper>
       </LoadingContainer>
     );
@@ -386,7 +317,7 @@ const Schedule = () => {
       </Head>
         <ResponsiveContainer>
           <Flex style={{ flexDirection: "column", width: "100%", gap: "4px", marginTop: "16px" }}>
-            <h2>My Schedule</h2>
+            <PageTitle>My Schedule</PageTitle>
 
             {/* Tournament Tabs */}
             {availableTournaments?.length > 0 && (
@@ -421,8 +352,8 @@ const Schedule = () => {
             )}
 
             {error && (
-              <div style={{ color: 'red', padding: '16px' }}>
-                Error loading schedule: {error.message}
+              <div style={{ color: 'var(--ussr)', padding: '16px' }}>
+                Error Loading Schedule: {error.message}
               </div>
             )}
 

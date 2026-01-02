@@ -260,7 +260,7 @@ const SubmitGameForm = ({
           disabled={isSubmitting}
           type="submit"
         >
-          {isSubmitting ? <Spinner size="3" /> : "Submit"}
+          {isSubmitting ? <Spinner size="3" /> : "Submit Game"}
         </SubmitButton>
 
         {errors.root && <Text type="error">{errors.root.message}</Text>}
