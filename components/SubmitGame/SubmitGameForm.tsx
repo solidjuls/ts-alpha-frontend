@@ -171,8 +171,7 @@ const SubmitGameForm = ({
                   labelText="opponentWas"
                   selectedItem={field.value}
                   error={!!errors.opponentWas}
-                  placeholder="Type the opponent name..."
-                  width={typeaheadWidth}
+                  placeholder="Type the Opponent Name..."
                   css={{ width: dropdownWidth }}
                   onBlur={() => {
                     // Don't clear on blur for react-hook-form

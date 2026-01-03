@@ -33,7 +33,8 @@ import {
   TournamentText,
   FlexRow,
   PlayerInfoContainer,
-  PageTitle
+  PageTitle,
+  SpinnerContainer
 } from "components/Schedule/Schedule.styled";
 
 const generateQueryParams = ({
@@ -165,7 +166,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
         </ColumnUnstyledLink>
       </PlayerInfo>
       <CheckOpponentProfileCell>
-        <UnstyledLink href={`/userprofile/${opponentId}`}>
+        <UnstyledLink href={`/userprofile/${opponentId}`} $hoverVariant="alt">
           <Text fontSize="small">OPPONENT PROFILE</Text>
         </UnstyledLink>
       </CheckOpponentProfileCell>
@@ -219,9 +220,9 @@ const SchedulePanel = ({
   return (
     <ResultsStyleWrapper style={{ opacity: isFetching ? 0.6 : 1, transition: 'opacity 0.2s' }}>
       {isFetching && (
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+        <SpinnerContainer>
           <Spinner />
-        </div>
+        </SpinnerContainer>
       )}
       {data.map((schedule, index) => (
         <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Checkbox } from "components/Checkbox";
-import styled from 'styled-components';
 import ReplacePlayers from './ReplacePlayers';
 import CsvUploadButton from './CsvButtonUpload';
 import UserTypeahead from 'components/UserTypeahead';
@@ -10,62 +9,19 @@ import { Flex, Box } from 'components/Atoms';
 import { useQuery } from '@tanstack/react-query';
 import { usersService } from 'services/users.service';
 import DateComponent from 'components/EditFormComponents/DateComponent';
-import { Input } from 'components/Input';
 import { Button } from 'components/Button';
 import { useAddSchedule, useRemovePlayer } from 'hooks/useSchedule';
 import { Spinner } from '@radix-ui/themes';
 import Text from 'components/Text';
-
-const Panel = styled.div`
-  padding: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  margin-bottom: 8px;
-`;
-
-const ScheduleSection = styled.div`
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-`;
-
-const SectionTitle = styled.h4`
-  margin: 0 0 12px 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: #374151;
-`;
-
-const FormRow = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-`;
-
-const GameCodeInput = styled(Input)`
-  width: 80px;
-  height: 35px;
-`;
-
-const RemoveButton = styled(Button)`
-  height: 35px;
-  background-color: #dc2626;
-  color: white;
-  margin-left: 8px;
-
-  &:hover {
-    background-color: #b91c1c;
-  }
-
-  &:disabled {
-    background-color: #9ca3af;
-  }
-`;
+import { 
+  Panel,
+  ScheduleSection,
+  SectionTitle,
+  FormRow,
+  GameCodeInput,
+  RemoveButton,
+  RemovePlayerContainer
+ } from './ScheduleFilter.styled';
 
 interface ScheduleFilterProps {
   noSchedule: boolean;
@@ -188,14 +144,14 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
         <Panel>
           <CsvUploadButton tournament={tournament} />
           <ScheduleSection>
-            <SectionTitle>Filter schedule</SectionTitle>
+            <SectionTitle>Filter Schedule</SectionTitle>
             <Checkbox
-              text="Show full schedule"
+              text="Show Full Schedule"
               checked={showFullSchedule}
               onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
             />
             <Checkbox
-              text="Show only pending games (without results)"
+              text="Show Only Pending Games"
               checked={showOnlyPending}
               onCheckedChange={(checked) => onShowOnlyPendingChange?.(checked)}
             />
@@ -204,8 +160,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                 <UserTypeahead
                   labelText="Filter by Player"
                   selectedItem={selectedPlayer}
-                  placeholder="Type the player name to filter schedule..."
-                  css={{ width: '320px', marginRight: "8px" }}
+                  placeholder="Type the Player Name..."
+                  width="175px;"
                   onBlur={() => {
                     setSelectedPlayer("");
                     onPlayerSelect?.("");
@@ -220,14 +176,15 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             </Flex>
           </ScheduleSection>
           <ScheduleSection>
-            <SectionTitle>Update schedule</SectionTitle>
+            <SectionTitle>Update Schedule</SectionTitle>
 
             <FormRow>
               <UserTypeahead
                 labelText="USA Player"
                 selectedItem={usaPlayer}
-                placeholder="Select USA player..."
-                width='200px'
+                placeholder="Select USA Player..."
+                width='150px'
+                css={{color:"red"}}
                 onBlur={() => {}}
                 onSelect={(item) => {
                   setUsaPlayer(item?.value || "");
@@ -238,8 +195,8 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
               <UserTypeahead
                 labelText="USSR Player"
                 selectedItem={ussrPlayer}
-                placeholder="Select USSR player..."
-                width='200px'
+                placeholder="Select USSR Player..."
+                width='150px'
                 onBlur={() => {}}
                 onSelect={(item) => {
                   setUssrPlayer(item?.value || "");
@@ -248,7 +205,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
               />
 
               <Box>
-                <Text style={{ marginBottom: '4px', display: 'block' }}>
+                <Text>
                   Game Code
                 </Text>
                 <GameCodeInput
@@ -275,12 +232,6 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
               <Button
                 onClick={handleCreateSchedule}
                 disabled={isCreatingSchedule || !usaPlayer || !ussrPlayer || !dueDate}
-                style={{
-                  height: '35px',
-                  backgroundColor: '#10b981',
-                  '&:hover': { backgroundColor: '#059669' },
-                  '&:disabled': { backgroundColor: '#9ca3af' }
-                }}
               >
                 {isCreatingSchedule ? <Spinner size="2" /> : "Create Schedule"}
               </Button>
@@ -288,13 +239,14 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             <FormRow>
               <ReplacePlayers tournament={tournament} />
             </FormRow>
+            <SectionTitle>Remove Player</SectionTitle>
             <FormRow>
-              <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <RemovePlayerContainer>
                 <UserTypeahead
-                  labelText="Remove Player"
+                  labelText=""
                   selectedItem={selectedPlayerToRemove}
-                  placeholder="Type the player name to remove..."
-                  width='270px'
+                  placeholder="Player to Remove..."
+                  width='150px'
                   onBlur={() => {
                     // Handle blur if needed
                   }}
@@ -306,15 +258,15 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   onClick={handleRemovePlayer}
                   disabled={!selectedPlayerToRemove || removePlayerMutation.isPending}
                 >
-                  {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove"}
+                  {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove Player"}
                 </RemoveButton>
-              </div>
+              </RemovePlayerContainer>
             </FormRow>
             {scheduleMessage && (
               <Text
                 fontSize="small"
                 css={{
-                  color: scheduleMessage.includes('success') ? '#10b981' : '#dc2626',
+                  color: scheduleMessage.includes('success') ? 'var(--usa)' : 'var(--ussr)',
                   marginTop: '8px'
                 }}
               >

@@ -2,11 +2,12 @@ import { Button } from "components/Button";
 import { useRouter } from 'next/router'
 import { useState } from "react";
 import Papa from 'papaparse'
-import { FileInput, Title } from "./CsvButtonUpload.styled";
-import { Flex, Span } from "components/Atoms";
+import { AdminContainer, FileContainer, FileInput, Title } from "./CsvButtonUpload.styled";
+import { Span } from "components/Atoms";
 import { useUploadCsvSchedule } from "hooks/useSchedule";
 import { CsvScheduleRow } from "services/schedule.service";
 import { Spinner } from "@radix-ui/themes";
+import { SmallSpan } from "./ScheduleFilter.styled";
 
 export default function CsvUploadButton({ tournament } : { tournament: string }) {
   const router = useRouter()
@@ -93,20 +94,20 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
         // Reload the page to show updated schedule
         setTimeout(() => router.reload(), 2000);
       } else {
-        setStatus("❌ Upload failed.");
+        setStatus("❌ Upload Failed.");
       }
     } catch (error: any) {
-      setStatus(`❌ Upload failed: ${error?.response?.data?.message || error.message || 'Unknown error'}`);
+      setStatus(`❌ Upload Failed: ${error?.response?.data?.message || error.message || 'Unknown Error'}`);
     }
   };
 
   return (
-    <Flex style={{ flexDirection: 'column'}}>
+    <AdminContainer>
       <Title>Upload CSV Schedule</Title>
-      <Span>1- Select a tournament from the dropdown</Span>
-      <Span>2- Upload a .csv file with the correct format (due_date,game_code,usa_player_id,ussr_player_id)</Span>
-      <Span style={{ fontSize: '12px', color: '#666' }}>Note: Tournament ID is automatically set from the selected tournament</Span>
-      <Flex style={{ margin: '8px 0 8px 0' }}>
+      <Span>1. Select a tournament from the dropdown</Span>
+      <Span>2. Upload a .csv file with the correct format (due_date, game_code, usa_player_id, ussr_player_id)</Span>
+      <SmallSpan>Note: Tournament ID is automatically set from the selected tournament.</SmallSpan>
+      <FileContainer>
         <FileInput
           type="file"
           accept=".csv"
@@ -120,7 +121,7 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
           {uploadCsvMutation.isPending ? <Spinner size="2" /> : "Upload CSV"}
         </Button>
         <p>{status}</p>
-      </Flex>
-    </Flex>
+      </FileContainer>
+    </AdminContainer>
   );
 }

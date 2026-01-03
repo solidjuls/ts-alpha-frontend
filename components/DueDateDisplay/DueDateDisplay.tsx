@@ -90,7 +90,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
           onDayChange={(date: Date) => setSelectedDate(date)}
           inputProps={{
             readOnly: true,
-            style: { cursor: "pointer", margin: '4px' },
+            style: { cursor: "pointer", margin: '4px', color: 'var(--primary-text)' },
           }}
           dayPickerProps={{
             showWeekNumbers: true,

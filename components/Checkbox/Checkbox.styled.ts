@@ -7,7 +7,7 @@ export const StyledCheckbox = styled(Root)`
   height: 20px;
   border-radius: 4px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   border: solid 1px var(--border);
   margin: 8px;
@@ -20,4 +20,9 @@ export const StyledCheckbox = styled(Root)`
 
 export const StyledIndicator = styled(Indicator)`
   color: var(--ussr);
+
+  /* 👇 When the checkbox is hovered, change indicator color */
+  ${StyledCheckbox}:hover & {
+    color: var(--alt-text);
+  }
 `;

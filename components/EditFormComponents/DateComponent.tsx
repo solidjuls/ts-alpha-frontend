@@ -1,4 +1,3 @@
-import "react-day-picker/lib/style.css";
 import React from "react";
 import WithLabel from "./WithLabel";
 import DayPickerInput from "react-day-picker/DayPickerInput";

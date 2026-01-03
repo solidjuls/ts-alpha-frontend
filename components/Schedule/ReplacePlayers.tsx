@@ -3,7 +3,7 @@ import { Button } from "components/Button";
 import UserTypeahead from "components/UserTypeahead"
 import { useState } from "react";
 import { useReplacePlayer } from "hooks/useSchedule";
-import { Title } from "./CsvButtonUpload.styled";
+import { SectionTitle } from "./ScheduleFilter.styled";
 
 interface ReplacePlayersProps {
   tournament: string | undefined
@@ -35,13 +35,13 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
     }
   }
   return <Flex style={{ flexDirection: 'column' }}>
-          <Title>Replace Players</Title>
+          <SectionTitle>Replace Player</SectionTitle>
           <Flex style={{ marginBottom: '16px', gap: '4px'}}>
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
-              placeholder="Player to replace..."
-              width="240px"
+              placeholder="Player to Replace..."
+              width="150px"
               onBlur={() => setOldUser("")}
               onSelect={(value) =>
                 setOldUser(value?.value as string)
@@ -50,19 +50,19 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
             <UserTypeahead
               labelText="newPlayer"
               selectedItem={newUser}
-              placeholder="Type the new player..."
-              width="240px"
+              placeholder="Type the New Player..."
+              width="150px"
               onBlur={() => setNewUser("")}
               onSelect={(value) =>
                 setNewUser(value?.value as string)
               }
             />
             <Button
-              style={{ height: "40px", alignSelf: 'flex-end' }}
+              style={{ height: "33px", alignSelf: 'flex-end' }}
               disabled={!oldUser || !newUser || !tournament || replacePlayerMutation.isPending}
               onClick={updatePlayers}
             >
-              {replacePlayerMutation.isPending ? 'Updating...' : 'Update'}
+              {replacePlayerMutation.isPending ? 'Updating...' : 'Replace Player'}
             </Button>
           </Flex>
         <Span>{responseMessage}</Span>

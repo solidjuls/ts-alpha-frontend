@@ -51,10 +51,8 @@ export const HorizontalNavText = styled(Text)`
   color: var(--primary-text);
   border-radius: 4px;
 
-  /* Subtle hover, no underline per style guide */
   &:hover {
     color: var(--ussr);
-    background-color: var(--bg-main);
   }
 `;
 

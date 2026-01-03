@@ -112,6 +112,7 @@ export const CheckOpponentProfileCell = styled.div`
   &:hover {
     background-color: var(--ussr);
     transform: translateY(-2px);
+    color: var(--alt-text);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   }
 
@@ -141,10 +142,14 @@ export const DueDateCell = styled.div`
   }
 `;
 
+interface UnstyledLinkProps {
+  $hoverVariant?: "primary" | "alt";
+}
+
 /**
  * Nav-style links (no underline; hover is color only)
  */
-export const UnstyledLink = styled(Link)`
+export const UnstyledLink = styled(Link)<UnstyledLinkProps>`
   all: unset;
   cursor: pointer;
   text-decoration: none;
@@ -152,7 +157,10 @@ export const UnstyledLink = styled(Link)`
   &:hover,
   &:focus-visible,
   &:active {
-    color: var(--primary-text);
+    color: ${({ $hoverVariant }) =>
+      $hoverVariant === "alt"
+        ? "var(--alt-text)"
+        : "var(--primary-text)"};
     text-decoration: none;
   }
 `;
@@ -259,8 +267,15 @@ export const TabButton = styled.button<TabButtonProps>`
     transform 0.2s ease;
 `;
 
-
 export const PageTitle = styled.h2`
     color: var(--primary-text);
     margin 0 0 16px 0;
+`;
+
+export const SpinnerContainer = styled.div`
+  position: absolute;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
 `;

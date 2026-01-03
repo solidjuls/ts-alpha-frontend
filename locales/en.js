@@ -26,7 +26,7 @@ module.exports = {
     aboutUs: "About Us",
     greeting: "Hi",
 
-    oldPlayer: "Player to Be Replaced",
+    oldPlayer: "Player to Replace",
     players: "Filter by Player",
     removePlayer: "Remove Player",
     newPlayer: "New Player",

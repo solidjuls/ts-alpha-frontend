@@ -14,29 +14,19 @@ const RelativeContainer = styled.div`
   z-index: 200;
 `;
 
-/**
- * Dropdown list container
- * - Uses card background + border tokens
- * - Soft shadow per style guide
- * - Positioned absolutely under the input
- */
 const ListContainer = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-
-  background-color: var(--bg-card);
-  color: var(--primary-text);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-
-  max-height: 300px;
-  overflow-y: auto;
+  border-radius: 4px;
+  background-color: white;
   outline: 0;
   z-index: 200;
-  padding: 4px 0;
+  border: 1px solid black;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 interface AutocompleteListProps {
@@ -46,23 +36,14 @@ interface AutocompleteListProps {
   [key: string]: any;
 }
 
-const AutocompleteList: React.FC<AutocompleteListProps> = ({
-  children,
-  noResultsCustomText,
-  css,
-  ...rest
-}) => {
+const AutocompleteList: React.FC<AutocompleteListProps> = ({ children, noResultsCustomText, css, ...rest }) => {
   const { isOpen, getMenuProps } = useAutocompleteState();
 
   if (!isOpen) return null;
 
   return (
     <RelativeContainer>
-      <ListContainer
-        {...(getMenuProps ? getMenuProps({ isOpen }) : {})}
-        style={css}
-        {...rest}
-      >
+      <ListContainer {...(getMenuProps ? getMenuProps({ isOpen }) : {})} style={css} {...rest}>
         {children}
       </ListContainer>
     </RelativeContainer>

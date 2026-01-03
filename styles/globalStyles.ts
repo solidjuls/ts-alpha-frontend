@@ -189,10 +189,54 @@ const GlobalStyles = createGlobalStyle`
     }
   }
 
+  /* ============================
+    React Day Picker Styles
+  ============================ */ 
+    .DayPickerInput > input {
+      color: var(--primary-text);
+    }
+
+    .DayPicker {
+      background-color: var(--bg-card);
+      color: var(--primary-text);
+    }
+
+    .DayPicker-Day:not(.DayPicker-Day--outside):not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):hover {
+      background-color: var(--ussr) !important;
+      color: var(--alt-text);
+    }
+
+    .DayPicker-Day--today:not(.DayPicker-Day--selected) {
+      color: var(--usa);
+    }
+
+    .DayPicker-TodayButton {
+      color: var(--usa);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .DayPicker-TodayButton:hover,
+    .DayPicker-TodayButton:active {
+      color: var(--ussr);
+      text-decoration: underline;
+    }
+
+    .DayPicker-NavButton {
+      background-color: var(--bg-card);
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: background-color 0.15s ease;
+      border-radius: 48px;
+    }
+
+    .DayPicker-NavButton:hover {
+      background-color: var(--ussr);
+    }
+
   /* ===========================
     PrimeReact MultiSelect
   =========================== */
-
     .p-multiselect-panel {
       background-color: var(--bg-card);
       border: 1px solid var(--border);
