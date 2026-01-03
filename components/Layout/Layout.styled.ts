@@ -18,7 +18,6 @@ export const Banner = styled.div`
   height: 220px;
   overflow: hidden;
 
-  /* Subtle dark overlay for text contrast */
   &::after {
     content: "";
     position: absolute;
@@ -32,32 +31,54 @@ export const Banner = styled.div`
   }
 `;
 
-export const BannerTitle = styled.h1`
+export const BannerContent = styled.div`
   position: absolute;
   z-index: 2;
   inset: 0;
 
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  margin: 0;
   padding: 0 1rem;
+  text-align: center;
+`;
 
+export const BannerTitle = styled.h1`
+  margin: 0;
   color: #ffffff;
+
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-align: center;
   text-transform: uppercase;
+`;
+
+export const BannerSubtitle = styled.h2`
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  a {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 `;
 
 export const StyledFooter = styled.footer`
   text-align: center;
   padding: 1rem;
   font-size: 0.85rem;
-  color: var(--muted-text); /* neutral gray */
-  }
+  color: var(--muted-text);
 `;
 
 export const LogoSpan = styled.span`

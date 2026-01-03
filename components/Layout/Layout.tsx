@@ -1,7 +1,16 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Navigation } from "components/Sidebar/Sidebar";
-import {Container, Main, StyledFooter, Banner, BannerTitle} from "./Layout.styled";
+import {
+  Container,
+  Main, 
+  StyledFooter, 
+  Banner, 
+  BannerTitle,
+  BannerContent,
+  BannerSubtitle
+} from "./Layout.styled";
 
 export const Footer = () => {
   const year = new Date().getFullYear();
@@ -39,9 +48,15 @@ const Layout = ({ children }: LayoutProps) => {
           style={{ objectFit: "cover" }}
         />
 
-        <BannerTitle>
-          International Twilight Struggle Community
-        </BannerTitle>
+        <BannerContent>
+          <BannerTitle>
+            International Twilight Struggle Community
+          </BannerTitle>
+
+          <BannerSubtitle>
+            Powered by <Link href="/about">ITS Junta</Link>
+          </BannerSubtitle>
+        </BannerContent>
       </Banner>
 
       <Main>{children}</Main>
