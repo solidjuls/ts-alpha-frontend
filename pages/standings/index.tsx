@@ -24,7 +24,8 @@ import {
   PlayerCell,
   PlayerInfoContainer,
   StatCell,
-  StyledHeaderCellCentered
+  StyledHeaderCellCentered,
+  ErrorBox
  } from "styles/standings.styled";
 
 type Division = "TORUN" | "SEATTLE";

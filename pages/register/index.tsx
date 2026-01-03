@@ -24,7 +24,10 @@ import {
   HelpText,
   SubmitButton,
   FooterRow,
-  InlineLink
+  InlineLink,
+  Alert,
+  AlertList,
+  AlertTitle
  } from "styles/register.styled";
 
 
