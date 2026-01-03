@@ -1,180 +1,294 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Spinner } from "@radix-ui/themes";
 import styled from "styled-components";
 import { Button } from "components/Button";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
-import { useTournamentsById, useRegisterForTournament, useUnregisterFromTournament, useRegisteredPlayers, useUpdateTournamentStatus, useBulkRegisterUsers, useGenerateRandomSchedule, useWaitlistPlayers, useAddToWaitlist, useRemoveFromWaitlist } from "hooks/useTournaments";
+import {
+  useTournamentsById,
+  useRegisterForTournament,
+  useUnregisterFromTournament,
+  useRegisteredPlayers,
+  useUpdateTournamentStatus,
+  useWaitlistPlayers,
+  useAddToWaitlist,
+  useRemoveFromWaitlist,
+} from "hooks/useTournaments";
 import { useRouter } from "next/router";
-import { getTournamentStatusNames, userRoles } from "utils/constants";
+import { userRoles } from "utils/constants";
 import UserTypeahead from "components/UserTypeahead";
 import { DropdownItemType } from "types/types";
 import { dateFormat } from "utils/dates";
 import { useAuth } from "contexts/AuthProviderNew";
-import { MainLayout } from "components/Layout";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
-import { tournamentStatusHelpers, ACTION_TO_STATUS, ACTION_LABELS, TOURNAMENT_STATUS_NAMES } from "utils/tournamentStatus";
+import {
+  tournamentStatusHelpers,
+  ACTION_TO_STATUS,
+  ACTION_LABELS,
+  TOURNAMENT_STATUS_NAMES,
+} from "utils/tournamentStatus";
 import { useIsAuthenticated } from "hooks/useAuth";
+
+/* -----------------------
+   Style guide wrappers
+------------------------ */
+
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+`;
+
+const Card = styled.section`
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+`;
+
+const CardBody = styled.div`
+  padding: 16px;
+
+  @media (max-width: 640px) {
+    padding: 14px;
+  }
+`;
+
+const CardFooter = styled.div`
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const Title = styled.h2`
+  margin: 0;
+  color: var(--primary-text);
+`;
+
+const Subtle = styled.div`
+  color: var(--primary-text);
+  opacity: 0.85;
+`;
+
+const Badge = styled.span<{ $variant?: "neutral" | "usa" | "ussr" }>`
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  background: ${({ $variant }) => {
+    switch ($variant) {
+      case "usa":
+        return "var(--usa-half)";
+      case "ussr":
+        return "var(--ussr-quarter)";
+      default:
+        return "var(--bg-card)";
+    }
+  }};
+
+  color: var(--primary-text);
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  gap: 10px 16px;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FullWidth = styled.div`
+  grid-column: 1 / -1;
+  min-width: 0;
+`;
 
 const DescriptionBox = styled.div`
   margin-top: 8px;
   padding: 12px;
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  border: 1px solid #e9ecef;
+  background: var(--bg-card);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  color: var(--primary-text);
+
+  /* protect layout from long links/words in HTML */
+  overflow-wrap: anywhere;
+
+  p:first-child {
+    margin-top: 0;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
 `;
 
-interface StatusTextProps {
-  $type?: 'registered' | 'default' | 'admin';
-}
-
-const StatusText = styled.span<StatusTextProps>`
-  font-weight: 500;
-
-  color: ${props => {
-    if (props.$type === 'registered') return '#16a34a';
-    if (props.$type === 'admin') return '#6b7280';
-    return '#6b7280';
-  }};
-
-  ${props => props.$type === 'admin' && `
-    font-weight: 500;
-  `}
-`;
-
-const NotFoundContainer = styled.div`
-  text-align: center;
-  padding: 40px;
-`;
-
-const TournamentCard = styled.div`
-  border: solid 1px lightgray;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  border-radius: 8px;
-  background-color: white;
-`;
-
-const TournamentGrid = styled.div`
-  display: grid;
-  gap: 0.25rem;
-  max-width: 48rem;
-  grid-template-columns: 1fr 2fr;
-  padding: 24px 0 24px 24px;
-  align-items: left;
-  width: 100%;
-`;
-
-const DescriptionContainer = styled.div`
+const StatusLine = styled.div`
   display: flex;
   flex-direction: column;
-  min-width: 400px;
-  grid-column: 1 / -1;
+  gap: 4px;
+  min-width: 0;
 `;
 
-const ActionSection = styled.div`
-  padding: 20px 24px;
-  border-top: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 12px;
-`;
-
-const ManualRegistrationForm = styled.div`
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 24px;
-  padding: 24px;
-`;
-
-const FormHeader = styled.div`
-  margin-bottom: 16px;
-`;
-
-const FormTitle = styled.h3`
-  margin: 0;
-  color: #1f2937;
-  font-size: 18px;
+const StatusText = styled.span<{ $tone?: "neutral" | "good" | "warn" }>`
   font-weight: 600;
+  color: ${({ $tone }) => {
+    switch ($tone) {
+      case "good":
+        return "var(--primary-text)";
+      case "warn":
+        return "var(--primary-text)";
+      default:
+        return "var(--primary-text)";
+    }
+  }};
 `;
 
-const FormDescription = styled.p`
-  margin: 8px 0 0 0;
-  color: #6b7280;
-  font-size: 14px;
-`;
-
-const FormRow = styled.div`
+const ButtonRow = styled.div`
   display: flex;
-  gap: 16px;
-  align-items: flex-end;
-`;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
 
-const FormField = styled.div`
-  flex: 1;
-`;
-
-interface RegisterButtonProps {
-  $isRegistered?: boolean;
-}
-
-const RegisterButton = styled(Button)<RegisterButtonProps>`
-  background-color: ${props => props.$isRegistered ? '#dc2626' : '#16a34a'};
-
-  &:hover {
-    background-color: ${props => props.$isRegistered ? '#b91c1c' : '#15803d'};
+  @media (max-width: 700px) {
+    justify-content: flex-start;
   }
 `;
 
-interface WaitlistButtonProps {
-  $isOnWaitlist?: boolean;
-}
-
-const WaitlistButton = styled(Button)<WaitlistButtonProps>`
-  background-color: ${props => props.$isOnWaitlist ? '#dc2626' : '#f59e0b'};
+const PillButton = styled(Button)<{ $tone?: "usa" | "ussr" | "neutral" }>`
+  /* If your Button already handles variants, keep this minimal.
+     We only align hover behavior with your guide. */
 
   &:hover {
-    background-color: ${props => props.$isOnWaitlist ? '#b91c1c' : '#d97706'};
+    background-color: var(--ussr);
+    color: var(--alt-text);
   }
 `;
 
-const EditButton = styled(Button)`
-  background-color: #3b82f6;
-`;
+export const DangerPillButton = styled(Button)`
+  padding: 10px 14px;
+  font-weight: 600;
 
-const ManualRegisterButton = styled(Button)`
-  background-color: #10b981;
+  background: var(--ussr);
+  color: var(--alt-text);
+  border: 1px solid var(--border);
 
-  &:hover {
-    background-color: #059669;
+  &:hover:not(:disabled) {
+    background: var(--ussr);
+    filter: brightness(0.95);
   }
 
   &:disabled {
-    background-color: #d1d5db;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 `;
 
-const ActionButton = styled(Button)<{ $variant?: string }>`
-  background-color: ${props => {
-    switch (props.$variant) {
-      case 'start-registration': return '#059669';
-      case 'close-registration': return '#dc2626';
-      case 'start-tournament': return '#7c3aed';
-      case 'close-tournament': return '#374151';
-      case 'waitlist-enabled': return '#f59e0b';
-      case 'waitlist-disabled': return '#6b7280';
-      default: return '#6b7280';
-    }
-  }};
+const AdminBar = styled.div`
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const AdminLabel = styled.div`
+  font-weight: 700;
+  color: var(--primary-text);
+`;
+
+const NotFoundContainer = styled.div`
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+  color: var(--primary-text);
+  text-align: center;
+`;
+
+const InlineFormCard = styled(Card)`
+  overflow: visible;
+`;
+
+const FormHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+`;
+
+const FormTitle = styled.h3`
+  margin: 0;
+  color: var(--primary-text);
+  font-size: 16px;
+`;
+
+const FormDescription = styled.p`
+  margin: 0;
+  color: var(--primary-text);
+  opacity: 0.8;
+  font-size: 13px;
+`;
+
+const FormRow = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+
+  @media (max-width: 700px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const FormField = styled.div`
+  flex: 1;
+  min-width: 0;
 `;
 
 interface RegistrationActionSectionProps {
@@ -196,72 +310,60 @@ const RegistrationActionSection = ({
   onRegisterClick,
   onWaitlistClick,
 }: RegistrationActionSectionProps) => {
-
-  const getStatusText = () => {
+  const statusNode = useMemo(() => {
     if (isUserRegistered) {
-      return <StatusText $type="registered">✓ You are registered for this tournament</StatusText>;
+      return (
+        <StatusText $tone="good">✓ You are registered for this tournament</StatusText>
+      );
     }
     if (isUserOnWaitlist) {
-      return <StatusText $type="default">You are on the waitlist for this tournament</StatusText>;
+      return <StatusText $tone="warn">You are on the waitlist for this tournament</StatusText>;
     }
     if (showWaitlistButton) {
-      return <StatusText $type="default">Registration closed. Join the waitlist</StatusText>;
+      return <StatusText $tone="neutral">Registration closed. Join the waitlist</StatusText>;
     }
-    return <StatusText $type="default">Click to register for this tournament</StatusText>;
-  };
-
-  const getWaitlistButtonLabel = () => {
-    if (isWaitlistAction) return <Spinner size="1" />;
-    if (isUserOnWaitlist) return "Leave Waitlist";
-    return "Join Waitlist";
-  };
-
-  const getRegisterButtonLabel = () => {
-    // No spinner - using optimistic updates for instant feedback
-    if (isUserRegistered) return "Unregister";
-    return "Register";
-  };
+    return <StatusText $tone="neutral">Click to register for this tournament</StatusText>;
+  }, [isUserOnWaitlist, isUserRegistered, showWaitlistButton]);
 
   if (showWaitlistButton) {
     return (
-      <ActionSection>
-        <div>{getStatusText()}</div>
-        <WaitlistButton
-          onClick={onWaitlistClick}
-          disabled={isWaitlistAction}
-          $isOnWaitlist={isUserOnWaitlist}
-        >
-          {getWaitlistButtonLabel()}
-        </WaitlistButton>
-      </ActionSection>
+      <CardFooter>
+        <StatusLine>{statusNode}</StatusLine>
+        <ButtonRow>
+          <PillButton onClick={onWaitlistClick} disabled={isWaitlistAction}>
+            {isWaitlistAction ? <Spinner size="1" /> : isUserOnWaitlist ? "Leave Waitlist" : "Join Waitlist"}
+          </PillButton>
+        </ButtonRow>
+      </CardFooter>
     );
   }
 
   if (!canRegister) return null;
-  
+
   return (
-    <ActionSection>
-      <div>{getStatusText()}</div>
-      <RegisterButton
-        onClick={onRegisterClick}
-        $isRegistered={isUserRegistered}
-      >
-        {getRegisterButtonLabel()}
-      </RegisterButton>
-    </ActionSection>
+    <CardFooter>
+      <StatusLine>{statusNode}</StatusLine>
+      <ButtonRow>
+        <PillButton onClick={onRegisterClick}>
+          {isUserRegistered ? "Unregister" : "Register"}
+        </PillButton>
+      </ButtonRow>
+    </CardFooter>
   );
 };
 
 const TournamentDetail = () => {
   const router = useRouter();
   const { id } = router.query;
+
   const { user } = useAuth();
   const { user: authUser } = useIsAuthenticated();
+
   const userRole = authUser?.role ?? userRoles.PLAYER;
   const userId = user?.id;
   const email = user?.email;
+
   const [isWaitlistAction, setIsWaitlistAction] = useState(false);
-  // Optimistic state for registration - null means use server state
   const [optimisticRegistered, setOptimisticRegistered] = useState<boolean | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showManualRegistration, setShowManualRegistration] = useState(false);
@@ -269,32 +371,80 @@ const TournamentDetail = () => {
   const [isManualRegistering, setIsManualRegistering] = useState(false);
 
   const { data, isLoading, refetch } = useTournamentsById([id as string]);
+
   const registerMutation = useRegisterForTournament();
   const unregisterMutation = useUnregisterFromTournament();
   const updateStatusMutation = useUpdateTournamentStatus();
-  const bulkRegisterMutation = useBulkRegisterUsers();
-  const generateScheduleMutation = useGenerateRandomSchedule();
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
 
   const tournament = data?.[0];
 
-  // Waitlist players query - only fetch when tournament has waitlist enabled
+  // Waitlist players query
   const { data: waitlistPlayers, refetch: refetchWaitlist } = useWaitlistPlayers(
     tournament ? parseInt(tournament.id) : 0
   );
 
-  // Get tournament status information
-  const currentStatus = (tournament?.status_id || 1) as 1 | 2 | 3 | 4 | 5;
-  const tournamentStatusName = tournamentStatusHelpers.getStatusName(currentStatus);
-  const availableActions = tournamentStatusHelpers.getAvailableActions(currentStatus);
-  const canRegister = tournamentStatusHelpers.canRegister(currentStatus);
-  console.log("canRegister", canRegister);
-  const canWaitlistRegister = tournamentStatusHelpers.canWaitlistRegister(currentStatus, tournament?.waitlist || false);
-  const canEdit = tournamentStatusHelpers.canEdit(currentStatus);
+  // Registered players query
+  const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
+    tournament ? parseInt(tournament.id) : 0
+  );
 
-  // Check if should show waitlist button instead of register (status 3 or 4 with waitlist enabled)
-  const showWaitlistButton = tournament?.waitlist && (currentStatus === 3 || currentStatus === 4);
+  if (isLoading || (tournament && playersLoading)) {
+    return (
+      <DetailContainer>
+        <Page>
+          <Card>
+            <CardBody style={{ display: "flex", justifyContent: "center", padding: "40px" }}>
+              <Spinner size="3" />
+            </CardBody>
+          </Card>
+        </Page>
+      </DetailContainer>
+    );
+  }
+
+  if (!tournament) {
+    return (
+      <DetailContainer>
+        <Page>
+          <NotFoundContainer>Tournament not found</NotFoundContainer>
+        </Page>
+      </DetailContainer>
+    );
+  }
+
+  const currentStatus = (tournament?.status_id || 1) as 1 | 2 | 3 | 4 | 5;
+  const canRegister = tournamentStatusHelpers.canRegister(currentStatus);
+  const availableActions = tournamentStatusHelpers.getAvailableActions(currentStatus);
+
+  const showWaitlistButton =
+    tournament.waitlist && (currentStatus === 3 || currentStatus === 4);
+
+  const adminsFormatted =
+    tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : "-";
+
+  const dateFormatted = tournament.starting_date
+    ? dateFormat(new Date(tournament.starting_date))
+    : "-";
+
+  const statusName = TOURNAMENT_STATUS_NAMES[tournament.status_id];
+
+  const isUserRegisteredFromServer = userId
+    ? registeredPlayers?.some(
+        (p) => p.email === email || p.userId === userId.toString()
+      )
+    : false;
+
+  const isUserRegistered =
+    optimisticRegistered !== null ? optimisticRegistered : isUserRegisteredFromServer;
+
+  const isUserOnWaitlist = userId
+    ? waitlistPlayers?.some((p) => p.userId === userId.toString())
+    : false;
+
+  const isUserAdmin =
+    tournament.adminId && userId && tournament.adminId.includes(userId);
 
   const handleTournamentAction = async (action: keyof typeof ACTION_TO_STATUS) => {
     if (!tournament) return;
@@ -303,71 +453,56 @@ const TournamentDetail = () => {
       const nextStatus = tournamentStatusHelpers.getNextStatus(action);
       await updateStatusMutation.mutateAsync({
         tournamentId: parseInt(tournament.id),
-        status: nextStatus
+        status: nextStatus,
       });
-      refetch()
+      refetch();
     } catch (error) {
       console.error(`Failed to execute ${action}:`, error);
+      alert("Failed to update tournament status. Please try again.");
     }
   };
 
-  // Get registered players to check if current user is registered
-  const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
-    tournament ? parseInt(tournament.id) : 0
-  );
+  const onRegisterClick = async () => {
+    if (!tournament || !userId) return;
 
-  const isUserRegisteredFromServer = userId ? registeredPlayers?.some(player =>
-    player.email === email || player.userId === userId.toString()
-  ) : false;
+    const wasRegistered = isUserRegistered;
+    setOptimisticRegistered(!wasRegistered);
 
-  // Use optimistic state if available, otherwise use server state
-  const isUserRegistered = optimisticRegistered !== null ? optimisticRegistered : isUserRegisteredFromServer;
-
-  // Check if user is on the waitlist
-  const isUserOnWaitlist = userId ? waitlistPlayers?.some(player =>
-    player.userId === userId.toString()
-  ) : false;
-
-  const isUserAdmin = tournament?.adminId && userId && tournament.adminId.includes(userId);
-
-  // Manual registration function
-  const onManualRegisterClick = async () => {
-    if (!tournament || !selectedUser) return;
-
-    setIsManualRegistering(true);
     try {
-      await registerMutation.mutateAsync({
-        id: parseInt(tournament.id),
-        userId: selectedUser
-      });
-      setSelectedUser("");
-      setShowManualRegistration(false);
-      // The registered players will be refetched automatically due to React Query cache invalidation
+      if (wasRegistered) {
+        await unregisterMutation.mutateAsync({
+          tournamentId: parseInt(tournament.id),
+          userId: userId.toString(),
+        });
+      } else {
+        await registerMutation.mutateAsync({
+          id: parseInt(tournament.id),
+          userId: userId.toString(),
+        });
+      }
+      await refetch();
+      setOptimisticRegistered(null);
     } catch (e) {
-      console.error("Manual registration error:", e);
-      alert("Failed to register user. Please try again.");
-    } finally {
-      setIsManualRegistering(false);
+      console.error("Registration error:", e);
+      setOptimisticRegistered(null);
+      alert("Registration update failed. Please try again.");
     }
   };
 
-  // Waitlist join/leave handler
   const onWaitlistClick = async () => {
     if (!tournament || !userId) return;
 
     setIsWaitlistAction(true);
     try {
       if (isUserOnWaitlist) {
-        // Leave waitlist
         await removeFromWaitlistMutation.mutateAsync({
           tournamentId: parseInt(tournament.id),
-          data: { userId: userId.toString() }
+          data: { userId: userId.toString() },
         });
       } else {
-        // Join waitlist
         await addToWaitlistMutation.mutateAsync({
           tournamentId: parseInt(tournament.id),
-          data: { userId: userId.toString() }
+          data: { userId: userId.toString() },
         });
       }
       refetchWaitlist();
@@ -379,227 +514,186 @@ const TournamentDetail = () => {
     }
   };
 
-  const onRegisterClick = async () => {
-    if (!tournament || !userId) return;
+  const onManualRegisterClick = async () => {
+    if (!tournament || !selectedUser) return;
 
-    const wasRegistered = isUserRegistered;
-
-    // Optimistically update the UI immediately
-    setOptimisticRegistered(!wasRegistered);
-
+    setIsManualRegistering(true);
     try {
-      if (wasRegistered) {
-        // Unregister logic - use userId to find and remove registration
-        await unregisterMutation.mutateAsync({
-          tournamentId: parseInt(tournament.id),
-          userId: userId.toString()
-        });
-      } else {
-        // Register logic - use userId
-        await registerMutation.mutateAsync({
-          id: parseInt(tournament.id),
-          userId: userId.toString()
-        });
-      }
-      // Refetch to sync with server, then clear optimistic state
+      await registerMutation.mutateAsync({
+        id: parseInt(tournament.id),
+        userId: selectedUser,
+      });
+      setSelectedUser("");
+      setShowManualRegistration(false);
       await refetch();
-      setOptimisticRegistered(null);
     } catch (e) {
-      console.error("Registration error:", e);
-      // Revert optimistic update on error
-      setOptimisticRegistered(null);
+      console.error("Manual registration error:", e);
+      alert("Failed to register user. Please try again.");
+    } finally {
+      setIsManualRegistering(false);
     }
   };
 
-  if (isLoading || (tournament && playersLoading)) {
-    return <Spinner size="3" />;
-  }
+  return (
+    <DetailContainer>
+      <Page>
+        <Card>
+          <HeaderRow>
+            <div style={{ display: "flex", gap: "10px", alignItems: "baseline", flexWrap: "wrap" }}>
+              <Title>{tournament.tournament_name || "Tournament"}</Title>
+              <Badge $variant={showWaitlistButton ? "ussr" : "usa"}>{statusName}</Badge>
+            </div>
 
-  if (!tournament) {
-    return (
-        <DetailContainer>
-          <NotFoundContainer>
-            Tournament not found
-          </NotFoundContainer>
-        </DetailContainer>
-    );
-  }
+            <Subtle>{isUserAdmin ? "Admin View" : "Tournament Details"}</Subtle>
+          </HeaderRow>
 
-  const adminsFormatted = tournament?.adminName?.length > 0 ? tournament?.adminName.join(", ") : '-';
-  const dateFormatted = tournament?.starting_date ? dateFormat(new Date(tournament.starting_date)) : '-';
-  const statusName = TOURNAMENT_STATUS_NAMES[tournament?.status_id];
-
-  if (!isUserAdmin) {
-    return (
-        <DetailContainer>
-          <TournamentCard>
-            <TournamentGrid>
-              <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
-              <DisplayInfo label="Status" infoText={statusName} />
+          <CardBody>
+            <InfoGrid>
+              {/* If DisplayInfo already matches your style guide, keep it.
+                 Otherwise this grid still handles responsive layout. */}
+              <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || "-"} />
+              <DisplayInfo label="Status" infoText={statusName || "-"} />
               <DisplayInfo label="Administrators" infoText={adminsFormatted} />
               <DisplayInfo label="Starting Date" infoText={dateFormatted} />
 
-              {tournament.description && (
-                <DescriptionContainer>
-                  <StyledLabel>Description</StyledLabel>
-                  <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
-                </DescriptionContainer>
+              {isUserAdmin && (
+                <>
+                  <DisplayInfo label="Can Register" infoText={canRegister ? "Yes" : "No"} />
+                  <DisplayInfo label="Waitlist Enabled" infoText={tournament.waitlist ? "Yes" : "No"} />
+                </>
               )}
-            </TournamentGrid>
 
-            <RegistrationActionSection
-              isUserRegistered={!!isUserRegistered}
-              isUserOnWaitlist={!!isUserOnWaitlist}
-              showWaitlistButton={!!showWaitlistButton}
-              isWaitlistAction={isWaitlistAction}
-              canRegister={canRegister}
-              onRegisterClick={onRegisterClick}
-              onWaitlistClick={onWaitlistClick}
-            />
-          </TournamentCard>
+              {tournament.description && (
+                <FullWidth>
+                  <StyledLabel>Description</StyledLabel>
+                  <DescriptionBox
+                    dangerouslySetInnerHTML={{ __html: tournament.description }}
+                  />
+                </FullWidth>
+              )}
+            </InfoGrid>
+          </CardBody>
 
-          <TournamentPlayersList
-            tournamentId={tournament.id}
-            tournamentStatusId={tournament.status_id}
-            onPlayerRemoved={() => refetch()}
-            isAdmin={!!isUserAdmin}
+          <RegistrationActionSection
+            isUserRegistered={!!isUserRegistered}
+            isUserOnWaitlist={!!isUserOnWaitlist}
+            showWaitlistButton={!!showWaitlistButton}
+            isWaitlistAction={isWaitlistAction}
+            canRegister={canRegister}
+            onRegisterClick={onRegisterClick}
+            onWaitlistClick={onWaitlistClick}
           />
 
-          {tournament.waitlist && (
-            <TournamentWaitlist
-              tournamentId={tournament.id}
-              userRole={userRole || 1}
-              onPlayerRemoved={() => refetch()}
-            />
-          )}
-        </DetailContainer>
-    );
-  }
+          {isUserAdmin && (
+            <AdminBar>
+              <AdminLabel>Admin Mode — Tournament Management</AdminLabel>
+
+              <ButtonRow>
+                <PillButton onClick={() => setIsEditing((v) => !v)}>
+                  {isEditing ? "Cancel Edit" : "Edit Tournament"}
+                </PillButton>
+
+                <PillButton onClick={() => setShowManualRegistration((v) => !v)}>
+                  {showManualRegistration ? "Cancel" : "Register User"}
+                </PillButton>
+
+                {availableActions.map((action) => {
+  const isCloseTournament =
+    action === "CLOSE_TOURNAMENT" || action === "close_tournament";
+
+  const Btn = isCloseTournament ? DangerPillButton : PillButton;
 
   return (
-    <DetailContainer>
-      <TournamentCard>
-        <TournamentGrid>
-          <DisplayInfo label="Tournament Name" infoText={tournament.tournament_name || '-'} />
-          <DisplayInfo label="Status" infoText={statusName} />
-          <DisplayInfo label="Can Register" infoText={canRegister ? 'Yes' : 'No'} />
-          <DisplayInfo label="Waitlist Enabled" infoText={tournament?.waitlist ? 'Yes' : 'No'} />
-          <DisplayInfo label="Administrators" infoText={adminsFormatted} />
-          <DisplayInfo label="Starting Date" infoText={dateFormatted} />
+    <Btn
+      key={action}
+      onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
+      disabled={updateStatusMutation.isPending}
+    >
+      {updateStatusMutation.isPending
+        ? "Processing..."
+        : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
+    </Btn>
+  );
+})}
 
-          {tournament.description && (
-            <DescriptionContainer>
-              <StyledLabel>Description</StyledLabel>
-              <DescriptionBox dangerouslySetInnerHTML={{ __html: tournament.description }} />
-            </DescriptionContainer>
+                <PillButton
+              onClick={() => console.log("Waitlist toggle not implemented yet")}
+            >
+              {tournament.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
+            </PillButton>
+
+              </ButtonRow>
+            </AdminBar>
           )}
-        </TournamentGrid>
-        <RegistrationActionSection
-          isUserRegistered={!!isUserRegistered}
-          isUserOnWaitlist={!!isUserOnWaitlist}
-          showWaitlistButton={!!showWaitlistButton}
-          isWaitlistAction={isWaitlistAction}
-          canRegister={canRegister}
-          onRegisterClick={onRegisterClick}
-          onWaitlistClick={onWaitlistClick}
-        />
-        <ActionSection>
-          <StatusText $type="admin">
-            Admin Mode - Tournament Management
-          </StatusText>
+        </Card>
 
-          <ButtonGroup>
-            <EditButton onClick={() => setIsEditing(!isEditing)}>
-              {isEditing ? "Cancel Edit" : "Edit Tournament"}
-            </EditButton>
-            <ManualRegisterButton onClick={() => setShowManualRegistration(!showManualRegistration)}>
-              {showManualRegistration ? "Cancel" : "Register User"}
-            </ManualRegisterButton>
+        {/* Manual registration */}
+        {isUserAdmin && showManualRegistration && (
+          <InlineFormCard>
+            <CardBody>
+              <FormHeader>
+                <FormTitle>Register User Manually</FormTitle>
+                <FormDescription>
+                  Search and select a user to register for this tournament.
+                </FormDescription>
+              </FormHeader>
 
-            {/* Tournament Action Buttons */}
-            {availableActions.map((action) => (
-              <ActionButton
-                key={action}
-                $variant={action.toLowerCase().replace('_', '-') as any}
-                onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
-                disabled={updateStatusMutation.isPending}
-              >
-                {updateStatusMutation.isPending ? 'Processing...' : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
-              </ActionButton>
-            ))}
+              <FormRow>
+                <FormField>
+                  <UserTypeahead
+                    labelText=""
+                    selectedItem={selectedUser}
+                    onSelect={(item: DropdownItemType | null) =>
+                      setSelectedUser(item?.value || "")
+                    }
+                    onBlur={() => {}}
+                    placeholder="Type user name or email..."
+                    css={{ width: "100%" }}
+                    error={false}
+                    users={[]} /* keep as-is if your UserTypeahead expects users prop elsewhere */
+                  />
+                </FormField>
 
-            <ActionButton
-              $variant={tournament?.waitlist ? "waitlist-enabled" : "waitlist-disabled"}
-              onClick={() => console.log('Waitlist toggle not implemented yet')}
-            >
-              {tournament?.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
-            </ActionButton>
-          </ButtonGroup>
-        </ActionSection>
-      </TournamentCard>
+                <PillButton
+                  onClick={onManualRegisterClick}
+                  disabled={!selectedUser || isManualRegistering}
+                >
+                  {isManualRegistering ? <Spinner size="1" /> : "Register"}
+                </PillButton>
+              </FormRow>
+            </CardBody>
+          </InlineFormCard>
+        )}
 
-      {/* Manual Registration Form */}
-      {showManualRegistration && (
-        <ManualRegistrationForm>
-          <FormHeader>
-            <FormTitle>
-              Register User Manually
-            </FormTitle>
-            <FormDescription>
-              Search and select a user to register for this tournament
-            </FormDescription>
-          </FormHeader>
+        {/* Edit form */}
+        {isUserAdmin && isEditing && (
+          <TournamentEditForm
+            tournament={tournament as any}
+            onSave={() => {
+              setIsEditing(false);
+              refetch();
+            }}
+            onCancel={() => setIsEditing(false)}
+          />
+        )}
 
-          <FormRow>
-            <FormField>
-              <UserTypeahead
-                labelText=""
-                selectedItem={selectedUser}
-                onSelect={(item: DropdownItemType | null) => setSelectedUser(item?.value || "")}
-                onBlur={() => {}}
-                placeholder="Type user name or email..."
-                css={{ width: '390px' }}
-                error={false}
-              />
-            </FormField>
-            <ManualRegisterButton
-              onClick={onManualRegisterClick}
-              disabled={!selectedUser || isManualRegistering}
-            >
-              {isManualRegistering ? <Spinner size="1" /> : "Register"}
-            </ManualRegisterButton>
-          </FormRow>
-        </ManualRegistrationForm>
-      )}
-
-      {/* Edit Form */}
-      {isEditing && (
-        <TournamentEditForm
-          tournament={tournament as any}
-          onSave={() => {
-            setIsEditing(false);
-            refetch();
-          }}
-          onCancel={() => setIsEditing(false)}
-        />
-      )}
-
-      {/* Registered Players List */}
-      <TournamentPlayersList
-        tournamentId={tournament.id}
-        tournamentStatusId={tournament.status_id}
-        onPlayerRemoved={() => refetch()}
-        isAdmin={!!isUserAdmin}
-      />
-
-      {/* Tournament Waitlist - Show if waitlist is enabled */}
-      {tournament.waitlist && (
-        <TournamentWaitlist
+        {/* Registered players */}
+        <TournamentPlayersList
           tournamentId={tournament.id}
-          userRole={userRole || 1}
+          tournamentStatusId={tournament.status_id}
           onPlayerRemoved={() => refetch()}
+          isAdmin={!!isUserAdmin}
         />
-      )}
+
+        {/* Waitlist */}
+        {tournament.waitlist && (
+          <TournamentWaitlist
+            tournamentId={tournament.id}
+            userRole={userRole || 1}
+            onPlayerRemoved={() => refetch()}
+          />
+        )}
+      </Page>
     </DetailContainer>
   );
 };
