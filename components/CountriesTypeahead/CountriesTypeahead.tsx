@@ -73,6 +73,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
           error={error}
           placeholder={placeholder}
           filter={filter}
+          css={{color: "var(--primary-text)"}}
           {...rest}
         />
         {filteredCountries.length > 0 && (
