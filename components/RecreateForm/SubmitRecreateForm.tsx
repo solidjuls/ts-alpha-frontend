@@ -1,16 +1,26 @@
 import React from "react";
-import { Control, FieldErrors, UseFormHandleSubmit, UseFormWatch } from "react-hook-form";
-import { Controller } from "react-hook-form";
+import {Control, FieldErrors, UseFormHandleSubmit, UseFormWatch, Controller} from "react-hook-form";
+import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import UserTypeahead from "./UserTypeahead";
 import { gameWinningOptions, endType, turns } from "utils/constants";
-import { Button } from "components/Button";
-import { Box, Form } from "components/Atoms";
 import { DropdownWithLabel } from "components/EditFormComponents";
-import { Spinner } from "@radix-ui/themes";
 import { DropdownItemType } from "types/types";
-import styled from "styled-components";
+import { 
+  StyledForm,
+  FormContainer,
+  Banner,
+  BannerTitle,
+  Grid,
+  Cell,
+  FullRow,
+  ActionsRow,
+  SubmitButton,
+  ErrorBox,
+  ErrorTitle,
+  ErrorList
+ } from "./SubmitRecreateForm.styled";
 
 const Banner = styled.div`
   align-items: flex-start;
@@ -75,6 +85,8 @@ export type SubmitGameFormProps = {
   watch: UseFormWatch<RecreateGameFormData>;
 };
 
+const dropdownCss = { width: "100%" };
+
 const SubmitRecreateForm = ({
   control,
   handleSubmit,
@@ -83,42 +95,75 @@ const SubmitRecreateForm = ({
   leagueTypes,
   errors,
   isSubmitting,
-  watch,
 }: SubmitGameFormProps) => {
+  // Consolidate error messages so we don’t render 10+ lines
+  const errorMessages: string[] = [
+    errors.root?.message as string,
+    errors.oldId?.message as string,
+    errors.gameCode?.message as string,
+    errors.usaPlayerId?.message as string,
+    errors.ussrPlayerId?.message as string,
+    errors.tournamentId?.message as string,
+    errors.gameWinner?.message as string,
+    errors.endTurn?.message as string,
+    errors.endMode?.message as string,
+    errors.video1?.message as string,
+  ].filter(Boolean);
 
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
-      <Banner>
-        <b>Recreate Game:</b> This will recalculate all ratings from this game onwards.
-      </Banner>
       <FormContainer>
-        <Controller
-          name="oldId"
-          control={control}
-          render={({ field }) => (
-            <TextComponent
-              labelText="Old Game ID"
-              inputValue={field.value}
-              placeholder="Enter the old game ID to recreate"
-              onInputValueChange={field.onChange}
-              css={{ width: dropdownWidth }}
-              error={!!errors.oldId}
-            />
-          )}
-        />
+        <Banner>
+          <BannerTitle>Recreate Game:</BannerTitle>{" "}
+          This will recalculate all ratings from this game onwards.
+        </Banner>
 
-        <Controller
-          name="gameCode"
-          control={control}
-          rules={{ required: "Game code is required" }}
-          render={({ field }) => (
-            <TextComponent
-              labelText="checkID"
-              inputValue={field.value}
-              placeholder="Game id"
-              onInputValueChange={field.onChange}
-              css={{ width: "80px" }}
-              error={!!errors.gameCode}
+        {errorMessages.length > 0 && (
+          <ErrorBox>
+            <ErrorTitle>Fix the Following</ErrorTitle>
+            <ErrorList>
+              {errorMessages.map((msg, idx) => (
+                <li key={`${msg}-${idx}`}>
+                  <Text type="error">{msg}</Text>
+                </li>
+              ))}
+            </ErrorList>
+          </ErrorBox>
+        )}
+
+        <Grid>
+          <Cell>
+            <Controller
+              name="oldId"
+              control={control}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="Old Game ID"
+                  inputValue={field.value}
+                  placeholder="Enter the Game ID to Recreate"
+                  onInputValueChange={field.onChange}
+                  css={dropdownCss}
+                  error={!!errors.oldId}
+                />
+              )}
+            />
+          </Cell>
+
+          <Cell>
+            <Controller
+              name="gameCode"
+              control={control}
+              rules={{ required: "Game code is required" }}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="Game Code"
+                  inputValue={field.value}
+                  placeholder="Game Code"
+                  onInputValueChange={field.onChange}
+                  css={{ width: "100%", maxWidth: "220px" }}
+                  error={!!errors.gameCode}
+                />
+              )}
             />
           )}
         />
@@ -140,8 +185,7 @@ const SubmitRecreateForm = ({
                 field.onChange(selectedItem?.value || "");
               }}
             />
-          )}
-        />
+          </Cell>
 
         <Controller
           name="ussrPlayerId"
@@ -160,115 +204,118 @@ const SubmitRecreateForm = ({
                 field.onChange(selectedItem?.value || "");
               }}
             />
-          )}
-        />
+          </Cell>
 
-        <Controller
-          name="tournamentId"
-          control={control}
-          rules={{ required: "Tournament is required" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="typeOfGame"
-              key="gameType"
-              items={leagueTypes}
-              selectedItem={field.value}
-              placeholder="Select tournament"
-              height="270px"
-              error={!!errors.tournamentId}
-              css={{ width: dropdownWidth }}
-              onSelect={field.onChange}
+          {/* Tournament */}
+          <Cell>
+            <Controller
+              name="tournamentId"
+              control={control}
+              rules={{ required: "Tournament is required" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="typeOfGame"
+                  key="gameType"
+                  items={leagueTypes}
+                  selectedItem={field.value}
+                  placeholder="Select Tournament"
+                  height="270px"
+                  error={!!errors.tournamentId}
+                  css={dropdownCss}
+                  onSelect={field.onChange}
+                />
+              )}
             />
-          )}
-        />
+          </Cell>
 
-        <Controller
-          name="gameWinner"
-          control={control}
-          rules={{ required: "Please select game winner" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="gameWinner"
-              placeholder="Game winner"
-              items={gameWinningOptions}
-              selectedItem={field.value}
-              selectedValueProperty="value"
-              selectedInputProperty="text"
-              error={!!errors.gameWinner}
-              css={{ width: dropdownWidth }}
-              onSelect={field.onChange}
+          {/* Winner */}
+          <Cell>
+            <Controller
+              name="gameWinner"
+              control={control}
+              rules={{ required: "Please select game winner" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="gameWinner"
+                  placeholder="Game Winner"
+                  items={gameWinningOptions}
+                  selectedItem={field.value}
+                  selectedValueProperty="value"
+                  selectedInputProperty="text"
+                  error={!!errors.gameWinner}
+                  css={dropdownCss}
+                  onSelect={field.onChange}
+                />
+              )}
             />
-          )}
-        />
+          </Cell>
 
-        <Controller
-          name="endTurn"
-          control={control}
-          rules={{ required: "End turn is required" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="endTurn"
-              placeholder="End turn"
-              selectedItem={field.value}
-              selectedValueProperty="value"
-              selectedInputProperty="text"
-              error={!!errors.endTurn}
-              items={turns}
-              css={{ width: dropdownWidth }}
-              onSelect={field.onChange}
+          {/* End turn */}
+          <Cell>
+            <Controller
+              name="endTurn"
+              control={control}
+              rules={{ required: "End turn is required" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="endTurn"
+                  placeholder="End Turn"
+                  selectedItem={field.value}
+                  selectedValueProperty="value"
+                  selectedInputProperty="text"
+                  error={!!errors.endTurn}
+                  items={turns}
+                  css={dropdownCss}
+                  onSelect={field.onChange}
+                />
+              )}
             />
-          )}
-        />
+          </Cell>
 
-        <Controller
-          name="endMode"
-          control={control}
-          rules={{ required: "Please select the victory type" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="endType"
-              placeholder="Victory type"
-              items={endType}
-              error={!!errors.endMode}
-              css={{ width: dropdownWidth }}
-              selectedItem={field.value}
-              onSelect={field.onChange}
+          {/* End mode */}
+          <Cell>
+            <Controller
+              name="endMode"
+              control={control}
+              rules={{ required: "Please select the victory type" }}
+              render={({ field }) => (
+                <DropdownWithLabel
+                  labelText="endType"
+                  placeholder="Victory Type"
+                  items={endType}
+                  error={!!errors.endMode}
+                  css={dropdownCss}
+                  selectedItem={field.value}
+                  onSelect={field.onChange}
+                />
+              )}
             />
-          )}
-        />
+          </Cell>
 
-        <Controller
-          name="video1"
-          control={control}
-          render={({ field }) => (
-            <TextComponent
-              labelText="videoLink1"
-              inputValue={field.value || ""}
-              placeholder="Link to the video..."
-              error={!!errors.video1}
-              css={{ width: dropdownWidth }}
-              onInputValueChange={field.onChange}
+          {/* Video link full width */}
+          <FullRow>
+            <Controller
+              name="video1"
+              control={control}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="videoLink1"
+                  inputValue={field.value || ""}
+                  placeholder="Link to the Video..."
+                  error={!!errors.video1}
+                  css={dropdownCss}
+                  onInputValueChange={field.onChange}
+                />
+              )}
             />
-          )}
-        />
+          </FullRow>
+        </Grid>
 
-        <SubmitButton
-          disabled={isSubmitting}
-          type="submit"
-        >
-          {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
-        </SubmitButton>
-
-        {errors.root && <Text type="error">{errors.root.message}</Text>}
-        {errors.oldId && <Text type="error">{errors.oldId.message}</Text>}
-        {errors.gameCode && <Text type="error">{errors.gameCode.message}</Text>}
-        {errors.usaPlayerId && <Text type="error">{errors.usaPlayerId.message}</Text>}
-        {errors.ussrPlayerId && <Text type="error">{errors.ussrPlayerId.message}</Text>}
-        {errors.tournamentId && <Text type="error">{errors.tournamentId.message}</Text>}
-        {errors.gameWinner && <Text type="error">{errors.gameWinner.message}</Text>}
-        {errors.endTurn && <Text type="error">{errors.endTurn.message}</Text>}
-        {errors.endMode && <Text type="error">{errors.endMode.message}</Text>}
-        {errors.video1 && <Text type="error">{errors.video1.message}</Text>}
+        <ActionsRow>
+          <SubmitButton disabled={isSubmitting} type="submit">
+            {isSubmitting ? <Spinner size="3" /> : "Recreate Game"}
+          </SubmitButton>
+        </ActionsRow>
       </FormContainer>
     </StyledForm>
   );
