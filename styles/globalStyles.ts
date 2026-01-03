@@ -194,6 +194,7 @@ const GlobalStyles = createGlobalStyle`
   ============================ */ 
     .DayPickerInput > input {
       color: var(--primary-text);
+      border-color: var(--border);
     }
 
     .DayPicker {
