@@ -193,8 +193,18 @@ const GlobalStyles = createGlobalStyle`
     React Day Picker Styles
   ============================ */ 
     .DayPickerInput > input {
+      all: unset;
+      width: 100px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 0 10px;
+      height: 35px;
+      font-size: 15px;
+      line-height: 1;
       color: var(--primary-text);
-      border-color: var(--border);
     }
 
     .DayPicker {

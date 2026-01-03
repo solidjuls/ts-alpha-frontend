@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Spinner } from "@radix-ui/themes";
-import styled from "styled-components";
-import { Button } from "components/Button";
+import Link from "next/link";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
 import { StyledLabel } from "components/DisplayInfo/DisplayInfo.styled";
@@ -31,265 +30,33 @@ import {
   TOURNAMENT_STATUS_NAMES,
 } from "utils/tournamentStatus";
 import { useIsAuthenticated } from "hooks/useAuth";
-
-/* -----------------------
-   Style guide wrappers
------------------------- */
-
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 16px;
-`;
-
-const Card = styled.section`
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-soft);
-  overflow: hidden;
-`;
-
-const CardBody = styled.div`
-  padding: 16px;
-
-  @media (max-width: 640px) {
-    padding: 14px;
-  }
-`;
-
-const CardFooter = styled.div`
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-const HeaderRow = styled.div`
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
-  border-bottom: 1px solid var(--border);
-
-  @media (max-width: 640px) {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-`;
-
-const Title = styled.h2`
-  margin: 0;
-  color: var(--primary-text);
-`;
-
-const Subtle = styled.div`
-  color: var(--primary-text);
-  opacity: 0.85;
-`;
-
-const Badge = styled.span<{ $variant?: "neutral" | "usa" | "ussr" }>`
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-
-  background: ${({ $variant }) => {
-    switch ($variant) {
-      case "usa":
-        return "var(--usa-half)";
-      case "ussr":
-        return "var(--ussr-quarter)";
-      default:
-        return "var(--bg-card)";
-    }
-  }};
-
-  color: var(--primary-text);
-`;
-
-const InfoGrid = styled.div`
-  display: grid;
-  gap: 10px 16px;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-
-  @media (max-width: 700px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const FullWidth = styled.div`
-  grid-column: 1 / -1;
-  min-width: 0;
-`;
-
-const DescriptionBox = styled.div`
-  margin-top: 8px;
-  padding: 12px;
-  background: var(--bg-card);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-soft);
-  color: var(--primary-text);
-
-  /* protect layout from long links/words in HTML */
-  overflow-wrap: anywhere;
-
-  p:first-child {
-    margin-top: 0;
-  }
-  p:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const StatusLine = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-`;
-
-const StatusText = styled.span<{ $tone?: "neutral" | "good" | "warn" }>`
-  font-weight: 600;
-  color: ${({ $tone }) => {
-    switch ($tone) {
-      case "good":
-        return "var(--primary-text)";
-      case "warn":
-        return "var(--primary-text)";
-      default:
-        return "var(--primary-text)";
-    }
-  }};
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-end;
-
-  @media (max-width: 700px) {
-    justify-content: flex-start;
-  }
-`;
-
-const PillButton = styled(Button)<{ $tone?: "usa" | "ussr" | "neutral" }>`
-  /* If your Button already handles variants, keep this minimal.
-     We only align hover behavior with your guide. */
-
-  &:hover {
-    background-color: var(--ussr);
-    color: var(--alt-text);
-  }
-`;
-
-export const DangerPillButton = styled(Button)`
-  padding: 10px 14px;
-  font-weight: 600;
-
-  background: var(--ussr);
-  color: var(--alt-text);
-  border: 1px solid var(--border);
-
-  &:hover:not(:disabled) {
-    background: var(--ussr);
-    filter: brightness(0.95);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
-
-const AdminBar = styled.div`
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-card);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-const AdminLabel = styled.div`
-  font-weight: 700;
-  color: var(--primary-text);
-`;
-
-const NotFoundContainer = styled.div`
-  padding: 18px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  box-shadow: var(--shadow-soft);
-  color: var(--primary-text);
-  text-align: center;
-`;
-
-const InlineFormCard = styled(Card)`
-  overflow: visible;
-`;
-
-const FormHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 12px;
-`;
-
-const FormTitle = styled.h3`
-  margin: 0;
-  color: var(--primary-text);
-  font-size: 16px;
-`;
-
-const FormDescription = styled.p`
-  margin: 0;
-  color: var(--primary-text);
-  opacity: 0.8;
-  font-size: 13px;
-`;
-
-const FormRow = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-
-  @media (max-width: 700px) {
-    flex-direction: column;
-    align-items: stretch;
-  }
-`;
-
-const FormField = styled.div`
-  flex: 1;
-  min-width: 0;
-`;
+import { 
+  Page,
+  Card,
+  CardBody,
+  CardFooter,
+  InlineFormCard,
+  HeaderRow,
+  Title,
+  Badge,
+  Subtle,
+  InfoGrid,
+  FullWidth,
+  DescriptionBox,
+  AdminBar,
+  AdminLabel,
+  ButtonRow,
+  PillButton,
+  DangerPillButton,
+  StatusLine,
+  StatusText,
+  NotFoundContainer,
+  FormDescription,
+  FormField,
+  FormHeader,
+  FormRow,
+  FormTitle
+ } from "styles/tournamentPage.styled";
 
 interface RegistrationActionSectionProps {
   isUserRegistered: boolean;
@@ -313,16 +80,16 @@ const RegistrationActionSection = ({
   const statusNode = useMemo(() => {
     if (isUserRegistered) {
       return (
-        <StatusText $tone="good">✓ You are registered for this tournament</StatusText>
+        <StatusText $tone="good">✓ You are registered for this tournament.</StatusText>
       );
     }
     if (isUserOnWaitlist) {
-      return <StatusText $tone="warn">You are on the waitlist for this tournament</StatusText>;
+      return <StatusText $tone="warn">You are on the waitlist for this tournament.</StatusText>;
     }
     if (showWaitlistButton) {
-      return <StatusText $tone="neutral">Registration closed. Join the waitlist</StatusText>;
+      return <StatusText $tone="neutral">Registration closed. Join the waitlist.</StatusText>;
     }
-    return <StatusText $tone="neutral">Click to register for this tournament</StatusText>;
+    return <StatusText $tone="neutral">Click to register for this tournament.</StatusText>;
   }, [isUserOnWaitlist, isUserRegistered, showWaitlistButton]);
 
   if (showWaitlistButton) {
@@ -408,7 +175,7 @@ const TournamentDetail = () => {
     return (
       <DetailContainer>
         <Page>
-          <NotFoundContainer>Tournament not found</NotFoundContainer>
+          <NotFoundContainer>Tournament Not Found</NotFoundContainer>
         </Page>
       </DetailContainer>
     );
@@ -421,8 +188,17 @@ const TournamentDetail = () => {
   const showWaitlistButton =
     tournament.waitlist && (currentStatus === 3 || currentStatus === 4);
 
-  const adminsFormatted =
-    tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : "-";
+  const adminsFormatted = tournament.adminName?.length
+  ? tournament.adminName.map((name, index) => (
+      <span key={tournament.adminId[index]}>
+        <Link href={`/userprofile/${tournament.adminId[index]}`}>
+          {name}
+        </Link>
+        {index < tournament.adminName.length - 1 && ", "}
+      </span>
+    ))
+  : "-";
+
 
   const dateFormatted = tournament.starting_date
     ? dateFormat(new Date(tournament.starting_date))
@@ -586,7 +362,7 @@ const TournamentDetail = () => {
 
           {isUserAdmin && (
             <AdminBar>
-              <AdminLabel>Admin Mode — Tournament Management</AdminLabel>
+              <AdminLabel>Tournament Management</AdminLabel>
 
               <ButtonRow>
                 <PillButton onClick={() => setIsEditing((v) => !v)}>
@@ -594,7 +370,7 @@ const TournamentDetail = () => {
                 </PillButton>
 
                 <PillButton onClick={() => setShowManualRegistration((v) => !v)}>
-                  {showManualRegistration ? "Cancel" : "Register User"}
+                  {showManualRegistration ? "Cancel Registration" : "Register User"}
                 </PillButton>
 
                 {availableActions.map((action) => {

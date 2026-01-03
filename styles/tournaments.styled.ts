@@ -81,7 +81,7 @@ export const TableHeaderCell = styled.th`
   text-align: left;
   font-weight: 700;
   font-size: 12px;
-  color: var(--primary-text);
+  color: var(--alt-text);
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
 `;
