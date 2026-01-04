@@ -57,6 +57,7 @@ type PlayerNameProps = {
   previousRating: number;
   countryCode: string;
   isUSSR?: boolean;
+  isWinner?: boolean;
 };
 
 
@@ -120,13 +121,14 @@ const PlayerName: React.FC<PlayerNameProps> = ({
   previousRating,
   countryCode,
   isUSSR,
+  isWinner
 }) => {
   return (
     <PlayerNameBlock>
       <PlayerRow>
         {!isUSSR ? (
           <>
-            <PlayerLink $side="usa" href={`/userprofile/${userId}`}>
+            <PlayerLink $side="usa" $isWinner={isWinner} href={`/userprofile/${userId}`}>
               {playerName}
             </PlayerLink>
             <FlagIcon code={countryCode} />
@@ -134,7 +136,7 @@ const PlayerName: React.FC<PlayerNameProps> = ({
         ) : (
           <>
             <FlagIcon code={countryCode} />
-            <PlayerLink $side="ussr" href={`/userprofile/${userId}`}>
+            <PlayerLink $side="ussr" $isWinner={isWinner} href={`/userprofile/${userId}`}>
               {playerName}
             </PlayerLink>
           </>
@@ -222,6 +224,7 @@ const deleteGame = async () => {
           rating={data.ratingsUSA.rating}
           previousRating={data.ratingsUSA.previousRating}
           countryCode={data.usaCountryCode}
+          isWinner={data.gameWinner === "1"}
         />
         <Text>vs</Text>
         <PlayerName
@@ -231,6 +234,7 @@ const deleteGame = async () => {
           previousRating={data.ratingsUSSR.previousRating}
           countryCode={data.ussrCountryCode}
           isUSSR
+          isWinner={data.gameWinner === "2"}
         />
       </PlayersHeader>
 

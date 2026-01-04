@@ -62,6 +62,10 @@ export interface HallOfFameResponse {
   spanish: HallOfFameEntry[];
   uk: HallOfFameEntry[];
   western: HallOfFameEntry[];
+  world: HallOfFameEntry[];
+  grand: HallOfFameEntry[];
+  mso: HallOfFameEntry[];
+  convention: HallOfFameEntry[];
 }
 
 // Create axios instance for NestJS backend with auth
@@ -112,6 +116,10 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
     spanish: [],
     uk: [],
     western: [],
+    world: [],
+    grand: [],
+    mso: [],
+    convention: [],
   };
 
   entries.forEach((apiEntry) => {
@@ -196,6 +204,18 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
     else if (leagueType === 'WESTERN') {
       grouped.western.push(entry);
     }
+    else if (leagueType === 'WORLD') {
+      grouped.world.push(entry);
+    }
+    else if (leagueType === 'GRAND') {
+      grouped.grand.push(entry);
+    }
+    else if (leagueType === 'MSO') {
+      grouped.mso.push(entry);
+    }
+    else if (leagueType === 'CONVENTION') {
+      grouped.convention.push(entry);
+    }
   });
 
   // Sort each league by season (string representing year)
@@ -229,6 +249,10 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
   grouped.spanish.sort(sortBySeason);
   grouped.uk.sort(sortBySeason);
   grouped.western.sort(sortBySeason);
+  grouped.world.sort(sortBySeason);
+  grouped.grand.sort(sortBySeason);
+  grouped.mso.sort(sortBySeason);
+  grouped.convention.sort(sortBySeason);
 
   return grouped;
 };

@@ -70,9 +70,16 @@ export const RatingRow = styled.div<{ $isUSSR?: boolean }>`
 `;
 
 // Link for player names, using brand colors & side-specific border
-export const PlayerLink = styled(Link)<{ $side: "usa" | "ussr" }>`
+export const PlayerLink = styled(Link)<{
+  $side: "usa" | "ussr";
+  $isWinner?: boolean;
+}>`
   text-decoration: none;
   color: var(--primary-text);
+
+  /* Winner stays bold, loser becomes normal */
+  font-weight: ${({ $isWinner }) => ($isWinner ? 600 : 400)};
+
   border-bottom: 2px solid
     ${({ $side }) => ($side === "usa" ? "var(--usa)" : "var(--ussr)")};
   padding-bottom: 1px;
@@ -83,6 +90,7 @@ export const PlayerLink = styled(Link)<{ $side: "usa" | "ussr" }>`
     text-decoration: none;
   }
 `;
+
 
 // Meta grid (tournament, code, etc.)
 export const MetaWrapper = styled.div`

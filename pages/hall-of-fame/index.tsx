@@ -151,6 +151,38 @@ export default function HallOfFamePage() {
       </Section>
 
       <Section>
+        <SectionTitle>World Cup</SectionTitle>
+        <SectionSubtitle>
+          The World Cup is a weekend tournament featuring an 8-game Swiss format.
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.world)}
+      </Section>
+
+      <Section>
+        <SectionTitle>Grand Slam Series</SectionTitle>
+        <SectionSubtitle>
+          The Grand Slam is a yearly series of shorter, one-day tournaments held in different time zones.
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.grand)}
+      </Section>
+
+      <Section>
+        <SectionTitle>Convention</SectionTitle>
+        <SectionSubtitle>
+          Generally held in Europe, the Twilight Struggle Convention is the largest in-person Twilight Struggle tournament.
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.convention)}
+      </Section>
+
+      <Section>
+        <SectionTitle>Mind Sports Olympiad (MSO)</SectionTitle>
+        <SectionSubtitle>
+          The <a href="https://mindsportsolympiad.com/" target="_blank">Mind Sports Olympiad</a> is an international event with over 100 different competitions that has occasionally featured Twilight Struggle.
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.mso)}
+      </Section>
+
+      <Section>
         <SectionTitle>Asynchronous Leagues (RATS)</SectionTitle>
         <SectionSubtitle>
           Not everyone has the ability to play live Twilight Struggle games so there are a variety of asynchronous
