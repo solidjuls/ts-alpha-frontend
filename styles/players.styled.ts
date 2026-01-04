@@ -37,6 +37,11 @@ export const FlexColumn = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
+
+  ${media.md} {
+    gap: 0.1rem;
+  }
 `;
 
 /**
@@ -127,14 +132,14 @@ export const ResultsStyleWrapper = styled.div`
 export const StyledResultsPanel = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
+
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 4px;
 `;
 
-/**
- * Individual player row
- * - Uses card styling & hover pattern from the design guide
- * - Grid layout that collapses to a single column on narrow screens
- */
 export const StyledCardRow = styled.article`
   display: grid;
   grid-template-columns: 80px minmax(0, 2fr) 96px;
@@ -148,11 +153,7 @@ export const StyledCardRow = styled.article`
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
 
-  transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease,
-    background-color 0.2s ease;
-
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
 
   &:hover {
@@ -167,8 +168,12 @@ export const StyledCardRow = styled.article`
   }
 
   ${media.md} {
-    grid-template-columns: 1fr;
-    align-items: flex-start;
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+
+    padding: 0.6rem 0.75rem;
+    gap: 0.35rem 0.6rem;
   }
 `;
 
@@ -186,4 +191,14 @@ export const TextHeader = styled(Text)`
     textTransform: uppercase;
     letterSpacing: 0.04em;
     font-size: small;
+`;
+
+export const RatingCell = styled.div`
+  justify-self: end;
+
+  ${media.md} {
+    grid-column: 1 / -1;
+    justify-self: start;
+    padding-top: 2px;
+  }
 `;

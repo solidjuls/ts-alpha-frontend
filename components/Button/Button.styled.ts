@@ -16,7 +16,7 @@ export const Button = styled.button`
   text-decoration: none;
 
   color: var(--primary-text);
-  background-color: var(--bg-cards);
+  background-color: var(--bg-card);
   border: 1px solid var(--border);
 
   transition:

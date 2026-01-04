@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { media } from "theme";
 
 export const ProfileContainer = styled.div`
   display: grid;
@@ -20,6 +21,10 @@ export const RecentGamesContainer = styled.div`
   border-radius: 0;
   margin: 32px 0 0 0;
   flex-direction: column;
+
+  ${media.sm} {
+    font-size: small;
+  }
 `;
 
 export const ProfileHeading = styled.h2`

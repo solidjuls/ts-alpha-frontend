@@ -101,10 +101,11 @@ export const MetaGrid = styled.div`
   max-width: 32rem;
 
   @media (max-width: 600px) {
-    grid-template-columns: 1fr;
-    gap: 0.25rem;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 0.35rem 0.75rem;
   }
 `;
+
 
 export const MetaLabelColumn = styled.div`
   display: flex;
@@ -120,6 +121,12 @@ export const MetaValueColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+`;
+
+export const MetaSpacer = styled.div`
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 // Chevron icons (rating change)

@@ -22,7 +22,8 @@ import {
   StyledCardRow,
   PageTitle,
   StyledText,
-  TextHeader
+  TextHeader,
+  RatingCell
 } from "styles/players.styled";
 
 interface CardColumnProps {
@@ -78,7 +79,9 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
       <StyledCardRow className="card card--clickable">
         <CardColumn header="Rank" value={player.rank} />
         <CardColumn header="Player" value={player.name} countryCode={player.countryCode} />
-        <CardColumn header="Rating" value={player.rating} />
+        <RatingCell>
+          <CardColumn header="Rating" value={player.rating} />
+        </RatingCell>
       </StyledCardRow>
     </UnstyledLink>
   );

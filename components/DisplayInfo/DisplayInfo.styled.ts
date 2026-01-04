@@ -9,12 +9,12 @@ export const Container = styled.div<{ $maxWidth: string }>`
 
 export const StyledLabel = styled(LabelPrimitive.Root)`
   font-size: 10px;
-  color: var(--alt-text);
+  color: var(--primary-text);
   user-select: none;
 `;
 
 export const StyledLabelInfo = styled.div`
   font-size: 14px;
   font-weight: 500;
-  color: var(--alt-text);
+  color: var(--primary-text);
 `;

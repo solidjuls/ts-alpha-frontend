@@ -34,7 +34,8 @@ import {
   AdminActions,
   AdminButton,
   LabelCopyBox,
-  NumericText
+  NumericText,
+  MetaSpacer
  } from "../../styles/games.styled";
 
 type GameProps = {
@@ -245,17 +246,17 @@ const deleteGame = async () => {
             {data.videoURL && <Span>Video:</Span>}
           </MetaLabelColumn>
 
-          <div />
+          <MetaSpacer/>
 
           <MetaValueColumn>
             <TruncatedSpan>{tournamentName}</TruncatedSpan>
-            <Span>{data.game_code}</Span>
-            <Span>{getWinnerText(data.gameWinner as GameWinner)}</Span>
-            <Span>{getTurnText(data.endTurn)}</Span>
-            <Span>{endMode}</Span>
-            <Span>
+            <TruncatedSpan>{data.game_code}</TruncatedSpan>
+            <TruncatedSpan>{getWinnerText(data.gameWinner as GameWinner)}</TruncatedSpan>
+            <TruncatedSpan>{getTurnText(data.endTurn)}</TruncatedSpan>
+            <TruncatedSpan>{endMode}</TruncatedSpan>
+            <TruncatedSpan>
               {data.created_at ? dateFormat(new Date(data.created_at)) : null}
-            </Span>
+            </TruncatedSpan>
             {data.videoURL && (
               <Link
                 target="_blank"
