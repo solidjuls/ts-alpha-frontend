@@ -177,7 +177,7 @@ export default function HallOfFamePage() {
       <Section>
         <SectionTitle>Mind Sports Olympiad (MSO)</SectionTitle>
         <SectionSubtitle>
-          The <a href="https://mindsportsolympiad.com/" target="_blank">Mind Sports Olympiad</a> is an international event with over 100 different competitions that has occasionally featured Twilight Struggle.
+          The <a href="https://mindsportsolympiad.com/" target="_blank" rel="noreferrer">Mind Sports Olympiad</a> is an international event with over 100 different competitions that has occasionally featured Twilight Struggle.
         </SectionSubtitle>
         {renderTable(hallOfFameData.mso)}
       </Section>
