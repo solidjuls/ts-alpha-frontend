@@ -136,16 +136,24 @@ export const StatusBadge = styled.span<{ $variant: StatusVariant }>`
         `;
       case "registrationOpen":
         return `
-          background: var(--usa-half);
+          background: var(--usa);
           color: var(--primary-text);
         `;
       case "registrationClosed":
         return `
-          background: var(--ussr-quarter);
+          background: var(--ussr);
           color: var(--primary-text);
         `;
       case "closed":
+        return `
+          background: var(--ussr);
+          color: var(--primary-text);
+        `;
       case "initial":
+        return `
+          background: var(--bg-card);
+          color: var(--primary-text);
+        `;
       default:
         return `
           background: var(--bg-card);
