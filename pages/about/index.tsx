@@ -1209,6 +1209,15 @@ const AboutPage = () => (
               </ExternalLink>
             </Inline>
           </li>
+
+          <li>
+            <Inline>
+              <InternalLink href="/userprofile/3170">Zihang Zhou</InternalLink> (bocchi152):{" "}
+              <ExternalLink href="https://youtu.be/sG5BUkHs6h0" target="_blank" rel="noreferrer">
+                YouTube
+              </ExternalLink>
+            </Inline>
+          </li>
         </List>
       </Card>
     </Stack>
