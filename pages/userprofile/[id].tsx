@@ -14,6 +14,7 @@ import { userRoles } from "utils/constants";
 import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../styles/userprofile.styled";
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
+import { FlagIcon } from "components/FlagIcon";
 
 const PAGE_SIZE = 10;
 
@@ -34,6 +35,7 @@ const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentG
 const UserProfileContent: React.FC<UserDetail> = (data) => (
   <>
     <ProfileHeading>
+      <FlagIcon code={data?.countries?.tld_code} />
       {`${data?.first_name} ${data?.last_name}`}
     </ProfileHeading>
 

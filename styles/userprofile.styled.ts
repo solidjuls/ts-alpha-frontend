@@ -28,9 +28,14 @@ export const RecentGamesContainer = styled.div`
 `;
 
 export const ProfileHeading = styled.h2`
-  grid-column: 1 / -1;   /* spans ALL grid columns */
+  grid-column: 1 / -1;
   width: 100%;
   margin: 0 0 16px 0;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   font-weight: 600;
   color: var(--primary-text);
 
@@ -40,3 +45,4 @@ export const ProfileHeading = styled.h2`
     font-size: medium;
   }
 `;
+

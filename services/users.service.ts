@@ -27,6 +27,7 @@ export interface UserDetail {
   countries?: {
     id: number;
     country_name: string;
+    tld_code: string;
   };
   rating?: number;
 }
