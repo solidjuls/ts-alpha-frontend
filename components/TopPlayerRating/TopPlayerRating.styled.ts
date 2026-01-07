@@ -7,7 +7,7 @@ export const SidePanelStyled = styled.div`
   flex-direction: column;
   background-color: var(--bg-card);
   margin: 0 12px 0 12px;
-  padding: px;
+  padding: 8px;
   border: solid 1px var(--border);
   border-radius: 12px;
   width: 350px;

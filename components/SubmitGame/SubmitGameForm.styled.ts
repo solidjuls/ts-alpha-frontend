@@ -26,6 +26,7 @@ export const StyledForm = styled(Form)`
   width: 640px;
   align-self: center;
   padding: 12px;
+  margin: 0 auto;
 
   ${media.md} {
     width: 100%;

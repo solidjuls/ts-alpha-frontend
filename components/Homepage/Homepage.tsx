@@ -3,10 +3,26 @@ import { useState, useMemo, useEffect } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import Text from "components/Text";
 import { TopPlayerRating } from "components/TopPlayerRating";
-import { Game } from "types/game.types";
+import { Game, GameWinner } from "types/game.types";
 import { getWinnerText } from "utils/games";
 import { dateFormat } from "utils/dates";
-import { ContainerGameResults, ResponsiveText, PlayerInfo, StyledResultsPanel, FilterPanel, UnstyledLink, GlobalContainer, MonoText } from "./Homepage.styled";
+import {
+  ContainerGameResults,
+  ResponsiveText,
+  PlayerCard,
+  StyledResultsPanel,
+  FilterPanel,
+  UnstyledLink,
+  GlobalContainer,
+  MonoText,
+  ResultMetaRow,
+  MatchupRow,
+  PlayerInline,
+  VsText,
+  ResultsHeader,
+  ResultsFooter,
+  LoadingPanel,
+} from "./Homepage.styled";
 import MultiSelect from "components/MultiSelect";
 import { Spinner } from "@radix-ui/themes";
 import { Pagination } from "components/Pagination";
@@ -25,71 +41,55 @@ type ResultsPanelProps = {
   isLoading?: boolean;
 };
 
-
 const PlayerInfoBox = ({
   usaPlayer,
   ussrPlayer,
   gameWinner,
   usaCountryCode,
   ussrCountryCode,
-}: Pick<
-  Game,
-  "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode"
->) => {
+}: Pick<Game, "usaPlayer" | "ussrPlayer" | "gameWinner" | "usaCountryCode" | "ussrCountryCode">) => {
+  const winner = getWinnerText(gameWinner as GameWinner);
+
+  const isUsaWinner = winner === "USA";
+  const isUssrWinner = winner === "USSR";
+
   return (
-    <div style={{ display: "flex", flexDirection: "row" }}>
-      <div
-        style={{
-          display: "flex",
-          margin: "0 8px 0 8px",
-          flexDirection: "row",
-          lineHeight: 1,
-          alignItems: "center",
-        }}
-      >
-        <FlagIcon code={usaCountryCode} />
-        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USA" ? "bold" : undefined}>
-          {usaPlayer}
+    <MatchupRow>
+      <PlayerInline>
+        {usaCountryCode && <FlagIcon code={usaCountryCode} />}
+        <Text
+          fontSize="medium"
+          strong={isUsaWinner ? "bold" : undefined}
+        >
+          {usaPlayer || "No Player Assigned"}
         </Text>
-      </div>
-      <span>vs</span>
-      <div
-        style={{
-          display: "flex",
-          margin: "0 8px 0 8px",
-          flexDirection: "row",
-          lineHeight: 1,
-          alignItems: "center",
-        }}
-      >
-        <FlagIcon code={ussrCountryCode} />
-        <Text fontSize="medium" strong={getWinnerText(gameWinner) === "USSR" ? "bold" : undefined}>
-          {ussrPlayer}
+      </PlayerInline>
+
+      <VsText>vs</VsText>
+
+      <PlayerInline>
+        {ussrCountryCode && <FlagIcon code={ussrCountryCode} />}
+        <Text
+          fontSize="medium"
+          strong={isUssrWinner ? "bold" : undefined}
+        >
+          {ussrPlayer || "No Player Assigned"}
         </Text>
-      </div>
-    </div>
+      </PlayerInline>
+    </MatchupRow>
   );
 };
 
+
+
 const ResultRow = ({ game }: { game: Game }) => {
   return (
-    <PlayerInfo>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          margin: "0 0 0 8px",
-        }}
-      >
-        <ResponsiveText>
-          {`Game #${game.id}`}
-        </ResponsiveText>
-        <MonoText>
-          {game.tournamentName}
-        </MonoText>
-        <MonoText>{dateFormat(new Date(game?.gameDate))}</MonoText>
-      </div>
+    <PlayerCard>
+      <ResultMetaRow>
+        <ResponsiveText>{`Game #${game.id}`}</ResponsiveText>
+        <MonoText>{game.tournamentName}</MonoText>
+        <MonoText>{dateFormat(new Date(game.gameDate))}</MonoText>
+      </ResultMetaRow>
 
       <PlayerInfoBox
         usaCountryCode={game.usaCountryCode}
@@ -98,25 +98,7 @@ const ResultRow = ({ game }: { game: Game }) => {
         ussrPlayer={game.ussrPlayer}
         gameWinner={game.gameWinner}
       />
-    </PlayerInfo>
-  );
-};
-
-const EmptyState = () => {
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        margin: "16px",
-        height: "320px",
-      }}
-    >
-      <Text style={{ fontSize: "20px" }}>
-        No Games
-      </Text>
-    </div>
+    </PlayerCard>
   );
 };
 
@@ -132,32 +114,23 @@ type FilterTournamentProps = {
   setSelectedValues: (values: MultiSelectItemType[]) => void;
 };
 
-const FilterUser: React.FC<FilterUserProps> = ({
-  users,
-  selectedValues,
-  setSelectedValues,
-}) => {
+const FilterUser: React.FC<FilterUserProps> = ({ users, selectedValues, setSelectedValues }) => {
   const usersMemo = useMemo(
     () => users.map((item) => ({ code: item.id as string, name: item.name as string })),
-    [users],
+    [users]
   );
 
   return (
-    <div>
-      <MultiSelect
-        items={usersMemo}
-        placeholder="Select Players..."
-        selectedValues={selectedValues}
-        setSelectedValues={(values: MultiSelectItemType[]) => {
-          // Limit to maximum 2 players
-          if (values.length <= 2) {
-            setSelectedValues(values);
-          }
-        }}
-        closeOnSelect={false}
-        selectionLimit={2}
-      />
-    </div>
+    <MultiSelect
+      items={usersMemo}
+      placeholder="Select Players..."
+      selectedValues={selectedValues}
+      setSelectedValues={(values: MultiSelectItemType[]) => {
+        if (values.length <= 2) setSelectedValues(values);
+      }}
+      closeOnSelect={false}
+      selectionLimit={2}
+    />
   );
 };
 
@@ -168,22 +141,21 @@ const FilterTournament: React.FC<FilterTournamentProps> = ({
 }) => {
   const tournamentsMemo = useMemo(
     () => tournaments.map((item) => ({ code: item.id.toString(), name: item.tournament_name })),
-    [tournaments],
+    [tournaments]
   );
 
   return (
-    <div>
-      <MultiSelect
-        items={tournamentsMemo}
-        placeholder="Select Tournaments..."
-        selectedValues={selectedValues}
-        setSelectedValues={(values: string) => {
-          const valuesArray = Array.isArray(values) ? values : [values];
-          setSelectedValues(valuesArray);
-        }}
-        closeOnSelect={false}
-      />
-    </div>
+    <MultiSelect
+      items={tournamentsMemo}
+      placeholder="Select Tournaments..."
+      selectedValues={selectedValues}
+      // (Your MultiSelect typing seems a bit loose; keep your current adapter)
+      setSelectedValues={(values: any) => {
+        const valuesArray = Array.isArray(values) ? values : [values];
+        setSelectedValues(valuesArray);
+      }}
+      closeOnSelect={false}
+    />
   );
 };
 
@@ -223,6 +195,7 @@ const Filter: React.FC<FilterProps> = ({
           setSelectedValues={setPlayersSelected}
         />
       )}
+
       {tournamentsList && (
         <FilterTournament
           tournaments={tournamentsList}
@@ -230,14 +203,14 @@ const Filter: React.FC<FilterProps> = ({
           setSelectedValues={setTournamentSelected}
         />
       )}
+
       <Checkbox
         text="Games with Videos"
         onCheckedChange={() => setVideoSelected(!videoSelected)}
         checked={videoSelected}
       />
-      <Button onClick={onClear}>
-        Clear
-      </Button>
+
+      <Button onClick={onClear}>Clear</Button>
     </FilterPanel>
   );
 };
@@ -245,28 +218,35 @@ const Filter: React.FC<FilterProps> = ({
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) => {
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', width: "100%" }}>
-        <StyledResultsPanel style={{ justifyContent: "center", alignItems: "center" }}>
-          <Spinner />
-        </StyledResultsPanel>
-      </div>
+      <LoadingPanel>
+        <Spinner />
+      </LoadingPanel>
     );
   }
+
+  if (!data || data.length === 0) {
+    return (
+      <LoadingPanel>
+        <Text style={{ fontSize: "20px" }}>No Games</Text>
+      </LoadingPanel>
+    );
+  }
+
   return (
     <StyledResultsPanel>
-      {data?.map((game, index) => (
-        <UnstyledLink key={index} href={`/games/${game.id}`} passHref>
-          <ResultRow key={index} game={game} />
+      {data.map((game) => (
+        <UnstyledLink key={game.id} href={`/games/${game.id}`} passHref>
+          <ResultRow game={game} />
         </UnstyledLink>
       ))}
     </StyledResultsPanel>
   );
 };
 
-const HOMEPAGE_FILTERS_KEY = 'homepage_filters';
+const HOMEPAGE_FILTERS_KEY = "homepage_filters";
 
 const getStoredFilters = (): { players: MultiSelectItemType[]; tournaments: MultiSelectItemType[] } | null => {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(HOMEPAGE_FILTERS_KEY);
     return stored ? JSON.parse(stored) : null;
@@ -282,40 +262,30 @@ const Homepage: React.FC = () => {
   const [videoSelected, setVideoSelected] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Save filters to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem(HOMEPAGE_FILTERS_KEY, JSON.stringify({
-      players: playersSelected,
-      tournaments: tournamentSelected,
-    }));
+    localStorage.setItem(
+      HOMEPAGE_FILTERS_KEY,
+      JSON.stringify({ players: playersSelected, tournaments: tournamentSelected })
+    );
   }, [playersSelected, tournamentSelected]);
 
   const gameFilters: GetGamesParams = useMemo(() => {
-    const filters: GetGamesParams = {
-      p: currentPage,
-      pageSize: 20,
-    };
+    const filters: GetGamesParams = { p: currentPage, pageSize: 20 };
 
     if (playersSelected.length > 0) {
-      filters.userFilter = playersSelected.map(item => item.code).join(',');
+      filters.userFilter = playersSelected.map((item) => item.code).join(",");
     }
-
     if (tournamentSelected.length > 0) {
-      filters.toFilter = tournamentSelected.map(item => item.code).join(',');
+      filters.toFilter = tournamentSelected.map((item) => item.code).join(",");
     }
-
-    if (videoSelected) {
-      filters.video = true;
-    }
+    if (videoSelected) filters.video = true;
 
     return filters;
   }, [playersSelected, tournamentSelected, videoSelected, currentPage]);
 
   const { data: gamesData, isLoading } = useGames(gameFilters);
 
-  const onPageChange = (page: string) => {
-    setCurrentPage(Number(page));
-  };
+  const onPageChange = (page: string) => setCurrentPage(Number(page));
 
   const onClear = () => {
     setPlayersSelected([]);
@@ -328,8 +298,9 @@ const Homepage: React.FC = () => {
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / 20) : 1;
 
   return (
-      <ContainerGameResults>
-        <GlobalContainer>
+    <ContainerGameResults>
+      <GlobalContainer>
+        <ResultsHeader>
           <Filter
             playersSelected={playersSelected}
             setPlayersSelected={setPlayersSelected}
@@ -339,20 +310,19 @@ const Homepage: React.FC = () => {
             setVideoSelected={setVideoSelected}
             onClear={onClear}
           />
-          <ResultsPanel
-            data={gamesData?.results || []}
-            isLoading={isLoading}
-          />
-          {!isLoading && gamesData && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
-            />
-          )}
-        </GlobalContainer>
-        <TopPlayerRating />
-      </ContainerGameResults>
+        </ResultsHeader>
+
+        <ResultsPanel data={gamesData?.results || []} isLoading={isLoading} />
+
+        {!isLoading && gamesData && (
+          <ResultsFooter>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={onPageChange} />
+          </ResultsFooter>
+        )}
+      </GlobalContainer>
+
+      <TopPlayerRating />
+    </ContainerGameResults>
   );
 };
 

@@ -15,7 +15,6 @@ import {
   FormContainer,
   SubmitButton,
   SizedText,
-  StyledController
  } from "./SubmitGameForm.styled";
 
 const dropdownWidth = "390px";

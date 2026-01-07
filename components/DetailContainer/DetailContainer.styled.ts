@@ -6,6 +6,7 @@ export const StyledDetailContainer = styled.div`
   color: var(--primary-text);
   padding: 24px 12px;
   width: 100%;
+  margin: 0 auto;
   max-width: 52rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
               0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -20,6 +21,7 @@ export const StyledDetailContainer = styled.div`
 
     /* ensure children can grow */
     width: 100%;
+    margin: 0;
   }
 `;
 
