@@ -179,7 +179,7 @@ const LoginFormComponent: React.FC = () => {
         <Links>
           <Link href="/reset-password">Forgot your password?</Link>
           <Link href="/email-verify">Need to verify your email?</Link>
-          <Link href="/register">
+          <Link href="/register" passHref>
           <PrimaryButton>
             Create Account
           </PrimaryButton>

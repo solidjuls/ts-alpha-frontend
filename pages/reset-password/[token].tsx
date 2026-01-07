@@ -103,7 +103,7 @@ const ResetPasswordConfirmPage: React.FC = () => {
             <InfoText>
               You can now log in with your new password.
             </InfoText>
-            <Link href="/login">
+            <Link href="/login" passHref>
               <Button style={{ backgroundColor: '#16a34a' }}>
                 <b>Go to Login</b>
               </Button>

@@ -18,7 +18,7 @@ const User = ({ id, name, rating, countryCode }: UserType) => {
     <UserContainer>
       <UserInfo>
         <FlagIcon code={countryCode} />
-        <Link href={`/userprofile/${id}`}><Text>{name}</Text></Link>
+        <Link href={`/userprofile/${id}`} passHref><Text>{name}</Text></Link>
       </UserInfo>
       <NumericText>{rating}</NumericText>
     </UserContainer>

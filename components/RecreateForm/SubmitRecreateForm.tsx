@@ -22,42 +22,6 @@ import {
   ErrorList
  } from "./SubmitRecreateForm.styled";
 
-const Banner = styled.div`
-  align-items: flex-start;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid hsl(210 20% 85%);
-  box-shadow: 0 6px 18px rgba(15,15,15,0.04);
-  max-width: 100%;
-  margin-bottom: 12px;
-  background-color: hsl(210 20% 97%);
-  color: hsl(210 30% 8%);
-`;
-
-const StyledForm = styled(Form)`
-  align-items: center;
-  background-color: white;
-  width: 640px;
-  align-self: center;
-  padding: 12px;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const FormContainer = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
-`;
-
-const SubmitButton = styled(Button)`
-  width: 200px;
-  font-size: 18px;
-`;
-
 const dropdownWidth = "390px";
 const typeaheadWidth = "350px";
 
@@ -165,9 +129,10 @@ const SubmitRecreateForm = ({
                 />
               )}
             />
-          )}
-        />
+          </Cell>
+        </Grid>
 
+      <Grid>
         <Controller
           name="usaPlayerId"
           control={control}
@@ -185,7 +150,8 @@ const SubmitRecreateForm = ({
                 field.onChange(selectedItem?.value || "");
               }}
             />
-          </Cell>
+          )}
+        />
 
         <Controller
           name="ussrPlayerId"
@@ -204,9 +170,9 @@ const SubmitRecreateForm = ({
                 field.onChange(selectedItem?.value || "");
               }}
             />
-          </Cell>
+          )}
+        />
 
-          {/* Tournament */}
           <Cell>
             <Controller
               name="tournamentId"
