@@ -11,6 +11,7 @@ export const PlayersCard = styled.section`
   border-radius: 12px;
   box-shadow: var(--shadow-soft);
   overflow: hidden;
+  flex: 1 1 auto;
 `;
 
 export const CardHeader = styled.div`

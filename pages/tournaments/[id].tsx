@@ -55,7 +55,8 @@ import {
   FormField,
   FormHeader,
   FormRow,
-  FormTitle
+  FormTitle,
+  Flex
  } from "styles/tournamentPage.styled";
 
 interface RegistrationActionSectionProps {
@@ -452,23 +453,25 @@ const TournamentDetail = () => {
             onCancel={() => setIsEditing(false)}
           />
         )}
-
-        {/* Registered players */}
-        <TournamentPlayersList
-          tournamentId={tournament.id}
-          tournamentStatusId={tournament.status_id}
-          onPlayerRemoved={() => refetch()}
-          isAdmin={!!isUserAdmin}
-        />
-
-        {/* Waitlist */}
-        {tournament.waitlist && (
-          <TournamentWaitlist
+        <Flex>
+          {/* Registered players */}
+          <TournamentPlayersList
             tournamentId={tournament.id}
-            userRole={userRole || 1}
+            tournamentStatusId={tournament.status_id}
             onPlayerRemoved={() => refetch()}
+            isAdmin={!!isUserAdmin}
           />
-        )}
+
+          {/* Waitlist */}
+          {tournament.waitlist && (
+            <TournamentWaitlist
+              tournamentId={tournament.id}
+              userRole={userRole || 1}
+              onPlayerRemoved={() => refetch()}
+              isAdmin={isUserAdmin}
+            />
+          )}
+        </Flex>
       </Page>
     </DetailContainer>
   );

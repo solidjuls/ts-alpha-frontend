@@ -2,6 +2,12 @@ import styled from "styled-components";
 import { media } from "theme";
 import { Button } from "components/Button";
 
+export const Flex = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+`;
+
 export const Page = styled.div`
   display: flex;
   flex-direction: column;
