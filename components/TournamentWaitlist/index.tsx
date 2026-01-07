@@ -14,6 +14,7 @@ const WaitlistContainer = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   overflow: hidden;
+  flex: 1 1 auto;
 `;
 
 const WaitlistHeader = styled.div`
@@ -84,6 +85,7 @@ const PlayersContainer = styled.div`
 interface TournamentWaitlistProps {
   tournamentId: string;
   userRole: number;
+  isAdmin: boolean;
   onPlayerRemoved?: () => void;
 }
 
@@ -91,6 +93,7 @@ const TournamentWaitlist: React.FC<TournamentWaitlistProps> = ({
   tournamentId,
   userRole,
   onPlayerRemoved,
+  isAdmin,
 }) => {
   const [selectedUser, setSelectedUser] = useState<DropdownItemType | null>(null);
   
@@ -99,7 +102,6 @@ const TournamentWaitlist: React.FC<TournamentWaitlistProps> = ({
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
 
-  const isAdmin = userRole === userRoles.SUPERADMIN;
 
   const handleAddToWaitlist = async () => {
     if (!selectedUser) return;
@@ -140,7 +142,6 @@ const TournamentWaitlist: React.FC<TournamentWaitlistProps> = ({
     <WaitlistContainer>
       <WaitlistHeader>
         <HeaderFlex>
-          <StyledLabel>Waitlist ({waitlistPlayers?.length || 0})</StyledLabel>
           {isAdmin && (
             <AddUserFlex>
               <UserTypeahead

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRegisteredPlayers, useUnregisterFromTournament, useForfeitPlayer } from "hooks/useTournaments";
 import { RegisteredPlayer } from "services/tournaments.service";
-import { 
+import {
   PlayersCard,
   CardHeader,
   HeaderLeft,
@@ -14,6 +14,7 @@ import {
   PlayerInfo,
   PlayerName,
   PlayerEmail,
+  PlayerRating,
   RightSide,
   WarnButton,
   DangerButton
@@ -126,10 +127,9 @@ const TournamentPlayersList = ({
           players.map((player) => (
             <ResponsiveRow key={player.registrationId}>
               <PlayerInfo>
-                <PlayerName title={player.name}>{player.name}</PlayerName>
+                <PlayerName title={player.name}>{player.name} ({player.rating})</PlayerName>
                 <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
               </PlayerInfo>
-
               <RightSide>
 
 
