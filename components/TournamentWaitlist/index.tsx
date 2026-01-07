@@ -147,7 +147,7 @@ const TournamentWaitlist: React.FC<TournamentWaitlistProps> = ({
               <UserTypeahead
                 options={userOptions}
                 selectedOption={selectedUser}
-                onSelectionChange={setSelectedUser}
+                onSelect={setSelectedUser}
                 placeholder="Add user to waitlist..."
               />
               <Button
