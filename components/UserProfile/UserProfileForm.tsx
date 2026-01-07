@@ -10,6 +10,7 @@ import CitiesTypeahead from "components/CitiesTypeahead";
 import CountriesTypeahead from "components/CountriesTypeahead";
 import { UserDetail, UpdateUserData, UpdatePasswordData } from "services/users.service";
 import { useUpdateUser, useUpdatePassword } from "hooks/useUsers";
+import { formStyles } from "./UserProfileForm.styled";
 
 type UserProfileFormProps = {
   data: UserDetail;
@@ -37,17 +38,7 @@ interface PasswordFormData {
 const inputWidth = "300px";
 const dropdownWidth = "322px";
 
-const formStyles = {
-  alignItems: "center",
-  backgroundColor: "White",
-  width: "640px",
-  padding: "12px",
-  alignSelf: "center",
-  // boxShadow: "rgb(100 100 111 / 20%) 0px 7px 29px 0px",
-  "@sm": {
-    width: "100%",
-  },
-};
+
 
 const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -153,7 +144,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="First Name"
           inputValue={watchProfile("firstName") || ""}
           onInputValueChange={(value) => setProfileValue("firstName", value, { shouldValidate: true })}
-          css={{ width: inputWidth }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
           error={!!profileErrors.firstName}
           maxLength={100}
         />
@@ -161,7 +152,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Last Name"
           inputValue={watchProfile("lastName") || ""}
           onInputValueChange={(value) => setProfileValue("lastName", value, { shouldValidate: true })}
-          css={{ width: inputWidth }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
           error={!!profileErrors.lastName}
           maxLength={100}
         />
@@ -169,7 +160,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Email"
           inputValue={watchProfile("email") || ""}
           onInputValueChange={(value) => setProfileValue("email", value, { shouldValidate: true })}
-          css={{ width: inputWidth }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
           error={!!profileErrors.email}
           maxLength={100}
         />
@@ -178,7 +169,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Playdek Name"
           inputValue={watchProfile("playdek_name") || ""}
           onInputValueChange={(value) => setProfileValue("playdek_name", value, { shouldValidate: true })}
-          css={{ width: inputWidth }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
           error={!!profileErrors.playdek_name}
           maxLength={100}
         />
@@ -187,14 +178,14 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Phone"
           inputValue={watchProfile("phone") || ""}
           onInputValueChange={(value) => setProfileValue("phone", value)}
-          css={{ width: inputWidth }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
           error={!!profileErrors.phone}
           maxLength={20}
         />
 
         <DropdownWithLabel
           labelText="Preferred Gaming Platform"
-          placeholder="Select preferred gaming platform"
+          placeholder="Select Preferred Gaming Platform"
           items={platforms}
           error={!!profileErrors.preferredGamingPlatform}
           width={dropdownWidth}
@@ -205,7 +196,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
 
         <DropdownWithLabel
           labelText="Preferred Game Duration"
-          placeholder="Select preferred game duration"
+          placeholder="Select Preferred Game Duration"
           items={gameDurations}
           width={dropdownWidth}
           error={!!profileErrors.preferredGameDuration}
@@ -218,7 +209,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="City"
           selectedItem={watchedCity?.toString() || ""}
           error={!!profileErrors.city}
-          placeholder="Type the city name..."
+          placeholder="Type the City Name..."
           css={{ width: "300px" }}
           width={dropdownWidth}
           listWidth="500px"
@@ -230,7 +221,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           labelText="Country"
           selectedItem={watchedCountry?.toString() || ""}
           error={!!profileErrors.country}
-          placeholder="Type the country name..."
+          placeholder="Type the Country Name..."
           css={{ width: "300px" }}
           width={dropdownWidth}
           listWidth="320px"
@@ -261,7 +252,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
         ) : (
           <Form onSubmit={handleSubmitPassword(onSubmitPassword)}>
             <div style={{ marginBottom: "10px" }}>
-              <label>Current Password</label>
+              <label>Current Password</label><br/>
               <input
                 type="password"
                 style={{ width: inputWidth, padding: "8px", marginTop: "5px" }}
@@ -275,7 +266,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
             </div>
 
             <div style={{ marginBottom: "10px" }}>
-              <label>New Password</label>
+              <label>New Password</label><br/>
               <input
                 type="password"
                 style={{ width: inputWidth, padding: "8px", marginTop: "5px" }}
@@ -292,7 +283,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
             </div>
 
             <div style={{ marginBottom: "10px" }}>
-              <label>Confirm New Password</label>
+              <label>Confirm New Password</label><br/>
               <input
                 type="password"
                 style={{ width: inputWidth, padding: "8px", marginTop: "5px" }}
@@ -323,7 +314,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
                   setShowPasswordForm(false);
                   resetPasswordForm();
                 }}
-                style={{ width: "100px", fontSize: "16px", backgroundColor: "#ccc" }}
+                style={{ width: "100px", fontSize: "16px" }}
               >
                 Cancel
               </Button>

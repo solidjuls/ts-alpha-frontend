@@ -1,8 +1,7 @@
 import { useState } from "react";
+import "react-day-picker/lib/style.css";
 import { useForm, Controller } from "react-hook-form";
 import { Spinner } from "@radix-ui/themes";
-import styled from "styled-components";
-import { Button } from "components/Button";
 import { DropdownWithLabel, EditTextComponent } from "components/EditFormComponents";
 import DateComponent from "components/EditFormComponents/DateComponent";
 import { EditTextAreaComponent } from "components/EditFormComponents/EditTextArea";
@@ -11,126 +10,29 @@ import { tournamentStatus } from "utils/constants";
 import UserTypeahead from "components/UserTypeahead";
 import { useTournamentAdmins, useAddTournamentAdmin, useRemoveTournamentAdmin, useUpdateTournament } from "hooks/useTournaments";
 import { DropdownItemType } from "types/types";
+import { 
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  FieldWrap,
+  WideFieldWrap,
+  Section,
+  SectionHeaderRow,
+  SectionTitle,
+  SectionHint,
+  AdminList,
+  AdminItem,
+  AdminName,
+  AddAdminButton,
+  AddAdminRow,
+  ButtonRow,
+  PrimaryButton,
+  DangerButton,
+  InlineError,
+  ErrorText
+ } from "./TournamentEditForm.styled";
 
-const EditFormContainer = styled.div`
-  margin-top: 24px;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  background-color: white;
-`;
-
-const EditFormHeader = styled.div`
-  padding: 16px 20px;
-  border-bottom: 1px solid #e9ecef;
-  background-color: #f8f9fa;
-  border-radius: 8px 8px 0 0;
-  font-weight: 500;
-`;
-
-const AdminSection = styled.div`
-  margin-top: 24px;
-  padding: 16px;
-  border: 1px solid #e9ecef;
-  border-radius: 6px;
-  background-color: #f8f9fa;
-`;
-
-const AdminSectionHeader = styled.h4`
-  margin: 0 0 16px 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: #374151;
-`;
-
-const AdminList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-`;
-
-const AdminItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background-color: white;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-`;
-
-const AdminName = styled.span`
-  font-size: 14px;
-  color: #374151;
-`;
-
-const RemoveButton = styled.button`
-  padding: 4px 8px;
-  font-size: 12px;
-  background-color: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #b91c1c;
-  }
-
-  &:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-  }
-`;
-
-const AddAdminContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-`;
-
-const FormContainer = styled.form`
-  align-items: flex-start;
-  background-color: white;
-  width: 100%;
-  padding: 20px;
-  gap: 16px;
-  display: flex;
-  flex-direction: column;
-`;
-
-const ErrorMessage = styled.div`
-  color: #dc2626;
-  font-size: 14px;
-  text-align: center;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-`;
-
-const CancelButton = styled(Button)`
-  background-color: #6b7280;
-`;
-
-const SaveButton = styled(Button)`
-  background-color: #3b82f6;
-`;
-
-const AddAdminButton = styled(Button)`
-  background-color: #10b981;
-  height: 40px;
-
-  &:hover {
-    background-color: #059669;
-  }
-`;
-
-const inputWidth = "370px";
-
-// Form data type for react-hook-form
 interface TournamentFormData {
   tournamentName: string;
   statusId: string;
@@ -145,12 +47,11 @@ interface TournamentEditFormProps {
 }
 
 const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditFormProps) => {
-  // Initialize react-hook-form
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-    clearErrors
+    clearErrors,
   } = useForm<TournamentFormData>({
     defaultValues: {
       tournamentName: tournament.tournament_name || "",
@@ -158,20 +59,19 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
       description: tournament.description || "",
       startingDate: tournament.starting_date ? new Date(tournament.starting_date) : new Date(),
     },
-    mode: "onChange"
+    mode: "onChange",
   });
 
   const [errorMsg, setErrorMsg] = useState("");
 
-  // Admin management state
   const [selectedAdminUser, setSelectedAdminUser] = useState("");
   const [isAddingAdmin, setIsAddingAdmin] = useState(false);
   const [removingAdminId, setRemovingAdminId] = useState<string | null>(null);
 
-  // Fetch tournament admins
-  const { data: tournamentAdmins, refetch: refetchAdmins } = useTournamentAdmins(parseInt(tournament.id));
+  const { data: tournamentAdmins, refetch: refetchAdmins } = useTournamentAdmins(
+    parseInt(tournament.id),
+  );
 
-  // Tournament and admin management mutations
   const updateTournamentMutation = useUpdateTournament();
   const addAdminMutation = useAddTournamentAdmin();
   const removeAdminMutation = useRemoveTournamentAdmin();
@@ -191,7 +91,7 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
         tournamentName: data.tournamentName,
         status: parseInt(data.statusId),
         startingDate: data.startingDate,
-        description: data.description
+        description: data.description,
       });
 
       onSave?.();
@@ -200,7 +100,6 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
     }
   };
 
-  // Admin management functions
   const handleAddAdmin = async () => {
     if (!selectedAdminUser) return;
 
@@ -208,7 +107,7 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
     try {
       await addAdminMutation.mutateAsync({
         tournamentId: parseInt(tournament.id),
-        userId: selectedAdminUser
+        userId: selectedAdminUser,
       });
       setSelectedAdminUser("");
       refetchAdmins();
@@ -226,7 +125,7 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
     try {
       await removeAdminMutation.mutateAsync({
         tournamentId: parseInt(tournament.id),
-        userId: userId
+        userId,
       });
       refetchAdmins();
     } catch (error: any) {
@@ -236,156 +135,160 @@ const TournamentEditForm = ({ tournament, onSave, onCancel }: TournamentEditForm
     }
   };
 
-  // Note: UserTypeahead component handles user fetching internally
-  // No need to pass users data or filter here
-
   return (
-    <EditFormContainer>
-      <EditFormHeader>
-        Edit Tournament
-      </EditFormHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle>Edit Tournament</CardTitle>
+      </CardHeader>
 
-      <FormContainer onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          name="tournamentName"
-          control={control}
-          rules={{
-            required: "Tournament name is required",
-            maxLength: { value: 255, message: "Tournament name must be less than 255 characters" }
-          }}
-          render={({ field }) => (
-            <EditTextComponent
-              labelText="Tournament Name"
-              inputValue={field.value}
-              onInputValueChange={field.onChange}
-              css={{ width: inputWidth }}
-              error={!!errors.tournamentName}
-              maxLength={255}
-            />
-          )}
-        />
+      <CardBody onSubmit={handleSubmit(onSubmit)}>
+        <FieldWrap>
+          <Controller
+            name="tournamentName"
+            control={control}
+            rules={{
+              required: "Tournament name is required",
+              maxLength: { value: 255, message: "Tournament name must be less than 255 characters" },
+            }}
+            render={({ field }) => (
+              <EditTextComponent
+                labelText="Tournament Name"
+                inputValue={field.value}
+                onInputValueChange={field.onChange}
+                css={{ width: "100%" }}
+                error={!!errors.tournamentName}
+                maxLength={255}
+              />
+            )}
+          />
+        </FieldWrap>
 
-        <Controller
-          name="statusId"
-          control={control}
-          rules={{ required: "Status is required" }}
-          render={({ field }) => (
-            <DropdownWithLabel
-              labelText="Status"
-              items={statusIds}
-              error={!!errors.statusId}
-              css={{ width: inputWidth }}
-              selectedItem={field.value}
-              placeholder="Status"
-              onSelect={field.onChange}
-            />
-          )}
-        />
+        <FieldWrap>
+          <Controller
+            name="statusId"
+            control={control}
+            rules={{ required: "Status is required" }}
+            render={({ field }) => (
+              <DropdownWithLabel
+                labelText="Status"
+                items={statusIds}
+                error={!!errors.statusId}
+                css={{ width: "100%" }}
+                selectedItem={field.value}
+                placeholder="Status"
+                onSelect={field.onChange}
+              />
+            )}
+          />
+        </FieldWrap>
 
-        <Controller
-          name="startingDate"
-          control={control}
-          rules={{ required: "Starting date is required" }}
-          render={({ field }) => (
-            <DateComponent
-              labelText="Starting Date"
-              inputValue={field.value}
-              onInputValueChange={field.onChange}
-            />
-          )}
-        />
+        <FieldWrap>
+          <Controller
+            name="startingDate"
+            control={control}
+            rules={{ required: "Starting date is required" }}
+            render={({ field }) => (
+              <DateComponent
+                labelText="Starting Date"
+                inputValue={field.value}
+                onInputValueChange={field.onChange}
+              />
+            )}
+          />
+        </FieldWrap>
 
-        <Controller
-          name="description"
-          control={control}
-          rules={{
-            maxLength: { value: 1000, message: "Description must be less than 1000 characters" }
-          }}
-          render={({ field }) => (
-            <EditTextAreaComponent
-              labelText="Description"
-              inputValue={field.value}
-              onInputValueChange={field.onChange}
-              css={{ width: "500px", height: "150px" }}
-              error={!!errors.description}
-              maxLength={1000}
-            />
-          )}
-        />
+        <WideFieldWrap>
+          <Controller
+            name="description"
+            control={control}
+            rules={{ maxLength: { value: 1000, message: "Description must be less than 1000 characters" } }}
+            render={({ field }) => (
+              <EditTextAreaComponent
+                labelText="Description"
+                inputValue={field.value}
+                onInputValueChange={field.onChange}
+                css={{ width: "100%", height: "150px", color: "var(--primary-text)", borderColor: "var(--border)" }}
+                error={!!errors.description}
+                maxLength={1000}
+              />
+            )}
+          />
+        </WideFieldWrap>
 
-        {/* Tournament Admins Management */}
-        <AdminSection>
-          <AdminSectionHeader>Tournament Admins</AdminSectionHeader>
+        <Section>
+          <SectionHeaderRow>
+            <SectionTitle>Tournament Admins</SectionTitle>
+            <SectionHint>Admins can manage registration and status.</SectionHint>
+          </SectionHeaderRow>
 
-          {/* Current Admins List */}
-          {tournamentAdmins && tournamentAdmins.length > 0 && (
+          {tournamentAdmins && tournamentAdmins.length > 0 ? (
             <AdminList>
               {tournamentAdmins.map((admin) => (
                 <AdminItem key={admin.userId}>
-                  <AdminName>{admin.name}</AdminName>
-                  <RemoveButton
+                  <AdminName title={admin.name}>{admin.name}</AdminName>
+
+                  <DangerButton
+                    type="button"
                     onClick={() => handleRemoveAdmin(admin.userId)}
                     disabled={removingAdminId === admin.userId}
                   >
                     {removingAdminId === admin.userId ? "Removing..." : "Remove"}
-                  </RemoveButton>
+                  </DangerButton>
                 </AdminItem>
               ))}
             </AdminList>
+          ) : (
+            <SectionHint>No admins yet.</SectionHint>
           )}
 
-          {/* Add New Admin */}
-          <AddAdminContainer>
-            <UserTypeahead
-              labelText="Add Admin"
-              selectedItem={selectedAdminUser}
-              onSelect={(item: DropdownItemType | null) => setSelectedAdminUser(item?.value || "")}
-              onBlur={() => {}}
-              placeholder="Select user to add as admin..."
-              css={{ width: "300px" }}
-            />
+          <AddAdminRow>
+            <div style={{ width: "min(420px, 100%)" }}>
+              <UserTypeahead
+                labelText="Add Admin"
+                selectedItem={selectedAdminUser}
+                onSelect={(item: DropdownItemType | null) =>
+                  setSelectedAdminUser(item?.value || "")
+                }
+                onBlur={() => {}}
+                placeholder="Select user to add as admin..."
+                css={{ width: "100%" }}
+              />
+            </div>
+
             <AddAdminButton
+              type="button"
               onClick={handleAddAdmin}
               disabled={!selectedAdminUser || isAddingAdmin}
             >
               {isAddingAdmin ? <Spinner size="2" /> : "Add Admin"}
             </AddAdminButton>
-          </AddAdminContainer>
-        </AdminSection>
+          </AddAdminRow>
+        </Section>
 
-        {/* Display form validation errors */}
-        {Object.keys(errors).length > 0 && (
-          <ErrorMessage>
-            {Object.values(errors).map((error, index) => (
-              <div key={index}>{error?.message}</div>
-            ))}
-          </ErrorMessage>
+        {(Object.keys(errors).length > 0 || errorMsg) && (
+          <InlineError>
+            {Object.keys(errors).length > 0 && (
+              <ErrorText>
+                {Object.values(errors).map((err, idx) => (
+                  <div key={idx}>{err?.message}</div>
+                ))}
+              </ErrorText>
+            )}
+            {errorMsg && <ErrorText>{errorMsg}</ErrorText>}
+          </InlineError>
         )}
 
-        {errorMsg && (
-          <ErrorMessage>
-            {errorMsg}
-          </ErrorMessage>
-        )}
-
-        <ButtonContainer>
-          <CancelButton
-            type="button"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
+        <ButtonRow>
+          <PrimaryButton type="button" onClick={onCancel} disabled={isSubmitting}>
             Cancel
-          </CancelButton>
+          </PrimaryButton>
 
-          <SaveButton
-            type="submit"
-            disabled={isSubmitting}
-          >
+          <PrimaryButton type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Spinner size="2" /> : "Save Changes"}
-          </SaveButton>
-        </ButtonContainer>
-      </FormContainer>
-    </EditFormContainer>
+          </PrimaryButton>
+        </ButtonRow>
+      </CardBody>
+    </Card>
   );
 };
 

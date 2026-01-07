@@ -1,20 +1,29 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Navigation } from "components/Sidebar/Sidebar";
-import { Container, Main, StyledFooter, LogoSpan, Banner, BannerImage } from './Layout.styled';
+import {
+  Container,
+  Main, 
+  StyledFooter, 
+  Banner, 
+  BannerTitle,
+  BannerContent,
+  BannerSubtitle
+} from "./Layout.styled";
 
 export const Footer = () => {
+  const year = new Date().getFullYear();
+
   return (
     <StyledFooter>
+      © {year}{" "}
       <a
-        href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+        href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Powered by{" "}
-        <LogoSpan>
-          <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-        </LogoSpan>
+        ITS Junta
       </a>
     </StyledFooter>
   );
@@ -28,11 +37,30 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Container>
       <Navigation />
+
       <Banner>
-        <BannerImage src="/menu-image.jpeg" alt="Twilight Struggle Banner" />
+        <Image
+          src="/menu-image.jpeg"
+          alt="Twilight Struggle Banner"
+          fill
+          priority
+          sizes="100vw"
+          style={{ objectFit: "cover" }}
+        />
+
+        <BannerContent>
+          <BannerTitle>
+            International Twilight Struggle Community
+          </BannerTitle>
+
+          <BannerSubtitle>
+            Powered by <Link href="/about">ITS Junta</Link>
+          </BannerSubtitle>
+        </BannerContent>
       </Banner>
+
       <Main>{children}</Main>
-      {/* <Footer /> */}
+      { <Footer /> }
     </Container>
   );
 };

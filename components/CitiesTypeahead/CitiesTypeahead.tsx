@@ -69,6 +69,7 @@ const CitiesTypeahead: React.FC<CitiesTypeaheadProps> = ({
           label={labelText}
           error={error}
           placeholder={placeholder}
+          css={{color: "var(--primary-text)"}}
           {...rest}
         />
         {filteredCities.length > 0 && (
@@ -79,7 +80,7 @@ const CitiesTypeahead: React.FC<CitiesTypeaheadProps> = ({
                 value={{ value, text }} 
                 index={index} 
                 id={value}
-                itemColor="grey50"
+                itemColor="var(--bg-card)"
                 disabled={false}
               >
                 <div>{text}</div>
@@ -89,14 +90,14 @@ const CitiesTypeahead: React.FC<CitiesTypeaheadProps> = ({
         )}
         {isLoading && input.length >= minChars && (
           <Typeahead.List css={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
+            <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)' }}>
               Loading cities...
             </div>
           </Typeahead.List>
         )}
         {!isLoading && input.length >= minChars && filteredCities.length === 0 && (
           <Typeahead.List css={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
+            <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)' }}>
               No cities found
             </div>
           </Typeahead.List>

@@ -12,7 +12,7 @@ export default function Home() {
         <title>Twilight Struggle</title>
         <meta
           name="description"
-          content="The place where competitive twilight struggle happens. Online tournaments with Round Robin and Swiss format. All skill levels are welcome."
+          content="The place where competitive Twilight Struggle happens. Online tournaments with Round Robin and Swiss format. All skill levels are welcome."
         />
         <link rel="icon" href="/ts-icon.webp" />
       </Head>

@@ -8,11 +8,9 @@ const UserProfileContainer = () => {
   const { data, isLoading, error } = useUserById(user?.id || "");
 
   if (isLoading) return <Spinner size="3" />;
-  if (error || !data) return <div>Error loading user profile</div>;
+  if (error || !data) return <div>Error Loading User Profile</div>;
 
   return <UserProfileForm data={data} />;
 };
-
-
 
 export default UserProfileContainer;

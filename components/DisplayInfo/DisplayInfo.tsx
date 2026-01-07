@@ -1,18 +1,27 @@
-import { Flex } from "components/Atoms";
-import { StyledLabel, StyledLabelInfo } from "./DisplayInfo.styled";
+import React, { useId } from "react";
+import { Container, StyledLabel, StyledLabelInfo } from "./DisplayInfo.styled";
 
 type DisplayInfoProps = {
   label: string;
   infoText: string;
   maxWidth?: string;
+  id?: string; 
 };
 
-const DisplayInfo: React.FC<DisplayInfoProps> = ({ label, infoText, maxWidth = "300px" }) => {
+const DisplayInfo: React.FC<DisplayInfoProps> = ({
+  label,
+  infoText,
+  maxWidth = "300px",
+  id,
+}) => {
+  const reactId = useId();
+  const valueId = id ?? `displayinfo-${reactId}`;
+
   return (
-    <div style={{ display: "flex",flexDirection: "column", maxWidth }}>
-      <StyledLabel htmlFor="userName">{label}</StyledLabel>
-      <StyledLabelInfo id="userName">{infoText || "-"}</StyledLabelInfo>
-    </div>
+    <Container $maxWidth={maxWidth}>
+      <StyledLabel htmlFor={valueId}>{label}</StyledLabel>
+      <StyledLabelInfo id={valueId}>{infoText || "-"}</StyledLabelInfo>
+    </Container>
   );
 };
 

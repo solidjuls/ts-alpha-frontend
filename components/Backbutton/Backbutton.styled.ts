@@ -25,17 +25,17 @@ export const LinkButton = styled.a`
   min-width: 2.5rem;
   font-size: 1rem;
   padding: 0px;
-  color: #DD6B20;
+  color: var(--usa);
   cursor: pointer;
   border: none;
   background: none;
 
   &:hover {
-    text-decoration: underline;
+    color: var(--ussr);
   }
 
   &:focus {
-    outline: 2px solid #DD6B20;
+    outline: 2px solid var(--usa);
     outline-offset: 2px;
   }
 `;

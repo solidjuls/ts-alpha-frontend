@@ -4,22 +4,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { Spinner } from '@radix-ui/themes';
-
 import { Button } from 'components/Button';
 import { Label } from 'components/Label';
 import { PasswordInput } from 'components/Input';
 import { useResetPasswordConfirm } from '../../hooks/useAuth';
-import {
+import { 
   ResetContainer,
   ResetCard,
   FormTitle,
   FormField,
-  ErrorMessage,
-  SuccessBanner,
   InfoText,
-  PasswordRequirements,
   BackLink,
-} from '../reset-password';
+  SuccessBanner,
+  PasswordRequirements,
+  ErrorMessage
+} from "styles/resetPassword.styled";
 
 const StyledPasswordInput = styled(PasswordInput)`
   width: 100%;
@@ -104,7 +103,7 @@ const ResetPasswordConfirmPage: React.FC = () => {
             <InfoText>
               You can now log in with your new password.
             </InfoText>
-            <Link href="/login">
+            <Link href="/login" passHref>
               <Button style={{ backgroundColor: '#16a34a' }}>
                 <b>Go to Login</b>
               </Button>

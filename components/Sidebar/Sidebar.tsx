@@ -1,94 +1,86 @@
+import { useState } from "react";
 import { useAuth } from "contexts/AuthProviderNew";
 import { FormattedMessage } from "react-intl";
-import { UserAvatar } from "components/UserAvatar";
-import {
-  Root,
-  Trigger,
-  Portal,
-  Item,
-} from "@radix-ui/react-dropdown-menu";
 import { userRoles } from "utils/constants";
+import { SignOutLink } from "components/SignOutLink";
+
 import {
   Flex,
-  StyledText,
-  StyledHamburgerMenuIcon,
   HorizontalNavigationLayout,
   UnstyledLink,
-  StyledContent,
   VerticalSidebarLayout,
   NavigationContainer,
   HorizontalItemsContainer,
   HorizontalNavText,
-} from './Sidebar.styled';
+  MobileMenuButton,
+  MobileMenu,
+  StyledHamburgerMenuIcon,
+  MobileBrand,
+  MobileAuthRow,
+} from "./Sidebar.styled";
 
+const Items = ({
+  role,
+  onNavigate,
+}: {
+  role?: string;
+  onNavigate?: () => void;
+}) => (
+  <>
+    <UnstyledLink href="/" passHref onClick={onNavigate}>
+      <HorizontalNavText>Game Results</HorizontalNavText>
+    </UnstyledLink>
 
+    <UnstyledLink href="/players" passHref onClick={onNavigate}>
+      <HorizontalNavText>Player List</HorizontalNavText>
+    </UnstyledLink>
 
-const Items = ({ role }: any) => {
-  return (
-    <>
-      <UnstyledLink href="/" passHref>
-        <HorizontalNavText>
-          Game Results
-        </HorizontalNavText>
+    <UnstyledLink href="/submit-game" passHref onClick={onNavigate}>
+      <HorizontalNavText>Submit Form</HorizontalNavText>
+    </UnstyledLink>
+
+    <UnstyledLink href="/schedule" passHref onClick={onNavigate}>
+      <HorizontalNavText>My Schedule</HorizontalNavText>
+    </UnstyledLink>
+
+    <UnstyledLink href="/standings" passHref onClick={onNavigate}>
+      <HorizontalNavText>Standings</HorizontalNavText>
+    </UnstyledLink>
+
+    <UnstyledLink href="/userprofile" passHref onClick={onNavigate}>
+      <HorizontalNavText>
+        <FormattedMessage id="profileText" defaultMessage="Profile" />
+      </HorizontalNavText>
+    </UnstyledLink>
+
+    {role === userRoles.SUPERADMIN && (
+      <UnstyledLink href="/recreateform" passHref onClick={onNavigate}>
+        <HorizontalNavText>Recreate Form</HorizontalNavText>
       </UnstyledLink>
-      <UnstyledLink href="/players" passHref>
-        <HorizontalNavText>
-          Player List
-        </HorizontalNavText>
+    )}
+
+    {role === userRoles.SUPERADMIN && (
+      <UnstyledLink href="/register" passHref onClick={onNavigate}>
+        <HorizontalNavText>Register User</HorizontalNavText>
       </UnstyledLink>
-      {/* <HorizontalNavText>Federations</HorizontalNavText> */}
-      <UnstyledLink href="/submit-game" passHref>
-        <HorizontalNavText>
-          Submit Form
-        </HorizontalNavText>
-      </UnstyledLink>
-      <UnstyledLink href="/schedule" passHref>
-        <HorizontalNavText>
-          My Schedule
-        </HorizontalNavText>
-      </UnstyledLink>
-      <UnstyledLink href="/standings" passHref>
-        <HorizontalNavText>
-          Standings
-        </HorizontalNavText>
-      </UnstyledLink>
-      <UnstyledLink href="/userprofile" passHref>
-        <HorizontalNavText>
-          <FormattedMessage id="profileText" />
-        </HorizontalNavText>
-      </UnstyledLink>
-      {role === userRoles.SUPERADMIN && (
-        <UnstyledLink href="/recreateform" passHref>
-          <HorizontalNavText>
-            Recreate Form
-          </HorizontalNavText>
-        </UnstyledLink>
-      )}
-      {role === userRoles.SUPERADMIN && (
-        <UnstyledLink href="/register" passHref>
-          <HorizontalNavText>
-            Register User
-          </HorizontalNavText>
-        </UnstyledLink>
-      )}
-      <UnstyledLink href="/tournaments" passHref>
-        <HorizontalNavText>
-          Tournaments
-        </HorizontalNavText>
-      </UnstyledLink>
-      <UnstyledLink href="/hall-of-fame" passHref>
-        <HorizontalNavText>
-          Hall of Fame
-        </HorizontalNavText>
-      </UnstyledLink>
-      <UnstyledLink href="/about" passHref>
-        <HorizontalNavText>
-          About Us
-        </HorizontalNavText>
-      </UnstyledLink>
-    </>
-  );
-};
+    )}
+
+    <UnstyledLink href="/tournaments" passHref onClick={onNavigate}>
+      <HorizontalNavText>Tournaments</HorizontalNavText>
+    </UnstyledLink>
+
+    <UnstyledLink href="/hall-of-fame" passHref onClick={onNavigate}>
+      <HorizontalNavText>Hall of Fame</HorizontalNavText>
+    </UnstyledLink>
+
+    <UnstyledLink href="/about" passHref onClick={onNavigate}>
+      <HorizontalNavText>
+        <FormattedMessage id="aboutUs" defaultMessage="About Us" />
+      </HorizontalNavText>
+    </UnstyledLink>
+  </>
+);
+
 
 const HorizontalNavigation = () => {
   const { user } = useAuth();
@@ -98,127 +90,64 @@ const HorizontalNavigation = () => {
       <HorizontalItemsContainer>
         <Items role={user?.role} />
       </HorizontalItemsContainer>
-      {!user && (
-        <UnstyledLink href="/login" passHref>
-          <StyledText>
-            <FormattedMessage id="signIn" />
-          </StyledText>
-        </UnstyledLink>
-      )}
-      {user && (
-        <Flex>
-          <UserAvatar name={user.name} />
-        </Flex>
-      )}
+
+      <Flex>
+        {!user && (
+          <UnstyledLink href="/login" passHref>
+            <HorizontalNavText>
+              <FormattedMessage id="signIn" defaultMessage="Sign In" />
+            </HorizontalNavText>
+          </UnstyledLink>
+        )}
+        {user && <SignOutLink />}
+      </Flex>
     </HorizontalNavigationLayout>
   );
 };
 
-
 const VerticalSidebar = () => {
   const { user } = useAuth();
+  const [open, setOpen] = useState(false);
+
   return (
     <VerticalSidebarLayout>
-      <Root>
-        <Trigger style={{ border: "none" }}>
-          <StyledHamburgerMenuIcon />
-        </Trigger>
-        <Portal>
-          <StyledContent align="end">
-            <UnstyledLink href="/" passHref>
-              <Item>
-                <HorizontalNavText>
-                  Game Results
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-            <UnstyledLink href="/players" passHref>
-              <Item>
-                <HorizontalNavText>
-                  Player List
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-            <UnstyledLink href="/submit-game" passHref>
-              <Item>
-                <HorizontalNavText>
-                  Submit Form
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-            <UnstyledLink href="/schedule" passHref>
-              <HorizontalNavText>
-                My Schedule
-              </HorizontalNavText>
-            </UnstyledLink>
-            <UnstyledLink href="/standings" passHref>
-              <HorizontalNavText>
-                Standings
-              </HorizontalNavText>
-            </UnstyledLink>
-            {user?.role === userRoles.SUPERADMIN && (
-              <UnstyledLink href="/recreateform" passHref>
-                <Item>
-                  <HorizontalNavText>
-                    Recreate Form
-                  </HorizontalNavText>
-                </Item>
-              </UnstyledLink>
-            )}
-            {user?.role === userRoles.SUPERADMIN && (
-              <UnstyledLink href="/userprofile" passHref>
-                <Item>
-                  <HorizontalNavText>
-                    Register Form
-                  </HorizontalNavText>
-                </Item>
-              </UnstyledLink>
-            )}
-            <UnstyledLink href="/userprofile" passHref>
-              <Item>
-                <HorizontalNavText>
-                  <FormattedMessage id="profileText" />
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-            <UnstyledLink href="/tournaments" passHref>
-              <HorizontalNavText>
-                Tournaments
-              </HorizontalNavText>
-            </UnstyledLink>
-            <UnstyledLink href="/hall-of-fame" passHref>
-              <HorizontalNavText>
-                Hall of Fame
-              </HorizontalNavText>
-            </UnstyledLink>
-            <UnstyledLink href="/about" passHref>
-              <Item>
-                <HorizontalNavText>
-                  <FormattedMessage id="aboutUs" />
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-            <UnstyledLink href="/login" passHref>
-              <Item>
-                <HorizontalNavText>
-                  {user ? <FormattedMessage id="signOut" /> : <FormattedMessage id="signIn" />}
-                </HorizontalNavText>
-              </Item>
-            </UnstyledLink>
-          </StyledContent>
-        </Portal>
-      </Root>
+      <MobileBrand>ITS Junta</MobileBrand>
+
+      <MobileMenuButton onClick={() => setOpen((prev) => !prev)} aria-label="Toggle navigation">
+        <StyledHamburgerMenuIcon />
+      </MobileMenuButton>
+
+      {open && (
+  <MobileMenu>
+    <HorizontalItemsContainer>
+      <Items role={user?.role} onNavigate={() => setOpen(false)} />
+    </HorizontalItemsContainer>
+
+    <MobileAuthRow>
+      {!user && (
+        <UnstyledLink href="/login" passHref onClick={() => setOpen(false)}>
+          <HorizontalNavText>
+            <FormattedMessage id="signIn" defaultMessage="Sign In" />
+          </HorizontalNavText>
+        </UnstyledLink>
+      )}
+      {user && <SignOutLink /* see note below */ />}
+    </MobileAuthRow>
+  </MobileMenu>
+)}
+
     </VerticalSidebarLayout>
   );
 };
+
 const Navigation = () => {
   return (
-    <>
-      <NavigationContainer>
-        <VerticalSidebar />
-        <HorizontalNavigation />
-      </NavigationContainer>
-    </>
+    <NavigationContainer>
+      {/* Mobile bar */}
+      <VerticalSidebar />
+      {/* Desktop nav */}
+      <HorizontalNavigation />
+    </NavigationContainer>
   );
 };
 

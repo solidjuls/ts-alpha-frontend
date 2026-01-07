@@ -1,164 +1,45 @@
-import styled from "styled-components";
+import Link from "next/link";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { useState } from "react";
 import { useStandings, PlayerStanding } from "hooks/useStandings";
 import { Spinner } from "@radix-ui/themes";
-
-// Using PlayerStanding type from the hook
-
-const PageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 8px;
-  width: 100%;
-`;
-
-const PageHeader = styled.h1`
-  text-align: center;
-`;
-
-const StyledTable = styled.table`
-  border-collapse: collapse;
-  margin-bottom: 8px;
-`;
-
-const StyledHeading = styled.thead`
-  font-weight: bold;
-  background-color: rgb(28, 69, 135);
-  color: white;
-`;
-
-const StyledHeaderCell = styled.th`
-  font-size: 12px;
-  text-align: left;
-  padding: 0 0 0 4px;
-  border: solid 1px black;
-`;
-
-const StyledCell = styled.td`
-  padding: 0 0 0 4px;
-  border: solid 1px black;
-  font-size: 12px;
-`;
-
-const TabContainer = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #ccc;
-  width: fit-content;
-`;
-
-interface TabButtonProps {
-  $active?: boolean;
-}
-
-const TabButton = styled.button<TabButtonProps>`
-  padding: 12px 24px;
-  border: none;
-  background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#f5f5f5'};
-  color: ${props => props.$active ? 'white' : '#666'};
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  outline: none;
-
-  &:hover {
-    background-color: ${props => props.$active ? 'rgb(28, 69, 135)' : '#e0e0e0'};
-  }
-`;
-
-const StandingsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 16px;
-  position: relative;
-`;
-
-interface LoadingOverlayProps {
-  $isVisible: boolean;
-}
-
-const LoadingOverlay = styled.div<LoadingOverlayProps>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: ${props => props.$isVisible ? 1 : 0};
-  pointer-events: ${props => props.$isVisible ? 'auto' : 'none'};
-  transition: opacity 0.2s ease;
-  z-index: 10;
-`;
-
-const StandingGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-radius: 8px;
-  padding: 8px;
-`;
-
-const StandingTitle = styled(Text)`
-  background-color: rgb(28, 69, 135);
-  color: white;
-  margin: 0;
-  text-align: center;
-`;
-
-const PlayerRow = styled.tr``;
-
-const RankCell = styled(StyledCell)`
-  border-left: solid 1px black;
-`;
-
-const PlayerInfoContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-`;
-
-const StatCell = styled(StyledCell)`
-  border-left: solid 1px black;
-  width: 50px;
-`;
-
-const WideRankCell = styled(RankCell)`
-  width: 40px;
-`;
-
-const WidePlayerCell = styled(StyledCell)`
-  padding-left: 40px;
-  width: 200px;
-`;
+import { 
+  PageContainer,
+  PageHeader,
+  Title,
+  TabContainer,
+  TabButton,
+  StandingsContainer,
+  StandingGroup,
+  StandingTitle,
+  StandingTitleBar,
+  LoadingOverlay,
+  TableScroll,
+  StyledTable,
+  StyledHeaderCell,
+  StyledHeading,
+  StyledRow,
+  RankCell,
+  PlayerCell,
+  PlayerInfoContainer,
+  StatCell,
+  StyledHeaderCellCentered,
+  ErrorBox
+ } from "styles/standings.styled";
 
 type Division = "TORUN" | "SEATTLE";
+
 
 const Standings = () => {
   const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
 
-  const {
-    data: standings,
-    isFetching,
-    error,
-  } = useStandings({
+  const { data: standings, isFetching, error } = useStandings({
     tournamentId: "318",
-    division: selectedDivision
+    division: selectedDivision,
   });
 
-  const handleDivisionChange = (division: Division) => {
-    setSelectedDivision(division);
-  };
-
-  if (error) return <div>Error loading standings</div>;
+  if (error) return <ErrorBox>Error Loading Standings</ErrorBox>;
 
   const grouped = standings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
@@ -168,88 +49,84 @@ const Standings = () => {
 
   for (const key in grouped) {
     grouped[key].sort((a, b) => {
-      if (b.winRate !== a.winRate) {
-        return b.winRate - a.winRate;
-      }
+      if (b.winRate !== a.winRate) return b.winRate - a.winRate;
       return b.sos - a.sos;
     });
   }
 
   return (
     <PageContainer>
-      {/* Division Filter Tabs */}
-      <PageHeader>Standings</PageHeader>
-      <TabContainer>
-        <TabButton
-          $active={selectedDivision === "TORUN"}
-          onClick={() => handleDivisionChange("TORUN")}
-        >
-          TORUN
-        </TabButton>
-        <TabButton
-          $active={selectedDivision === "SEATTLE"}
-          onClick={() => handleDivisionChange("SEATTLE")}
-        >
-          SEATTLE
-        </TabButton>
-      </TabContainer>
+      <PageHeader>
+        <Title>Standings</Title>
+
+        <TabContainer>
+          <TabButton $active={selectedDivision === "TORUN"} onClick={() => setSelectedDivision("TORUN")}>
+            TORUN
+          </TabButton>
+          <TabButton $active={selectedDivision === "SEATTLE"} onClick={() => setSelectedDivision("SEATTLE")}>
+            SEATTLE
+          </TabButton>
+        </TabContainer>
+      </PageHeader>
 
       <StandingsContainer>
-        {/* Loading overlay - shows on top of existing content during refetch */}
         <LoadingOverlay $isVisible={isFetching}>
           <Spinner size="3" />
         </LoadingOverlay>
 
-        {grouped && Object.entries(grouped).map(([standingName, players]) => (
-          <StandingGroup key={standingName}>
-            <StandingTitle strong="bold">
-              {standingName}
-            </StandingTitle>
-            <StyledTable>
-              <StyledHeading>
-                <tr>
-                  <WideRankCell as="th">Rank</WideRankCell>
-                  <WidePlayerCell as="th">Player Name</WidePlayerCell>
-                  <StyledHeaderCell>W-L-T</StyledHeaderCell>
-                  <StyledHeaderCell>Win%</StyledHeaderCell>
-                  <StyledHeaderCell>SoS</StyledHeaderCell>
-                </tr>
-              </StyledHeading>
-              <tbody>
-                {players.map((player, index) => (
-                  <PlayerRow key={player.userId}>
-                    <RankCell>
-                      <Text fontSize="small" style={{ textAlign: "center" }}>
-                        {index+1}
-                      </Text>
-                    </RankCell>
-                    <StyledCell>
-                      <PlayerInfoContainer>
-                        {player.tldCode && <FlagIcon code={player.tldCode} />}
-                        <Text fontSize="small">{player.name}</Text>
-                      </PlayerInfoContainer>
-                    </StyledCell>
-                    <StatCell>
-                      <Text fontSize="small">
-                        {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                      </Text>
-                    </StatCell>
-                    <StatCell>
-                      <Text fontSize="small" style={{ textAlign: "center" }}>
-                        {`${(player.winRate*100).toFixed(0)}%`}
-                      </Text>
-                    </StatCell>
-                    <StatCell>
-                      <Text fontSize="small" style={{ textAlign: "center" }}>
-                        {`${(player.sos*100).toFixed(0)}%`}
-                      </Text>
-                    </StatCell>
-                  </PlayerRow>
-                ))}
-              </tbody>
-            </StyledTable>
-          </StandingGroup>
-        ))}
+        {grouped &&
+          Object.entries(grouped).map(([standingName, players]) => (
+            <StandingGroup key={standingName}>
+              <StandingTitleBar>
+                <StandingTitle>{standingName}</StandingTitle>
+              </StandingTitleBar>
+
+              <TableScroll>
+                <StyledTable>
+                  <StyledHeading>
+                    <tr>
+                      <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
+                      <StyledHeaderCell>Player</StyledHeaderCell>
+                      <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
+                      <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
+                      <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
+                    </tr>
+                  </StyledHeading>
+
+                  <tbody>
+                    {players.map((player, index) => (
+                      <StyledRow key={player.userId}>
+                        <RankCell>
+                          <Text fontSize="small">{index + 1}</Text>
+                        </RankCell>
+
+                        <PlayerCell>
+                          <PlayerInfoContainer>
+                            {player.tldCode && <FlagIcon code={player.tldCode} />}
+                            <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
+                          </PlayerInfoContainer>
+                        </PlayerCell>
+
+                        <StatCell>
+                          <Text fontSize="small">
+                            {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                          </Text>
+                        </StatCell>
+
+                        <StatCell>
+                          <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
+                        </StatCell>
+
+                        <StatCell>
+                          <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
+                        </StatCell>
+                      </StyledRow>
+                    ))}
+                  </tbody>
+                </StyledTable>
+              </TableScroll>
+            </StandingGroup>
+          ))}
       </StandingsContainer>
     </PageContainer>
   );

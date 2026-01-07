@@ -8,10 +8,15 @@ import { ResultsPanel } from "components/Homepage/Homepage";
 import { UserDetail } from "services/users.service";
 import { Game as ServiceGame } from "services/games.service";
 import { Game as ComponentGame, GameWinner } from "types/game.types";
-import styled from "styled-components";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
+import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../styles/userprofile.styled";
+import { Pagination } from "components/Pagination";
+import React, {useState} from "react";
+import { FlagIcon } from "components/FlagIcon";
+
+const PAGE_SIZE = 10;
 
 // Convert service Game type to component Game type
 const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentGame => ({
@@ -29,61 +34,46 @@ const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentG
 
 const UserProfileContent: React.FC<UserDetail> = (data) => (
   <>
-    <DisplayInfo label="Player's name" infoText={`${data?.first_name} ${data?.last_name}`} />
+    <ProfileHeading>
+      <FlagIcon code={data?.countries?.tld_code} />
+      {`${data?.first_name} ${data?.last_name}`}
+    </ProfileHeading>
+
     <DisplayInfo label="Federation" infoText={data?.countries?.country_name || "-"} />
     <DisplayInfo label="Playdek" infoText={data?.playdek_name || "-"} />
     <DisplayInfo label="Location" infoText={data?.cities?.name || "-"} />
-    <DisplayInfo label="Preferred gaming platform" infoText={data?.preferred_gaming_platform || "-"} />
+    <DisplayInfo label="Preferred Platform" infoText={data?.preferred_gaming_platform || "-"} />
     <DisplayInfo label="Email" infoText={data?.email} />
 
     <DisplayInfo label="Rating" infoText={data?.rating?.toString() || "-"} />
-    <DisplayInfo label="Regional federation" infoText="-" />
+    <DisplayInfo label="Regional Federation" infoText="-" />
     <DisplayInfo
-      label="Last activity date"
+      label="Last Activity"
       infoText={data.last_login_at ? dateFormat(new Date(data.last_login_at)) : "-"}
     />
-    <DisplayInfo label="Preferred game duration" infoText={data?.preferred_game_duration || "-"} />
+    <DisplayInfo label="Preferred Duration" infoText={data?.preferred_game_duration || "-"} />
   </>
 );
-
-// Styled components for the profile layout
-const ProfileContainer = styled.div`
-  display: grid;
-  gap: 0.25rem;
-  max-width: 48rem;
-  height: ${props => props.userLoading ? "250px" : "auto"};
-  grid-template-columns: 1fr 2fr;
-  background-color: white;
-  padding: 24px 0 24px 24px;
-  align-items: left;
-  border: solid 1px lightgray;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  width: 100%;
-`;
-
-const RecentGamesContainer = styled.div`
-  display: flex;
-  width: 100%;
-  border-radius: 0;
-  margin: 32px 0 0 0;
-  flex-direction: column;
-`;
 
 const UserProfile = () => {
   const params = useParams();
   const id = params?.id as string;
 
-  // Use NestJS endpoints with React Query
+  const [currentPage, setCurrentPage] = useState(1);
   const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
-  const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], 1, 10);
+  const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], currentPage, PAGE_SIZE);
 
-  // Handle errors
+  const totalPages = gamesData ? Math.ceil(gamesData.totalRows / PAGE_SIZE) : 1;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   if (userError) {
     return (
       <DetailContainer>
-        <ProfileContainer style={{ height: "250px" }}>
-          <div>Error loading user profile</div>
+        <ProfileContainer>
+          <div>Error Loading User Profile</div>
         </ProfileContainer>
       </DetailContainer>
     );
@@ -96,15 +86,27 @@ const UserProfile = () => {
           {userLoading || !userData ? <Spinner size="3" /> : <UserProfileContent {...userData} />}
         </ProfileContainer>
       </DetailContainer>
+
       <DetailContainer backButton={false}>
         <RecentGamesContainer>
           Recent Games
           {gamesError ? (
-            <div>Error loading recent games</div>
+            <div>Error Loading Recent Games</div>
           ) : gamesLoading || !gamesData ? (
             <Spinner size="3" />
           ) : (
-            <ResultsPanel data={gamesData.results.map(convertServiceGameToComponentGame)} />
+            <>
+              <ResultsPanel
+                data={gamesData.results.map(convertServiceGameToComponentGame)}
+              />
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              )}
+            </>
           )}
         </RecentGamesContainer>
       </DetailContainer>

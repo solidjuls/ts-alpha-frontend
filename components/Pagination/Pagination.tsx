@@ -1,7 +1,6 @@
-import { Button } from "components/Button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { Label } from "components/Label";
-import { Box } from "components/Atoms";
+import { PageBox, PageButton, IconButton } from "./Pagination.styled";
 
 interface PaginationComponentProps {
   currentPage: number;
@@ -17,35 +16,23 @@ const PaginationComponent: React.FC<PaginationComponentProps> = ({ currentPage, 
   };
 
   return (
-    <Box css={{ ...styles.paginationContainer }}>
-      <Button css={{ width: "80px" }} onClick={() => handlePageChange(1)}>
+    <PageBox>
+      <PageButton disabled={currentPage === 1} onClick={() => handlePageChange(1)}>
         First
-      </Button>
-      <Button disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
+      </PageButton>
+      <IconButton disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)}>
         <ChevronLeftIcon />
-      </Button>
+      </IconButton>
       <Label>{currentPage}</Label>
       <Label>of {totalPages}</Label>
-      <Button onClick={() => handlePageChange(currentPage + 1)}>
+      <IconButton disabled={currentPage === totalPages} onClick={() => handlePageChange(currentPage + 1)}>
         <ChevronRightIcon />
-      </Button>
-      <Button css={{ width: "80px" }} onClick={() => handlePageChange(totalPages)}>
+      </IconButton>
+      <PageButton disabled={currentPage === totalPages} onClick={() => handlePageChange(totalPages)}>
         Last
-      </Button>
-    </Box>
+      </PageButton>
+    </PageBox>
   );
-};
-
-// Styles for the Pagination component
-const styles = {
-  paginationContainer: {
-    display: "flex",
-    alignItems: "center",
-    padding: "8px",
-  },
-  pageInput: {
-    width: "30px",
-  },
 };
 
 export { PaginationComponent as Pagination };

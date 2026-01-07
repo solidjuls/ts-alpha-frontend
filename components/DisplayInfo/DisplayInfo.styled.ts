@@ -1,15 +1,20 @@
 import styled from "styled-components";
 import * as LabelPrimitive from "@radix-ui/react-label";
 
+export const Container = styled.div<{ $maxWidth: string }>`
+  display: flex;
+  flex-direction: column;
+  max-width: ${(p) => p.$maxWidth};
+`;
+
 export const StyledLabel = styled(LabelPrimitive.Root)`
   font-size: 10px;
-  font-weight: 500;
-  color: lightgray;
+  color: var(--primary-text);
   user-select: none;
 `;
 
-export const StyledLabelInfo = styled(LabelPrimitive.Root)`
+export const StyledLabelInfo = styled.div`
   font-size: 14px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--primary-text);
 `;

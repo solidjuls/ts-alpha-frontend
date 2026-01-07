@@ -3,38 +3,42 @@ import styled from "styled-components";
 import { useAutocompleteState } from "../AutocompleteContext";
 
 interface ItemProps {
-  $color?: 'lightgray' | 'white';
+  $highlighted?: boolean;
   disabled?: boolean;
+  $itemColor?: string;
 }
 
 const Item = styled.div<ItemProps>`
   position: relative;
   cursor: pointer;
   display: block;
-  line-height: 1;
-  color: ${props => props.theme?.colors?.textDark || '#333'};
-  font-size: ${props => props.theme.fontSizes.fontSizeM || '14px'};
-  padding: 4px 8px;
-  background-color: ${props => {
-    if (props.$color === 'lightgray') return 'darkBlue';
-    return props.theme?.colors?.backgroundColorLight || '#fff';
-  }};
-  color: ${props => {
-    if (props.$color === 'lightgray') return 'white';
-    return props.theme?.colors?.textDark || '#333';
-  }};
-  transition: all 50ms;
+  line-height: 1.4;
+  padding: 6px 10px;
+  font-size: 0.875rem;
+
+  background-color: ${({ $highlighted, $itemColor }) =>
+    $highlighted ? "var(--usa-alt)" : $itemColor || "var(--bg-card)"};
+  color: ${({ $highlighted }) =>
+    $highlighted ? "#ffffff" : "var(--primary-text)"};
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 
   &[disabled] {
     opacity: 0.5;
-    cursor: auto;
+    cursor: not-allowed;
     pointer-events: none;
   }
 
-  &:focus {
-    outline: none;
-    background-color: darkBlue;
-    color: white;
+  &:hover {
+    background-color: var(--ussr);
+    color: #ffffff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--usa);
+    outline-offset: 2px;
   }
 `;
 
@@ -63,11 +67,14 @@ const AutocompleteListItem: React.FC<AutocompleteListItemProps> = ({
   const restItemProps = { ...itemProps };
   delete (restItemProps as any).onClick;
 
+  const isHighlighted = highlightedIndex === index;
+
   return (
     <Item
       key={`${id}${index}`}
       {...rest}
-      $color={highlightedIndex === index ? "lightgray" : "white"}
+      $highlighted={isHighlighted}
+      $itemColor={itemColor}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       {...restItemProps}
@@ -76,7 +83,5 @@ const AutocompleteListItem: React.FC<AutocompleteListItemProps> = ({
     </Item>
   );
 };
-
-// Default props are handled through TypeScript interface defaults
 
 export { AutocompleteListItem };

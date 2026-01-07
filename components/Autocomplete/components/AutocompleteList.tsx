@@ -4,7 +4,7 @@ import { useAutocompleteState } from "../AutocompleteContext";
 
 export const i18ns = {
   noResults: {
-    en: "Unfortunately no results were found.",
+    en: "No Results Were Found.",
     de: "Leider haben wir zu Ihrer Suche keine passenden Ergebnisse gefunden.",
   },
 };

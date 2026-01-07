@@ -1,4 +1,5 @@
 import Text from "components/Text";
+import Link from "next/link";
 import { FlagIcon } from "components/FlagIcon";
 import { SkeletonPlayers } from "components/Skeletons";
 import { usePlayerRatings } from "hooks/useRating";
@@ -8,17 +9,18 @@ import {
   UserContainer,
   UserInfo,
   PlayersContainer,
-  TitleText
+  TitleText,
+  NumericText
 } from './TopPlayerRating.styled';
 
-const User = ({ name, rating, countryCode }: UserType) => {
+const User = ({ id, name, rating, countryCode }: UserType) => {
   return (
     <UserContainer>
       <UserInfo>
         <FlagIcon code={countryCode} />
-        <Text>{name}</Text>
+        <Link href={`/userprofile/${id}`} passHref><Text>{name}</Text></Link>
       </UserInfo>
-      <Text>{rating}</Text>
+      <NumericText>{rating}</NumericText>
     </UserContainer>
   );
 };
@@ -26,7 +28,7 @@ const User = ({ name, rating, countryCode }: UserType) => {
 const Announcement = () => {
   return (
     <SidePanelStyled>
-      <Text>Next match on action round zero</Text>
+      <Text>Next Match on Action Round Zero</Text>
     </SidePanelStyled>
   );
 };
@@ -46,17 +48,17 @@ const TopPlayerRating = () => {
   if (error) {
     return (
       <SidePanelStyled>
-        <TitleText strong="bold">
+        <TitleText>
           Top Players
         </TitleText>
-        <Text>Error loading top players</Text>
+        <Text>Error Loading Top Players</Text>
       </SidePanelStyled>
     );
   }
 
   return (
     <SidePanelStyled>
-      <TitleText strong="bold">
+      <TitleText>
         Top Players
       </TitleText>
       {isLoading && <SkeletonPlayers />}
@@ -64,6 +66,7 @@ const TopPlayerRating = () => {
         {playersData?.results?.map((player) => (
           <User
             key={player.id}
+            id={player.id}
             name={player.name}
             rating={player.rating}
             countryCode={player.countryCode || ''}

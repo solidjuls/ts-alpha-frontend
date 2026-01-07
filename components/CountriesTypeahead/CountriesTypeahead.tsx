@@ -73,6 +73,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
           error={error}
           placeholder={placeholder}
           filter={filter}
+          css={{color: "var(--primary-text)"}}
           {...rest}
         />
         {filteredCountries.length > 0 && (
@@ -83,7 +84,7 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
                 value={{ value, text }} 
                 index={index} 
                 id={value}
-                itemColor="grey50"
+                itemColor="var(--bg-card)"
                 disabled={false}
               >
                 <div>{text}</div>
@@ -93,15 +94,15 @@ const CountriesTypeahead: React.FC<CountriesTypeaheadProps> = ({
         )}
         {isLoading && input.length >= minChars && (
           <Typeahead.List css={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
-              Loading countries...
+            <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)', backgroundColor: 'var(--bg-card)' }}>
+              Loading Countries...
             </div>
           </Typeahead.List>
         )}
         {!isLoading && input.length >= minChars && filteredCountries.length === 0 && (
           <Typeahead.List css={{ width: listWidth }}>
-            <div style={{ padding: '8px', textAlign: 'center', color: '#666' }}>
-              No countries found
+            <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)', backgroundColor: 'var(--bg-card)' }}>
+              No Countries Found
             </div>
           </Typeahead.List>
         )}

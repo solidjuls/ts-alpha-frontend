@@ -1,7 +1,7 @@
 import DropdownMenu from "components/DropdownMenu";
-import MultiSelect from "components/MultiSelect";
 import WithLabel from "./WithLabel";
 import { DropdownItemType } from "types/types";
+import { FieldWrapper, ErrorText } from "./DropdownWithLabel.styled";
 
 type DropdownWithLabelProps = {
   labelText: string;
@@ -14,7 +14,7 @@ type DropdownWithLabelProps = {
   height?: string;
   disabled?: boolean;
   error: boolean;
-  css: any;
+  css?: any;
 };
 
 const DropdownWithLabel = ({
@@ -24,20 +24,24 @@ const DropdownWithLabel = ({
   onSelect,
   items,
   error,
-  height = undefined,
+  height,
   ...rest
 }: DropdownWithLabelProps) => (
   <WithLabel labelText={labelText}>
-    <DropdownMenu
-      items={items}
-      placeholder={placeholder}
-      selectedItem={selectedItem}
-      onSelect={onSelect}
-      height={height}
-      {...rest}
-      // filter={false}
-    />
-    {error && <div style={{ color: "red" }}>{`${placeholder} is invalid`}</div>}
+    <FieldWrapper>
+      <DropdownMenu
+        items={items}
+        placeholder={placeholder}
+        selectedItem={selectedItem}
+        onSelect={onSelect}
+        height={height}
+        {...rest}
+        error={error}
+      />
+      {error && (
+        <ErrorText>{`${placeholder} is invalid`}</ErrorText>
+      )}
+    </FieldWrapper>
   </WithLabel>
 );
 

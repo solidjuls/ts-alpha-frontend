@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { violet } from "@radix-ui/colors";
 import { Indicator, Root } from "@radix-ui/react-checkbox";
 
 export const StyledCheckbox = styled(Root)`
@@ -8,17 +7,22 @@ export const StyledCheckbox = styled(Root)`
   height: 20px;
   border-radius: 4px;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
-  border: solid 1px black;
+  border: solid 1px var(--border);
   margin: 8px;
   cursor: pointer;
 
   &:hover {
-    background-color: ${violet.violet3};
+    background-color: var(--ussr);
   }
 `;
 
 export const StyledIndicator = styled(Indicator)`
-  color: ${violet.violet11};
+  color: var(--ussr);
+
+  /* 👇 When the checkbox is hovered, change indicator color */
+  ${StyledCheckbox}:hover & {
+    color: var(--alt-text);
+  }
 `;
