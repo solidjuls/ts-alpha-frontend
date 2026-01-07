@@ -21,6 +21,7 @@ export interface RegisteredPlayer {
   phoneNumber: string;
   playdekName: string;
   status: string;
+  rating: number;
   registeredAt: Date;
   userId?: string;
   name: string;
