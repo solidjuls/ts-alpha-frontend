@@ -13,6 +13,7 @@ import {
   useWaitlistPlayers,
   useAddToWaitlist,
   useRemoveFromWaitlist,
+  useToggleWaitlist,
 } from "hooks/useTournaments";
 import { useRouter } from "next/router";
 import { userRoles } from "utils/constants";
@@ -145,6 +146,7 @@ const TournamentDetail = () => {
   const updateStatusMutation = useUpdateTournamentStatus();
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
+  const toggleWaitlistMutation = useToggleWaitlist();
 
   const tournament = data?.[0];
 
@@ -394,9 +396,12 @@ const TournamentDetail = () => {
 })}
 
                 <PillButton
-              onClick={() => console.log("Waitlist toggle not implemented yet")}
+              onClick={() => toggleWaitlistMutation.mutate(parseInt(tournament.id))}
+              disabled={toggleWaitlistMutation.isPending}
             >
-              {tournament.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
+              {toggleWaitlistMutation.isPending
+                ? <Spinner size="1" />
+                : tournament.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
             </PillButton>
 
               </ButtonRow>

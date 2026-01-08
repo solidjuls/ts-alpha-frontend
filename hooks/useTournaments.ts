@@ -345,6 +345,24 @@ export const useRemoveFromWaitlist = () => {
   });
 };
 
+export const useToggleWaitlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tournamentId: number) => tournamentsService.toggleWaitlist(tournamentId),
+    onSuccess: (_, tournamentId) => {
+      // Invalidate tournament details to refresh waitlist status
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.detail(tournamentId.toString())
+      });
+      // Also invalidate the list
+      queryClient.invalidateQueries({
+        queryKey: tournamentKeys.lists()
+      });
+    },
+  });
+};
+
 // Bulk register random users mutation
 export const useBulkRegisterUsers = () => {
   const queryClient = useQueryClient();

@@ -287,6 +287,12 @@ class TournamentsService {
     return response.data;
   }
 
+  // POST /api/tournaments/:id/waitlist/toggle - Toggle waitlist enabled/disabled
+  async toggleWaitlist(tournamentId: number): Promise<{ waitlist: boolean }> {
+    const response = await this.axiosInstance.patch(`/tournaments/${tournamentId}/waitlist/toggle`);
+    return response.data;
+  }
+
   // PATCH /api/tournaments/status - Update tournament status
   async updateTournamentStatus(data: UpdateTournamentStatusRequest): Promise<UpdateTournamentStatusResponse> {
     const response = await this.axiosInstance.patch('/tournaments/status', data);
