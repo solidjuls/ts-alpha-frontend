@@ -245,7 +245,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ data, isLoading }) =
 
 const HOMEPAGE_FILTERS_KEY = "homepage_filters";
 
-const getStoredFilters = (): { players: MultiSelectItemType[]; tournaments: MultiSelectItemType[] } | null => {
+type StoredFilters = {
+  players: MultiSelectItemType[];
+  tournaments: MultiSelectItemType[];
+  page: number;
+};
+
+const getStoredFilters = (): StoredFilters | null => {
   if (typeof window === "undefined") return null;
   try {
     const stored = localStorage.getItem(HOMEPAGE_FILTERS_KEY);
@@ -260,14 +266,14 @@ const Homepage: React.FC = () => {
   const [playersSelected, setPlayersSelected] = useState<MultiSelectItemType[]>(storedFilters?.players || []);
   const [tournamentSelected, setTournamentSelected] = useState<MultiSelectItemType[]>(storedFilters?.tournaments || []);
   const [videoSelected, setVideoSelected] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(storedFilters?.page || 1);
 
   useEffect(() => {
     localStorage.setItem(
       HOMEPAGE_FILTERS_KEY,
-      JSON.stringify({ players: playersSelected, tournaments: tournamentSelected })
+      JSON.stringify({ players: playersSelected, tournaments: tournamentSelected, page: currentPage })
     );
-  }, [playersSelected, tournamentSelected]);
+  }, [playersSelected, tournamentSelected, currentPage]);
 
   const gameFilters: GetGamesParams = useMemo(() => {
     const filters: GetGamesParams = { p: currentPage, pageSize: 20 };
