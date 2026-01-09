@@ -13,6 +13,7 @@ import {
   useWaitlistPlayers,
   useAddToWaitlist,
   useRemoveFromWaitlist,
+  useToggleWaitlist,
 } from "hooks/useTournaments";
 import { useRouter } from "next/router";
 import { userRoles } from "utils/constants";
@@ -145,15 +146,15 @@ const TournamentDetail = () => {
   const updateStatusMutation = useUpdateTournamentStatus();
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
+  const toggleWaitlistMutation = useToggleWaitlist();
 
   const tournament = data?.[0];
 
-  // Waitlist players query
+  const enableWaitlistCall = tournament && tournament.waitlist;
   const { data: waitlistPlayers, refetch: refetchWaitlist } = useWaitlistPlayers(
-    tournament ? parseInt(tournament.id) : 0
+    enableWaitlistCall ? parseInt(tournament.id) : 0
   );
 
-  // Registered players query
   const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
     tournament ? parseInt(tournament.id) : 0
   );
@@ -240,7 +241,10 @@ const TournamentDetail = () => {
   };
 
   const onRegisterClick = async () => {
-    if (!tournament || !userId) return;
+    if (!userId) {
+      router.push("/login");
+      return;
+    }
 
     const wasRegistered = isUserRegistered;
     setOptimisticRegistered(!wasRegistered);
@@ -375,28 +379,31 @@ const TournamentDetail = () => {
                 </PillButton>
 
                 {availableActions.map((action) => {
-  const isCloseTournament =
-    action === "CLOSE_TOURNAMENT" || action === "close_tournament";
+                  const isCloseTournament =
+                    action === "CLOSE_TOURNAMENT" || action === "close_tournament";
 
-  const Btn = isCloseTournament ? DangerPillButton : PillButton;
+                  const Btn = isCloseTournament ? DangerPillButton : PillButton;
 
-  return (
-    <Btn
-      key={action}
-      onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
-      disabled={updateStatusMutation.isPending}
-    >
-      {updateStatusMutation.isPending
-        ? "Processing..."
-        : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
-    </Btn>
-  );
-})}
+                  return (
+                    <Btn
+                      key={action}
+                      onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      {updateStatusMutation.isPending
+                        ? "Processing..."
+                        : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
+                    </Btn>
+                  );
+                })}
 
-                <PillButton
-              onClick={() => console.log("Waitlist toggle not implemented yet")}
+            <PillButton
+              onClick={() => toggleWaitlistMutation.mutate(parseInt(tournament.id))}
+              disabled={toggleWaitlistMutation.isPending}
             >
-              {tournament.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
+              {toggleWaitlistMutation.isPending
+                ? <Spinner size="1" />
+                : tournament.waitlist ? "Disable Waitlist" : "Enable Waitlist"}
             </PillButton>
 
               </ButtonRow>
