@@ -280,3 +280,42 @@ export const SpinnerContainer = styled.div`
   transform: translate(-50%, -50%);
   z-index: 10;
 `;
+
+export const DeleteCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  margin: 4px;
+  border-width: 1px;
+  border-radius: 6px;
+  border: solid 1px ${props => props.theme.colors.greyLight};
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: white;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`;
+
+export const DeleteButton = styled.button`
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #c0392b;
+  }
+
+  &:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+  }
+`;

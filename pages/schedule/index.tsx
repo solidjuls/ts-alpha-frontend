@@ -34,8 +34,11 @@ import {
   FlexRow,
   PlayerInfoContainer,
   PageTitle,
-  SpinnerContainer
+  SpinnerContainer,
+  DeleteCell,
+  DeleteButton,
 } from "components/Schedule/Schedule.styled";
+import { useDeleteSchedule } from "hooks/useSchedule";
 
 const generateQueryParams = ({
   id,
@@ -135,8 +138,21 @@ const getVariant: VariantType = (schedule) => {
   return "default";
 };
 
-const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; userId: string; isAdmin: boolean }) => {
+const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
+  schedule: ScheduleItem;
+  userId: string;
+  isAdmin: boolean;
+  onDelete?: (id: string) => void;
+  isDeleting?: boolean;
+}) => {
   const opponentId = schedule.idUsa === userId ? schedule.idUssr : schedule.idUsa;
+
+  const handleDelete = () => {
+    if (onDelete && window.confirm(`Are you sure you want to delete this scheduled game?\n\n${schedule.nameUsa} vs ${schedule.nameUssr}\nTournament: ${schedule.tournamentName}`)) {
+      onDelete(schedule.id);
+    }
+  };
+
   return (
     <Flex>
       <PlayerInfo status={getVariant(schedule)}>
@@ -179,6 +195,16 @@ const ScheduleRow = ({ schedule, isAdmin, userId }: { schedule: ScheduleItem; us
           gamePlayed={false}
         />
       </DueDateCell>
+      {isAdmin && (
+        <DeleteCell>
+          <DeleteButton
+            onClick={handleDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </DeleteButton>
+        </DeleteCell>
+      )}
     </Flex>
   );
 };
@@ -188,13 +214,17 @@ const SchedulePanel = ({
   isAdmin,
   userId,
   isLoading,
-  isFetching = false
+  isFetching = false,
+  onDelete,
+  deletingId,
 }: {
   data: ScheduleItem[] | undefined;
   userId: string;
   isAdmin: boolean;
   isLoading: boolean;
   isFetching?: boolean;
+  onDelete?: (id: string) => void;
+  deletingId?: string | null;
 }) => {
   // Show full loading state only on initial load (no data yet)
   if (isLoading && !data) {
@@ -225,7 +255,14 @@ const SchedulePanel = ({
         </SpinnerContainer>
       )}
       {data.map((schedule, index) => (
-        <ScheduleRow key={index} schedule={schedule} userId={userId} isAdmin={isAdmin} />
+        <ScheduleRow
+          key={index}
+          schedule={schedule}
+          userId={userId}
+          isAdmin={isAdmin}
+          onDelete={onDelete}
+          isDeleting={deletingId === schedule.id}
+        />
       ))}
     </ResultsStyleWrapper>
   );
@@ -240,15 +277,18 @@ const Schedule = () => {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
   const [showOnlyPending, setShowOnlyPending] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const deleteScheduleMutation = useDeleteSchedule();
 
   // Only fetch schedules when tournament changes or filters change (not for initial load)
   // const shouldFetchSchedule = currentPage !== 1 ||
   //   selectedTournament !== initialTournaments[0] ||
   //   showFullSchedule ||
   //   showOnlyPending;
-  
+
   // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
-  
+
   const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
     userId: selectedUserId,
     a: Number(showFullSchedule),
@@ -298,6 +338,17 @@ const Schedule = () => {
 
   const onPageChange = (page: string) => {
     setCurrentPage(parseInt(page));
+  };
+
+  const handleDeleteSchedule = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await deleteScheduleMutation.mutateAsync(id);
+    } catch (error) {
+      console.error("Failed to delete schedule:", error);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const activeTabButton = (tournament, index) => {
@@ -364,6 +415,8 @@ const Schedule = () => {
               isAdmin={isUserAdminForTournament}
               isLoading={isLoading && !dataSchedule}
               isFetching={isFetching}
+              onDelete={isUserAdminForTournament ? handleDeleteSchedule : undefined}
+              deletingId={deletingId}
             />
 
             {scheduleData && scheduleTotalPages > 1 && (
@@ -377,7 +430,7 @@ const Schedule = () => {
         </ResponsiveContainer>
     </>
   );
-};// Wrap with ProtectedRoute - requires logged in user
+};
 const SchedulePage = () => (
   <ProtectedRoute requiredRole={userRoles.PLAYER}>
     <Schedule />
