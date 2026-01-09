@@ -150,12 +150,11 @@ const TournamentDetail = () => {
 
   const tournament = data?.[0];
 
-  // Waitlist players query
+  const enableWaitlistCall = tournament && tournament.waitlist;
   const { data: waitlistPlayers, refetch: refetchWaitlist } = useWaitlistPlayers(
-    tournament ? parseInt(tournament.id) : 0
+    enableWaitlistCall ? parseInt(tournament.id) : 0
   );
 
-  // Registered players query
   const { data: registeredPlayers, isLoading: playersLoading } = useRegisteredPlayers(
     tournament ? parseInt(tournament.id) : 0
   );
