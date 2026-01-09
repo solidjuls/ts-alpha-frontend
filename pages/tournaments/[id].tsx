@@ -242,7 +242,10 @@ const TournamentDetail = () => {
   };
 
   const onRegisterClick = async () => {
-    if (!tournament || !userId) return;
+    if (!userId) {
+      router.push("/login");
+      return;
+    }
 
     const wasRegistered = isUserRegistered;
     setOptimisticRegistered(!wasRegistered);
@@ -377,25 +380,25 @@ const TournamentDetail = () => {
                 </PillButton>
 
                 {availableActions.map((action) => {
-  const isCloseTournament =
-    action === "CLOSE_TOURNAMENT" || action === "close_tournament";
+                  const isCloseTournament =
+                    action === "CLOSE_TOURNAMENT" || action === "close_tournament";
 
-  const Btn = isCloseTournament ? DangerPillButton : PillButton;
+                  const Btn = isCloseTournament ? DangerPillButton : PillButton;
 
-  return (
-    <Btn
-      key={action}
-      onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
-      disabled={updateStatusMutation.isPending}
-    >
-      {updateStatusMutation.isPending
-        ? "Processing..."
-        : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
-    </Btn>
-  );
-})}
+                  return (
+                    <Btn
+                      key={action}
+                      onClick={() => handleTournamentAction(action as keyof typeof ACTION_TO_STATUS)}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      {updateStatusMutation.isPending
+                        ? "Processing..."
+                        : tournamentStatusHelpers.getActionLabel(action as keyof typeof ACTION_LABELS)}
+                    </Btn>
+                  );
+                })}
 
-                <PillButton
+            <PillButton
               onClick={() => toggleWaitlistMutation.mutate(parseInt(tournament.id))}
               disabled={toggleWaitlistMutation.isPending}
             >
