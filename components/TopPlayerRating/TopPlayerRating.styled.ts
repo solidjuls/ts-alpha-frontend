@@ -22,6 +22,7 @@ export const UserContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 `;
 
 export const UserInfo = styled.div`
