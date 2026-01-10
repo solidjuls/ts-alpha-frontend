@@ -83,11 +83,6 @@ export const VerticalSidebarLayout = styled.div`
   }
 `;
 
-/* Mobile “brand” / title on the left (optional) */
-export const MobileBrand = styled(Text)`
-  font-weight: 700;
-  color: var(--primary-text);
-`;
 
 /* Hamburger button on the right */
 export const MobileMenuButton = styled.button`
