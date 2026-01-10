@@ -9,7 +9,6 @@ export const ContainerGameResults = styled.div`
   width: 100%;
   gap: 16px;
 
-  /* Give the page some breathing room like other pages */
   padding: 16px;
 
   ${media.md} {
@@ -23,7 +22,6 @@ export const GlobalContainer = styled.div`
   flex-direction: column;
   width: 100%;
 
-  /* Center the main column on wide screens */
   max-width: 56rem;
   margin: 0 auto;
 
@@ -48,7 +46,6 @@ export const FilterPanel = styled.div`
   align-items: center;
   flex-wrap: wrap;
 
-  /* Card-style container like other pages */
   background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -100,6 +97,8 @@ export const PlayerCard = styled.div`
     transform: translateY(-1px);
     box-shadow: 0 8px 20px rgba(15, 15, 15, 0.08);
     border-color: rgba(0, 0, 0, 0.12);
+    background-color: var(--ussr);
+    color: var(--alt-text);
   }
 `;
 
