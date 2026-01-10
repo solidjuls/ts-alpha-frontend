@@ -35,7 +35,6 @@ import {
   PlayerInfoContainer,
   PageTitle,
   SpinnerContainer,
-  DeleteCell,
   DeleteButton,
 } from "components/Schedule/Schedule.styled";
 import { useDeleteSchedule } from "hooks/useSchedule";
@@ -193,18 +192,10 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
           gameDate={schedule.gameDate || ""}
           admin={isAdmin}
           gamePlayed={false}
+          onDelete={isAdmin ? onDelete: undefined}
+          isDeleting={isDeleting}
         />
       </DueDateCell>
-      {isAdmin && (
-        <DeleteCell>
-          <DeleteButton
-            onClick={handleDelete}
-            disabled={isDeleting}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </DeleteButton>
-        </DeleteCell>
-      )}
     </Flex>
   );
 };
