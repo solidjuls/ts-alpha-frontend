@@ -83,7 +83,6 @@ export const VerticalSidebarLayout = styled.div`
   }
 `;
 
-
 /* Hamburger button on the right */
 export const MobileMenuButton = styled.button`
   border: none;
@@ -126,14 +125,14 @@ export const MobileMenu = styled.nav`
   }
 `;
 
-/* Optional: wrapper for the mobile auth row (Sign In / Sign Out) */
+/* Wrapper for the mobile auth row (Sign In / Sign Out) */
 export const MobileAuthRow = styled(Flex)`
   padding: 4px 8px;
   border-top: 1px solid var(--border);
   justify-content: flex-end;
 `;
 
-/* Kept for compatibility, though you may not need it now */
+/* Kept for compatibility */
 export const StyledText = styled(Text)`
   font-weight: 600;
   color: var(--primary-text);
