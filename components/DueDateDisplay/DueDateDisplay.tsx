@@ -7,7 +7,8 @@ import { format as formatDate } from "date-fns";
 import { dateFormat } from "utils/dates";
 import { useUpdateSchedule } from "hooks/useSchedule";
 import { Spinner } from "@radix-ui/themes";
-import { DateSpan, ActionButton, DangerActionButton } from "./DueDateDisplay.styled";
+import { DateSpan, ActionButton } from "./DueDateDisplay.styled";
+import { DangerButton } from "components/DangerButton/DangerButton";
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
@@ -129,12 +130,12 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
           </ActionButton>
 
           {onDelete && (
-            <DangerActionButton
+            <DangerButton
               onClick={handleDelete}
               disabled={isDeleting || isUpdating}
             >
               {isDeleting ? "Deleting..." : "Delete"}
-            </DangerActionButton>
+            </DangerButton>
           )}
         </Flex>
       </Flex>

@@ -48,7 +48,6 @@ import {
   AdminLabel,
   ButtonRow,
   PillButton,
-  DangerPillButton,
   StatusLine,
   StatusText,
   NotFoundContainer,
@@ -59,6 +58,7 @@ import {
   FormTitle,
   Flex
  } from "styles/tournamentPage.styled";
+ import { DangerButton } from "components/DangerButton/DangerButton";
 
 interface RegistrationActionSectionProps {
   isUserRegistered: boolean;
@@ -382,7 +382,7 @@ const TournamentDetail = () => {
                   const isCloseTournament =
                     action === "CLOSE_TOURNAMENT" || action === "close_tournament";
 
-                  const Btn = isCloseTournament ? DangerPillButton : PillButton;
+                  const Btn = isCloseTournament ? DangerButton : PillButton;
 
                   return (
                     <Btn

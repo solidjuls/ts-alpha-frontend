@@ -170,25 +170,6 @@ export const PillButton = styled(Button)<{ $tone?: "usa" | "ussr" | "neutral" }>
   }
 `;
 
-export const DangerPillButton = styled(Button)`
-  padding: 10px 14px;
-  font-weight: 600;
-
-  background: var(--ussr);
-  color: var(--alt-text);
-  border: 1px solid var(--border);
-
-  &:hover:not(:disabled) {
-    background: var(--ussr);
-    filter: brightness(0.95);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-`;
-
 export const AdminBar = styled.div`
   padding: 12px 16px;
   border-top: 1px solid var(--border);
