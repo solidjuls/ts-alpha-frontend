@@ -160,6 +160,7 @@ export const StyledCardRow = styled.article`
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     background-color: var(--ussr);
+    color: var(--alt-text);
   }
 
   &:active {
