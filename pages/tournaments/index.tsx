@@ -8,7 +8,7 @@ import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
 import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 import { useIsAuthenticated } from "hooks/useAuth";
-import { 
+import {
   PageContainer,
   LoadingArea,
   PageHeader,
@@ -25,16 +25,23 @@ import {
   NameCell,
   EmptyState,
   StatusBadge,
-  StatusVariant
- } from "styles/tournaments.styled";
-
+  StatusVariant,
+  MobileList,
+  MobileCard,
+  MobileTopRow,
+  MobileName,
+  MobileMeta,
+  MobileMetaRow,
+  MobileLabel,
+  MobileValue,
+} from "styles/tournaments.styled";
 
 type TournamentStatusKey = keyof typeof tournamentStatus;
 
 const getVariant = (statusId: TournamentStatusType): TournamentStatusKey => {
   return (
     (Object.keys(tournamentStatus) as TournamentStatusKey[]).find(
-      (key) => tournamentStatus[key] === statusId,
+      (key) => tournamentStatus[key] === statusId
     ) || "closed"
   );
 };
@@ -54,11 +61,11 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
     : "-";
 
   const statusName = getTournamentStatusNames(
-    tournament.status_id as TournamentStatusType,
+    tournament.status_id as TournamentStatusType
   );
 
   const statusVariant = getVariant(
-    tournament.status_id as TournamentStatusType,
+    tournament.status_id as TournamentStatusType
   ) as StatusVariant;
 
   return (
@@ -73,6 +80,46 @@ const TournamentRow = ({ tournament }: TournamentRowProps) => {
   );
 };
 
+const TournamentMobileCard = ({ tournament }: { tournament: Tournament }) => {
+  const router = useRouter();
+
+  const adminsFormatted =
+    tournament.adminName?.length > 0 ? tournament.adminName.join(", ") : "-";
+
+  const dateFormatted = tournament.starting_date
+    ? dateFormat(new Date(tournament.starting_date))
+    : "-";
+
+  const statusName = getTournamentStatusNames(
+    tournament.status_id as TournamentStatusType
+  );
+
+  const statusVariant = getVariant(
+    tournament.status_id as TournamentStatusType
+  ) as StatusVariant;
+
+  return (
+    <MobileCard onClick={() => router.push(`/tournaments/${tournament.id}`)}>
+      <MobileTopRow>
+        <MobileName>{tournament.tournament_name}</MobileName>
+        <StatusBadge $variant={statusVariant}>{statusName}</StatusBadge>
+      </MobileTopRow>
+
+      <MobileMeta>
+        <MobileMetaRow>
+          <MobileLabel>Administrators</MobileLabel>
+          <MobileValue>{adminsFormatted}</MobileValue>
+        </MobileMetaRow>
+
+        <MobileMetaRow>
+          <MobileLabel>Starting Date</MobileLabel>
+          <MobileValue>{dateFormatted}</MobileValue>
+        </MobileMetaRow>
+      </MobileMeta>
+    </MobileCard>
+  );
+};
+
 const Tournaments = () => {
   const { user } = useIsAuthenticated();
   const role = user?.role ?? null;
@@ -83,6 +130,10 @@ const Tournaments = () => {
     tournamentStatus["registrationClosed"],
     tournamentStatus["registrationOpen"],
   ]);
+
+  const filteredTournaments = data?.filter(
+  (tournament) => tournament.tournament_name !== "Friendly Game"
+);
 
   if (isLoading) {
     return (
@@ -105,7 +156,7 @@ const Tournaments = () => {
           <Actions>
             {role === userRoles.SUPERADMIN && (
               <CreateButton>
-                <UnstyledLink href="/tournament-create">
+                <UnstyledLink href="/tournament-create" $hoverVariant="alt">
                   Create New Tournament
                 </UnstyledLink>
               </CreateButton>
@@ -114,6 +165,7 @@ const Tournaments = () => {
         </PageHeader>
 
         <Card>
+          {/* Desktop/tablet table */}
           <TableScroll>
             <TournamentTable>
               <TableHeader>
@@ -126,15 +178,22 @@ const Tournaments = () => {
               </TableHeader>
 
               <tbody>
-                {data?.map((tournament) => (
+                {filteredTournaments?.map((tournament) => (
                   <TournamentRow key={tournament.id} tournament={tournament} />
                 ))}
               </tbody>
             </TournamentTable>
           </TableScroll>
+
+          {/* Mobile cards */}
+          <MobileList>
+            {filteredTournaments?.map((tournament) => (
+              <TournamentMobileCard key={tournament.id} tournament={tournament} />
+            ))}
+          </MobileList>
         </Card>
 
-        {(!data || data.length === 0) && (
+        {(!filteredTournaments || filteredTournaments.length === 0) && (
           <EmptyState>
             <Text fontSize="big">No Tournaments Found</Text>
             <Text fontSize="medium" style={{ marginTop: "8px" }}>

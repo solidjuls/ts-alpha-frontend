@@ -37,6 +37,7 @@ import {
   NumericText,
   MetaSpacer
  } from "../../styles/games.styled";
+ import { DangerButton } from "components/DangerButton/DangerButton";
 
 type GameProps = {
   gameId: string;
@@ -282,7 +283,7 @@ const deleteGame = async () => {
                 Recreate Game
               </UnstyledLink>
             </AdminButton>
-            <AdminButton
+            <DangerButton
               onClick={deleteGame}
               disabled={deleteGameMutation.isPending}
             >
@@ -291,7 +292,7 @@ const deleteGame = async () => {
               ) : (
                 "Delete Game"
               )}
-            </AdminButton>
+            </DangerButton>
           </AdminActions>
           {deleteSuccessMessage && <div>Game Deleted Successfully</div>}
         </>

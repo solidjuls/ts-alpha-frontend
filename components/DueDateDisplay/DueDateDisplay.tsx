@@ -3,12 +3,12 @@ import { Flex } from "components/Atoms";
 import Text from "components/Text";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import "react-day-picker/lib/style.css";
-import { Button } from "components/Button";
 import { format as formatDate } from "date-fns";
 import { dateFormat } from "utils/dates";
 import { useUpdateSchedule } from "hooks/useSchedule";
 import { Spinner } from "@radix-ui/themes";
-import { DateSpan } from "./DueDateDisplay.styled";
+import { DateSpan, ActionButton } from "./DueDateDisplay.styled";
+import { DangerButton } from "components/DangerButton/DangerButton";
 
 interface DueDateDisplayProps {
   dueDate: string | Date;
@@ -16,6 +16,11 @@ interface DueDateDisplayProps {
   admin: boolean;
   gamePlayed: boolean;
   scheduleId: string;
+
+  // Optional delete support (for admins)
+  onDelete?: (id: string) => void;
+  isDeleting?: boolean;
+  deleteConfirmText?: string; // optional override
 }
 
 const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
@@ -24,13 +29,18 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   gamePlayed,
   gameDate,
   scheduleId,
+  onDelete,
+  isDeleting = false,
+  deleteConfirmText,
 }) => {
-  const initialDate = typeof dueDate === "string" ? new Date(dueDate) : dueDate
+  const initialDate = typeof dueDate === "string" ? new Date(dueDate) : dueDate;
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
 
   useEffect(() => {
-    if(typeof dueDate === "string") {
+    if (typeof dueDate === "string") {
       setSelectedDate(new Date(dueDate));
+    } else {
+      setSelectedDate(dueDate);
     }
   }, [dueDate]);
 
@@ -45,7 +55,19 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
         dueDate: selectedDate.toISOString(),
       });
     } catch (error) {
-      console.error('Error Updating Schedule Due Date:', error);
+      console.error("Error Updating Schedule Due Date:", error);
+    }
+  };
+
+  const handleDelete = () => {
+    if (!onDelete) return;
+
+    const msg =
+      deleteConfirmText ??
+      "Are you sure you want to delete this scheduled game?";
+
+    if (window.confirm(msg)) {
+      onDelete(scheduleId);
     }
   };
 
@@ -63,7 +85,8 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
       <DateSpan>{formatDate(new Date(date), "yyyy/MM/dd")}</DateSpan>
     </>
   );
-  const renderLabel = (color: string) => (
+
+  const renderLabel = (description: string, date: string | Date) => (
     <Flex
       style={{
         display: "flex",
@@ -71,15 +94,14 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
         width: "140px",
       }}
     >
-      {gameDate ? (
-        <RenderLabelContent description="Game Played" date={gameDate} />
-      ) : (
-        <RenderLabelContent description="Due Date" date={dueDate} />
-      )}
+      <RenderLabelContent description={description} date={date} />
     </Flex>
   );
 
+  // Admin: editable date + Update + optional Delete
   if (admin) {
+    const isUpdating = updateScheduleMutation.isPending;
+
     return (
       <Flex style={{ alignItems: "center" }}>
         <DayPickerInput
@@ -90,28 +112,42 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
           onDayChange={(date: Date) => setSelectedDate(date)}
           inputProps={{
             readOnly: true,
-            style: { cursor: "pointer", margin: '4px', color: 'var(--primary-text)' },
+            style: {
+              cursor: "pointer",
+              margin: "4px",
+              color: "var(--primary-text)",
+            },
           }}
           dayPickerProps={{
             showWeekNumbers: true,
             todayButton: "Today",
           }}
         />
-        <Button
-          onClick={handleSave}
-          disabled={updateScheduleMutation.isPending}
-        >
-          {updateScheduleMutation.isPending ? <Spinner size="3" /> : "Update"}
-        </Button>
+
+        <Flex style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <ActionButton onClick={handleSave} disabled={isUpdating || isDeleting}>
+            {isUpdating ? <Spinner size="3" /> : "Update"}
+          </ActionButton>
+
+          {onDelete && (
+            <DangerButton
+              onClick={handleDelete}
+              disabled={isDeleting || isUpdating}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </DangerButton>
+          )}
+        </Flex>
       </Flex>
     );
   }
 
-  if (gamePlayed) {
-    return renderLabel("var(--usa)"); 
+  // Non-admin: read-only label
+  if (gamePlayed && gameDate) {
+    return renderLabel("Game Played", gameDate);
   }
 
-  return renderLabel("var(--ussr)"); 
+  return renderLabel("Due Date", dueDate);
 };
 
 export { DueDateDisplay };

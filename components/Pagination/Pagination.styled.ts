@@ -42,3 +42,26 @@ export const PageBox = styled(Box)`
   gap: 8px;            
   padding: 8px;
 `;
+
+export const PageInput = styled.input`
+  width: 56px;
+  height: 32px;
+  padding: 0 10px;
+
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--primary-text);
+
+  text-align: center;
+  font-weight: 600;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+`;

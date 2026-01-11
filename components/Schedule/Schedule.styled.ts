@@ -22,6 +22,12 @@ export const ResultsStyleWrapper = styled.div`
   width: 100%;
   max-width: 1000px;
   min-height: 600px;
+
+  color: var(--primary-text);
+
+  &:hover {
+    color: var(--alt-text);
+  }
 `;
 
 interface PlayerInfoProps {
@@ -78,6 +84,7 @@ export const PlayerInfo = styled.div<PlayerInfoProps>`
     background-color: var(--ussr);
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    color: var(--alt-text);
   }
 
   &:active {
@@ -188,6 +195,7 @@ export const PlayerInfoContainer = styled(Box)`
   flex-direction: row;
   line-height: 1;
   align-items: center;
+  color: inherit;
 `;
 
 export const TournamentInfoFlex = styled(Flex)`
@@ -210,12 +218,16 @@ export const TournamentText = styled(Text)`
   align-self: center;
   margin-left: 4px;
   font-size: small;
-  color: var(--primary-text);
+  color: inherit;
 `;
 
 export const ColumnUnstyledLink = styled(UnstyledLink)`
   display: flex;
   flex-direction: column;
+  color: inherit;
+  &:hover {
+    color: inherit;
+  }
 `;
 
 /**
@@ -281,41 +293,51 @@ export const SpinnerContainer = styled.div`
   z-index: 10;
 `;
 
-export const DeleteCell = styled.div`
+export const ActionButtonsRow = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 4px;
-  margin: 4px;
-  border-width: 1px;
-  border-radius: 6px;
-  border: solid 1px ${props => props.theme.colors.greyLight};
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  background-color: white;
+  gap: 8px;
 
-  @media (max-width: 600px) {
+  margin-left: auto;
+
+  ${media.md} {
     display: none;
   }
 `;
 
 export const DeleteButton = styled.button`
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 12px;
+  height: 36px;
+  min-width: 96px;
+
+  padding: 0 14px;
+  font-size: 14px;
   font-weight: 600;
+
+  border-radius: 6px;
+  border: 1px solid var(--border);
+
+  background-color: var(--ussr);
+  color: var(--alt-text);
+
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
 
   &:hover:not(:disabled) {
-    background-color: #c0392b;
+    background-color: var(--ussr-dark, var(--ussr));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
   &:disabled {
-    background-color: #bdc3c7;
+    opacity: 0.6;
     cursor: not-allowed;
   }
 `;

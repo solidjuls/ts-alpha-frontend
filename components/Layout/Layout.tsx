@@ -18,13 +18,13 @@ export const Footer = () => {
   return (
     <StyledFooter>
       © {year}{" "}
-      <a
+      <Link
         href="https://docs.google.com/document/d/1tfDV_R2GXQfTmBAEjzlPUIY__BsU1Yd3eauIfzMVBI4/"
         target="_blank"
         rel="noopener noreferrer"
       >
         ITS Junta
-      </a>
+      </Link>
     </StyledFooter>
   );
 };

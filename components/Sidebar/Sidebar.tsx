@@ -15,7 +15,6 @@ import {
   MobileMenuButton,
   MobileMenu,
   StyledHamburgerMenuIcon,
-  MobileBrand,
   MobileAuthRow,
 } from "./Sidebar.styled";
 
@@ -111,8 +110,6 @@ const VerticalSidebar = () => {
 
   return (
     <VerticalSidebarLayout>
-      <MobileBrand>ITS Junta</MobileBrand>
-
       <MobileMenuButton onClick={() => setOpen((prev) => !prev)} aria-label="Toggle navigation">
         <StyledHamburgerMenuIcon />
       </MobileMenuButton>
