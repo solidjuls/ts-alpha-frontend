@@ -132,7 +132,7 @@ const RatingChart: React.FC<RatingChartProps> = ({ playerId }) => {
     // }
   };
 
-  if (ratingLoading) return null;
+  if (ratingLoading || !ratingHistory) return null;
   // Create arrays for the chart data
   const dates: Date[] = ratingHistory?.map((item) => new Date(item.date));
   const ratings: number[] = ratingHistory?.map((item) => item.currentRating);

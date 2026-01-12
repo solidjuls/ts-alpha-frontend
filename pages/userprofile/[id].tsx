@@ -16,7 +16,7 @@ import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { useRatingHistory } from "hooks/useRating";
-import { RatingChart } from "components/Charts";
+import { RatingChart, WinTypeChart } from "components/Charts";
 
 const PAGE_SIZE = 10;
 
@@ -91,6 +91,7 @@ const UserProfile = () => {
       </DetailContainer>
 
       <RatingChart playerId={id} />
+      <WinTypeChart playerId={id} />
       <DetailContainer backButton={false}>
         <RecentGamesContainer>
           Recent Games

@@ -71,6 +71,29 @@ export interface SubmitGameData {
   video1?: string;
 }
 
+export interface WinTypeStats {
+  USA: {
+    wins: number;
+    losses: number;
+    ties: number;
+    winTypes: Record<string, number>;
+    lossTypes: Record<string, number>;
+  };
+  USSR: {
+    wins: number;
+    losses: number;
+    ties: number;
+    winTypes: Record<string, number>;
+    lossTypes: Record<string, number>;
+  };
+}
+
+export interface GetChartDataParams {
+  userId: string;
+  fromDate?: string;
+  type: 'winType';
+}
+
 class GamesService {
   private axiosInstance;
 
@@ -133,6 +156,17 @@ class GamesService {
       oldId: gameId,
       op: 'delete'
     });
+  }
+
+  async getChartData(params: GetChartDataParams): Promise<WinTypeStats> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('userId', params.userId);
+    queryParams.append('type', params.type);
+
+      queryParams.append('fromDate', '2025/01/01');
+
+    const response = await this.axiosInstance.get(`/games/chart-data?${queryParams.toString()}`);
+    return response.data;
   }
 }
 
