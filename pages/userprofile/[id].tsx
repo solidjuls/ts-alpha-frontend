@@ -15,6 +15,7 @@ import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../st
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 import { FlagIcon } from "components/FlagIcon";
+import { useRatingHistory } from "hooks/useRating";
 
 const PAGE_SIZE = 10;
 
@@ -62,9 +63,11 @@ const UserProfile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
   const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], currentPage, PAGE_SIZE);
-
+  // call the rating history endpoint
+  const { data: ratingHistory, isLoading: ratingLoading, error: ratingError } = useRatingHistory({ userId: id });
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / PAGE_SIZE) : 1;
 
+  console.log("ratingHistory", ratingHistory);
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
