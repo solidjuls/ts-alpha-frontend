@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { Box, Flex } from "components/Atoms";
 import Text from "components/Text";
@@ -68,451 +68,168 @@ interface WinTypeStats {
   };
 }
 
+const colorPalette = {
+    root: "#FFFFFF",
+    usa: "#1f77b4",  // Azul USA
+    ussr: "#cc0000", // Rojo URSS
+    win: "#22c55e",  // Verde Victoria
+    loss: "#ef4444", // Rojo Derrota
+    tie: "#94a3b8",  // Gris Empate
+    // Colores para el 3er Nivel (Tipos de fin de juego)
+    types: {
+      defcon: "#8b5cf6",        // Violeta
+      final_scoring: "#06b6d4", // Cian
+      vp_track: "#eab308",      // Amarillo
+      wargames: "#f97316",      // Naranja
+      forfeit: "#ec4899",       // Rosa
+      timer: "#78350f",         // Marrón
+      scoring_card: "#84cc16",  // Lima
+      unknown: "#64748b"        // Pizarra
+    }
+  };
+
 const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
   // const [isLoading, setIsLoading] = useState(true);
   // const [winTypeStats, setWinTypeStats] = useState<WinTypeStats | null>(null);
   const [chartReady, setChartReady] = useState(true);
     const { data: winTypeStats, isLoading: winTypeLoading, error: winTypeError } = useWinTypeChartData(playerId, fromDate);
-//   useEffect(() => {
-//     const fetchWinTypeData = async () => {
-//       setIsLoading(true);
-//       setChartReady(false);
-//       try {
-//         const url = `/api/game/win-types?userFilter=${playerId}${fromDate ? `&fromDate=${fromDate}` : ""}`;
-//         const response = await getAxiosInstance().get<WinTypeStats>(url);
-//         setWinTypeStats(response.data);
-//       } catch (error) {
-//         console.error("Error fetching win type data:", error);
-//         return null;
-//       } finally {
-//         // Add a small delay before marking as ready to ensure everything is loaded
-//         setTimeout(() => {
-//           setIsLoading(false);
-//           setChartReady(true);
-//         }, 500);
-//       }
-//     };
+  // Datos brutos proporcionados
+  // const rawData = {
+  //   "usaStats": [
+  //     { "total_games": "76", "wins": "38", "losses": "37", "ties": "1", "defcon_wins": "5", "final_scoring_wins": "10", "vp_track_wins": "15", "wargames_wins": "7", "forfeit_wins": "0", "timer_wins": "1", "cuban_wins": "0", "scoring_card_wins": "0", "unknown_wins": "0", "defcon_losses": "6", "final_scoring_losses": "13", "vp_track_losses": "7", "wargames_losses": "9", "forfeit_losses": "0", "timer_losses": "0", "cuban_losses": "0", "scoring_card_losses": "2", "unknown_losses": "0" }
+  //   ],
+  //   "ussrStats": [
+  //     { "total_games": "78", "wins": "46", "losses": "31", "ties": "1", "defcon_wins": "0", "final_scoring_wins": "13", "vp_track_wins": "24", "wargames_wins": "7", "forfeit_wins": "1", "timer_wins": "0", "cuban_wins": "0", "scoring_card_wins": "1", "unknown_wins": "0", "defcon_losses": "3", "final_scoring_losses": "16", "vp_track_losses": "5", "wargames_losses": "6", "forfeit_losses": "0", "timer_losses": "0", "cuban_losses": "0", "scoring_card_losses": "1", "unknown_losses": "0" }
+  //   ]
+  // };
 
-//     fetchWinTypeData();
-//   }, [playerId, fromDate]);
-
-if (!winTypeStats) return null;
-
-  // Calculate win rates
-  const usaWinRate = winTypeStats?.usaStats
-    ? (
-        (winTypeStats.usaStats.wins /
-          (winTypeStats.usaStats.wins + winTypeStats.usaStats.losses + winTypeStats.usaStats.ties)) *
-        100
-      ).toFixed(1)
-    : "0";
-  const ussrWinRate = winTypeStats?.ussrStats
-    ? (
-        (winTypeStats.ussrStats.wins /
-          (winTypeStats.ussrStats.wins + winTypeStats.ussrStats.losses + winTypeStats.ussrStats.ties)) *
-        100
-      ).toFixed(1)
-    : "0";
-
-  // Calculate total games for percentage calculations
-  const totalUSAGames = winTypeStats?.usaStats
-    ? winTypeStats.usaStats.wins + winTypeStats.usaStats.losses + winTypeStats.usaStats.ties
-    : 0;
-  const totalUSSRGames = winTypeStats?.ussrStats
-    ? winTypeStats.ussrStats.wins + winTypeStats.ussrStats.losses + winTypeStats.ussrStats.ties
-    : 0;
-  const totalGames = totalUSAGames + totalUSSRGames;
-
-  // Calculate percentages for each category
-  const calculatePercentages = (side: "USA" | "USSR") => {
-    if (!winTypeStats?.[side]) return {};
-
-    const sideTotal = winTypeStats[side].wins + winTypeStats[side].losses + winTypeStats[side].ties;
-    if (sideTotal === 0) return {};
-
-    const percentages: Record<string, number> = {};
-
-    // Calculate percentages for wins, losses, ties
-    percentages[`${side}-Wins`] = (winTypeStats[side].wins / sideTotal) * 100;
-    percentages[`${side}-Losses`] = (winTypeStats[side].losses / sideTotal) * 100;
-    percentages[`${side}-Ties`] = (winTypeStats[side].ties / sideTotal) * 100;
-
-    // Calculate percentages for win types
-    if (winTypeStats[side].wins > 0) {
-      winLossTypeOrder.forEach((type) => {
-        const count = winTypeStats[side].winTypes[type] || 0;
-        percentages[`${side}-Wins-${type}`] = (count / winTypeStats[side].wins) * 100;
-      });
+  // Mapeo de propiedades del JSON a etiquetas legibles
+  const typeMapping = {
+    wins: {
+      defcon_wins: "DEFCON", final_scoring_wins: "Final Scoring", vp_track_wins: "VP Track",
+      wargames_wins: "Wargames", forfeit_wins: "Forfeit", timer_wins: "Timer",
+      cuban_wins: "Cuban Missile", scoring_card_wins: "Scoring Card", unknown_wins: "Unknown"
+    },
+    losses: {
+      defcon_losses: "DEFCON", final_scoring_losses: "Final Scoring", vp_track_losses: "VP Track",
+      wargames_losses: "Wargames", forfeit_losses: "Forfeit", timer_losses: "Timer",
+      cuban_losses: "Cuban Missile", scoring_card_losses: "Scoring Card", unknown_losses: "Unknown"
     }
+  };
 
-    // Calculate percentages for loss types
-    if (winTypeStats[side].losses > 0) {
-      winLossTypeOrder.forEach((type) => {
-        const count = winTypeStats[side].lossTypes[type] || 0;
-        percentages[`${side}-Losses-${type}`] = (count / winTypeStats[side].losses) * 100;
+  const transformDataForSunburst = (data) => {
+    const ids = [];
+    const labels = [];
+    const parents = [];
+    const values = [];
+    const colors = [];
+
+    const usa = data.usaStats[0];
+    const ussr = data.ussrStats[0];
+
+    // 1. Nodo Raíz (Total Global)
+    const totalGlobal = parseInt(usa.total_games) + parseInt(ussr.total_games);
+    ids.push("total");
+    labels.push("All Games");
+    parents.push("");
+    values.push(totalGlobal);
+    colors.push(colorPalette.root);
+
+    // Helper para procesar cada bando (USA y USSR)
+    const processSide = (sideData, sideName, sideId, sideColor) => {
+      // 2. Nodo de Bando (USA o USSR)
+      ids.push(sideId);
+      labels.push(sideName);
+      parents.push("total");
+      values.push(parseInt(sideData.total_games));
+      colors.push(sideColor);
+
+      const outcomes = [
+        { id: "wins", label: "Wins", value: parseInt(sideData.wins), col: colorPalette.win },
+        { id: "losses", label: "Losses", value: parseInt(sideData.losses), col: colorPalette.loss },
+        { id: "ties", label: "Ties", value: parseInt(sideData.ties), col: colorPalette.tie }
+      ];
+
+      outcomes.forEach(outcome => {
+        if (outcome.value > 0) {
+          const outcomeId = `${sideId}_${outcome.id}`;
+          
+          // 3. Nivel de Resultados (Wins / Losses / Ties)
+          ids.push(outcomeId);
+          labels.push(outcome.label);
+          parents.push(sideId);
+          values.push(outcome.value);
+          colors.push(outcome.col);
+
+          // 4. Nivel de Detalle (Tipos de victoria/derrota)
+          // Solo desglosamos si es Wins o Losses
+          if (outcome.id !== "ties") {
+            // Buscamos todas las propiedades que terminen en _wins o _losses
+            Object.keys(sideData).forEach(key => {
+              if (key.endsWith(`_${outcome.id}`)) {
+                const val = parseInt(sideData[key]);
+                if (val > 0) {
+                  // Creamos un nombre legible: "defcon_wins" -> "Defcon"
+                  const typeKey = key.replace(`_${outcome.id}`, "");
+                  const cleanLabel = key
+                    .replace(`_${outcome.id}`, "")
+                    .replace(/_/g, " ")
+                    .replace(/\b\w/g, l => l.toUpperCase());
+
+                  ids.push(`${outcomeId}_${key}`);
+                  labels.push(cleanLabel);
+                  parents.push(outcomeId);
+                  values.push(val);
+                  colors.push(colorPalette.types[typeKey] || colorPalette.types.unknown);
+                }
+              }
+            });
+          }
+        }
       });
+    };
+
+    processSide(usa, "USA", "usa", colorPalette.usa);
+    processSide(ussr, "USSR", "ussr", colorPalette.ussr);
+
+    return { ids, labels, parents, values, colors };
+  };
+
+  const plotData = useMemo(() => {
+    if (winTypeStats) {
+      return transformDataForSunburst(winTypeStats)
     }
+}, [winTypeStats]);
 
-    return percentages;
+  const layout = {
+    margin: { l: 10, r: 10, b: 10, t: 50 },
+    width: 700,
+    height: 700,
+    title: { text: "Global Twilight Struggle Outcomes (USA vs USSR)", font: { size: 20 } },
   };
 
-  const usaPercentages = calculatePercentages("USA");
-  const ussrPercentages = calculatePercentages("USSR");
-
-  // Prepare data for the chart - using a sunburst chart to show the hierarchy
-  const data: Data[] = [
-    {
-      type: "sunburst",
-      ids: [
-        "USA",
-        "USSR",
-        "USA-Wins",
-        "USA-Losses",
-        "USA-Ties",
-        "USSR-Wins",
-        "USSR-Losses",
-        "USSR-Ties",
-        ...winLossTypeOrder.map((type) => `USA-Wins-${type}`),
-        ...winLossTypeOrder.map((type) => `USA-Losses-${type}`),
-        ...winLossTypeOrder.map((type) => `USSR-Wins-${type}`),
-        ...winLossTypeOrder.map((type) => `USSR-Losses-${type}`),
-      ],
-      labels: [
-        "USA",
-        "USSR",
-        "Wins",
-        "Losses",
-        "Ties",
-        "Wins",
-        "Losses",
-        "Ties",
-        ...winLossTypeOrder,
-        ...winLossTypeOrder,
-        ...winLossTypeOrder,
-        ...winLossTypeOrder,
-      ],
-      parents: [
-        "",
-        "",
-        "USA",
-        "USA",
-        "USA",
-        "USSR",
-        "USSR",
-        "USSR",
-        ...winLossTypeOrder.map(() => "USA-Wins"),
-        ...winLossTypeOrder.map(() => "USA-Losses"),
-        ...winLossTypeOrder.map(() => "USSR-Wins"),
-        ...winLossTypeOrder.map(() => "USSR-Losses"),
-      ],
-      values: [
-        winTypeStats?.USA
-          ? winTypeStats.USA.wins + winTypeStats.USA.losses + winTypeStats.USA.ties
-          : 0,
-        winTypeStats?.USSR
-          ? winTypeStats.USSR.wins + winTypeStats.USSR.losses + winTypeStats.USSR.ties
-          : 0,
-        winTypeStats?.USA?.wins || 0,
-        winTypeStats?.USA?.losses || 0,
-        winTypeStats?.USA?.ties || 0,
-        winTypeStats?.USSR?.wins || 0,
-        winTypeStats?.USSR?.losses || 0,
-        winTypeStats?.USSR?.ties || 0,
-        ...winLossTypeOrder.map((type) => winTypeStats?.USA?.winTypes[type] || 0),
-        ...winLossTypeOrder.map((type) => winTypeStats?.USA?.lossTypes[type] || 0),
-        ...winLossTypeOrder.map((type) => winTypeStats?.USSR?.winTypes[type] || 0),
-        ...winLossTypeOrder.map((type) => winTypeStats?.USSR?.lossTypes[type] || 0),
-      ],
-      branchvalues: "total",
-      hovertemplate:
-        "<b>%{label}</b><br>" +
-        "Count: %{value}<br>" +
-        "Percentage: %{customdata:.0f}%<br>" +
-        "<extra></extra>",
-      customdata: [
-        // USA, USSR percentages of total games
-        totalUSAGames > 0 ? (totalUSAGames / totalGames) * 100 : 0,
-        totalUSSRGames > 0 ? (totalUSSRGames / totalGames) * 100 : 0,
-        // USA Wins, Losses, Ties percentages
-        usaPercentages["USA-Wins"] || 0,
-        usaPercentages["USA-Losses"] || 0,
-        usaPercentages["USA-Ties"] || 0,
-        // USSR Wins, Losses, Ties percentages
-        ussrPercentages["USSR-Wins"] || 0,
-        ussrPercentages["USSR-Losses"] || 0,
-        ussrPercentages["USSR-Ties"] || 0,
-        // USA Win Types percentages
-        ...winLossTypeOrder.map((type) => usaPercentages[`USA-Wins-${type}`] || 0),
-        // USA Loss Types percentages
-        ...winLossTypeOrder.map((type) => usaPercentages[`USA-Losses-${type}`] || 0),
-        // USSR Win Types percentages
-        ...winLossTypeOrder.map((type) => ussrPercentages[`USSR-Wins-${type}`] || 0),
-        // USSR Loss Types percentages
-        ...winLossTypeOrder.map((type) => ussrPercentages[`USSR-Losses-${type}`] || 0),
-      ],
-      marker: {
-        colors: [
-          colors.usa,
-          colors.ussr, // USA, USSR
-          colors.wins,
-          colors.losses,
-          colors.ties, // USA Wins, Losses, Ties
-          colors.wins,
-          colors.losses,
-          colors.ties, // USSR Wins, Losses, Ties
-          colors.defcon,
-          colors.scoring,
-          colors.vp,
-          colors.wargames,
-          colors.forfeit,
-          colors.timer,
-          colors.cuban,
-          colors.scoringCard,
-          colors.unknown, // USA Win Types
-          colors.defcon,
-          colors.scoring,
-          colors.vp,
-          colors.wargames,
-          colors.forfeit,
-          colors.timer,
-          colors.cuban,
-          colors.scoringCard,
-          colors.unknown, // USA Loss Types
-          colors.defcon,
-          colors.scoring,
-          colors.vp,
-          colors.wargames,
-          colors.forfeit,
-          colors.timer,
-          colors.cuban,
-          colors.scoringCard,
-          colors.unknown, // USSR Win Types
-          colors.defcon,
-          colors.scoring,
-          colors.vp,
-          colors.wargames,
-          colors.forfeit,
-          colors.timer,
-          colors.cuban,
-          colors.scoringCard,
-          colors.unknown, // USSR Loss Types
-        ],
-        line: {
-          color: [
-            colors.usa,
-            colors.usa, // USA, USSR
-            colors.usa,
-            colors.usa,
-            colors.usa, // USA Wins, Losses, Ties
-            colors.ussr,
-            colors.ussr,
-            colors.ussr, // USSR Wins, Losses, Ties
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa, // USA Win Types
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa,
-            colors.usa, // USA Loss Types
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr, // USSR Win Types
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr,
-            colors.ussr, // USSR Loss Types
-          ],
-          width: 1,
-        },
-      },
-      textinfo: "label+value",
-      textfont: { size: 14 },
-    },
-  ];
-
-  console.log("DATA:", data);
-  const layout: Partial<Layout> = {
-    title: {
-      text: "Win/Loss Distribution by Side and Type",
-      font: {
-        size: 20,
-        family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
-      },
-    },
-    height: 600,
-    margin: { t: 60, r: 0, b: 0, l: 0 },
-    plot_bgcolor: "white",
-    paper_bgcolor: "white",
-    font: {
-      family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
-    },
-  };
-
-  const config: Partial<Config> = {
-    responsive: true,
-    displayModeBar: false,
-  };
-
+  if (!plotData) return null;
   return (
-    <>
-      {!chartReady ? (
-        <div
-          style={{
-            height: "600px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#f9f9f9",
-            borderRadius: "8px",
-            marginTop: "16px",
-          }}
-        >
-          <Text style={{ color: "#666" }}>Loading win/loss data...</Text>
-        </div>
-      ) : (
-        <>
-          <Plot
-            data={data}
-            layout={layout}
-            config={config}
-            style={{ width: "100%", height: "600px" }}
-          />
-
-          <div style={{ marginTop: "16px" }}>
-            <Flex
-              style={{
-                flexWrap: "wrap",
-                gap: "12px",
-                justifyContent: "center",
-                marginTop: "16px",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.defcon,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>DEFCON</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.scoring,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Final Scoring</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.vp,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>VP Track</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.wargames,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Wargames</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.forfeit,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Forfeit</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.timer,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Timer Expired</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.cuban,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Cuban Missile Crisis</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.scoringCard,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Scoring Card Held</div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <div
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    backgroundColor: colors.unknown,
-                    borderRadius: "4px",
-                  }}
-                />
-                <div>Unknown</div>
-              </div>
-            </Flex>
-          </div>
-        </>
-      )}
-    </>
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <Plot
+        data={[{
+          type: "sunburst",
+          ids: plotData.ids,
+          labels: plotData.labels,
+          parents: plotData.parents,
+          values: plotData.values,
+          branchvalues: "total",
+          marker: {
+            colors: plotData.colors,
+            line: { width: 1.5, color: "white" }
+          },
+          leaf: { opacity: 0.8 },
+          hovertemplate: '<b>%{label}</b><br>Games: %{value}<extra></extra>'
+        }]}
+        layout={layout}
+        config={{ responsive: true }}
+      />
+    </div>
   );
 };
 
