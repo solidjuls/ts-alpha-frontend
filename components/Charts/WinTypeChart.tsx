@@ -6,31 +6,30 @@ import { Game } from "types/game.types";
 import { Data, Layout, Config } from "plotly.js";
 import { endType } from "utils/constants";
 import { useWinTypeChartData } from "hooks/useGames";
+import { DateSelector } from "./DateSelector";
 
 // Dynamically import Plot with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-// Color palette
 const colors = {
-  // Side colors
-  usa: "#4B6CB7", // Calm blue for USA
-  ussr: "#B74B4B", // Muted red for USSR
+  usa: "#4B6CB7",
+  ussr: "#B74B4B",
 
   // Outcome colors
-  wins: "#2E8B57", // Sea green for wins
-  losses: "#8B7355", // Warm brown for losses
-  ties: "#808080", // Gray for ties
+  wins: "#2E8B57",
+  losses: "#8B7355",
+  ties: "#808080",
 
   // Win/loss type colors - consistent regardless of source
-  defcon: "#6A5ACD", // Slate blue for DEFCON
-  scoring: "#4682B4", // Steel blue for Final Scoring
-  vp: "#8B4513", // Saddle brown for VP Track
-  wargames: "#2F4F4F", // Dark slate gray for Wargames
-  forfeit: "#A0522D", // Sienna for Forfeit
-  timer: "#8B7355", // Peru for Timer Expired
-  cuban: "#2F4F4F", // Dark slate gray for Cuban Missile Crisis
-  scoringCard: "#20B2AA", // Light sea green for Scoring Card Held
-  unknown: "#A9A9A9", // Dark gray for Unknown
+  defcon: "#6A5ACD",
+  scoring: "#4682B4",
+  vp: "#8B4513",
+  wargames: "#2F4F4F",
+  forfeit: "#A0522D",
+  timer: "#8B7355",
+  cuban: "#2F4F4F",
+  scoringCard: "#20B2AA",
+  unknown: "#A9A9A9",
 };
 
 interface WinTypeChartProps {
@@ -58,6 +57,7 @@ interface WinTypeStats {
     ties: number;
     winTypes: Record<string, number>;
     lossTypes: Record<string, number>;
+    total_games: string;
   };
   USSR: {
     wins: number;
@@ -65,59 +65,106 @@ interface WinTypeStats {
     ties: number;
     winTypes: Record<string, number>;
     lossTypes: Record<string, number>;
+    total_games: string;
   };
 }
 
 const colorPalette = {
-    root: "#FFFFFF",
-    usa: "#1f77b4",  // Azul USA
-    ussr: "#cc0000", // Rojo URSS
-    win: "#22c55e",  // Verde Victoria
-    loss: "#ef4444", // Rojo Derrota
-    tie: "#94a3b8",  // Gris Empate
-    // Colores para el 3er Nivel (Tipos de fin de juego)
-    types: {
-      defcon: "#8b5cf6",        // Violeta
-      final_scoring: "#06b6d4", // Cian
-      vp_track: "#eab308",      // Amarillo
-      wargames: "#f97316",      // Naranja
-      forfeit: "#ec4899",       // Rosa
-      timer: "#78350f",         // Marrón
-      scoring_card: "#84cc16",  // Lima
-      unknown: "#64748b"        // Pizarra
-    }
+  root: "#FFFFFF",
+  usa: "#1f77b4",
+  ussr: "#cc0000",
+  win: "#22c55e",
+  loss: "#ef4444",
+  tie: "#94a3b8",
+  types: {
+    defcon: "#8b5cf6",
+    final_scoring: "#06b6d4",
+    vp_track: "#eab308",
+    wargames: "#f97316",
+    forfeit: "#ec4899",
+    timer: "#78350f",
+    scoring_card: "#84cc16",
+    unknown: "#64748b",
+  },
+};
+
+interface ChartProps {
+  plotData: any;
+  winTypeLoading: boolean;
+  winTypeError: Error | null;
+}
+
+const Chart: React.FC<ChartProps> = ({ plotData, winTypeLoading, winTypeError }) => {
+  const layout = {
+    margin: { l: 10, r: 10, b: 10, t: 50 },
+    width: 700,
+    height: 700,
+    title: { text: "Global Twilight Struggle Outcomes (USA vs USSR)", font: { size: 20 } },
   };
 
-const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [winTypeStats, setWinTypeStats] = useState<WinTypeStats | null>(null);
-  const [chartReady, setChartReady] = useState(true);
-    const { data: winTypeStats, isLoading: winTypeLoading, error: winTypeError } = useWinTypeChartData(playerId, fromDate);
-  // Datos brutos proporcionados
-  // const rawData = {
-  //   "usaStats": [
-  //     { "total_games": "76", "wins": "38", "losses": "37", "ties": "1", "defcon_wins": "5", "final_scoring_wins": "10", "vp_track_wins": "15", "wargames_wins": "7", "forfeit_wins": "0", "timer_wins": "1", "cuban_wins": "0", "scoring_card_wins": "0", "unknown_wins": "0", "defcon_losses": "6", "final_scoring_losses": "13", "vp_track_losses": "7", "wargames_losses": "9", "forfeit_losses": "0", "timer_losses": "0", "cuban_losses": "0", "scoring_card_losses": "2", "unknown_losses": "0" }
-  //   ],
-  //   "ussrStats": [
-  //     { "total_games": "78", "wins": "46", "losses": "31", "ties": "1", "defcon_wins": "0", "final_scoring_wins": "13", "vp_track_wins": "24", "wargames_wins": "7", "forfeit_wins": "1", "timer_wins": "0", "cuban_wins": "0", "scoring_card_wins": "1", "unknown_wins": "0", "defcon_losses": "3", "final_scoring_losses": "16", "vp_track_losses": "5", "wargames_losses": "6", "forfeit_losses": "0", "timer_losses": "0", "cuban_losses": "0", "scoring_card_losses": "1", "unknown_losses": "0" }
-  //   ]
-  // };
+  if (winTypeLoading) return <div>Loading...</div>;
+  if (winTypeError) return <div>{winTypeError.message}</div>;
+  if (!plotData) return null;
+  return (
+    <Plot
+      data={[
+        {
+          type: "sunburst",
+          ids: plotData.ids,
+          labels: plotData.labels,
+          parents: plotData.parents,
+          values: plotData.values,
+          branchvalues: "total",
+          marker: {
+            colors: plotData.colors,
+            line: { width: 1.5, color: "white" },
+          },
+          hovertemplate: "<b>%{label}</b><br>Games: %{value}<extra></extra>",
+        },
+      ]}
+      layout={layout}
+      config={{ responsive: true }}
+    />
+  );
+};
 
-  // Mapeo de propiedades del JSON a etiquetas legibles
+const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
+  const now = new Date();
+  const threeMonthsAgoDate = new Date(now.setMonth(now.getMonth() - 3)).toISOString().split("T")[0];
+  const [fromDate, setFromDate] = useState<string>(threeMonthsAgoDate);
+
+  const {
+    data: winTypeStats,
+    isLoading: winTypeLoading,
+    error: winTypeError,
+  } = useWinTypeChartData(playerId, fromDate);
+
   const typeMapping = {
     wins: {
-      defcon_wins: "DEFCON", final_scoring_wins: "Final Scoring", vp_track_wins: "VP Track",
-      wargames_wins: "Wargames", forfeit_wins: "Forfeit", timer_wins: "Timer",
-      cuban_wins: "Cuban Missile", scoring_card_wins: "Scoring Card", unknown_wins: "Unknown"
+      defcon_wins: "DEFCON",
+      final_scoring_wins: "Final Scoring",
+      vp_track_wins: "VP Track",
+      wargames_wins: "Wargames",
+      forfeit_wins: "Forfeit",
+      timer_wins: "Timer",
+      cuban_wins: "Cuban Missile",
+      scoring_card_wins: "Scoring Card",
+      unknown_wins: "Unknown",
     },
     losses: {
-      defcon_losses: "DEFCON", final_scoring_losses: "Final Scoring", vp_track_losses: "VP Track",
-      wargames_losses: "Wargames", forfeit_losses: "Forfeit", timer_losses: "Timer",
-      cuban_losses: "Cuban Missile", scoring_card_losses: "Scoring Card", unknown_losses: "Unknown"
-    }
+      defcon_losses: "DEFCON",
+      final_scoring_losses: "Final Scoring",
+      vp_track_losses: "VP Track",
+      wargames_losses: "Wargames",
+      forfeit_losses: "Forfeit",
+      timer_losses: "Timer",
+      cuban_losses: "Cuban Missile",
+      scoring_card_losses: "Scoring Card",
+      unknown_losses: "Unknown",
+    },
   };
 
-  const transformDataForSunburst = (data) => {
+  const transformDataForSunburst = (data: WinTypeStats) => {
     const ids = [];
     const labels = [];
     const parents = [];
@@ -136,7 +183,12 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
     colors.push(colorPalette.root);
 
     // Helper para procesar cada bando (USA y USSR)
-    const processSide = (sideData, sideName, sideId, sideColor) => {
+    const processSide = (
+      sideData: typeof data.USA,
+      sideName: string,
+      sideId: string,
+      sideColor: string,
+    ) => {
       // 2. Nodo de Bando (USA o USSR)
       ids.push(sideId);
       labels.push(sideName);
@@ -147,13 +199,13 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
       const outcomes = [
         { id: "wins", label: "Wins", value: parseInt(sideData.wins), col: colorPalette.win },
         { id: "losses", label: "Losses", value: parseInt(sideData.losses), col: colorPalette.loss },
-        { id: "ties", label: "Ties", value: parseInt(sideData.ties), col: colorPalette.tie }
+        { id: "ties", label: "Ties", value: parseInt(sideData.ties), col: colorPalette.tie },
       ];
 
-      outcomes.forEach(outcome => {
+      outcomes.forEach((outcome) => {
         if (outcome.value > 0) {
           const outcomeId = `${sideId}_${outcome.id}`;
-          
+
           // 3. Nivel de Resultados (Wins / Losses / Ties)
           ids.push(outcomeId);
           labels.push(outcome.label);
@@ -165,16 +217,19 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
           // Solo desglosamos si es Wins o Losses
           if (outcome.id !== "ties") {
             // Buscamos todas las propiedades que terminen en _wins o _losses
-            Object.keys(sideData).forEach(key => {
+            Object.keys(sideData).forEach((key) => {
               if (key.endsWith(`_${outcome.id}`)) {
                 const val = parseInt(sideData[key]);
                 if (val > 0) {
                   // Creamos un nombre legible: "defcon_wins" -> "Defcon"
-                  const typeKey = key.replace(`_${outcome.id}`, "");
+                  const typeKey = key.replace(
+                    `_${outcome.id}`,
+                    "",
+                  ) as keyof typeof colorPalette.types;
                   const cleanLabel = key
                     .replace(`_${outcome.id}`, "")
                     .replace(/_/g, " ")
-                    .replace(/\b\w/g, l => l.toUpperCase());
+                    .replace(/\b\w/g, (l) => l.toUpperCase());
 
                   ids.push(`${outcomeId}_${key}`);
                   labels.push(cleanLabel);
@@ -197,40 +252,27 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId, fromDate }) => {
 
   const plotData = useMemo(() => {
     if (winTypeStats) {
-      return transformDataForSunburst(winTypeStats)
+      return transformDataForSunburst(winTypeStats);
     }
-}, [winTypeStats]);
+  }, [winTypeStats]);
 
-  const layout = {
-    margin: { l: 10, r: 10, b: 10, t: 50 },
-    width: 700,
-    height: 700,
-    title: { text: "Global Twilight Struggle Outcomes (USA vs USSR)", font: { size: 20 } },
-  };
-
-  if (!plotData) return null;
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <Plot
-        data={[{
-          type: "sunburst",
-          ids: plotData.ids,
-          labels: plotData.labels,
-          parents: plotData.parents,
-          values: plotData.values,
-          branchvalues: "total",
-          marker: {
-            colors: plotData.colors,
-            line: { width: 1.5, color: "white" }
-          },
-          leaf: { opacity: 0.8 },
-          hovertemplate: '<b>%{label}</b><br>Games: %{value}<extra></extra>'
-        }]}
-        layout={layout}
-        config={{ responsive: true }}
-      />
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "52rem",
+        backgroundColor: "white",
+        padding: "24px",
+        marginTop: "16px",
+        border: "solid 1px lightgray",
+        borderRadius: "8px",
+        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+      }}
+    >
+      <DateSelector setFromDate={setFromDate} />
+      <Chart plotData={plotData} winTypeLoading={winTypeLoading} winTypeError={winTypeError} />
     </div>
   );
 };
 
-export { WinTypeChart }
+export { WinTypeChart };

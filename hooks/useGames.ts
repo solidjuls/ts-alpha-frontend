@@ -191,7 +191,7 @@ export const useDeleteGame = () => {
 // Hook for getting win type chart data
 export const useWinTypeChartData = (
   userId: string,
-  fromDate?: string,
+  fromDate: string,
   options?: UseQueryOptions<WinTypeStats, Error>
 ) => {
   const params: GetChartDataParams = { userId, type: 'winType', fromDate };

@@ -90,8 +90,12 @@ const UserProfile = () => {
         </ProfileContainer>
       </DetailContainer>
 
-      <RatingChart playerId={id} />
-      <WinTypeChart playerId={id} />
+      <DetailContainer backButton={false}>
+        <RatingChart playerId={id} />
+      </DetailContainer>
+      <DetailContainer backButton={false}>
+        <WinTypeChart playerId={id} />
+      </DetailContainer>
       <DetailContainer backButton={false}>
         <RecentGamesContainer>
           Recent Games

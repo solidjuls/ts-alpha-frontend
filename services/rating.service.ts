@@ -34,14 +34,17 @@ export interface GetPlayerRatingsParams {
 }
 
 export interface RatingHistoryEntry {
-  rating: number;
+  currentRating: number;
   date: string;
-  gameId?: string;
+  gameId: string;
+  opponent: string;
+  ratingChange: number;
+  isUsaGame: string;
 }
 
 export interface GetRatingHistoryParams {
   userId: string;
-  fromDate?: string;
+  fromDate: string;
 }
 
 class RatingService {
@@ -103,10 +106,7 @@ class RatingService {
   async getRatingHistory(params: GetRatingHistoryParams): Promise<RatingHistoryEntry[]> {
     const queryParams = new URLSearchParams();
     queryParams.append('userId', params.userId);
-
-    // if (params.fromDate) {
-      queryParams.append('fromDate', '2024/01/01');
-    //}
+    queryParams.append('fromDate', params.fromDate);
 
     const response = await this.axiosInstance.get(`/rating/history?${queryParams.toString()}`);
     return response.data;

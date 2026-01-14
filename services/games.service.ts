@@ -90,7 +90,7 @@ export interface WinTypeStats {
 
 export interface GetChartDataParams {
   userId: string;
-  fromDate?: string;
+  fromDate: string;
   type: 'winType';
 }
 
@@ -162,8 +162,7 @@ class GamesService {
     const queryParams = new URLSearchParams();
     queryParams.append('userId', params.userId);
     queryParams.append('type', params.type);
-
-      queryParams.append('fromDate', '2025/01/01');
+    queryParams.append('fromDate', params.fromDate);
 
     const response = await this.axiosInstance.get(`/games/chart-data?${queryParams.toString()}`);
     return response.data;
