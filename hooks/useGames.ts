@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import gamesService, { GameListResponse, GetGamesParams, Game, SubmitGameData, RecreateGameParams, GetChartDataParams, WinTypeStats } from '../services/games.service';
+import gamesService, { GameListResponse, GetGamesParams, SubmitGameData, RecreateGameParams, GetChartDataParams, WinTypeStats } from '../services/games.service';
 
 // Query keys for React Query
 export const GAMES_QUERY_KEYS = {

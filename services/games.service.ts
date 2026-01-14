@@ -1,3 +1,4 @@
+import { Game } from 'types/game.types';
 import { createAuthenticatedAxios } from '../utils/api';
 
 export interface GameRating {
@@ -71,21 +72,34 @@ export interface SubmitGameData {
   video1?: string;
 }
 
+export interface WinTypeStatsItem {
+  total_games: string;
+  wins: string;
+  losses: string;
+  ties: string;
+  defcon_wins: string;
+  final_scoring_wins: string;
+  vp_track_wins: string;
+  wargames_wins: string;
+  forfeit_wins: string;
+  timer_wins: string;
+  cuban_wins: string;
+  scoring_card_wins: string;
+  unknown_wins: string;
+  defcon_losses: string;
+  final_scoring_losses: string;
+  vp_track_losses: string;
+  wargames_losses: string;
+  forfeit_losses: string;
+  timer_losses: string;
+  cuban_losses: string;
+  scoring_card_losses: string;
+  unknown_losses: string;
+}
+
 export interface WinTypeStats {
-  USA: {
-    wins: number;
-    losses: number;
-    ties: number;
-    winTypes: Record<string, number>;
-    lossTypes: Record<string, number>;
-  };
-  USSR: {
-    wins: number;
-    losses: number;
-    ties: number;
-    winTypes: Record<string, number>;
-    lossTypes: Record<string, number>;
-  };
+  usaStats: WinTypeStatsItem[]
+  ussrStats: WinTypeStatsItem[]
 }
 
 export interface GetChartDataParams {

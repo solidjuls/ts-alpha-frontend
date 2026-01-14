@@ -1,72 +1,15 @@
 import React, { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
-import { Box, Flex } from "components/Atoms";
-import Text from "components/Text";
-import { Game } from "types/game.types";
-import { Data, Layout, Config } from "plotly.js";
-import { endType } from "utils/constants";
 import { useWinTypeChartData } from "hooks/useGames";
 import { DateSelector } from "./DateSelector";
+import { WinTypeStats, WinTypeStatsItem } from "services/games.service";
 
 // Dynamically import Plot with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-const colors = {
-  usa: "#4B6CB7",
-  ussr: "#B74B4B",
-
-  // Outcome colors
-  wins: "#2E8B57",
-  losses: "#8B7355",
-  ties: "#808080",
-
-  // Win/loss type colors - consistent regardless of source
-  defcon: "#6A5ACD",
-  scoring: "#4682B4",
-  vp: "#8B4513",
-  wargames: "#2F4F4F",
-  forfeit: "#A0522D",
-  timer: "#8B7355",
-  cuban: "#2F4F4F",
-  scoringCard: "#20B2AA",
-  unknown: "#A9A9A9",
-};
-
 interface WinTypeChartProps {
   playerId: string;
   fromDate?: string;
-}
-
-// Define a fixed order for win/loss types
-const winLossTypeOrder = [
-  "DEFCON",
-  "Final Scoring",
-  "VP Track",
-  "Wargames",
-  "Forfeit",
-  "Timer Expired",
-  "Cuban Missile Crisis",
-  "Scoring Card Held",
-  "Unknown",
-] as const;
-
-interface WinTypeStats {
-  USA: {
-    wins: number;
-    losses: number;
-    ties: number;
-    winTypes: Record<string, number>;
-    lossTypes: Record<string, number>;
-    total_games: string;
-  };
-  USSR: {
-    wins: number;
-    losses: number;
-    ties: number;
-    winTypes: Record<string, number>;
-    lossTypes: Record<string, number>;
-    total_games: string;
-  };
 }
 
 const colorPalette = {
@@ -139,31 +82,6 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
     error: winTypeError,
   } = useWinTypeChartData(playerId, fromDate);
 
-  const typeMapping = {
-    wins: {
-      defcon_wins: "DEFCON",
-      final_scoring_wins: "Final Scoring",
-      vp_track_wins: "VP Track",
-      wargames_wins: "Wargames",
-      forfeit_wins: "Forfeit",
-      timer_wins: "Timer",
-      cuban_wins: "Cuban Missile",
-      scoring_card_wins: "Scoring Card",
-      unknown_wins: "Unknown",
-    },
-    losses: {
-      defcon_losses: "DEFCON",
-      final_scoring_losses: "Final Scoring",
-      vp_track_losses: "VP Track",
-      wargames_losses: "Wargames",
-      forfeit_losses: "Forfeit",
-      timer_losses: "Timer",
-      cuban_losses: "Cuban Missile",
-      scoring_card_losses: "Scoring Card",
-      unknown_losses: "Unknown",
-    },
-  };
-
   const transformDataForSunburst = (data: WinTypeStats) => {
     const ids = [];
     const labels = [];
@@ -184,7 +102,7 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
 
     // Helper para procesar cada bando (USA y USSR)
     const processSide = (
-      sideData: typeof data.USA,
+      sideData: WinTypeStatsItem,
       sideName: string,
       sideId: string,
       sideColor: string,
@@ -219,7 +137,7 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
             // Buscamos todas las propiedades que terminen en _wins o _losses
             Object.keys(sideData).forEach((key) => {
               if (key.endsWith(`_${outcome.id}`)) {
-                const val = parseInt(sideData[key]);
+                const val = parseInt(sideData[key as keyof WinTypeStatsItem]);
                 if (val > 0) {
                   // Creamos un nombre legible: "defcon_wins" -> "Defcon"
                   const typeKey = key.replace(
