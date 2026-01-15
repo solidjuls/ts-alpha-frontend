@@ -92,7 +92,6 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
     const usa = data.usaStats[0];
     const ussr = data.ussrStats[0];
 
-    // 1. Nodo Raíz (Total Global)
     const totalGlobal = parseInt(usa.total_games) + parseInt(ussr.total_games);
     ids.push("total");
     labels.push("All Games");
@@ -100,14 +99,12 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
     values.push(totalGlobal);
     colors.push(colorPalette.root);
 
-    // Helper para procesar cada bando (USA y USSR)
     const processSide = (
       sideData: WinTypeStatsItem,
       sideName: string,
       sideId: string,
       sideColor: string,
     ) => {
-      // 2. Nodo de Bando (USA o USSR)
       ids.push(sideId);
       labels.push(sideName);
       parents.push("total");
@@ -124,40 +121,35 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
         if (outcome.value > 0) {
           const outcomeId = `${sideId}_${outcome.id}`;
 
-          // 3. Nivel de Resultados (Wins / Losses / Ties)
           ids.push(outcomeId);
           labels.push(outcome.label);
           parents.push(sideId);
           values.push(outcome.value);
           colors.push(outcome.col);
 
-          // 4. Nivel de Detalle (Tipos de victoria/derrota)
-          // Solo desglosamos si es Wins o Losses
-          if (outcome.id !== "ties") {
-            // Buscamos todas las propiedades que terminen en _wins o _losses
-            Object.keys(sideData).forEach((key) => {
-              if (key.endsWith(`_${outcome.id}`)) {
-                const val = parseInt(sideData[key as keyof WinTypeStatsItem]);
-                if (val > 0) {
-                  // Creamos un nombre legible: "defcon_wins" -> "Defcon"
-                  const typeKey = key.replace(
-                    `_${outcome.id}`,
-                    "",
-                  ) as keyof typeof colorPalette.types;
-                  const cleanLabel = key
-                    .replace(`_${outcome.id}`, "")
-                    .replace(/_/g, " ")
-                    .replace(/\b\w/g, (l) => l.toUpperCase());
+          // if (outcome.id !== "ties") {
+          //   Object.keys(sideData).forEach((key) => {
+          //     if (key.endsWith(`_${outcome.id}`)) {
+          //       const val = parseInt(sideData[key as keyof WinTypeStatsItem]);
+          //       if (val > 0) {
+          //         // const typeKey = key.replace(
+          //         //   `_${outcome.id}`,
+          //         //   "",
+          //         // ) as keyof typeof colorPalette.types;
+          //         // const cleanLabel = key
+          //         //   .replace(`_${outcome.id}`, "")
+          //         //   .replace(/_/g, " ")
+          //         //   .replace(/\b\w/g, (l) => l.toUpperCase());
 
-                  ids.push(`${outcomeId}_${key}`);
-                  labels.push(cleanLabel);
-                  parents.push(outcomeId);
-                  values.push(val);
-                  colors.push(colorPalette.types[typeKey] || colorPalette.types.unknown);
-                }
-              }
-            });
-          }
+          //         // ids.push(`${outcomeId}_${key}`);
+          //         // labels.push(cleanLabel);
+          //         // parents.push(outcomeId);
+          //         // values.push(val);
+          //         // colors.push(colorPalette.types[typeKey] || colorPalette.types.unknown);
+          //       }
+          //     }
+          //   });
+          // }
         }
       });
     };

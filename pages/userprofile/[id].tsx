@@ -89,7 +89,6 @@ const UserProfile = () => {
           {userLoading || !userData ? <Spinner size="3" /> : <UserProfileContent {...userData} />}
         </ProfileContainer>
       </DetailContainer>
-
       <DetailContainer backButton={false}>
         <RatingChart playerId={id} />
       </DetailContainer>
