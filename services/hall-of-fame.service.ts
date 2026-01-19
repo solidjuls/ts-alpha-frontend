@@ -66,6 +66,8 @@ export interface HallOfFameResponse {
   grand: HallOfFameEntry[];
   mso: HallOfFameEntry[];
   convention: HallOfFameEntry[];
+  king: HallOfFameEntry[];
+  evergreen: HallOfFameEntry[];
 }
 
 // Create axios instance for NestJS backend with auth
@@ -120,6 +122,8 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
     grand: [],
     mso: [],
     convention: [],
+    king: [],
+    evergreen: [],
   };
 
   entries.forEach((apiEntry) => {
@@ -216,6 +220,12 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
     else if (leagueType === 'CONVENTION') {
       grouped.convention.push(entry);
     }
+    else if (leagueType === 'KING') {
+      grouped.convention.push(entry);
+    }
+    else if (leagueType === 'EVERGREEN') {
+      grouped.convention.push(entry);
+    }
   });
 
   // Sort each league by season (string representing year)
@@ -253,6 +263,8 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
   grouped.grand.sort(sortBySeason);
   grouped.mso.sort(sortBySeason);
   grouped.convention.sort(sortBySeason);
+  grouped.king.sort(sortBySeason);
+  grouped.evergreen.sort(sortBySeason);
 
   return grouped;
 };

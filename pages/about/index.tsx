@@ -1011,6 +1011,25 @@ const AboutPage = () => (
 
           <li>
             <Inline>
+              <InternalLink href="/userprofile/3104">Rong Yu</InternalLink> (Velvet Feather):{" "}
+              <ExternalLink
+                href="https://www.youtube.com/@rumiascarlet4717"
+                target="_blank"
+                rel="noreferrer"
+              >
+                YouTube
+              </ExternalLink>{" "}
+              <LanguagePill title="Chinese Speaker">
+                <FlagWrap>
+                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                </FlagWrap>
+                CN
+              </LanguagePill>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
               <InternalLink href="/userprofile/2670">Sean Wanschoor</InternalLink> (Hannarchie):{" "}
               <ExternalLink
                 href="https://www.youtube.com/channel/UCRvAqSws-5hgewoaz49UlTw"
