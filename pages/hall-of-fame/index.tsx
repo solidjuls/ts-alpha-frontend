@@ -159,9 +159,9 @@ export default function HallOfFamePage() {
       </Section>
 
       <Section>
-        <SectionTitle>The King's Cup</SectionTitle>
+        <SectionTitle>The King`&apos;`s Cup</SectionTitle>
         <SectionSubtitle>
-          The King's Cup is a 2-day-long, Swiss tournament. There are four matches each day with the new regal of the TS community crowned 
+          The King`&apos;`s Cup is a 2-day-long, Swiss tournament. There are four matches each day with the new regal of the TS community crowned 
           at the end of day two. All peasants are welcome to compete for a chance to ascend the throne!
         </SectionSubtitle>
         {renderTable(hallOfFameData.king)}
