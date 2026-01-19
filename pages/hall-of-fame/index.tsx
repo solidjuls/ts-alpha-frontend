@@ -159,11 +159,28 @@ export default function HallOfFamePage() {
       </Section>
 
       <Section>
+        <SectionTitle>The King's Cup</SectionTitle>
+        <SectionSubtitle>
+          The King's Cup is a 2-day-long, Swiss tournament. There are four matches each day with the new regal of the TS community crowned 
+          at the end of day two. All peasants are welcome to compete for a chance to ascend the throne!
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.king)}
+      </Section>
+
+      <Section>
         <SectionTitle>Grand Slam Series</SectionTitle>
         <SectionSubtitle>
           The Grand Slam is a yearly series of shorter, one-day tournaments held in different time zones.
         </SectionSubtitle>
         {renderTable(hallOfFameData.grand)}
+      </Section>
+
+      <Section>
+        <SectionTitle>Evergreen Cup</SectionTitle>
+        <SectionSubtitle>
+          The Evergreen Cup is a single-elimination tournament with a 10-day timer to complete every round.
+        </SectionSubtitle>
+        {renderTable(hallOfFameData.evergreen)}
       </Section>
 
       <Section>
