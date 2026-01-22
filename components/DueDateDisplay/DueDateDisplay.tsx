@@ -99,7 +99,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   );
 
   // Admin: editable date + Update + optional Delete
-  if (admin) {
+  if (admin && !gamePlayed && !gameDate) {
     const isUpdating = updateScheduleMutation.isPending;
 
     return (
