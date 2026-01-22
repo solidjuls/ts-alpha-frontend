@@ -221,10 +221,10 @@ const groupAndSortByLeague = (entries: HallOfFameApiEntry[]): HallOfFameResponse
       grouped.convention.push(entry);
     }
     else if (leagueType === 'KING') {
-      grouped.convention.push(entry);
+      grouped.king.push(entry);
     }
     else if (leagueType === 'EVERGREEN') {
-      grouped.convention.push(entry);
+      grouped.evergreen.push(entry);
     }
   });
 
