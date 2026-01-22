@@ -3,9 +3,17 @@ import dynamic from "next/dynamic";
 import { useWinTypeChartData } from "hooks/useGames";
 import { DateSelector } from "./DateSelector";
 import { WinTypeStats, WinTypeStatsItem } from "services/games.service";
+import styled from "styled-components";
 
 // Dynamically import Plot with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+const ChartContainer = styled.div`
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+`;
 
 interface WinTypeChartProps {
   playerId: string;
@@ -40,34 +48,37 @@ interface ChartProps {
 const Chart: React.FC<ChartProps> = ({ plotData, winTypeLoading, winTypeError }) => {
   const layout = {
     margin: { l: 10, r: 10, b: 10, t: 50 },
-    width: 700,
-    height: 700,
-    title: { text: "Global Twilight Struggle Outcomes (USA vs USSR)", font: { size: 20 } },
+    autosize: true,
+    title: { text: "Twilight Struggle Results", font: { size: 20 } },
   };
 
   if (winTypeLoading) return <div>Loading...</div>;
   if (winTypeError) return <div>{winTypeError.message}</div>;
   if (!plotData) return null;
   return (
-    <Plot
-      data={[
-        {
-          type: "sunburst",
-          ids: plotData.ids,
-          labels: plotData.labels,
-          parents: plotData.parents,
-          values: plotData.values,
-          branchvalues: "total",
-          marker: {
-            colors: plotData.colors,
-            line: { width: 1.5, color: "white" },
+    <ChartContainer>
+      <Plot
+        data={[
+          {
+            type: "sunburst",
+            ids: plotData.ids,
+            labels: plotData.labels,
+            parents: plotData.parents,
+            values: plotData.values,
+            branchvalues: "total",
+            marker: {
+              colors: plotData.colors,
+              line: { width: 1.5, color: "white" },
+            },
+            hovertemplate: "<b>%{label}</b><br>Games: %{value}<extra></extra>",
           },
-          hovertemplate: "<b>%{label}</b><br>Games: %{value}<extra></extra>",
-        },
-      ]}
-      layout={layout}
-      config={{ responsive: true }}
-    />
+        ]}
+        layout={layout}
+        config={{ responsive: true, displayModeBar: false }}
+        style={{ width: "100%", height: "100%" }}
+        useResizeHandler={true}
+      />
+    </ChartContainer>
   );
 };
 

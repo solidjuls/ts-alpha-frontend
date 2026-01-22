@@ -108,7 +108,7 @@ const Chart: React.FC<ChartProps> = ({ ratingHistory, ratingLoading, ratingError
       line: {
         color: "#374151",
         width: 2,
-        shape: "spline",
+        shape: "linear",
       },
       marker: {
         size: 8,
