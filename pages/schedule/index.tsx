@@ -348,6 +348,18 @@ const Schedule = () => {
     }
     return index === 0
   }
+
+  let updatedScheduleData = scheduleData;
+  // if no filters are set
+  const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && currentPage === 1;
+  if (noFilters && scheduleData && scheduleData.length > 0) {
+    // split all completed games, order them by completed game date and then add them back
+    const completedGames = scheduleData?.filter(game => game.gameDate);
+    const orderedCompletedGames = completedGames?.sort((a, b) => {
+      return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
+    });
+    updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
+  }
   return (
     <>
       <Head>
@@ -383,7 +395,7 @@ const Schedule = () => {
             {/* Admin Controls */}
             {isUserAdminForTournament && currentTournament && (
               <ScheduleFilter
-                noSchedule={!scheduleData || scheduleData.length === 0}
+                noSchedule={!updatedScheduleData || updatedScheduleData.length === 0}
                 tournament={currentTournament.id}
                 onPlayerSelect={handlePlayerSelect}
                 onPlayerRemove={handlePlayerRemove}
@@ -401,7 +413,7 @@ const Schedule = () => {
             )}
 
             <SchedulePanel
-              data={scheduleData}
+              data={updatedScheduleData}
               userId={userId}
               isAdmin={isUserAdminForTournament}
               isLoading={isLoading && !dataSchedule}
@@ -410,7 +422,7 @@ const Schedule = () => {
               deletingId={deletingId}
             />
 
-            {scheduleData && scheduleTotalPages > 1 && (
+            {updatedScheduleData && scheduleTotalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={scheduleTotalPages}
