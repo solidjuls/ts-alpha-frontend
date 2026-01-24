@@ -191,7 +191,6 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
           scheduleId={schedule.id}
           gameDate={schedule.gameDate || ""}
           admin={isAdmin}
-          gamePlayed={false}
           onDelete={isAdmin ? onDelete: undefined}
           isDeleting={isDeleting}
         />
