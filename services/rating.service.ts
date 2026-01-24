@@ -33,6 +33,20 @@ export interface GetPlayerRatingsParams {
   orderDirection?: 'asc' | 'desc';
 }
 
+export interface RatingHistoryEntry {
+  currentRating: number;
+  date: string;
+  gameId: string;
+  opponent: string;
+  ratingChange: number;
+  isUsaGame: string;
+}
+
+export interface GetRatingHistoryParams {
+  userId: string;
+  fromDate: string;
+}
+
 class RatingService {
   private axiosInstance: AxiosInstance;
 
@@ -85,6 +99,16 @@ class RatingService {
   // Health check endpoint
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
     const response = await this.axiosInstance.get('/rating/health');
+    return response.data;
+  }
+
+  // Get rating history for a user
+  async getRatingHistory(params: GetRatingHistoryParams): Promise<RatingHistoryEntry[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('userId', params.userId);
+    queryParams.append('fromDate', params.fromDate);
+
+    const response = await this.axiosInstance.get(`/rating/history?${queryParams.toString()}`);
     return response.data;
   }
 }

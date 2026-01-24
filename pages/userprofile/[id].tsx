@@ -6,8 +6,8 @@ import { useGamesByUsers } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
 import { UserDetail } from "services/users.service";
-import { Game as ServiceGame } from "services/games.service";
-import { Game as ComponentGame, GameWinner } from "types/game.types";
+// import { Game as ServiceGame } from "services/games.service";
+// import { Game as ComponentGame, GameWinner } from "types/game.types";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
@@ -15,17 +15,19 @@ import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../st
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 import { FlagIcon } from "components/FlagIcon";
+import { useRatingHistory } from "hooks/useRating";
+import { RatingChart, WinTypeChart } from "components/Charts";
 
 const PAGE_SIZE = 10;
 
 // Convert service Game type to component Game type
-const convertServiceGameToComponentGame = (serviceGame: ServiceGame): ComponentGame => ({
+const convertServiceGameToComponentGame = (serviceGame: any): any => ({
   ...serviceGame,
   id: BigInt(serviceGame.id),
   usaPlayerId: BigInt(serviceGame.usaPlayerId),
   ussrPlayerId: BigInt(serviceGame.ussrPlayerId),
   reporter_id: serviceGame.reporter_id ? BigInt(serviceGame.reporter_id) : null,
-  gameWinner: serviceGame.gameWinner as GameWinner,
+  gameWinner: serviceGame.gameWinner as any,
   created_at: serviceGame.created_at ? new Date(serviceGame.created_at) : null,
   updated_at: serviceGame.updated_at ? new Date(serviceGame.updated_at) : null,
   reported_at: new Date(serviceGame.reported_at),
@@ -62,7 +64,8 @@ const UserProfile = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { data: userData, isLoading: userLoading, error: userError } = useUserById(id);
   const { data: gamesData, isLoading: gamesLoading, error: gamesError } = useGamesByUsers([id], currentPage, PAGE_SIZE);
-
+  // call the rating history endpoint
+  
   const totalPages = gamesData ? Math.ceil(gamesData.totalRows / PAGE_SIZE) : 1;
 
   const handlePageChange = (page: number) => {
@@ -86,7 +89,12 @@ const UserProfile = () => {
           {userLoading || !userData ? <Spinner size="3" /> : <UserProfileContent {...userData} />}
         </ProfileContainer>
       </DetailContainer>
-
+      <DetailContainer backButton={false}>
+        <RatingChart playerId={id} />
+      </DetailContainer>
+      <DetailContainer backButton={false}>
+        <WinTypeChart playerId={id} />
+      </DetailContainer>
       <DetailContainer backButton={false}>
         <RecentGamesContainer>
           Recent Games

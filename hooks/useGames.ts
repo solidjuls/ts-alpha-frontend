@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import gamesService, { GameListResponse, GetGamesParams, Game, SubmitGameData, RecreateGameParams } from '../services/games.service';
+import gamesService, { GameListResponse, GetGamesParams, SubmitGameData, RecreateGameParams, GetChartDataParams, WinTypeStats } from '../services/games.service';
 
 // Query keys for React Query
 export const GAMES_QUERY_KEYS = {
@@ -10,8 +10,9 @@ export const GAMES_QUERY_KEYS = {
   detail: (id: string) => [...GAMES_QUERY_KEYS.details(), id] as const,
   top: (count: number) => [...GAMES_QUERY_KEYS.all, 'top', count] as const,
   homepage: () => [...GAMES_QUERY_KEYS.all, 'homepage'] as const,
-  resultsPage: (page: number, filters: Omit<GetGamesParams, 'p' | 'pageSize'>) => 
+  resultsPage: (page: number, filters: Omit<GetGamesParams, 'p' | 'pageSize'>) =>
     [...GAMES_QUERY_KEYS.all, 'resultsPage', page, filters] as const,
+  chartData: (params: GetChartDataParams) => [...GAMES_QUERY_KEYS.all, 'chartData', params] as const,
 };
 
 // Hook for getting games with filters and pagination
@@ -184,5 +185,23 @@ export const useDeleteGame = () => {
     onError: (error: any) => {
       console.error('Delete game failed:', error);
     },
+  });
+};
+
+// Hook for getting win type chart data
+export const useWinTypeChartData = (
+  userId: string,
+  fromDate: string,
+  options?: UseQueryOptions<WinTypeStats, Error>
+) => {
+  const params: GetChartDataParams = { userId, type: 'winType', fromDate };
+
+  return useQuery({
+    queryKey: GAMES_QUERY_KEYS.chartData(params),
+    queryFn: () => gamesService.getChartData(params),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    ...options,
   });
 };
