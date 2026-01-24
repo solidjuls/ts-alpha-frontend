@@ -14,7 +14,6 @@ interface DueDateDisplayProps {
   dueDate: string | Date;
   gameDate: string | Date;
   admin: boolean;
-  gamePlayed: boolean;
   scheduleId: string;
 
   // Optional delete support (for admins)
@@ -26,7 +25,6 @@ interface DueDateDisplayProps {
 const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   dueDate,
   admin,
-  gamePlayed,
   gameDate,
   scheduleId,
   onDelete,
@@ -99,7 +97,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   );
 
   // Admin: editable date + Update + optional Delete
-  if (admin && !gamePlayed && !gameDate) {
+  if (admin && !gameDate) {
     const isUpdating = updateScheduleMutation.isPending;
 
     return (
@@ -143,7 +141,7 @@ const DueDateDisplay: React.FC<DueDateDisplayProps> = ({
   }
 
   // Non-admin: read-only label
-  if (gamePlayed && gameDate) {
+  if (gameDate) {
     return renderLabel("Game Played", gameDate);
   }
 
