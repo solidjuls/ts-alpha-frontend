@@ -1,38 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { Data, Layout } from "plotly.js";
 import { useRouter } from "next/router";
-import styled from "styled-components";
 import { useRatingHistory } from "hooks/useRating";
 import { DateSelector } from "./DateSelector";
 import { RatingHistoryEntry } from "services/rating.service";
+import { ChartCard, ChartArea, CenterMessage } from "./RatingChart.styled";
+import { Spinner } from "@radix-ui/themes";
+import Text from "components/Text";
 
 // Dynamically import Plot with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
-const Text = styled("div")`
-  font-size: "14px",
-  color: "#333",
-`;
-
 interface RatingChartProps {
   playerId: string;
 }
-
-interface RatingHistoryItem {
-  gameId: string;
-  date: string;
-  currentRating: number;
-  previousRating: number;
-  ratingChange: number;
-  opponent: string;
-  isUsaGame: string;
-}
-
-const colors = {
-  usa: "#4B6CB7",
-  ussr: "#B74B4B",
-};
 
 interface ChartProps {
   ratingHistory: RatingHistoryEntry[] | undefined;
@@ -42,54 +24,63 @@ interface ChartProps {
 
 const Chart: React.FC<ChartProps> = ({ ratingHistory, ratingLoading, ratingError }) => {
   const router = useRouter();
+  const chartWrapRef = useRef<HTMLDivElement | null>(null); // Needed to allow pointer cursor
 
-  if (ratingLoading) return <div>Loading...</div>;
-  if (ratingError) return <div>{ratingError.message}</div>;
-  const layout: Partial<Layout> = {
-    title: {
-      text: "Rating History",
-      font: {
-        size: 20,
-        family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
-      },
-    },
-    xaxis: {
-      title: {
-        text: "Date",
-        font: {
-          size: 14,
-        },
-      },
-      zeroline: false,
-      gridcolor: "#f0f0f0",
-      zerolinecolor: "#d3d3d3",
-    },
-    yaxis: {
-      title: {
-        text: "Rating",
-        font: {
-          size: 14,
-        },
-      },
-      zeroline: false,
-      gridcolor: "#f0f0f0",
-    },
-    margin: { t: 60, r: 30, b: 50, l: 60 },
-    showlegend: false,
-    plot_bgcolor: "white",
-    paper_bgcolor: "white",
-    font: {
-      family: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif",
-    },
-    hovermode: "closest",
-    hoverlabel: {
-      bgcolor: "white",
-      font: { size: 12 },
-      align: "left",
-    },
+  // Needed because Plotly has trouble with CSS color variables
+  const getThemeColors = () => {
+    if (typeof window === "undefined") return null;
+
+    const css = getComputedStyle(document.documentElement);
+
+    return {
+      bgCard: css.getPropertyValue("--bg-card").trim(),
+      border: css.getPropertyValue("--border").trim(),
+      text: css.getPropertyValue("--primary-text").trim(),
+      muted: css.getPropertyValue("--muted-text").trim(),
+      usa: css.getPropertyValue("--usa").trim(),
+      ussr: css.getPropertyValue("--ussr").trim(),
+    };
   };
-  const ratingHistorySorted = ratingHistory?.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  if (!ratingHistorySorted) return null;
+
+  const ratingHistorySorted = useMemo(() => {
+    if (!ratingHistory) return null;
+    return [...ratingHistory].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }, [ratingHistory]);
+
+  const theme = getThemeColors();
+  if (!theme) {
+    return (
+      <CenterMessage>
+        <Spinner />
+      </CenterMessage>
+    );
+  }
+
+  if (ratingLoading) {
+    return (
+      <CenterMessage>
+        <Spinner />
+      </CenterMessage>
+    );
+  }
+    if (ratingError) {
+    return (
+      <CenterMessage>
+        <Text>{ratingError.message}</Text>
+      </CenterMessage>
+    );
+  }
+
+  if (!ratingHistorySorted || ratingHistorySorted.length === 0) {
+    return (
+      <CenterMessage>
+        <Text>No Rating History Available</Text>
+      </CenterMessage>
+    );
+  }
+
   // Create arrays for the chart data
   const dates: Date[] = ratingHistorySorted.map((item) => new Date(item.date));
   const ratings: number[] = ratingHistorySorted.map((item) => item.currentRating);
@@ -97,6 +88,48 @@ const Chart: React.FC<ChartProps> = ({ ratingHistory, ratingLoading, ratingError
   const opponents: string[] = ratingHistorySorted.map((item) => item.opponent);
   const ratingChanges: number[] = ratingHistorySorted.map((item) => item.ratingChange);
   const isUSAGames: boolean[] = ratingHistorySorted.map((item) => item.isUsaGame === "1");
+
+  const layout: Partial<Layout> = {
+    title: {
+      text: "Rating History",
+      font: {
+        size: 18,
+        family: "var(--font-body)",
+        color: theme.text,
+      },
+    },
+    margin: { t: 48, r: 18, b: 40, l: 52 },
+    showlegend: false,
+    hovermode: "closest",
+    paper_bgcolor: theme.bgCard,
+    plot_bgcolor: theme.bgCard,
+    font: {
+      family: "var(--font-body)",
+      color: theme.text,
+    },
+    xaxis: {
+      title: { text: "Date", font: { size: 12, family: "var(--font-body)"} },
+      zeroline: false,
+      gridcolor: theme.border,
+      tickfont: { size: 11, family: "var(--font-body)"},
+    },
+    yaxis: {
+      title: { text: "Rating", font: { size: 12, family: "var(--font-body)"} },
+      zeroline: false,
+      gridcolor: theme.border,
+      tickfont: { size: 11, family: "var(--font-body)"},
+    },
+    hoverlabel: {
+      bgcolor: theme.bgCard,
+      bordercolor: theme.border,
+      font: {
+        size: 12,
+        family: "var(--font-body)",
+        color: theme.text,
+      },
+      align: "left",
+    },
+  };
 
   const data: Data[] = [
     {
@@ -106,13 +139,15 @@ const Chart: React.FC<ChartProps> = ({ ratingHistory, ratingLoading, ratingError
       mode: "lines+markers",
       name: "Rating",
       line: {
-        color: "#374151",
+        color: theme.text,
         width: 2,
         shape: "linear",
       },
       marker: {
         size: 8,
-        color: ratingHistorySorted?.map((item) => (item.isUsaGame === "1" ? colors.usa : colors.ussr)),
+        color: ratingHistorySorted.map((item) =>
+          item.isUsaGame === "1" ? theme.usa : theme.ussr
+        ) as any,
       },
       hovertemplate:
         "<b>Date:</b> %{customdata[3]|%Y-%m-%d}<br>" +
@@ -131,61 +166,68 @@ const Chart: React.FC<ChartProps> = ({ ratingHistory, ratingLoading, ratingError
     },
   ];
 
-  const handleClick = (event: any) => {
-    if (event && event.points && event.points.length > 0) {
-      const pointIndex = event.points[0].pointIndex;
-      const gameId = ratingHistorySorted[pointIndex].gameId;
+  const setPlotlyCursor = (cursor: string) => {
+    const root = chartWrapRef.current;
+    if (!root) return;
 
-      if (gameId) {
-        router.push(`/games/${gameId}`);
-      }
+    const plotlyEl = root.querySelector(".js-plotly-plot") as HTMLElement | null;
+    if (plotlyEl) {
+      plotlyEl.style.cursor = cursor;
+    }
+
+    const plotlyAlt = root.querySelector(".plotly") as HTMLElement | null;
+    if (plotlyAlt) {
+      plotlyAlt.style.cursor = cursor;
+    }
+
+    const dragLayer = root.querySelector(".draglayer .nsewdrag") as HTMLElement | null;
+    if (dragLayer) {
+      dragLayer.style.cursor = cursor;
     }
   };
 
+
+  const handleHover = () => setPlotlyCursor("pointer");
+  const handleUnhover = () => setPlotlyCursor("crosshair");
+
+  const handleClick = (event: any) => {
+    const pointIndex = event?.points?.[0]?.pointIndex;
+    if (typeof pointIndex !== "number") return;
+
+    const gameId = ratingHistorySorted[pointIndex]?.gameId;
+    if (gameId) router.push(`/games/${gameId}`);
+  };
+
   return (
-    <Plot
-      data={data}
-      layout={layout}
-      config={{
-        responsive: true,
-        displayModeBar: false,
-      }}
-      style={{ width: "100%", height: "400px" }}
-      onClick={handleClick}
-    />
+    <div ref={chartWrapRef} style={{ width: "100%", height: 400 }}>
+      <Plot
+        data={data}
+        layout={layout}
+        config={{ responsive: true, displayModeBar: false }}
+        style={{ width: "100%", height: "100%" }}
+        onClick={handleClick}
+        onHover={handleHover}
+        onUnhover={handleUnhover}
+      />
+    </div>
   );
 };
 
 const RatingChart: React.FC<RatingChartProps> = ({ playerId }) => {
   const now = new Date();
-  const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3)).toISOString().split("T")[0];
+  const threeMonthsAgoDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+  const threeMonthsAgo = threeMonthsAgoDate.toISOString().split("T")[0];
+
   const [fromDate, setFromDate] = useState<string>(threeMonthsAgo);
-  const {
-    data: ratingHistory,
-    isLoading: ratingLoading,
-    error: ratingError,
-  } = useRatingHistory({ userId: playerId, fromDate });
+
+  const { data: ratingHistory, isLoading: ratingLoading, error: ratingError } =
+    useRatingHistory({ userId: playerId, fromDate });
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "52rem",
-        backgroundColor: "white",
-        padding: "24px",
-        marginTop: "16px",
-        border: "solid 1px lightgray",
-        borderRadius: "8px",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-      }}
-    >
+    <ChartCard className="card">
       <DateSelector setFromDate={setFromDate} />
-      <Chart
-        ratingHistory={ratingHistory}
-        ratingLoading={ratingLoading}
-        ratingError={ratingError}
-      />
-    </div>
+      <Chart ratingHistory={ratingHistory} ratingLoading={ratingLoading} ratingError={ratingError} />
+    </ChartCard>
   );
 };
 

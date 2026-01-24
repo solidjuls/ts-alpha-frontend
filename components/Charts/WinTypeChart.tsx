@@ -1,62 +1,102 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useWinTypeChartData } from "hooks/useGames";
 import { DateSelector } from "./DateSelector";
 import { WinTypeStats, WinTypeStatsItem } from "services/games.service";
-import styled from "styled-components";
+import { Spinner } from "@radix-ui/themes";
+import Text from "components/Text";
+import { ChartCard, ChartArea, CenterMessage } from "./WinTypeChart.styled";
 
 // Dynamically import Plot with no SSR
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
-
-const ChartContainer = styled.div`
-  width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  aspect-ratio: 1 / 1;
-`;
 
 interface WinTypeChartProps {
   playerId: string;
   fromDate?: string;
 }
 
-const colorPalette = {
-  root: "#FFFFFF",
-  usa: "#1f77b4",
-  ussr: "#cc0000",
-  win: "#22c55e",
-  loss: "#ef4444",
-  tie: "#94a3b8",
-  types: {
-    defcon: "#8b5cf6",
-    final_scoring: "#06b6d4",
-    vp_track: "#eab308",
-    wargames: "#f97316",
-    forfeit: "#ec4899",
-    timer: "#78350f",
-    scoring_card: "#84cc16",
-    unknown: "#64748b",
-  },
-};
-
 interface ChartProps {
-  plotData: any;
+  plotData: {
+    ids: string[];
+    labels: string[];
+    parents: string[];
+    values: number[];
+    colors: string[];
+  } | null;
   winTypeLoading: boolean;
   winTypeError: Error | null;
 }
 
+const getThemeTokens = () => {
+  if (typeof window === "undefined") return null;
+
+  const css = getComputedStyle(document.documentElement);
+  return {
+    bgCard: css.getPropertyValue("--bg-card").trim(),
+    border: css.getPropertyValue("--border").trim(),
+    text: css.getPropertyValue("--primary-text").trim(),
+    muted: css.getPropertyValue("--muted-text").trim(),
+    altText: css.getPropertyValue("--alt-text").trim(),
+    usa: css.getPropertyValue("--usa").trim(),
+    ussr: css.getPropertyValue("--ussr").trim(),
+    shadowSoft: css.getPropertyValue("--shadow-soft").trim(), // not used in plotly; kept if needed
+    fontBody: css.getPropertyValue("--font-body").trim(),
+  };
+};
+
 const Chart: React.FC<ChartProps> = ({ plotData, winTypeLoading, winTypeError }) => {
+  const theme = getThemeTokens();
+
+  if (!theme) {
+    return (
+      <CenterMessage>
+        <Spinner />
+      </CenterMessage>
+    );
+  }
+
+  if (winTypeLoading) {
+    return (
+      <CenterMessage>
+        <Spinner />
+      </CenterMessage>
+    );
+  }
+
+  if (winTypeError) {
+    return (
+      <CenterMessage>
+        <Text style={{ color: theme.ussr }}>{winTypeError.message}</Text>
+      </CenterMessage>
+    );
+  }
+
+  if (!plotData) {
+    return (
+      <CenterMessage>
+        <Text style={{ color: theme.muted }}>No data available.</Text>
+      </CenterMessage>
+    );
+  }
+
   const layout = {
-    margin: { l: 10, r: 10, b: 10, t: 50 },
+    margin: { l: 10, r: 10, b: 10, t: 46 },
     autosize: true,
-    title: { text: "Twilight Struggle Results", font: { size: 20 } },
+    paper_bgcolor: theme.bgCard,
+    plot_bgcolor: theme.bgCard,
+    font: {
+      family: theme.fontBody,
+      color: theme.text,
+      size: 12,
+    },
+    title: {
+      text: "Twilight Struggle Results",
+      font: { size: 18, family: theme.fontBody, color: theme.text },
+    },
   };
 
-  if (winTypeLoading) return <div>Loading...</div>;
-  if (winTypeError) return <div>{winTypeError.message}</div>;
-  if (!plotData) return null;
   return (
-    <ChartContainer>
+    <ChartArea>
       <Plot
         data={[
           {
@@ -68,54 +108,56 @@ const Chart: React.FC<ChartProps> = ({ plotData, winTypeLoading, winTypeError })
             branchvalues: "total",
             marker: {
               colors: plotData.colors,
-              line: { width: 1.5, color: "white" },
+              line: { width: 1, color: theme.bgCard },
             },
             hovertemplate: "<b>%{label}</b><br>Games: %{value}<extra></extra>",
           },
         ]}
-        layout={layout}
+        layout={layout as any}
         config={{ responsive: true, displayModeBar: false }}
         style={{ width: "100%", height: "100%" }}
-        useResizeHandler={true}
+        useResizeHandler
       />
-    </ChartContainer>
+    </ChartArea>
   );
 };
 
 const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
   const now = new Date();
-  const threeMonthsAgoDate = new Date(now.setMonth(now.getMonth() - 3)).toISOString().split("T")[0];
+  const threeMonthsAgoDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate())
+    .toISOString()
+    .split("T")[0];
+
   const [fromDate, setFromDate] = useState<string>(threeMonthsAgoDate);
 
-  const {
-    data: winTypeStats,
-    isLoading: winTypeLoading,
-    error: winTypeError,
-  } = useWinTypeChartData(playerId, fromDate);
+  const { data: winTypeStats, isLoading: winTypeLoading, error: winTypeError } =
+    useWinTypeChartData(playerId, fromDate);
 
-  const transformDataForSunburst = (data: WinTypeStats) => {
-    const ids = [];
-    const labels = [];
-    const parents = [];
-    const values = [];
-    const colors = [];
+  const plotData = useMemo(() => {
+    if (!winTypeStats) return null;
 
-    const usa = data.usaStats[0];
-    const ussr = data.ussrStats[0];
+    // Resolve tokens to real colors (Plotly can’t use CSS vars reliably)
+    const theme = getThemeTokens();
+    if (!theme) return null;
+
+    const ids: string[] = [];
+    const labels: string[] = [];
+    const parents: string[] = [];
+    const values: number[] = [];
+    const colors: string[] = [];
+
+    const usa = winTypeStats.usaStats[0];
+    const ussr = winTypeStats.ussrStats[0];
 
     const totalGlobal = parseInt(usa.total_games) + parseInt(ussr.total_games);
+
     ids.push("total");
     labels.push("All Games");
     parents.push("");
     values.push(totalGlobal);
-    colors.push(colorPalette.root);
+    colors.push(theme.bgCard);
 
-    const processSide = (
-      sideData: WinTypeStatsItem,
-      sideName: string,
-      sideId: string,
-      sideColor: string,
-    ) => {
+    const processSide = (sideData: WinTypeStatsItem, sideName: string, sideId: string, sideColor: string) => {
       ids.push(sideId);
       labels.push(sideName);
       parents.push("total");
@@ -123,76 +165,33 @@ const WinTypeChart: React.FC<WinTypeChartProps> = ({ playerId }) => {
       colors.push(sideColor);
 
       const outcomes = [
-        { id: "wins", label: "Wins", value: parseInt(sideData.wins), col: colorPalette.win },
-        { id: "losses", label: "Losses", value: parseInt(sideData.losses), col: colorPalette.loss },
-        { id: "ties", label: "Ties", value: parseInt(sideData.ties), col: colorPalette.tie },
+        { id: "wins", label: "Wins", value: parseInt(sideData.wins), col: theme.usa },  // wins = USA tone
+        { id: "losses", label: "Losses", value: parseInt(sideData.losses), col: theme.ussr }, // losses = USSR tone
+        { id: "ties", label: "Ties", value: parseInt(sideData.ties), col: theme.border }, // neutral
       ];
 
       outcomes.forEach((outcome) => {
         if (outcome.value > 0) {
-          const outcomeId = `${sideId}_${outcome.id}`;
-
-          ids.push(outcomeId);
+          ids.push(`${sideId}_${outcome.id}`);
           labels.push(outcome.label);
           parents.push(sideId);
           values.push(outcome.value);
           colors.push(outcome.col);
-
-          // if (outcome.id !== "ties") {
-          //   Object.keys(sideData).forEach((key) => {
-          //     if (key.endsWith(`_${outcome.id}`)) {
-          //       const val = parseInt(sideData[key as keyof WinTypeStatsItem]);
-          //       if (val > 0) {
-          //         // const typeKey = key.replace(
-          //         //   `_${outcome.id}`,
-          //         //   "",
-          //         // ) as keyof typeof colorPalette.types;
-          //         // const cleanLabel = key
-          //         //   .replace(`_${outcome.id}`, "")
-          //         //   .replace(/_/g, " ")
-          //         //   .replace(/\b\w/g, (l) => l.toUpperCase());
-
-          //         // ids.push(`${outcomeId}_${key}`);
-          //         // labels.push(cleanLabel);
-          //         // parents.push(outcomeId);
-          //         // values.push(val);
-          //         // colors.push(colorPalette.types[typeKey] || colorPalette.types.unknown);
-          //       }
-          //     }
-          //   });
-          // }
         }
       });
     };
 
-    processSide(usa, "USA", "usa", colorPalette.usa);
-    processSide(ussr, "USSR", "ussr", colorPalette.ussr);
+    processSide(usa, "USA", "usa", theme.usa);
+    processSide(ussr, "USSR", "ussr", theme.ussr);
 
     return { ids, labels, parents, values, colors };
-  };
-
-  const plotData = useMemo(() => {
-    if (winTypeStats) {
-      return transformDataForSunburst(winTypeStats);
-    }
   }, [winTypeStats]);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "52rem",
-        backgroundColor: "white",
-        padding: "24px",
-        marginTop: "16px",
-        border: "solid 1px lightgray",
-        borderRadius: "8px",
-        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1),0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-      }}
-    >
+    <ChartCard className="card">
       <DateSelector setFromDate={setFromDate} />
       <Chart plotData={plotData} winTypeLoading={winTypeLoading} winTypeError={winTypeError} />
-    </div>
+    </ChartCard>
   );
 };
 
