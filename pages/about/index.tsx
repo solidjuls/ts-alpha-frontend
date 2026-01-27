@@ -652,6 +652,15 @@ const AboutPage = () => (
 
           <li>
             <Inline>
+              <InternalLink href="/userprofile/3105">Guang Li</InternalLink> (mengxinxiaohuli):{" "}
+              <ExternalLink href="https://www.youtube.com/@njjhjh-h4w" target="_blank" rel="noreferrer">
+                YouTube
+              </ExternalLink>{" "}
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
               <InternalLink href="/userprofile/1984">Guangheng Wu</InternalLink> (harrywgh):{" "}
               <ExternalLink href="https://www.youtube.com/channel/UCHg3vmoH73MJ79D7-Umpwjw" target="_blank" rel="noreferrer">
                 YouTube
