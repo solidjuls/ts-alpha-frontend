@@ -34,6 +34,7 @@ export interface GetScheduleParams {
   a?: number;
   page?: number;
   pageSize?: number;
+  noOpponent?: boolean;
   onlyPending?: boolean;
   orderBy?: 'dueDate' | 'gameDate' | 'tournamentName';
   orderDirection?: 'asc' | 'desc';
@@ -90,6 +91,10 @@ class ScheduleService {
     this.axiosInstance = createAuthenticatedAxios()
   }
   
+  async getPlayersWithoutOpponents(tournamentId: string): Promise<any> {
+    const response = await this.axiosInstance.get(`/schedule/players-with-missing-games?tid=${tournamentId}`);
+    return response.data;
+  }
   async getSchedules(params: GetScheduleParams = {}): Promise<ScheduleListResponse> {
     const queryParams = new URLSearchParams();
 
@@ -99,6 +104,7 @@ class ScheduleService {
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
     if (params.onlyPending) queryParams.append('onlyPending', 'true');
+    if (params.noOpponent) queryParams.append('noOpponent', 'true');
     if (params.orderBy) queryParams.append('orderBy', params.orderBy);
     if (params.orderDirection) queryParams.append('orderDirection', params.orderDirection);
 
