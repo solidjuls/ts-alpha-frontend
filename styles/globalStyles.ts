@@ -350,6 +350,7 @@ const GlobalStyles = createGlobalStyle`
 
     .p-multiselect-header .p-inputtext {
       width: 100%;
+      min-width: 200px;
       padding: 6px 8px;
       font-family: var(--font-body);
       font-size: 0.875rem;
@@ -362,6 +363,10 @@ const GlobalStyles = createGlobalStyle`
       transition:
         border-color 0.15s ease,
         box-shadow 0.15s ease;
+    }
+
+    .p-multiselect-close .p-link {
+      width: 20px;
     }
 
     .p-multiselect-filter {
@@ -400,7 +405,7 @@ const GlobalStyles = createGlobalStyle`
   ============================ */ 
     ${media.md} {
       button {
-        width: 100%;
+        width: 20px;
       }
     }
 `;
