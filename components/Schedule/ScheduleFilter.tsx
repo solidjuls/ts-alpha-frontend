@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { usersService } from 'services/users.service';
 import DateComponent from 'components/EditFormComponents/DateComponent';
 import { Button } from 'components/Button';
-import { useAddSchedule, useRemovePlayer } from 'hooks/useSchedule';
+import { useAddSchedule, usePlayersWithoutOpponents, useRemovePlayer } from 'hooks/useSchedule';
 import { Spinner } from '@radix-ui/themes';
 import Text from 'components/Text';
 import { 
@@ -28,10 +28,12 @@ interface ScheduleFilterProps {
   tournament: string;
   onPlayerSelect?: (playerId: string) => void;
   onPlayerRemove?: (playerId: string) => void;
+  onShowScheduleWithoutOpponents: (noOpponents: boolean) => void;
   onShowFullScheduleChange?: (showFull: boolean) => void;
   onShowOnlyPendingChange?: (showPending: boolean) => void;
   showFullSchedule?: boolean;
   showOnlyPending?: boolean;
+  showSchedulesWithoutOpponents?: boolean;
 }
 
 const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
@@ -40,8 +42,10 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   onPlayerRemove,
   onShowFullScheduleChange,
   onShowOnlyPendingChange,
+  onShowScheduleWithoutOpponents,
   showFullSchedule = false,
-  showOnlyPending = false
+  showOnlyPending = false,
+  showSchedulesWithoutOpponents = false
 }) => {
   const [checked, setChecked] = React.useState(true);
   const [selectedPlayer, setSelectedPlayer] = React.useState("");
@@ -71,8 +75,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
     enabled: !!tournament,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  // Users are now fetched directly by the UserTypeahead components
+  const { data: opponents } = usePlayersWithoutOpponents("318")
 
   // Handle player removal
   const handleRemovePlayer = async () => {
@@ -154,6 +157,11 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
               text="Show Only Pending Games"
               checked={showOnlyPending}
               onCheckedChange={(checked) => onShowOnlyPendingChange?.(checked)}
+            />
+            <Checkbox
+              text="Show schedules with missing opponents"
+              checked={showSchedulesWithoutOpponents}
+              onCheckedChange={(checked) => onShowScheduleWithoutOpponents?.(checked)}
             />
             <Flex>
               <>

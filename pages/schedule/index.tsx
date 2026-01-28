@@ -167,7 +167,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
         >
           <TournamentInfoFlex>
             <TournamentText>
-              {schedule.tournamentName}
+              {schedule.tournamentName} - {schedule.gameCode}
             </TournamentText>
           </TournamentInfoFlex>
 
@@ -266,6 +266,7 @@ const Schedule = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
+  const [showSchedulesWithoutOpponents, setShowSchedulesWithoutOpponents] = useState(false)
   const [showOnlyPending, setShowOnlyPending] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -285,6 +286,7 @@ const Schedule = () => {
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
     pageSize: 20,
+    noOpponent: showSchedulesWithoutOpponents,
     onlyPending: showOnlyPending,
     orderBy: 'dueDate',
     orderDirection: 'asc'
@@ -321,6 +323,11 @@ const Schedule = () => {
     setCurrentPage(1); // Reset to first page when changing view
   };
 
+   const handleShowScheduleWithoutOpponents = (showFull: boolean) => {
+    setShowSchedulesWithoutOpponents(showFull);
+    setCurrentPage(1); // Reset to first page when changing view
+  };
+
   const handleShowOnlyPendingChange = (showPending: boolean) => {
     setShowOnlyPending(showPending);
     setCurrentPage(1); // Reset to first page when changing filter
@@ -350,7 +357,7 @@ const Schedule = () => {
 
   let updatedScheduleData = scheduleData;
   // if no filters are set
-  const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && currentPage === 1;
+  const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && !showSchedulesWithoutOpponents && currentPage === 1;
   if (noFilters && scheduleData && scheduleData.length > 0) {
     // split all completed games, order them by completed game date and then add them back
     const completedGames = scheduleData?.filter(game => game.gameDate);
@@ -400,8 +407,10 @@ const Schedule = () => {
                 onPlayerRemove={handlePlayerRemove}
                 onShowFullScheduleChange={handleShowFullScheduleChange}
                 onShowOnlyPendingChange={handleShowOnlyPendingChange}
+                onShowScheduleWithoutOpponents={handleShowScheduleWithoutOpponents}
                 showFullSchedule={showFullSchedule}
                 showOnlyPending={showOnlyPending}
+                showSchedulesWithoutOpponents={showSchedulesWithoutOpponents}
               />
             )}
 
