@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import Link from "next/link";
 
 /* ----------------------------
@@ -38,6 +38,10 @@ export const Page = styled.main`
   margin: 24px auto;
   padding: 0 16px 24px;
   color: var(--primary-text);
+
+  @media (min-width: 900px) {
+    padding-right: 150px;
+  }
 `;
 
 export const Stack = styled.div`
@@ -217,4 +221,144 @@ export const Inline = styled.span`
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+`;
+
+/* ----------------------------
+   Floating Quick Links
+---------------------------- */
+
+export const FloatingNav = styled.aside<{ $openMobile?: boolean }>`
+  position: fixed;
+  right: 16px;
+  top: 200px;
+  width: 220px;
+  z-index: 50;
+
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+
+  padding: 12px;
+
+  /* Desktop: always visible */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  /* Mobile: becomes a popover */
+  @media (max-width: 900px) {
+    top: auto;
+    bottom: 72px;
+    right: 12px;
+    width: min(260px, calc(100vw - 24px));
+
+    ${({ $openMobile }) =>
+      $openMobile
+        ? css`
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+          `
+        : css`
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(6px);
+          `}
+
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+`;
+
+export const FloatingNavTitle = styled.div`
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted-text);
+  text-transform: uppercase;
+`;
+
+export const FloatingNavList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+export const FloatingNavItem = styled.li`
+  margin: 0;
+  padding: 0;
+`;
+
+export const FloatingNavLink = styled.button<{ $active?: boolean }>`
+  all: unset;
+  cursor: pointer;
+
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+
+  border-radius: 8px;
+  border: 1px solid transparent;
+
+  color: var(--primary-text);
+  font-weight: 600;
+  line-height: 1.2;
+
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ussr);
+    color: var(--alt-text);
+  }
+
+  ${({ $active }) =>
+    $active &&
+    css`
+      border-color: var(--border);
+      background-color: rgba(0, 0, 0, 0.04);
+    `}
+`;
+
+export const FloatingNavToggle = styled.button`
+  /* Only visible on mobile */
+  display: none;
+
+  @media (max-width: 900px) {
+    display: inline-flex;
+  }
+
+  position: fixed;
+  right: 12px;
+  bottom: 16px;
+  z-index: 60;
+
+  padding: 10px 12px;
+  border-radius: 999px;
+
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--primary-text);
+
+  box-shadow: var(--shadow-soft);
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ussr);
+    color: var(--alt-text);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--usa);
+    outline-offset: 2px;
+  }
 `;

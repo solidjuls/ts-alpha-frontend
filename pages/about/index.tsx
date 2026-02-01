@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import Image from "next/image";
 import { 
@@ -26,11 +26,97 @@ import {
   FlagWrap,
   ITSRGrid,
   RatingWrapper,
-  Inline
+  Inline,
+  FloatingNav,
+  FloatingNavTitle,
+  FloatingNavList,
+  FloatingNavItem,
+  FloatingNavLink,
+  FloatingNavToggle,
  } from "styles/about.styled";
 
 const WIDTH = 24;
 const HEIGHT = 16;
+const QUICK_LINKS = [
+  { id: "tournaments", label: "Tournaments" },
+  { id: "itsr", label: "ITSR Rating" },
+  { id: "community", label: "Community" },
+  { id: "how-to-play", label: "How to Play" },
+  { id: "videos", label: "Videos" },
+];
+
+const QuickLinksMenu: React.FC = () => {
+  const [activeId, setActiveId] = useState<string>(QUICK_LINKS[0].id);
+  const [openMobile, setOpenMobile] = useState(false);
+
+  useEffect(() => {
+    const els = QUICK_LINKS
+      .map((l) => document.getElementById(l.id))
+      .filter(Boolean) as HTMLElement[];
+
+    if (els.length === 0) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        // pick the most “visible” entry
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
+
+        if (visible?.target?.id) setActiveId(visible.target.id);
+      },
+      {
+        root: null,
+        // activates when section is near the top third of the viewport
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: [0.1, 0.2, 0.35],
+      }
+    );
+
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  const scrollToId = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // smooth scroll
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    setOpenMobile(false);
+  };
+
+  return (
+    <>
+      <FloatingNavToggle
+        type="button"
+        onClick={() => setOpenMobile((v) => !v)}
+        aria-expanded={openMobile}
+        aria-controls="about-quick-links"
+      >
+        Quick Links
+      </FloatingNavToggle>
+
+      <FloatingNav id="about-quick-links" $openMobile={openMobile}>
+        <FloatingNavTitle>Quick Links</FloatingNavTitle>
+
+        <FloatingNavList>
+          {QUICK_LINKS.map((link) => (
+            <FloatingNavItem key={link.id}>
+              <FloatingNavLink
+                type="button"
+                onClick={() => scrollToId(link.id)}
+                $active={activeId === link.id}
+              >
+                {link.label}
+              </FloatingNavLink>
+            </FloatingNavItem>
+          ))}
+        </FloatingNavList>
+      </FloatingNav>
+    </>
+  );
+};
 
 const Card = ({ children, ...rest }: React.PropsWithChildren<React.HTMLAttributes<HTMLElement>>) => (
   <BaseCard {...rest}>
@@ -40,6 +126,7 @@ const Card = ({ children, ...rest }: React.PropsWithChildren<React.HTMLAttribute
 
 const AboutPage = () => (
   <Page>
+    <QuickLinksMenu/>
     <Stack>
       <HeaderCard>
         <HeaderInner>
@@ -59,7 +146,7 @@ const AboutPage = () => (
         </HeaderInner>
       </HeaderCard>
 
-      <Card>
+      <Card id="tournaments">
         <Subtitle>Our Tournaments</Subtitle>
         <Paragraph>
           We have a large database of over 30,000 competitive games, from 2006 to the present, played by over 1,500
@@ -235,7 +322,7 @@ const AboutPage = () => (
         </List>
       </Card>
 
-      <Card>
+      <Card id="itsr">
         <Subtitle>ITSR Rating System</Subtitle>
 
         <ITSRGrid>
@@ -281,7 +368,7 @@ const AboutPage = () => (
         </ITSRGrid>
       </Card>
 
-      <Card>
+      <Card id="community">
         <Subtitle>ITS Community</Subtitle>
         <Paragraph>
           Most of our communication happens on{" "}
@@ -324,7 +411,7 @@ const AboutPage = () => (
         </Paragraph>
       </Card>
 
-      <Card>
+      <Card id="how-to-play">
         <Subtitle>How to Play Twilight Struggle</Subtitle>
         <Paragraph>
           Twilight Struggle has a STEEP learning curve. Watching gameplay videos is a great way to learn (you can see
@@ -452,7 +539,7 @@ const AboutPage = () => (
         </Dl>
       </Card>
 
-      <Card>
+      <Card id="videos">
         <Subtitle>Community Twilight Struggle Videos</Subtitle>
         <Paragraph>
           The videos and streams below are from members of the ITS community. Watching videos of Twilight Struggle with
