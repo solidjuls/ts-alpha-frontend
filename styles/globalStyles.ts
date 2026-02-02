@@ -403,11 +403,7 @@ const GlobalStyles = createGlobalStyle`
   /* ============================
     Mobile Styles
   ============================ */ 
-    ${media.md} {
-      button {
-        width: 20px;
-      }
-    }
+
 `;
 
 export default GlobalStyles;
