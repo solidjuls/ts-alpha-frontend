@@ -260,7 +260,7 @@ const deleteGame = async () => {
             <TruncatedSpan>{getTurnText(data.endTurn)}</TruncatedSpan>
             <TruncatedSpan>{endMode}</TruncatedSpan>
             <TruncatedSpan>
-              {data.created_at ? dateFormat(new Date(data.created_at)) : null}
+              {data.gameDate ? dateFormat(new Date(data.gameDate)) : null}
             </TruncatedSpan>
             {data.videoURL && (
               <Link
