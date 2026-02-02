@@ -6,8 +6,6 @@ import { useGamesByUsers } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { ResultsPanel } from "components/Homepage/Homepage";
 import { UserDetail } from "services/users.service";
-// import { Game as ServiceGame } from "services/games.service";
-// import { Game as ComponentGame, GameWinner } from "types/game.types";
 import { useParams } from "next/navigation";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
@@ -15,12 +13,10 @@ import { ProfileContainer, RecentGamesContainer, ProfileHeading } from "../../st
 import { Pagination } from "components/Pagination";
 import React, {useState} from "react";
 import { FlagIcon } from "components/FlagIcon";
-import { useRatingHistory } from "hooks/useRating";
 import { RatingChart, WinTypeChart } from "components/Charts";
 
 const PAGE_SIZE = 10;
 
-// Convert service Game type to component Game type
 const convertServiceGameToComponentGame = (serviceGame: any): any => ({
   ...serviceGame,
   id: BigInt(serviceGame.id),
