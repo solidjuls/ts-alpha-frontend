@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Text from "components/Text";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import { media } from "theme";
 
 /* ---------- Layout ---------- */
@@ -27,6 +27,7 @@ export const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  scroll-margin-top: 100px;
 `;
 
 export const SectionTitle = styled.h3`
@@ -210,4 +211,136 @@ export const ErrorBox = styled.div`
   border-radius: 12px;
   background: var(--bg-card);
   box-shadow: var(--shadow-soft);
+`;
+
+/* ---------- Quick Links (desktop visible, mobile toggle) ---------- */
+
+export const QuickLinksToggle = styled.button`
+  /* Desktop: hide toggle, show the card */
+  display: none;
+
+  ${media.md} {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 12px;
+    border-radius: 999px;
+
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    color: var(--primary-text);
+
+    box-shadow: var(--shadow-soft);
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background-color: var(--ussr);
+      color: var(--alt-text);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--usa);
+      outline-offset: 2px;
+    }
+  }
+`;
+
+export const QuickLinksCard = styled.div<{ $openMobile?: boolean }>`
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+
+  /* Desktop: always visible under Lead */
+  display: block;
+
+  /* Mobile: hidden until opened */
+  ${media.md} {
+    ${({ $openMobile }) =>
+      $openMobile
+        ? css`
+            display: block;
+          `
+        : css`
+            display: none;
+          `}
+  }
+`;
+
+export const QuickLinksInner = styled.div`
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const QuickLinksLabel = styled.div`
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted-text);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+`;
+
+export const QuickLinksRow = styled.nav`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+export const QuickLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 10px;
+  border-radius: 999px;
+
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--primary-text);
+
+  font-weight: 600;
+  text-decoration: none;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ussr);
+    color: var(--alt-text);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--usa);
+    outline-offset: 2px;
+  }
+`;
+
+export const QuickLinksSticky = styled.div`
+  /* This keeps it in the document flow AND makes it follow as you scroll */
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;

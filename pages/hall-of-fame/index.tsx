@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FlagIcon } from "components/FlagIcon";
 import { useHallOfFame } from "hooks/useHallOfFame";
 import { Spinner } from "@radix-ui/themes";
@@ -22,7 +22,14 @@ import {
   PlayerInfo,
   PlayerName,
   Medal,
-  ErrorBox
+  ErrorBox,
+  QuickLinksToggle,
+  QuickLinksCard,
+  QuickLinksInner,
+  QuickLinksLabel,
+  QuickLinksRow,
+  QuickLink,
+  QuickLinksSticky
  } from "styles/hallOfFame.styled";
 
 type Place = 1 | 2 | 3;
@@ -64,6 +71,7 @@ const PlayerCell = ({ flag, name, id, place }: PlayerCellProps) => {
 
 export default function HallOfFamePage() {
   const { data: hallOfFameData, isLoading, error } = useHallOfFame();
+  const [quickLinksOpen, setQuickLinksOpen] = useState(false);
 
   useEffect(() => {
     if (hallOfFameData) console.log("Hall of Fame API Response:", hallOfFameData);
@@ -119,29 +127,59 @@ export default function HallOfFamePage() {
   return (
     <PageContainer>
       <Title>Hall of Fame</Title>
-      
 
       <Lead>
         The ITSL, OTSL, and RTSL are the largest, oldest, and arguably most prestigious Twilight Struggle leagues.
         Placing in the top three of one of these leagues puts players amongst the best in the world.
       </Lead>
 
-      <Section>
+      <QuickLinksSticky>
+        <QuickLinksToggle
+          type="button"
+          onClick={() => setQuickLinksOpen((v) => !v)}
+          aria-expanded={quickLinksOpen}
+          aria-controls="hof-quick-links"
+        >
+          Quick Links
+        </QuickLinksToggle>
+
+        <QuickLinksCard id="hof-quick-links" $openMobile={quickLinksOpen}>
+          <QuickLinksInner>
+            <QuickLinksLabel>Quick Links</QuickLinksLabel>
+            <QuickLinksRow>
+              <QuickLink href="#itsl" onClick={() => setQuickLinksOpen(false)}>ITSL</QuickLink>
+              <QuickLink href="#otsl" onClick={() => setQuickLinksOpen(false)}>OTSL</QuickLink>
+              <QuickLink href="#rtsl" onClick={() => setQuickLinksOpen(false)}>RTSL</QuickLink>
+              <QuickLink href="#cl" onClick={() => setQuickLinksOpen(false)}>Champions League</QuickLink>
+              <QuickLink href="#world-cup" onClick={() => setQuickLinksOpen(false)}>World Cup</QuickLink>
+              <QuickLink href="#kings-cup" onClick={() => setQuickLinksOpen(false)}>King&apos;s Cup</QuickLink>
+              <QuickLink href="#grand-slam" onClick={() => setQuickLinksOpen(false)}>Grand Slam</QuickLink>
+              <QuickLink href="#evergreen" onClick={() => setQuickLinksOpen(false)}>Evergreen</QuickLink>
+              <QuickLink href="#convention" onClick={() => setQuickLinksOpen(false)}>Convention</QuickLink>
+              <QuickLink href="#mso" onClick={() => setQuickLinksOpen(false)}>MSO</QuickLink>
+              <QuickLink href="#rats" onClick={() => setQuickLinksOpen(false)}>RATS</QuickLink>
+              <QuickLink href="#regional" onClick={() => setQuickLinksOpen(false)}>Regional</QuickLink>
+            </QuickLinksRow>
+          </QuickLinksInner>
+        </QuickLinksCard>
+      </QuickLinksSticky>
+
+      <Section id="itsl">
         <SectionTitle>International Twilight Struggle League (ITSL)</SectionTitle>
         {renderTable(hallOfFameData.itsl)}
       </Section>
 
-      <Section>
+      <Section id="otsl">
         <SectionTitle>Online Twilight Struggle League (OTSL)</SectionTitle>
         {renderTable(hallOfFameData.otsl)}
       </Section>
 
-      <Section>
+      <Section id="rtsl">
         <SectionTitle>Royale Twilight Struggle League (RTSL)</SectionTitle>
         {renderTable(hallOfFameData.rtsl)}
       </Section>
 
-      <Section>
+      <Section id="cl">
         <SectionTitle>Champions League</SectionTitle>
         <SectionSubtitle>
           The Champions League is an invite-only tournament inspired by UEFA, featuring winners of regional tournaments
@@ -150,7 +188,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.cl)}
       </Section>
 
-      <Section>
+      <Section id="world-cup">
         <SectionTitle>World Cup</SectionTitle>
         <SectionSubtitle>
           The World Cup is a weekend tournament featuring an 8-game Swiss format.
@@ -158,7 +196,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.world)}
       </Section>
 
-      <Section>
+      <Section id="kings-cup">
         <SectionTitle>The King&apos;s Cup</SectionTitle>
         <SectionSubtitle>
           The King&apos;s Cup is a 2-day-long, Swiss tournament. There are four matches each day with the new regal of the TS community crowned 
@@ -167,7 +205,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.king)}
       </Section>
 
-      <Section>
+      <Section id="grand-slam">
         <SectionTitle>Grand Slam Series</SectionTitle>
         <SectionSubtitle>
           The Grand Slam is a yearly series of shorter, one-day tournaments held in different time zones.
@@ -175,7 +213,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.grand)}
       </Section>
 
-      <Section>
+      <Section id="evergreen">
         <SectionTitle>Evergreen Cup</SectionTitle>
         <SectionSubtitle>
           The Evergreen Cup is a single-elimination tournament with a 10-day timer to complete every round.
@@ -183,7 +221,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.evergreen)}
       </Section>
 
-      <Section>
+      <Section id="convention">
         <SectionTitle>Convention</SectionTitle>
         <SectionSubtitle>
           Generally held in Europe, the Twilight Struggle Convention is the largest in-person Twilight Struggle tournament.
@@ -191,7 +229,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.convention)}
       </Section>
 
-      <Section>
+      <Section id="mso">
         <SectionTitle>Mind Sports Olympiad (MSO)</SectionTitle>
         <SectionSubtitle>
           The <a href="https://mindsportsolympiad.com/" target="_blank" rel="noreferrer">Mind Sports Olympiad</a> is an international event with over 100 different competitions that has occasionally featured Twilight Struggle.
@@ -199,7 +237,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.mso)}
       </Section>
 
-      <Section>
+      <Section id="rats">
         <SectionTitle>Asynchronous Leagues (RATS)</SectionTitle>
         <SectionSubtitle>
           Not everyone has the ability to play live Twilight Struggle games so there are a variety of asynchronous
@@ -208,7 +246,7 @@ export default function HallOfFamePage() {
         {renderTable(hallOfFameData.rats)}
       </Section>
 
-      <Section>
+      <Section id="regional">
         <SectionTitle>Regional Leagues</SectionTitle>
         <SectionSubtitle>
           Regional leagues are generally restricted to players who have a connection to a certain region. You can reach
