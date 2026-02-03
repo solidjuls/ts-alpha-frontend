@@ -21,6 +21,8 @@ module.exports = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: true,
+  output: 'export',
+  images: { unoptimized: true },
   // Other configurations can go here
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Extend your webpack configuration here if needed
