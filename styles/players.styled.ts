@@ -141,10 +141,10 @@ export const StyledResultsPanel = styled.div`
 `;
 
 export const StyledCardRow = styled.article`
-  display: grid;
-  grid-template-columns: 80px minmax(0, 2fr) 96px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   gap: 0.75rem;
-  align-items: center;
   padding: 0.75rem 1rem;
 
   color: var(--primary-text);
@@ -169,10 +169,6 @@ export const StyledCardRow = styled.article`
   }
 
   ${media.md} {
-    grid-template-columns: 56px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-items: start;
-
     padding: 0.6rem 0.75rem;
     gap: 0.35rem 0.6rem;
   }
@@ -192,6 +188,7 @@ export const TextHeader = styled(Text)`
     textTransform: uppercase;
     letterSpacing: 0.04em;
     font-size: small;
+    margin: 4px 4px 4px 0;
 `;
 
 export const RatingCell = styled.div`

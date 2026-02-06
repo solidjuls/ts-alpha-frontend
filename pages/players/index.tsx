@@ -25,6 +25,7 @@ import {
   TextHeader,
   RatingCell
 } from "styles/players.styled";
+import { Flex } from "components/Atoms";
 
 interface CardColumnProps {
   header: string;
@@ -77,8 +78,10 @@ const PlayerRow: React.FC<PlayerRowProps> = ({ index, player }) => {
   return (
     <UnstyledLink key={index} href={`/userprofile/${player.id}`} passHref>
       <StyledCardRow className="card card--clickable">
-        <CardColumn header="Rank" value={player.rank} />
-        <CardColumn header="Player" value={player.name} countryCode={player.countryCode} />
+        <Flex style={{ gap: '8px' }}>
+          <CardColumn header="Rank" value={player.rank} />
+          <CardColumn header="Player" value={player.name} countryCode={player.countryCode} />
+        </Flex>
         <RatingCell>
           <CardColumn header="Rating" value={player.rating} />
         </RatingCell>
