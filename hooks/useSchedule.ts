@@ -38,6 +38,21 @@ export const useSchedules = (
   });
 };
 
+export const usePlayersWithoutOpponents = (
+  tournamentId: string,
+  options?: Omit<UseQueryOptions<any, Error>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery({
+    queryKey: ['players-without-opponents', tournamentId],
+    queryFn: () => scheduleService.getPlayersWithoutOpponents(tournamentId),
+    staleTime: 0, // Always refetch - no caching
+    gcTime: 0, // Don't keep in cache (formerly cacheTime in v4)
+    refetchOnMount: 'always', // Always refetch when component mounts
+    placeholderData: keepPreviousData, // Keep previous data while loading new data (React Query v5)
+    ...options,
+  });
+};
+
 // Hook for getting schedules by user
 export const useSchedulesByUser = (
   userId: string,
