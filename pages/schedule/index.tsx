@@ -45,14 +45,16 @@ const generateQueryParams = ({
   idUssr,
   tournamentId,
   gameCode,
+  randomSides
 }: {
   id: string;
   idUsa: string;
   idUssr: string;
   tournamentId: string;
   gameCode: string;
+  randomSides: boolean;
 }) => {
-  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gameCode=${gameCode}`;
+  return `?id=${id}&idUsa=${idUsa}&idUssr=${idUssr}&tid=${tournamentId}&gameCode=${gameCode}&randomSides=${Number(randomSides)}`;
 };
 
 const resolveLink = ({
@@ -62,6 +64,7 @@ const resolveLink = ({
   idUssr,
   tournamentId,
   gameCode,
+  randomSides
 }: {
   gameResultsId: string | null;
   id: string;
@@ -69,9 +72,10 @@ const resolveLink = ({
   idUssr: string;
   tournamentId: string;
   gameCode: string;
+  randomSides: boolean;
 }) => {
   if (!gameResultsId)
-    return `/submit-game${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode })}`;
+    return `/submit-game${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode, randomSides })}`;
 
   return `/games/${gameResultsId}`;
 };
@@ -82,7 +86,8 @@ const PlayerInfoBox = ({
   countryUsa,
   countryUssr,
   gameWinner,
-}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner">) => {
+  randomSides
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides">) => {
   return (
     <FlexRow>
       <PlayerInfoContainer>
@@ -91,7 +96,7 @@ const PlayerInfoBox = ({
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
         >
-          {nameUsa || "No Player Assigned"}
+          {nameUsa}
         </Text>
       </PlayerInfoContainer>
       <span>vs</span>
@@ -101,9 +106,10 @@ const PlayerInfoBox = ({
           fontSize="medium"
           strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
         >
-          {nameUssr || "No Player Assigned"}
+          {nameUssr}
         </Text>
       </PlayerInfoContainer>
+      <strong>{randomSides && '(Random)'}</strong>
     </FlexRow>
   );
 };
@@ -163,6 +169,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             idUssr: schedule.idUssr,
             tournamentId: schedule.tournamentId,
             gameCode: schedule.gameCode,
+            randomSides: schedule.randomSides,
           })}
         >
           <TournamentInfoFlex>
@@ -177,6 +184,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             countryUssr={schedule.countryUssr}
             nameUsa={schedule.nameUsa}
             nameUssr={schedule.nameUssr}
+            randomSides={schedule.randomSides}
           />
         </ColumnUnstyledLink>
       </PlayerInfo>

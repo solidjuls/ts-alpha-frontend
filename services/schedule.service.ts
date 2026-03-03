@@ -16,6 +16,7 @@ export interface ScheduleItem {
   gameWinner: string | null;
   gameResultsId: string | null;
   gameCode: string;
+  randomSides: boolean;
   idUsa: string;
   idUssr: string;
 }
