@@ -30,7 +30,6 @@ export const PlayersHeader = styled.div`
   gap: 8px;
 
   ${media.md} {
-    flex-direction: column;
     align-items: flex-start;
   }
 `;
