@@ -1,185 +1,113 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
-
-
-
-// This maps a current square ID to the next square ID in the bracket
-type SquareMapping = Record<string, string>;
-
-interface Props {
-  initialPlayers: Player[];
-}
-
-export interface Player {
+interface Player {
   fullName: string;
   userId: string;
   playoffSquare: string;
   playoffName: string;
 }
 
-const TOTAL_STARTING_SLOTS = 64;
+const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => {
+  // --- 1. THE ADVANCEMENT MAP (Flat Logic) ---
+  const ADVANCE_TO: Record<string, string> = {
+    // Left Wing (1-32 feed into 65-80, etc.)
+    ...Object.fromEntries(Array.from({ length: 32 }, (_, i) => [`sq-${i + 1}`, `sq-${65 + Math.floor(i / 2)}`])),
+    // Right Wing (33-64 feed into 81-96, etc.)
+    ...Object.fromEntries(Array.from({ length: 32 }, (_, i) => [`sq-${i + 33}`, `sq-${81 + Math.floor(i / 2)}`])),
+    // Semi-Finals to Finals (Example)
+    'sq-125': 'sq-127', 'sq-126': 'sq-127'
+  };
 
-
-const BracketUI: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => {
-  // 1. Hashmap logic for advancement
-  const squareMapping = useMemo(() => {
-    const map: Record<string, string> = {};
-    let currentId = 1, nextRoundStartId = 65, slotsInRound = 64;
-    while (slotsInRound > 1) {
-      for (let i = 0; i < slotsInRound; i += 2) {
-        map[`sq-${currentId + i}`] = `sq-${nextRoundStartId + i / 2}`;
-        map[`sq-${currentId + i + 1}`] = `sq-${nextRoundStartId + i / 2}`;
-      }
-      currentId = nextRoundStartId;
-      slotsInRound /= 2;
-      nextRoundStartId += slotsInRound;
-    }
-    return map;
-  }, []);
-
+  // --- 2. HASHMAP STATE ---
   const [bracket, setBracket] = useState<Record<string, Player | null>>(() => {
-    const hashmap: Record<string, Player | null> = {};
-    for (let i = 1; i <= 127; i++) hashmap[`sq-${i}`] = null;
-    initialPlayers.forEach(p => { hashmap[p.playoffSquare] = p; });
-    return hashmap;
+    const map: Record<string, Player | null> = {};
+    for (let i = 1; i <= 127; i++) map[`sq-${i}`] = null;
+    
+    // Balanced Distribution (19 left, 19 right)
+    initialPlayers.slice(0, 19).forEach((p, i) => map[`sq-${i + 1}`] = p);
+    initialPlayers.slice(19, 38).forEach((p, i) => map[`sq-${i + 33}`] = p);
+    return map;
   });
 
-  const handleAdvance = (id: string) => {
+  const advance = (id: string) => {
+    const nextId = ADVANCE_TO[id];
     const player = bracket[id];
-    const nextId = squareMapping[id];
-    if (player && nextId) {
+    if (nextId && player) {
       setBracket(prev => ({ ...prev, [nextId]: { ...player, playoffSquare: nextId } }));
     }
   };
 
-  // 2. Component for Square + Lines
-  const Square = ({ id, isRightSideOfMatch }: { id: string, isRightSideOfMatch: boolean }) => {
-    const player = bracket[id];
-    const hasNext = !!squareMapping[id];
-
-    return (
-      <div style={{ ...containerStyle, position: 'relative' }}>
-        <span style={labelStyle}>{id}</span>
-        <div 
-          onClick={() => handleAdvance(id)}
-          style={{ 
-            ...squareStyle, 
-            backgroundColor: player ? '#ffffff' : '#f3f4f6',
-            borderColor: player ? '#2563eb' : '#d1d5db',
-            zIndex: 2
-          }}
-        >
-          {player?.fullName || ''}
-        </div>
-        {/* Connection Line to the right */}
-        {hasNext && (
-          <div style={{
-            position: 'absolute',
-            right: '-10px',
-            top: '50%',
-            width: '10px',
-            height: isRightSideOfMatch ? 'calc(50% + 10px)' : 'calc(50% + 10px)',
-            borderRight: '1px solid #9ca3af',
-            borderTop: !isRightSideOfMatch ? '1px solid #9ca3af' : 'none',
-            borderBottom: isRightSideOfMatch ? '1px solid #9ca3af' : 'none',
-            transform: isRightSideOfMatch ? 'translateY(-100%)' : 'none',
-          }} />
-        )}
-      </div>
-    );
-  };
-
-  const renderRound = (start: number, count: number, title: string) => (
-    <div style={columnStyle}>
-      <h6 style={headerStyle}>{title}</h6>
-      <div style={roundFlexStyle}>
-        {Array.from({ length: count }).map((_, i) => (
-          <Square 
-            key={`sq-${start + i}`} 
-            id={`sq-${start + i}`} 
-            isRightSideOfMatch={i % 2 !== 0} 
-          />
-        ))}
-      </div>
-    </div>
-  );
+  // --- 3. FLAT LAYOUT CONFIG ---
+  // We define the order of columns from left to right
+  const columns = [
+    { title: "R1-L", ids: range(1, 32), side: 'left' },
+    { title: "R2-L", ids: range(65, 80), side: 'left' },
+    { title: "FINAL", ids: ['sq-127'], side: 'center' },
+    { title: "R2-R", ids: range(81, 96), side: 'right' },
+    { title: "R1-R", ids: range(33, 64), side: 'right' },
+  ];
 
   return (
     <div style={viewportStyle}>
-      {renderRound(1, 64, "R1")}
-      {renderRound(65, 32, "R2")}
-      {renderRound(97, 16, "R3")}
-      {renderRound(113, 8, "R4")}
-      {renderRound(121, 4, "R5")}
-      {renderRound(125, 2, "R6")}
-      {renderRound(127, 1, "🏆")}
+      {columns.map((col) => (
+        <div key={col.title} style={columnStyle}>
+          <div style={headerStyle}>{col.title}</div>
+          <div style={roundFlexStyle}>
+            {col.ids.map((id, i) => {
+              const player = bracket[id];
+              const isBottom = i % 2 !== 0;
+              return (
+                <div key={id} style={containerStyle}>
+                  <label style={labelStyle}>{id}</label>
+                  <div 
+                    onClick={() => advance(id)}
+                    style={{ 
+                      ...squareStyle, 
+                      borderColor: player ? '#3b82f6' : '#e5e7eb',
+                      background: player ? '#fff' : '#f9fafb'
+                    }}
+                  >
+                    {player?.fullName || ''}
+                  </div>
+                  {/* Flat Logic for Lines: No recursion, just absolute positioning */}
+                  {ADVANCE_TO[id] && (
+                    <div style={getLineStyle(col.side as 'left'|'right', isBottom)} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-// --- Updated Styles for Connectors ---
+// --- HELPERS & STYLES ---
+
+const range = (s: number, e: number) => Array.from({ length: e - s + 1 }, (_, i) => `sq-${s + i}`);
+
+const getLineStyle = (side: 'left' | 'right', isBottom: boolean): React.CSSProperties => ({
+  position: 'absolute',
+  width: '15px',
+  height: '50%',
+  [side === 'left' ? 'right' : 'left']: '-15px',
+  top: isBottom ? '0' : '50%',
+  borderRight: side === 'left' ? '1px solid #cbd5e1' : 'none',
+  borderLeft: side === 'right' ? '1px solid #cbd5e1' : 'none',
+  borderTop: !isBottom ? '1px solid #cbd5e1' : 'none',
+  borderBottom: isBottom ? '1px solid #cbd5e1' : 'none',
+  pointerEvents: 'none'
+});
 
 const viewportStyle: React.CSSProperties = {
-  display: 'flex',
-  padding: '20px',
-  height: '92vh',
-  width: '100%',
-  backgroundColor: '#fff',
-  overflowX: 'auto',
-  overflowY: 'hidden',
-  fontFamily: 'Inter, system-ui, sans-serif'
+  display: 'flex', height: '95vh', overflowX: 'auto', overflowY: 'hidden', padding: '10px', gap: '30px'
 };
+const columnStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', minWidth: '110px' };
+const roundFlexStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', justifyContent: 'space-around', flexGrow: 1 };
+const containerStyle: React.CSSProperties = { position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' };
+const squareStyle: React.CSSProperties = { width: '100%', height: '18px', border: '1px solid', fontSize: '9px', display: 'flex', alignItems: 'center', padding: '0 4px', cursor: 'pointer', overflow: 'hidden' };
+const labelStyle: React.CSSProperties = { fontSize: '7px', color: '#aaa' };
+const headerStyle: React.CSSProperties = { fontSize: '10px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' };
 
-const columnStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  flex: '1 0 120px',
-  minWidth: '120px'
-};
-
-const roundFlexStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-around',
-  flexGrow: 1,
-  position: 'relative'
-};
-
-const containerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  width: '90%'
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '7px',
-  color: '#6b7280',
-  marginBottom: '1px',
-};
-
-const squareStyle: React.CSSProperties = {
-  width: '100%',
-  height: '16px',
-  border: '1px solid',
-  borderRadius: '3px',
-  fontSize: '8.5px',
-  display: 'flex',
-  alignItems: 'center',
-  padding: '0 4px',
-  cursor: 'pointer',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
-};
-
-const headerStyle: React.CSSProperties = {
-  fontSize: '10px',
-  margin: '0 0 10px 0',
-  textAlign: 'center',
-  color: '#111827',
-  fontWeight: 'bold'
-};
-
-export default BracketUI;
+export default Bracket;
