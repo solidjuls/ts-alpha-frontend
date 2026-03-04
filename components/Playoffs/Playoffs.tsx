@@ -12,7 +12,8 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
   // For 38 players, powerOfTwo is 64. totalRounds per side is log2(64) = 6.
   const slotsPerSide = initialPlayers.length/2; 
   const roundsPerSide = Math.log2(slotsPerSide); // 5 rounds per side before merging
-
+console.log("slotsPerSide", slotsPerSide);
+console.log("roundsPerSide", roundsPerSide);
   // 2. GENERATE DYNAMIC COLUMN CONFIGURATION
   const columns = useMemo(() => {
     const leftCols = [];
@@ -121,7 +122,7 @@ const columnStyle: React.CSSProperties = { display: 'flex', flexDirection: 'colu
 const roundFlexStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', justifyContent: 'space-around', flexGrow: 1 };
 const containerStyle: React.CSSProperties = { position: 'relative', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' };
 const squareStyle: React.CSSProperties = { width: '100%', height: '18px', border: '1px solid', fontSize: '9px', display: 'flex', alignItems: 'center', padding: '0 4px', zIndex: 2 };
-const labelStyle: React.CSSProperties = { fontSize: '7px', color: '#cbd5e1' };
+const labelStyle: React.CSSProperties = { fontSize: '7px', color: 'black' };
 const headerStyle: React.CSSProperties = { fontSize: '11px', fontWeight: 'bold', textAlign: 'center', marginBottom: '10px' };
 
 const getLineStyle = (side: 'left' | 'right', isBottom: boolean): React.CSSProperties => ({

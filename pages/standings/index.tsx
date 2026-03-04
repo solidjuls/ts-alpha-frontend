@@ -32,7 +32,7 @@ import { Player } from "components/Playoffs/Playoffs";
 
 type Division = "TORUN" | "SEATTLE";
 
-const MOCK_PLAYERS: Player[] = Array.from({ length: 38 }, (_, i) => ({
+const MOCK_PLAYERS: Player[] = Array.from({ length: 28 }, (_, i) => ({
   userId: `u-${i + 1}`,
   fullName: `Player ${i + 1}`,
   playoffSquare: `sq-${i + 1}`, // Initial assignment
