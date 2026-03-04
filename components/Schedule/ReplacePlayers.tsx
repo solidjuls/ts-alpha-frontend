@@ -36,7 +36,7 @@ const ReplacePlayers: React.FC<ReplacePlayersProps> = ({ tournament }) => {
   }
   return <Flex style={{ flexDirection: 'column' }}>
           <SectionTitle>Replace Player</SectionTitle>
-          <Flex style={{ marginBottom: '16px', gap: '4px'}}>
+          <Flex style={{ marginBottom: '16px', gap: '4px', flexWrap: 'wrap'}}>
             <UserTypeahead
               labelText="oldPlayer"
               selectedItem={oldUser}
