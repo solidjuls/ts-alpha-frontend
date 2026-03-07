@@ -35,8 +35,9 @@ type Division = "TORUN" | "SEATTLE";
 const MOCK_PLAYERS: Player[] = Array.from({ length: 31 }, (_, i) => ({
   userId: `u-${i + 1}`,
   fullName: `Player ${i + 1}`,
-  playoffSquare: `sq-${i + 1}`, // Initial assignment
+  playoffSquare: undefined,
   playoffName: i < 32 ? "Round 1" : "Waitlist/Qualifiers",
+  seed: i + 1,
 }));
 
 const Standings = () => {
