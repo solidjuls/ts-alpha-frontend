@@ -143,70 +143,62 @@ const generateInitialSeeding = (
 };
 
 const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
-  const rounds = {};
-  console.log("bracket", bracket);
+  const rounds: Record<string, Player[]> = {};
+
   try {
     Object.entries(bracket).forEach(([id, player]) => {
-      // Use a regex to capture the prefix (e.g., 'r1', 'r12') 
-      // or simply take the first two characters if the pattern is consistent
       const match = id.match(/^r\d+/);
-      
+
       if (match) {
         const roundKey = match[0];
 
-        // Initialize the array if it doesn't exist yet
         if (!rounds[roundKey]) {
           rounds[roundKey] = [];
         }
         if (player) {
           rounds[roundKey].push(player);
         } else {
-          rounds[roundKey].push({ playoffSquare: id } as Player);
+          rounds[roundKey].push({ playoffSquare: id, nextSquare: null } as Player);
         }
       }
     });
-    const squaresAlreadyAssigned: string[] = []
+    const squaresAlreadyAssigned: string[] = [];
 
     Object.keys(rounds).forEach(currentKey => {
       const currentRoundNumber = parseInt(currentKey.replace('r', ''));
       const nextKey = `r${currentRoundNumber + 1}`;
       const currentPlayers = rounds[currentKey];
       const nextPlayers = rounds[nextKey];
-      // console.log("currentKey", currentKey, nextKey, currentPlayers, nextPlayers);
 
-      // If there's no next round (e.g., we are at the Finals), stop here
       if (!nextPlayers) return;
 
-      for(let i = 0; i < currentPlayers.length; i++) {
-        if (currentPlayers[i] && currentPlayers[i+1]) {
+      for (let i = 0; i < currentPlayers.length; i++) {
+        if (currentPlayers[i] && currentPlayers[i + 1]) {
           const player = currentPlayers[i];
-          const nextPlayer = currentPlayers[i+1];
-          // if the current player was assigned on previous iteration, skip it
-          if (bracket[player.playoffSquare]?.nextSquare) continue
+          const nextPlayer = currentPlayers[i + 1];
+          if (bracket[player.playoffSquare!]?.nextSquare) continue;
 
-          // nextPlayers next first empty square
-          const nextEmptySquare = nextPlayers.find(p => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare));
+          const nextEmptySquare = nextPlayers.find((p: Player) => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare!));
           if (nextEmptySquare) {
-
-            player.nextSquare = nextEmptySquare.playoffSquare;
-            nextPlayer.nextSquare = nextEmptySquare.playoffSquare;
-            bracket[player.playoffSquare] = {
+            player.nextSquare = nextEmptySquare.playoffSquare!;
+            nextPlayer.nextSquare = nextEmptySquare.playoffSquare!;
+            bracket[player.playoffSquare!] = {
               ...player,
-              nextSquare: nextEmptySquare.playoffSquare,
-            }
-            bracket[nextPlayer.playoffSquare] = {
+              nextSquare: nextEmptySquare.playoffSquare!,
+            };
+            bracket[nextPlayer.playoffSquare!] = {
               ...nextPlayer,
-              nextSquare: nextEmptySquare.playoffSquare,
-            }
-            squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare);
+              nextSquare: nextEmptySquare.playoffSquare!,
+            };
+            squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare!);
           }
         }
       }
     });
-   } catch(e) {
+  } catch (e) {
     console.error("Error generating next squares:", e);
   }
-}
+};
 
 
 // Draggable Player Component
@@ -363,7 +355,7 @@ console.log("finalBracket", bracketWithSeeds);
       setBracket((prev) => ({
         ...prev,
         [nextId]: {
-          ...prev[nextId],
+          nextSquare: prev[nextId]?.nextSquare ?? null,
           fullName: slot.fullName,
           userId: slot.userId,
           playoffName: slot.playoffName,
@@ -381,14 +373,14 @@ console.log("finalBracket", bracketWithSeeds);
   };
 
   // Helper to clear player data from a slot while preserving nextSquare
-  const clearSlot = (slotId: string, prev: Record<string, Player>): Player => ({
-    nextSquare: prev[slotId].nextSquare,
+  const clearSlot = (slotId: string, prev: Record<string, Player | undefined>): Player => ({
+    nextSquare: prev[slotId]?.nextSquare ?? null,
   });
 
   // Helper to place player in a slot while preserving nextSquare
-  const fillSlot = (slotId: string, player: Player, prev: Record<string, Player>): Player => ({
+  const fillSlot = (slotId: string, player: Player, prev: Record<string, Player | undefined>): Player => ({
     ...player,
-    nextSquare: prev[slotId].nextSquare,
+    nextSquare: prev[slotId]?.nextSquare ?? null,
     playoffSquare: slotId,
   });
 
@@ -415,9 +407,6 @@ console.log("finalBracket", bracketWithSeeds);
         [toSlot]: fillSlot(toSlot, player, prev),
       }));
 
-      // Remove from pool
-      // setPlayerPool((prev) => prev.filter((p) => p.userId !== player.userId));
-
       // If there was a player in the target slot, move them back to pool
       if (hasExistingPlayer) {
         // setPlayerPool((prev) => [...prev, existingSlot]);
@@ -425,7 +414,6 @@ console.log("finalBracket", bracketWithSeeds);
     } else if (toSlot === 'pool') {
       // Dragging from bracket back to pool - clear slot but keep nextSquare
       setBracket((prev) => ({ ...prev, [fromSlot]: clearSlot(fromSlot, prev) }));
-      // setPlayerPool((prev) => [...prev, player]);
     } else {
       // Dragging between bracket slots (swap)
       const existingSlot = bracket[toSlot];
@@ -438,28 +426,37 @@ console.log("finalBracket", bracketWithSeeds);
       }));
     }
   };
-console.log("bracket", bracket);
+  // Group slot IDs into pairs (matches)
+  const groupIntoPairs = (ids: string[]): string[][] => {
+    const pairs: string[][] = [];
+    for (let i = 0; i < ids.length; i += 2) {
+      pairs.push(ids.slice(i, i + 2));
+    }
+    return pairs;
+  };
+
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={mainContainerStyle}>
-        {/* Player Pool */}
-        {/* <PlayerPoolDroppable playerPool={playerPool} /> */}
-
         {/* Bracket */}
         <div style={viewportStyle}>
           {columns.map((col) => (
             <div key={col.title} style={columnStyle}>
               <div style={headerStyle}>{col.title}</div>
               <div style={roundFlexStyle}>
-                {col.ids.map((id, i) => (
-                  <DroppableSlot
-                    key={id}
-                    id={id}
-                    player={bracket[id]}
-                    onAdvance={advance}
-                    side={col.side}
-                    isOdd={i % 2 !== 0}
-                  />
+                {groupIntoPairs(col.ids).map((pair, matchIndex) => (
+                  <div key={`match-${matchIndex}`} style={matchContainerStyle}>
+                    {pair.map((id, i) => (
+                      <DroppableSlot
+                        key={id}
+                        id={id}
+                        player={bracket[id]}
+                        onAdvance={advance}
+                        side={col.side}
+                        isOdd={i % 2 !== 0}
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
@@ -518,6 +515,7 @@ const viewportStyle: React.CSSProperties = {
   padding: '20px',
   gap: '40px',
   alignItems: 'center',
+  justifyContent: 'space-between',
   backgroundColor: '#fff',
   flex: 1,
 };
@@ -534,6 +532,17 @@ const roundFlexStyle: React.CSSProperties = {
   flexDirection: 'column',
   justifyContent: 'space-around',
   flexGrow: 1,
+  gap: '8px',
+};
+
+const matchContainerStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+  padding: '4px',
+  border: '1px solid #e5e7eb',
+  borderRadius: '6px',
+  backgroundColor: '#fafafa',
 };
 
 const containerStyle: React.CSSProperties = {
