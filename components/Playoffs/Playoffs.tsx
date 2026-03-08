@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import { styled } from 'styled-components';
 
 interface Player {
   fullName?: string;
@@ -243,45 +244,20 @@ const DroppableSlot: React.FC<{
   return (
     <div style={containerStyle}>
       <label style={labelStyle}>{id}</label>
-      <div
+      <Square
         ref={setNodeRef}
         onDoubleClick={() => player && onAdvance(id)}
-        style={{
-          ...squareStyle,
-          borderColor: isOver ? '#22c55e' : player ? '#3b82f6' : '#e5e7eb',
-          background: isOver ? '#dcfce7' : player ? '#fff' : '#f9fafb',
-          boxShadow: isOver ? '0 0 0 2px #22c55e' : 'none',
-        }}
+        isOver={isOver}
+        isOdd={isOdd}
+        player={player}
       >
         {player ? (
           <DraggablePlayer player={player} slotId={id} />
         ) : (
           <span style={{ color: '#9ca3af', fontSize: '8px' }}>Drop here</span>
         )}
-      </div>
-      {side !== 'center' && <div style={getLineStyle(side, isOdd)} />}
-    </div>
-  );
-};
-
-// Player Pool Draggable Item
-const PoolPlayer: React.FC<{ player: Player }> = ({ player }) => {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `pool-${player.userId}`,
-    data: { player, fromSlot: 'pool' },
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={{
-        ...poolPlayerStyle,
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      {player.fullName}
+      </Square>
+      {/* {side !== 'center' && <div style={getLineStyle(side, isOdd)} />} */}
     </div>
   );
 };
@@ -445,7 +421,7 @@ console.log("finalBracket", bracketWithSeeds);
               <div style={headerStyle}>{col.title}</div>
               <div style={roundFlexStyle}>
                 {groupIntoPairs(col.ids).map((pair, matchIndex) => (
-                  <div key={`match-${matchIndex}`} style={matchContainerStyle}>
+                  <MatchContainer key={`match-${matchIndex}`}>
                     {pair.map((id, i) => (
                       <DroppableSlot
                         key={id}
@@ -456,7 +432,7 @@ console.log("finalBracket", bracketWithSeeds);
                         isOdd={i % 2 !== 0}
                       />
                     ))}
-                  </div>
+                  </MatchContainer>
                 ))}
               </div>
             </div>
@@ -471,32 +447,6 @@ console.log("finalBracket", bracketWithSeeds);
         ) : null}
       </DragOverlay>
     </DndContext>
-  );
-};
-
-// Player Pool Droppable Container
-const PlayerPoolDroppable: React.FC<{ playerPool: Player[] }> = ({ playerPool }) => {
-  const { setNodeRef, isOver } = useDroppable({ id: 'pool' });
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...poolContainerStyle,
-        borderColor: isOver ? '#22c55e' : '#e5e7eb',
-        background: isOver ? '#dcfce7' : '#f9fafb',
-      }}
-    >
-      <div style={poolHeaderStyle}>Player Pool ({playerPool.length})</div>
-      <div style={poolListStyle}>
-        {playerPool.map((player) => (
-          <PoolPlayer key={player.userId} player={player} />
-        ))}
-        {playerPool.length === 0 && (
-          <span style={{ color: '#9ca3af', fontSize: '11px' }}>All players assigned</span>
-        )}
-      </div>
-    </div>
   );
 };
 
@@ -535,15 +485,26 @@ const roundFlexStyle: React.CSSProperties = {
   gap: '8px',
 };
 
-const matchContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2px',
-  padding: '4px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '6px',
-  backgroundColor: '#fafafa',
-};
+const MatchContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: lightgray;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    bottom: 29px;
+    right: 0px;
+    width: 1px;
+    background-color: red;
+  }
+`;
 
 const containerStyle: React.CSSProperties = {
   position: 'relative',
@@ -553,19 +514,40 @@ const containerStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-const squareStyle: React.CSSProperties = {
-  width: '100%',
-  height: '24px',
-  border: '2px solid',
-  fontSize: '9px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: '0 4px',
-  zIndex: 2,
-  borderRadius: '4px',
-  transition: 'all 0.15s ease',
-};
+const Square = styled.div`
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  z-index: 2;
+  font-size: 9px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  position: relative;
+  
+  /* Dynamic Props */
+  border: 2px solid ${(props) => 
+    props.isOver ? '#22c55e' : props.player ? '#3b82f6' : '#e5e7eb'};
+    
+  background: ${(props) => 
+    props.isOver ? '#dcfce7' : props.player ? '#fff' : '#f9fafb'};
+    
+  box-shadow: ${(props) => 
+    props.isOver ? '0 0 0 2px #22c55e' : 'none'};
+  &::before {
+    content: '';
+    position: absolute;
+    top: 32px;
+    bottom: 29px;
+    right: -47px;
+    width: ${props => props.isOdd ? '0px': '41px'};
+    height: ${props => props.isOdd ? '0px': '1px'};
+    background-color: red;
+  }
+`
+
 
 const labelStyle: React.CSSProperties = {
   fontSize: '7px',
@@ -601,46 +583,6 @@ const seedBadgeStyle: React.CSSProperties = {
   fontWeight: 600,
 };
 
-const poolContainerStyle: React.CSSProperties = {
-  width: '180px',
-  minWidth: '180px',
-  height: '90vh',
-  border: '2px dashed',
-  borderRadius: '8px',
-  padding: '12px',
-  margin: '20px',
-  display: 'flex',
-  flexDirection: 'column',
-  transition: 'all 0.15s ease',
-};
-
-const poolHeaderStyle: React.CSSProperties = {
-  fontSize: '12px',
-  fontWeight: 'bold',
-  marginBottom: '12px',
-  color: '#374151',
-  textAlign: 'center',
-};
-
-const poolListStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-  overflowY: 'auto',
-  flex: 1,
-};
-
-const poolPlayerStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  backgroundColor: '#fff',
-  border: '1px solid #3b82f6',
-  borderRadius: '4px',
-  fontSize: '10px',
-  cursor: 'grab',
-  textAlign: 'center',
-  fontWeight: 500,
-};
-
 const dragOverlayStyle: React.CSSProperties = {
   padding: '8px 16px',
   backgroundColor: '#3b82f6',
@@ -653,8 +595,8 @@ const dragOverlayStyle: React.CSSProperties = {
 
 const getLineStyle = (side: 'left' | 'right', isBottom: boolean): React.CSSProperties => ({
   position: 'absolute',
-  width: '20px',
-  height: '50%',
+  width: '70px',
+  height: '100%',
   [side === 'left' ? 'right' : 'left']: '-20px',
   top: isBottom ? '0' : '50%',
   borderRight: side === 'left' ? '1px solid #cbd5e1' : 'none',
