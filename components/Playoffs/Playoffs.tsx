@@ -29,8 +29,8 @@ interface Player {
 // - Round 5: Semi Finals
 // - Round 6: Finals/Champion
 // Returns a hashmap where key is the square ID and value contains nextSquare
-const generateBracketConfig = (_playerCount: number = 31): Record<string, Player> => {
-  const config: Record<string, Player> = {};
+const generateBracketConfig = (_playerCount: number = 31): Record<string, Player | undefined> => {
+  const config: Record<string, Player | undefined> = {};
 
   // Slot counts for 31 players bracket
   // Each seeded player in rounds 2+ occupies an ODD slot, their opponent goes to the adjacent EVEN slot
@@ -44,40 +44,40 @@ const generateBracketConfig = (_playerCount: number = 31): Record<string, Player
   for (let i = 0; i < R1_SLOTS; i++) {
     const id = `r1-${i + 1}`;
     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = { nextSquare: `r2-${nextPosition}` };
+    config[id] = undefined// { nextSquare: null };
   }
 
   // Round 2: 16 slots -> feed into Round 3 EVEN slots
   for (let i = 0; i < R2_SLOTS; i++) {
     const id = `r2-${i + 1}`;
     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = { nextSquare: `r3-${nextPosition}` };
+    config[id] = undefined// { nextSquare: null };
   }
 
   // Round 3 (Octave Finals): 12 slots -> feed into Round 4 EVEN slots
   for (let i = 0; i < R3_SLOTS; i++) {
     const id = `r3-${i + 1}`;
     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = { nextSquare: `r4-${nextPosition}` };
+    config[id] = undefined// { nextSquare: null };
   }
 
   // Round 4 (Quarter Finals): 8 slots -> feed into Round 5 EVEN slots
   for (let i = 0; i < R4_SLOTS; i++) {
     const id = `r4-${i + 1}`;
     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = { nextSquare: `r5-${nextPosition}` };
+    config[id] = undefined// { nextSquare: null };
   }
 
   // Round 5 (Semi Finals): 4 slots -> feed into Round 6
   for (let i = 0; i < R5_SLOTS; i++) {
     const id = `r5-${i + 1}`;
     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = { nextSquare: `r6-${nextPosition}` };
+    config[id] = undefined// { nextSquare: null };
   }
 
   // Round 6 (Finals): 2 slots -> no next (champion)
-  config['r6-1'] = { nextSquare: null };
-  config['r6-2'] = { nextSquare: null };
+  config['r6-1'] = undefined// { nextSquare: null };
+  config['r6-2'] = undefined// { nextSquare: null };
 
   return config;
 };
@@ -86,13 +86,13 @@ const generateBracketConfig = (_playerCount: number = 31): Record<string, Player
 // Seeded players go to ODD slots, their opponents (from previous round) go to adjacent EVEN slots
 const generateInitialSeeding = (
   players: Player[],
-  bracketConfig: Record<string, Player>
-): Record<string, Player> => {
-  const bracket: Record<string, Player> = {};
+  bracketConfig: Record<string, Player | undefined>
+): Record<string, Player | undefined> => {
+  const bracket: Record<string, Player | undefined> = {};
 
   // Initialize all slots with their nextSquare config (no player data yet)
   Object.entries(bracketConfig).forEach(([id, config]) => {
-    bracket[id] = { nextSquare: config.nextSquare };
+    bracket[id] = undefined;
   });
 
   // Sort players by seed
@@ -129,7 +129,7 @@ const generateInitialSeeding = (
       slotId = `r1-${seed - 16}`;
     }
 
-    if (slotId && bracket[slotId]) {
+    if (slotId) {
       // Merge player data with existing nextSquare config
       bracket[slotId] = {
         ...bracket[slotId],
@@ -142,7 +142,71 @@ const generateInitialSeeding = (
   return bracket;
 };
 
+const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
+  const rounds = {};
+  console.log("bracket", bracket);
+  try {
+    Object.entries(bracket).forEach(([id, player]) => {
+      // Use a regex to capture the prefix (e.g., 'r1', 'r12') 
+      // or simply take the first two characters if the pattern is consistent
+      const match = id.match(/^r\d+/);
+      
+      if (match) {
+        const roundKey = match[0];
 
+        // Initialize the array if it doesn't exist yet
+        if (!rounds[roundKey]) {
+          rounds[roundKey] = [];
+        }
+        if (player) {
+          rounds[roundKey].push(player);
+        } else {
+          rounds[roundKey].push({ playoffSquare: id } as Player);
+        }
+      }
+    });
+    const squaresAlreadyAssigned: string[] = []
+
+    Object.keys(rounds).forEach(currentKey => {
+      const currentRoundNumber = parseInt(currentKey.replace('r', ''));
+      const nextKey = `r${currentRoundNumber + 1}`;
+      const currentPlayers = rounds[currentKey];
+      const nextPlayers = rounds[nextKey];
+      // console.log("currentKey", currentKey, nextKey, currentPlayers, nextPlayers);
+
+      // If there's no next round (e.g., we are at the Finals), stop here
+      if (!nextPlayers) return;
+
+      for(let i = 0; i < currentPlayers.length; i++) {
+        if (currentPlayers[i] && currentPlayers[i+1]) {
+          const player = currentPlayers[i];
+          const nextPlayer = currentPlayers[i+1];
+          // if the current player was assigned on previous iteration, skip it
+          if (bracket[player.playoffSquare]?.nextPlayoffSquare) continue
+
+          // nextPlayers next first empty square
+          const nextEmptySquare = nextPlayers.find(p => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare));
+          if (nextEmptySquare) {
+
+            player.nextPlayoffSquare = nextEmptySquare.playoffSquare;
+            nextPlayer.nextPlayoffSquare = nextEmptySquare.playoffSquare;
+            bracket[player.playoffSquare] = {
+              ...player,
+              nextPlayoffSquare: nextEmptySquare.playoffSquare,
+            }
+            bracket[nextPlayer.playoffSquare] = {
+              ...nextPlayer,
+              nextPlayoffSquare: nextEmptySquare.playoffSquare,
+            }
+            squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare);
+          }
+        }
+      }
+    });
+   } catch(e) {
+    console.error("Error generating next squares:", e);
+  }
+}
 
 
 // Draggable Player Component
@@ -175,7 +239,7 @@ const DraggablePlayer: React.FC<{
 // Droppable Slot Component
 const DroppableSlot: React.FC<{
   id: string;
-  player: Player | null;
+  player: Player | undefined;
   onAdvance: (id: string) => void;
   side: 'left' | 'right' | 'center';
   isOdd: boolean;
@@ -230,9 +294,13 @@ const PoolPlayer: React.FC<{ player: Player }> = ({ player }) => {
   );
 };
 
+
 const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
-
+const config = generateBracketConfig();
+const bracketWithSeeds = generateInitialSeeding(initialPlayers, config);
+generateNextSquares(bracketWithSeeds);
+console.log("finalBracket", bracketWithSeeds);
   // Pointer sensor with activation constraint
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -282,21 +350,10 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
 
   // 3. HASHMAP STATE for bracket slots - auto-seeded
   // Each slot contains Player data (including nextSquare)
-  const [bracket, setBracket] = useState<Record<string, Player>>(() => {
-    const config = generateBracketConfig();
-    return generateInitialSeeding(initialPlayers, config);
-  });
+  const [bracket, setBracket] = useState<Record<string, Player | undefined>>(bracketWithSeeds);
 
   // 4. PLAYER POOL STATE (players not yet seeded)
-  const [playerPool, setPlayerPool] = useState<Player[]>(() => {
-    // Only include players without a seed assignment
-    const seededIds = new Set(
-      initialPlayers
-        .filter((p) => p.seed && p.seed >= 1 && p.seed <= 31)
-        .map((p) => p.userId)
-    );
-    return initialPlayers.filter((p) => !seededIds.has(p.userId));
-  });
+  // const [playerPool, setPlayerPool] = useState<Player[]>(finalBracket);
 
   // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
@@ -306,7 +363,7 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
       setBracket((prev) => ({
         ...prev,
         [nextId]: {
-          ...prev[nextId], // Keep nextSquare of target slot
+          ...prev[nextId],
           fullName: slot.fullName,
           userId: slot.userId,
           playoffName: slot.playoffName,
@@ -386,7 +443,7 @@ console.log("bracket", bracket);
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={mainContainerStyle}>
         {/* Player Pool */}
-        <PlayerPoolDroppable playerPool={playerPool} />
+        {/* <PlayerPoolDroppable playerPool={playerPool} /> */}
 
         {/* Bracket */}
         <div style={viewportStyle}>
