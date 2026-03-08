@@ -182,21 +182,21 @@ const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
           const player = currentPlayers[i];
           const nextPlayer = currentPlayers[i+1];
           // if the current player was assigned on previous iteration, skip it
-          if (bracket[player.playoffSquare]?.nextPlayoffSquare) continue
+          if (bracket[player.playoffSquare]?.nextSquare) continue
 
           // nextPlayers next first empty square
           const nextEmptySquare = nextPlayers.find(p => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare));
           if (nextEmptySquare) {
 
-            player.nextPlayoffSquare = nextEmptySquare.playoffSquare;
-            nextPlayer.nextPlayoffSquare = nextEmptySquare.playoffSquare;
+            player.nextSquare = nextEmptySquare.playoffSquare;
+            nextPlayer.nextSquare = nextEmptySquare.playoffSquare;
             bracket[player.playoffSquare] = {
               ...player,
-              nextPlayoffSquare: nextEmptySquare.playoffSquare,
+              nextSquare: nextEmptySquare.playoffSquare,
             }
             bracket[nextPlayer.playoffSquare] = {
               ...nextPlayer,
-              nextPlayoffSquare: nextEmptySquare.playoffSquare,
+              nextSquare: nextEmptySquare.playoffSquare,
             }
             squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare);
           }
