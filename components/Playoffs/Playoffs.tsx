@@ -19,7 +19,6 @@ interface Player {
   seed?: number; // Player seed/ranking (1-31)
 }
 
-// Square configuration with next square mapping
 interface SquareConfig {
   id: string;
   round: number;
@@ -27,69 +26,90 @@ interface SquareConfig {
   nextSquare: string | null;
 }
 
-// Generate bracket structure for 31 players across 6 rounds
-// Round 1: 16 slots (seeds 17-31 play here, some get byes)
-// Round 2: 8 slots (seeds 9-16 start here)
-// Round 3: 4 slots (seeds 2-8 start here, some get byes - "Octave Finals")
-// Round 4: 2 slots (seed 1 starts here - "Quarter Finals")
-// Round 5: 1 slot (Semi Finals)
-// Round 6: 1 slot (Finals/Champion)
-const generateBracketConfig = (): Record<string, SquareConfig> => {
+// Generate bracket structure dynamically based on player count
+// For 31 players:
+// - Seeds 17-31 (15 players): Round 1
+// - Seeds 9-16 (8 players): Round 2 (odd slots, even slots for R1 winners)
+// - Seeds 2-8 (7 players): Round 3 "Octave Finals" (odd slots, even for R2 winners)
+// - Seed 1 (1 player): Round 4 "Quarter Finals" (odd slot, even for R3 winner)
+// - Round 5: Semi Finals
+// - Round 6: Finals/Champion
+const generateBracketConfig = (_playerCount: number = 31): Record<string, SquareConfig> => {
   const config: Record<string, SquareConfig> = {};
 
-  // Round 1: 16 slots -> feed into Round 2 (8 slots)
-  for (let i = 0; i < 16; i++) {
+  // Slot counts for 31 players bracket
+  // Each seeded player in rounds 2+ occupies an ODD slot, their opponent goes to the adjacent EVEN slot
+  const R1_SLOTS = 16; // Seeds 17-31 (15 players + 1 bye)
+  const R2_SLOTS = 16; // 8 odd (seeds 9-16) + 8 even (R1 winners)
+  const R3_SLOTS = 12;  // 4 odd (seeds 5-8) + 4 even (R2 winners)
+  const R4_SLOTS = 8;  // 2 odd (seeds 2-4 distributed) + 2 even (R3 winners)
+  const R5_SLOTS = 2;  // Semi finals
+
+  // Round 1: 16 slots -> feed into Round 2 EVEN slots
+  // r1-1 & r1-2 -> r2-2, r1-3 & r1-4 -> r2-4, etc.
+  for (let i = 0; i < R1_SLOTS; i++) {
     const id = `r1-${i + 1}`;
+    const nextPosition = Math.ceil((i + 1) / 2) * 2; // Even: 2, 4, 6, 8, 10, 12, 14, 16
     config[id] = {
       id,
       round: 1,
       position: i + 1,
-      nextSquare: `r2-${Math.ceil((i + 1) / 2)}`,
+      nextSquare: `r2-${nextPosition}`,
     };
   }
 
-  // Round 2: 8 slots -> feed into Round 3 (4 slots)
-  for (let i = 0; i < 8; i++) {
+  // Round 2: 16 slots -> feed into Round 3 EVEN slots
+  // Odd slots (1,3,5...) for seeded players, even slots (2,4,6...) for R1 winners
+  // r2-1 & r2-2 -> r3-2, r2-3 & r2-4 -> r3-4, etc.
+  for (let i = 0; i < R2_SLOTS; i++) {
     const id = `r2-${i + 1}`;
+    const nextPosition = Math.ceil((i + 1) / 2) * 2; // Even: 2, 4, 6, 8
     config[id] = {
       id,
       round: 2,
       position: i + 1,
-      nextSquare: `r3-${Math.ceil((i + 1) / 2)}`,
+      nextSquare: `r3-${nextPosition}`,
     };
   }
 
-  // Round 3 (Octave Finals): 4 slots -> feed into Round 4 (2 slots)
-  for (let i = 0; i < 4; i++) {
+  // Round 3 (Octave Finals): 8 slots -> feed into Round 4 EVEN slots
+  // r3-1 & r3-2 -> r4-2, r3-3 & r3-4 -> r4-4
+  for (let i = 0; i < R3_SLOTS; i++) {
     const id = `r3-${i + 1}`;
+    const nextPosition = Math.ceil((i + 1) / 2) * 2; // Even: 2, 4
     config[id] = {
       id,
       round: 3,
       position: i + 1,
-      nextSquare: `r4-${Math.ceil((i + 1) / 2)}`,
+      nextSquare: `r4-${nextPosition}`,
     };
   }
 
-  // Round 4 (Quarter Finals): 2 slots -> feed into Round 5 (1 slot)
-  for (let i = 0; i < 2; i++) {
+  // Round 4 (Quarter Finals): 4 slots -> feed into Round 5 EVEN slots
+  // r4-1 & r4-2 -> r5-2
+  for (let i = 0; i < R4_SLOTS; i++) {
     const id = `r4-${i + 1}`;
+    const nextPosition = Math.ceil((i + 1) / 2) * 2; // Even: 2
     config[id] = {
       id,
       round: 4,
       position: i + 1,
-      nextSquare: 'r5-1',
+      nextSquare: `r5-${nextPosition}`,
     };
   }
 
-  // Round 5 (Semi Finals): 1 slot -> feed into Round 6
-  config['r5-1'] = {
-    id: 'r5-1',
-    round: 5,
-    position: 1,
-    nextSquare: 'r6-1',
-  };
+  // Round 5 (Semi Finals): 2 slots -> feed into Round 6
+  for (let i = 0; i < R5_SLOTS; i++) {
+    const id = `r5-${i + 1}`;
+    config[id] = {
+      id,
+      round: 5,
+      position: i + 1,
+      nextSquare: 'r6-1',
+    };
+  }
 
-  // Round 6 (Finals): 1 slot -> no next
+  // Round 6 (Finals): 1 slot -> no next (champion)
   config['r6-1'] = {
     id: 'r6-1',
     round: 6,
@@ -101,10 +121,12 @@ const generateBracketConfig = (): Record<string, SquareConfig> => {
 };
 
 // Auto-seed players based on their ranking
-// Seed 1: Quarter Finals (Round 4)
-// Seeds 2-8: Octave Finals (Round 3) - 7 players in 4 slots (some byes)
-// Seeds 9-16: Round 2 - 8 players in 8 slots
-// Seeds 17-31: Round 1 - 15 players in 16 slots (1 bye)
+// Seeded players go to ODD slots, their opponents (from previous round) go to adjacent EVEN slots
+// Seed 1: Quarter Finals (Round 4, slot r4-1)
+// Seeds 2-4: Quarter Finals (Round 4, odd slots r4-3) or Round 3 (r3-1, r3-3)
+// Seeds 5-8: Octave Finals (Round 3, odd slots r3-5, r3-7)
+// Seeds 9-16: Round 2 (odd slots r2-1, r2-3, r2-5, r2-7, r2-9, r2-11, r2-13, r2-15)
+// Seeds 17-31: Round 1 (slots r1-1 to r1-15)
 const generateInitialSeeding = (
   players: Player[],
   bracketConfig: Record<string, SquareConfig>
@@ -124,35 +146,54 @@ const generateInitialSeeding = (
     let slotId: string | null = null;
 
     if (seed === 1) {
-      // Seed 1 goes to Quarter Finals (Round 4, position 1)
+      // Seed 1 goes to Quarter Finals (Round 4, odd slot 1)
       slotId = 'r4-1';
-    } else if (seed >= 2 && seed <= 8) {
-      // Seeds 2-8 go to Octave Finals (Round 3)
-      // Position mapping: 2->r3-2, 3->r3-3, 4->r3-4, 5-8 need to play in R2 first
-      if (seed <= 4) {
-        slotId = `r3-${seed - 1}`; // Seeds 2,3,4 -> r3-1, r3-2, r3-3
+    } else if (seed === 2) {
+      // Seed 2 goes to Quarter Finals (Round 4, odd slot 3)
+      slotId = 'r4-3';
+    } else if (seed >= 3 && seed <= 4) {
+      // Seeds 3-4 go to Octave Finals (Round 3, odd slots 1, 3)
+      const oddSlot = (seed - 3) * 2 + 1; // 3->1, 4->3
+      slotId = `r3-${oddSlot}`;
+    } else if (seed >= 5 && seed <= 8) {
+      // Seeds 5-8 go to Octave Finals (Round 3, odd slots 5, 7) or Round 2
+      // We have r3-1 to r3-8, odd slots are 1, 3, 5, 7
+      // Seeds 3,4 take 1,3, so seeds 5,6 take 5,7
+      // Seeds 7,8 need to start in R2
+      if (seed <= 6) {
+        const r3OddSlot = (seed - 5) * 2 + 5; // 5->5, 6->7
+        slotId = `r3-${r3OddSlot}`;
       } else {
-        // Seeds 5-8 start in Round 2
-        slotId = `r2-${seed - 4}`; // Seeds 5,6,7,8 -> r2-1, r2-2, r2-3, r2-4
+        // Seeds 7-8 start in Round 2 (odd slots at end)
+        const r2OddSlot = (seed - 7) * 2 + 13; // 7->13, 8->15
+        slotId = `r2-${r2OddSlot}`;
       }
     } else if (seed >= 9 && seed <= 16) {
-      // Seeds 9-16 go to Round 2
-      slotId = `r2-${seed - 8 + 4}`; // Seeds 9-16 -> r2-5 to r2-8 (adjusted)
-      // Actually: r2-5, r2-6, r2-7, r2-8
-      const r2Position = seed - 4; // 9->5, 10->6, etc.
-      slotId = `r2-${r2Position}`;
+      // Seeds 9-16 go to Round 2 (odd slots 1, 3, 5, 7, 9, 11, 13, 15)
+      // But 13, 15 are taken by seeds 7-8, so: 9-14 -> 1, 3, 5, 7, 9, 11
+      const index = seed - 9; // 0-7
+      if (index < 6) {
+        const oddSlot = index * 2 + 1; // 9->1, 10->3, 11->5, 12->7, 13->9, 14->11
+        slotId = `r2-${oddSlot}`;
+      } else {
+        // Seeds 15-16 need to go to R1 or we need more R2 slots
+        // For simplicity, put them in remaining odd slots
+        slotId = `r1-${seed - 16 + 16}`; // Will overflow to R1
+      }
     } else if (seed >= 17 && seed <= 31) {
-      // Seeds 17-31 go to Round 1
-      slotId = `r1-${seed - 16}`; // Seeds 17-31 -> r1-1 to r1-15
+      // Seeds 17-31 go to Round 1 (15 players in slots 1-15)
+      slotId = `r1-${seed - 16}`; // 17->1, 18->2, ..., 31->15
     }
 
-    if (slotId) {
+    if (slotId && bracketConfig[slotId]) {
       bracket[slotId] = { ...player, playoffSquare: slotId };
     }
   });
 
   return bracket;
 };
+
+
 
 
 // Draggable Player Component
@@ -256,7 +297,7 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
   // const bracketConfig = useMemo(() => generateBracketConfig(), []);
   const bracketConfig = generateBracketConfig()
 
-  // 2. COLUMN CONFIGURATION FOR 6 ROUNDS
+  // 2. COLUMN CONFIGURATION FOR 6 ROUNDS (matching slot counts from generateBracketConfig)
   const columns = useMemo(() => {
     return [
       {
@@ -266,22 +307,22 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
       },
       {
         title: 'Round 2',
-        ids: Array.from({ length: 8 }, (_, i) => `r2-${i + 1}`),
+        ids: Array.from({ length: 16 }, (_, i) => `r2-${i + 1}`),
         side: 'left' as const,
       },
       {
         title: 'Octave Finals',
-        ids: Array.from({ length: 4 }, (_, i) => `r3-${i + 1}`),
+        ids: Array.from({ length: 12 }, (_, i) => `r3-${i + 1}`),
         side: 'left' as const,
       },
       {
         title: 'Quarter Finals',
-        ids: Array.from({ length: 2 }, (_, i) => `r4-${i + 1}`),
+        ids: Array.from({ length: 8 }, (_, i) => `r4-${i + 1}`),
         side: 'left' as const,
       },
       {
         title: 'Semi Finals',
-        ids: ['r5-1'],
+        ids: Array.from({ length: 4 }, (_, i) => `r5-${i + 1}`),
         side: 'left' as const,
       },
       {
@@ -294,7 +335,6 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
 
   // 3. HASHMAP STATE for bracket slots - auto-seeded
   const [bracket, setBracket] = useState<Record<string, Player | null>>(() => {
-    // Generate config directly here since useState initializer runs before useMemo
     const config = generateBracketConfig();
     return generateInitialSeeding(initialPlayers, config);
   });
