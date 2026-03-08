@@ -416,16 +416,16 @@ console.log("finalBracket", bracketWithSeeds);
       }));
 
       // Remove from pool
-      setPlayerPool((prev) => prev.filter((p) => p.userId !== player.userId));
+      // setPlayerPool((prev) => prev.filter((p) => p.userId !== player.userId));
 
       // If there was a player in the target slot, move them back to pool
       if (hasExistingPlayer) {
-        setPlayerPool((prev) => [...prev, existingSlot]);
+        // setPlayerPool((prev) => [...prev, existingSlot]);
       }
     } else if (toSlot === 'pool') {
       // Dragging from bracket back to pool - clear slot but keep nextSquare
       setBracket((prev) => ({ ...prev, [fromSlot]: clearSlot(fromSlot, prev) }));
-      setPlayerPool((prev) => [...prev, player]);
+      // setPlayerPool((prev) => [...prev, player]);
     } else {
       // Dragging between bracket slots (swap)
       const existingSlot = bracket[toSlot];
