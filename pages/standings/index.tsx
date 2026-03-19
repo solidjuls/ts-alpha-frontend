@@ -32,13 +32,38 @@ import { Player } from "components/Playoffs/Playoffs";
 
 type Division = "TORUN" | "SEATTLE";
 
-const MOCK_PLAYERS: Player[] = Array.from({ length: 31 }, (_, i) => ({
-  userId: `u-${i + 1}`,
-  fullName: `Player ${i + 1}`,
-  playoffSquare: undefined,
-  playoffName: i < 32 ? "Round 1" : "Waitlist/Qualifiers",
-  seed: i + 1,
-}));
+const MOCK_PLAYERS: Player[] = [
+  { "userId": 2439, "fullName": "Michal Borkowicz", "seed": 1, "playoffSquare": undefined },
+  { "userId": 3064, "fullName": "Robin Bos", "seed": 2, "playoffSquare": undefined },
+  { "userId": 1597, "fullName": "Andrea Ciappi", "seed": 3, "playoffSquare": undefined },
+  { "userId": 2971, "fullName": "Markel Elortza", "seed": 4, "playoffSquare": undefined },
+  { "userId": 2623, "fullName": "Roger Erill", "seed": 5, "playoffSquare": undefined },
+  { "userId": 2082, "fullName": "Jarek Grzaslewicz", "seed": 6, "playoffSquare": undefined },
+  { "userId": 1921, "fullName": "Firat Guncu", "seed": 7, "playoffSquare": undefined },
+  { "userId": 2393, "fullName": "Mathias Heinze", "seed": 8, "playoffSquare": undefined },
+  { "userId": 1974, "fullName": "Giorgos Iosifidis", "seed": 9, "playoffSquare": undefined },
+  { "userId": 2682, "fullName": "Serhei Isaenka", "seed": 10, "playoffSquare": undefined },
+  { "userId": 2537, "fullName": "Paweł Januszewski", "seed": 11, "playoffSquare": undefined },
+  { "userId": 1853, "fullName": "Dimitris Katsoulas", "seed": 12, "playoffSquare": undefined },
+  { "userId": 2508, "fullName": "Onur Kulaksizoglu", "seed": 13, "playoffSquare": undefined },
+  { "userId": 2621, "fullName": "Rodrigo Laso", "seed": 14, "playoffSquare": undefined },
+  { "userId": 2784, "fullName": "Tomasz Łaniewski", "seed": 15, "playoffSquare": undefined },
+  { "userId": 2256, "fullName": "Katsiaryna Makouskaya", "seed": 16, "playoffSquare": undefined },
+  { "userId": 1600, "fullName": "Andrea Mancuso", "seed": 17, "playoffSquare": undefined },
+  { "userId": 2606, "fullName": "Ricki McLaughlin", "seed": 18, "playoffSquare": undefined },
+  { "userId": 2878, "fullName": "Ziemowit Pazderski", "seed": 19, "playoffSquare": undefined },
+  { "userId": 2074, "fullName": "Jan Schmidt", "seed": 20, "playoffSquare": undefined },
+  { "userId": 1635, "fullName": "Arek Sitkowski", "seed": 21, "playoffSquare": undefined },
+  { "userId": 2983, "fullName": "Pawel Sokol", "seed": 22, "playoffSquare": undefined },
+  { "userId": 3100, "fullName": "Balazs Ulveczki", "seed": 23, "playoffSquare": undefined },
+  { "userId": 2012, "fullName": "Hicham Vanborm", "seed": 24, "playoffSquare": undefined },
+  { "userId": 1634, "fullName": "Aran Warszawski", "seed": 25, "playoffSquare": undefined },
+  { "userId": 2962, "fullName": "Jakub Węcławski", "seed": 26, "playoffSquare": undefined },
+  { "userId": 1658, "fullName": "Bartosz Wróbel", "seed": 27, "playoffSquare": undefined },
+  { "userId": 2886, "fullName": "Weiran Xie", "seed": 28, "playoffSquare": undefined },
+  { "userId": 3084, "fullName": "Zhuang Yan", "seed": 29, "playoffSquare": undefined },
+  { "userId": 1838, "fullName": "Delun Zhang", "seed": 30, "playoffSquare": undefined }
+]
 
 const Standings = () => {
   const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
