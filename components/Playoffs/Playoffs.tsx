@@ -11,10 +11,12 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { styled } from 'styled-components';
+import { useSavePlayoffBracket } from '../../hooks/usePlayoffs';
+import { PlayoffEntryDto } from '../../services/playoffs.service';
 
 interface Player {
   fullName?: string;
-  userId?: string;
+  userId?: number;
   playoffSquare?: string;
   playoffName?: string;
   seed?: number; // Player seed/ranking (1-31)
@@ -263,12 +265,17 @@ const DroppableSlot: React.FC<{
 };
 
 
+const TOURNAMENT_ID = 325; // Hardcoded for now
+
 const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
-const config = generateBracketConfig();
-const bracketWithSeeds = generateInitialSeeding(initialPlayers, config);
-generateNextSquares(bracketWithSeeds);
-console.log("finalBracket", bracketWithSeeds);
+  const saveBracketMutation = useSavePlayoffBracket();
+
+  const config = generateBracketConfig();
+  const bracketWithSeeds = generateInitialSeeding(initialPlayers, config);
+  generateNextSquares(bracketWithSeeds);
+  console.log("finalBracket", bracketWithSeeds);
+
   // Pointer sensor with activation constraint
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -277,6 +284,23 @@ console.log("finalBracket", bracketWithSeeds);
       },
     })
   );
+
+  // Build payload for saving bracket - includes ALL slots (even empty ones)
+  const buildPayload = (bracketState: Record<string, Player | undefined>): PlayoffEntryDto[] => {
+    return Object.entries(bracketState).map(([playoffSquare, player]) => ({
+      tournamentId: TOURNAMENT_ID,
+      playoffSquare,
+      nextSquare: player?.nextSquare ?? null,
+      userId: player?.userId ?? null,
+      seed: player?.seed ?? null,
+    }));
+  };
+
+  const handleSaveBracket = () => {
+    const payload = buildPayload(bracket);
+    console.log('Saving bracket payload:', payload);
+    saveBracketMutation.mutate(payload);
+  };
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
 
@@ -413,30 +437,51 @@ console.log("finalBracket", bracketWithSeeds);
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div style={mainContainerStyle}>
-        {/* Bracket */}
-        <div style={viewportStyle}>
-          {columns.map((col) => (
-            <div key={col.title} style={columnStyle}>
-              <div style={headerStyle}>{col.title}</div>
-              <div style={roundFlexStyle}>
-                {groupIntoPairs(col.ids).map((pair, matchIndex) => (
-                  <MatchContainer key={`match-${matchIndex}`}>
-                    {pair.map((id, i) => (
-                      <DroppableSlot
-                        key={id}
-                        id={id}
-                        player={bracket[id]}
-                        onAdvance={advance}
-                        side={col.side}
-                        isOdd={i % 2 !== 0}
-                      />
-                    ))}
-                  </MatchContainer>
-                ))}
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        {/* Header with Save Button */}
+        <div style={toolbarStyle}>
+          <button
+            onClick={handleSaveBracket}
+            disabled={saveBracketMutation.isPending}
+            style={saveButtonStyle}
+          >
+            {saveBracketMutation.isPending ? 'Saving...' : 'Save Bracket'}
+          </button>
+          {saveBracketMutation.isSuccess && (
+            <span style={{ color: '#22c55e', marginLeft: '8px' }}>✓ Saved</span>
+          )}
+          {saveBracketMutation.isError && (
+            <span style={{ color: '#ef4444', marginLeft: '8px' }}>
+              Error: {saveBracketMutation.error?.message || 'Failed to save'}
+            </span>
+          )}
+        </div>
+
+        <div style={mainContainerStyle}>
+          {/* Bracket */}
+          <div style={viewportStyle}>
+            {columns.map((col) => (
+              <div key={col.title} style={columnStyle}>
+                <div style={headerStyle}>{col.title}</div>
+                <div style={roundFlexStyle}>
+                  {groupIntoPairs(col.ids).map((pair, matchIndex) => (
+                    <MatchContainer key={`match-${matchIndex}`}>
+                      {pair.map((id, i) => (
+                        <DroppableSlot
+                          key={id}
+                          id={id}
+                          player={bracket[id]}
+                          onAdvance={advance}
+                          side={col.side}
+                          isOdd={i % 2 !== 0}
+                        />
+                      ))}
+                    </MatchContainer>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -451,10 +496,29 @@ console.log("finalBracket", bracketWithSeeds);
 };
 
 // --- STYLES ---
+const toolbarStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  padding: '12px 20px',
+  borderBottom: '1px solid #e5e7eb',
+  backgroundColor: '#f9fafb',
+};
+
+const saveButtonStyle: React.CSSProperties = {
+  padding: '8px 16px',
+  backgroundColor: '#3b82f6',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  fontSize: '14px',
+  fontWeight: 500,
+  cursor: 'pointer',
+};
+
 const mainContainerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'row',
-  height: '100%',
+  flex: 1,
   backgroundColor: '#fff',
 };
 
@@ -514,7 +578,13 @@ const containerStyle: React.CSSProperties = {
   alignItems: 'center',
 };
 
-const Square = styled.div`
+interface SquareProps {
+  isOver: boolean;
+  isOdd: boolean;
+  player: Player | undefined;
+}
+
+const Square = styled.div<SquareProps>`
   width: 100%;
   height: 24px;
   display: flex;
@@ -526,15 +596,15 @@ const Square = styled.div`
   border-radius: 4px;
   transition: all 0.15s ease;
   position: relative;
-  
+
   /* Dynamic Props */
-  border: 2px solid ${(props) => 
+  border: 2px solid ${(props) =>
     props.isOver ? '#22c55e' : props.player ? '#3b82f6' : '#e5e7eb'};
-    
-  background: ${(props) => 
+
+  background: ${(props) =>
     props.isOver ? '#dcfce7' : props.player ? '#fff' : '#f9fafb'};
-    
-  box-shadow: ${(props) => 
+
+  box-shadow: ${(props) =>
     props.isOver ? '0 0 0 2px #22c55e' : 'none'};
   &::before {
     content: '';
