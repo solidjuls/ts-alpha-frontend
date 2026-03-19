@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -11,15 +11,15 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { styled } from 'styled-components';
-import { useSavePlayoffBracket } from '../../hooks/usePlayoffs';
+import { useSavePlayoffBracket, usePlayoffBracket } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 
 interface Player {
-  fullName?: string;
-  userId?: number;
+  userName: string | null;
+  userId: number | null;
   playoffSquare?: string;
   playoffName?: string;
-  seed?: number; // Player seed/ranking (1-31)
+  seed: number | null;
   nextSquare: string | null; // Square where winner advances to
 }
 
@@ -226,7 +226,7 @@ const DraggablePlayer: React.FC<{
       }}
     >
       {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
-      {player.fullName}
+      {player.userName}
     </div>
   );
 };
@@ -267,14 +267,35 @@ const DroppableSlot: React.FC<{
 
 const TOURNAMENT_ID = 325; // Hardcoded for now
 
-const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => {
+// Parse PlayoffEntryDto[] from API to Record<string, Player | undefined>
+const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | undefined> => {
+  const bracket: Record<string, Player | undefined> = {};
+
+  for (const entry of entries) {
+      bracket[entry.playoffSquare] = {
+        userId: entry.userId,
+        userName: entry.userName,
+        seed: entry.seed,
+        nextSquare: entry.nextSquare,
+        playoffSquare: entry.playoffSquare,
+      };
+  }
+
+  return bracket;
+};
+
+const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const saveBracketMutation = useSavePlayoffBracket();
+  const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(TOURNAMENT_ID);
 
-  const config = generateBracketConfig();
-  const bracketWithSeeds = generateInitialSeeding(initialPlayers, config);
-  generateNextSquares(bracketWithSeeds);
-  console.log("finalBracket", bracketWithSeeds);
+  // Parse API response to bracket state
+  const initialBracket = useMemo(() => {
+    if (!bracketData || bracketData.length === 0) {
+      return {};
+    }
+    return parseBracketData(bracketData);
+  }, [bracketData]);
 
   // Pointer sensor with activation constraint
   const sensors = useSensors(
@@ -340,13 +361,16 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
     ];
   }, []);
 
-  // 3. HASHMAP STATE for bracket slots - auto-seeded
-  // Each slot contains Player data (including nextSquare)
-  const [bracket, setBracket] = useState<Record<string, Player | undefined>>(bracketWithSeeds);
+  // 3. HASHMAP STATE for bracket slots - loaded from API
+  const [bracket, setBracket] = useState<Record<string, Player | undefined>>({});
 
-  // 4. PLAYER POOL STATE (players not yet seeded)
-  // const [playerPool, setPlayerPool] = useState<Player[]>(finalBracket);
-
+  // Sync bracket state when API data is loaded
+  useEffect(() => {
+    if (Object.keys(initialBracket).length > 0) {
+      setBracket(initialBracket);
+    }
+  }, [initialBracket]);
+console.log("bracket", initialBracket)
   // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
     const slot = bracket[id];
@@ -356,7 +380,7 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
         ...prev,
         [nextId]: {
           nextSquare: prev[nextId]?.nextSquare ?? null,
-          fullName: slot.fullName,
+          userName: slot.userName,
           userId: slot.userId,
           playoffName: slot.playoffName,
           seed: slot.seed,
@@ -435,6 +459,33 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
     return pairs;
   };
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
+        <span>Loading bracket...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px', color: '#ef4444' }}>
+        <span>Error loading bracket: {error?.message || 'Unknown error'}</span>
+      </div>
+    );
+  }
+
+  // Empty bracket state
+  if (Object.keys(bracket).length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px', color: '#6b7280' }}>
+        <span>No bracket data available</span>
+      </div>
+    );
+  }
+
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -488,7 +539,7 @@ const Bracket: React.FC<{ initialPlayers: Player[] }> = ({ initialPlayers }) => 
       {/* Drag Overlay */}
       <DragOverlay>
         {activePlayer ? (
-          <div style={dragOverlayStyle}>{activePlayer.fullName}</div>
+          <div style={dragOverlayStyle}>{activePlayer.userName}</div>
         ) : null}
       </DragOverlay>
     </DndContext>

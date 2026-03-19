@@ -7,6 +7,7 @@ export interface PlayoffEntryDto {
   nextSquare: string | null;
   playoffSquare: string;
   userId: number | null;
+  userName: string | null;
   seed: number | null;
 }
 
@@ -21,6 +22,15 @@ class PlayoffsService {
 
   constructor() {
     this.axiosInstance = createAuthenticatedAxios();
+  }
+
+  /**
+   * Get the playoff bracket for a tournament
+   * @param tournamentId The tournament ID
+   */
+  async getPlayoffBracket(tournamentId: number): Promise<PlayoffEntryDto[]> {
+    const response = await this.axiosInstance.get(`/playoffs/${tournamentId}`);
+    return response.data;
   }
 
   /**
