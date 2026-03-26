@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import tournamentsService, {
   CreateTournamentRequest,
+  CreateSubtournamentRequest,
+  SubtournamentResponse,
   UpdateTournamentRequest,
   RegisterTournamentRequest,
   UpdateTournamentStatusRequest,
@@ -399,6 +401,26 @@ export const useGenerateRandomSchedule = () => {
       queryClient.invalidateQueries({
         queryKey: tournamentKeys.detail(tournamentId.toString())
       });
+    },
+  });
+};
+
+// Create subtournament (playoff) mutation
+export const useCreateSubtournament = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    SubtournamentResponse,
+    Error,
+    { parentId: number; data: CreateSubtournamentRequest }
+  >({
+    mutationFn: ({ parentId, data }) =>
+      tournamentsService.createSubtournament(parentId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: tournamentKeys.all });
+    },
+    onError: (error: any) => {
+      console.error('Create subtournament failed:', error);
     },
   });
 };

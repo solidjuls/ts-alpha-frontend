@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import Papa from "papaparse";
 import {
   DndContext,
   DragOverlay,
@@ -11,198 +12,198 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { styled } from 'styled-components';
-import { useSavePlayoffBracket, usePlayoffBracket } from '../../hooks/usePlayoffs';
+import { useSavePlayoffBracket, usePlayoffBracket, useAllPlayoffs } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 
-interface Player {
-  userName: string | null;
-  userId: number | null;
-  playoffSquare?: string;
-  playoffName?: string;
-  seed: number | null;
-  nextSquare: string | null; // Square where winner advances to
-}
+ interface Player {
+   userName: string | null;
+   userId: number | null;
+   playoffSquare?: string;
+   playoffName?: string;
+   seed: number | null;
+   nextSquare: string | null;
+ }
+ 
 
-// Generate bracket structure dynamically based on player count
-// For 31 players:
-// - Seeds 17-31 (15 players): Round 1
-// - Seeds 9-16 (8 players): Round 2 (odd slots, even slots for R1 winners)
-// - Seeds 2-8 (7 players): Round 3 "Octave Finals" (odd slots, even for R2 winners)
-// - Seed 1 (1 player): Round 4 "Quarter Finals" (odd slot, even for R3 winner)
-// - Round 5: Semi Finals
-// - Round 6: Finals/Champion
-// Returns a hashmap where key is the square ID and value contains nextSquare
-const generateBracketConfig = (_playerCount: number = 31): Record<string, Player | undefined> => {
-  const config: Record<string, Player | undefined> = {};
-
-  // Slot counts for 31 players bracket
-  // Each seeded player in rounds 2+ occupies an ODD slot, their opponent goes to the adjacent EVEN slot
-  const R1_SLOTS = 16; // Seeds 17-31 (15 players + 1 bye)
-  const R2_SLOTS = 16; // 8 odd (seeds 9-16) + 8 even (R1 winners)
-  const R3_SLOTS = 12; // 4 odd (seeds 5-8) + 4 even (R2 winners)
-  const R4_SLOTS = 8;  // 2 odd (seeds 2-4 distributed) + 2 even (R3 winners)
-  const R5_SLOTS = 4;  // Semi finals
-
-  // Round 1: 16 slots -> feed into Round 2 EVEN slots
-  for (let i = 0; i < R1_SLOTS; i++) {
-    const id = `r1-${i + 1}`;
-    const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = undefined// { nextSquare: null };
-  }
-
-  // Round 2: 16 slots -> feed into Round 3 EVEN slots
-  for (let i = 0; i < R2_SLOTS; i++) {
-    const id = `r2-${i + 1}`;
-    const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = undefined// { nextSquare: null };
-  }
-
-  // Round 3 (Octave Finals): 12 slots -> feed into Round 4 EVEN slots
-  for (let i = 0; i < R3_SLOTS; i++) {
-    const id = `r3-${i + 1}`;
-    const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = undefined// { nextSquare: null };
-  }
-
-  // Round 4 (Quarter Finals): 8 slots -> feed into Round 5 EVEN slots
-  for (let i = 0; i < R4_SLOTS; i++) {
-    const id = `r4-${i + 1}`;
-    const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = undefined// { nextSquare: null };
-  }
-
-  // Round 5 (Semi Finals): 4 slots -> feed into Round 6
-  for (let i = 0; i < R5_SLOTS; i++) {
-    const id = `r5-${i + 1}`;
-    const nextPosition = Math.ceil((i + 1) / 2) * 2;
-    config[id] = undefined// { nextSquare: null };
-  }
-
-  // Round 6 (Finals): 2 slots -> no next (champion)
-  config['r6-1'] = undefined// { nextSquare: null };
-  config['r6-2'] = undefined// { nextSquare: null };
-
-  return config;
-};
-
-// Auto-seed players based on their ranking
-// Seeded players go to ODD slots, their opponents (from previous round) go to adjacent EVEN slots
-const generateInitialSeeding = (
-  players: Player[],
-  bracketConfig: Record<string, Player | undefined>
-): Record<string, Player | undefined> => {
-  const bracket: Record<string, Player | undefined> = {};
-
-  // Initialize all slots with their nextSquare config (no player data yet)
-  Object.entries(bracketConfig).forEach(([id, config]) => {
-    bracket[id] = undefined;
-  });
-
-  // Sort players by seed
-  const sortedPlayers = [...players].sort((a, b) => (a.seed || 999) - (b.seed || 999));
-
-  sortedPlayers.forEach((player) => {
-    const seed = player.seed || 999;
-    let slotId: string | null = null;
-
-    if (seed === 1) {
-      slotId = 'r4-1';
-    } else if (seed === 2) {
-      slotId = 'r4-3';
-    } else if (seed >= 3 && seed <= 4) {
-      const oddSlot = (seed - 3) * 2 + 1;
-      slotId = `r3-${oddSlot}`;
-    } else if (seed >= 5 && seed <= 8) {
-      if (seed <= 6) {
-        const r3OddSlot = (seed - 5) * 2 + 5;
-        slotId = `r3-${r3OddSlot}`;
-      } else {
-        const r2OddSlot = (seed - 7) * 2 + 13;
-        slotId = `r2-${r2OddSlot}`;
-      }
-    } else if (seed >= 9 && seed <= 16) {
-      const index = seed - 9;
-      if (index < 6) {
-        const oddSlot = index * 2 + 1;
-        slotId = `r2-${oddSlot}`;
-      } else {
-        slotId = `r1-${seed - 16 + 16}`;
-      }
-    } else if (seed >= 17 && seed <= 31) {
-      slotId = `r1-${seed - 16}`;
-    }
-
-    if (slotId) {
-      // Merge player data with existing nextSquare config
-      bracket[slotId] = {
-        ...bracket[slotId],
-        ...player,
-        playoffSquare: slotId,
-      };
-    }
-  });
-
-  return bracket;
-};
-
-const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
-  const rounds: Record<string, Player[]> = {};
-
-  try {
-    Object.entries(bracket).forEach(([id, player]) => {
-      const match = id.match(/^r\d+/);
-
-      if (match) {
-        const roundKey = match[0];
-
-        if (!rounds[roundKey]) {
-          rounds[roundKey] = [];
-        }
-        if (player) {
-          rounds[roundKey].push(player);
-        } else {
-          rounds[roundKey].push({ playoffSquare: id, nextSquare: null } as Player);
-        }
-      }
-    });
-    const squaresAlreadyAssigned: string[] = [];
-
-    Object.keys(rounds).forEach(currentKey => {
-      const currentRoundNumber = parseInt(currentKey.replace('r', ''));
-      const nextKey = `r${currentRoundNumber + 1}`;
-      const currentPlayers = rounds[currentKey];
-      const nextPlayers = rounds[nextKey];
-
-      if (!nextPlayers) return;
-
-      for (let i = 0; i < currentPlayers.length; i++) {
-        if (currentPlayers[i] && currentPlayers[i + 1]) {
-          const player = currentPlayers[i];
-          const nextPlayer = currentPlayers[i + 1];
-          if (bracket[player.playoffSquare!]?.nextSquare) continue;
-
-          const nextEmptySquare = nextPlayers.find((p: Player) => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare!));
-          if (nextEmptySquare) {
-            player.nextSquare = nextEmptySquare.playoffSquare!;
-            nextPlayer.nextSquare = nextEmptySquare.playoffSquare!;
-            bracket[player.playoffSquare!] = {
-              ...player,
-              nextSquare: nextEmptySquare.playoffSquare!,
-            };
-            bracket[nextPlayer.playoffSquare!] = {
-              ...nextPlayer,
-              nextSquare: nextEmptySquare.playoffSquare!,
-            };
-            squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare!);
-          }
-        }
-      }
-    });
-  } catch (e) {
-    console.error("Error generating next squares:", e);
-  }
-};
-
+  // Generate bracket structure dynamically based on player count
+ // For 31 players:
+ // - Seeds 17-31 (15 players): Round 1
+ // - Seeds 9-16 (8 players): Round 2 (odd slots, even slots for R1 winners)
+ // - Seeds 2-8 (7 players): Round 3 "Octave Finals" (odd slots, even for R2 winners)
+ // - Seed 1 (1 player): Round 4 "Quarter Finals" (odd slot, even for R3 winner)
+ // - Round 5: Semi Finals
+ // - Round 6: Finals/Champion
+ // Returns a hashmap where key is the square ID and value contains nextSquare
+ const generateBracketConfig = (_playerCount: number = 31): Record<string, Player | undefined> => {
+   const config: Record<string, Player | undefined> = {};
+ 
+   // Slot counts for 31 players bracket
+   // Each seeded player in rounds 2+ occupies an ODD slot, their opponent goes to the adjacent EVEN slot
+   const R1_SLOTS = 16; // Seeds 17-31 (15 players + 1 bye)
+   const R2_SLOTS = 16; // 8 odd (seeds 9-16) + 8 even (R1 winners)
+   const R3_SLOTS = 12; // 4 odd (seeds 5-8) + 4 even (R2 winners)
+   const R4_SLOTS = 8;  // 2 odd (seeds 2-4 distributed) + 2 even (R3 winners)
+   const R5_SLOTS = 4;  // Semi finals
+ 
+   // Round 1: 16 slots -> feed into Round 2 EVEN slots
+   for (let i = 0; i < R1_SLOTS; i++) {
+     const id = `r1-${i + 1}`;
+     const nextPosition = Math.ceil((i + 1) / 2) * 2;
+     config[id] = undefined// { nextSquare: null };
+   }
+ 
+   // Round 2: 16 slots -> feed into Round 3 EVEN slots
+   for (let i = 0; i < R2_SLOTS; i++) {
+     const id = `r2-${i + 1}`;
+     const nextPosition = Math.ceil((i + 1) / 2) * 2;
+     config[id] = undefined// { nextSquare: null };
+   }
+ 
+   // Round 3 (Octave Finals): 12 slots -> feed into Round 4 EVEN slots
+   for (let i = 0; i < R3_SLOTS; i++) {
+     const id = `r3-${i + 1}`;
+     const nextPosition = Math.ceil((i + 1) / 2) * 2;
+     config[id] = undefined// { nextSquare: null };
+   }
+ 
+   // Round 4 (Quarter Finals): 8 slots -> feed into Round 5 EVEN slots
+   for (let i = 0; i < R4_SLOTS; i++) {
+     const id = `r4-${i + 1}`;
+     const nextPosition = Math.ceil((i + 1) / 2) * 2;
+     config[id] = undefined// { nextSquare: null };
+   }
+ 
+   // Round 5 (Semi Finals): 4 slots -> feed into Round 6
+   for (let i = 0; i < R5_SLOTS; i++) {
+     const id = `r5-${i + 1}`;
+     const nextPosition = Math.ceil((i + 1) / 2) * 2;
+     config[id] = undefined// { nextSquare: null };
+   }
+ 
+   // Round 6 (Finals): 2 slots -> no next (champion)
+   config['r6-1'] = undefined// { nextSquare: null };
+   config['r6-2'] = undefined// { nextSquare: null };
+ 
+   return config;
+ };
+ 
+ // Auto-seed players based on their ranking
+ // Seeded players go to ODD slots, their opponents (from previous round) go to adjacent EVEN slots
+ const generateInitialSeeding = (
+   players: Player[],
+   bracketConfig: Record<string, Player | undefined>
+ ): Record<string, Player | undefined> => {
+   const bracket: Record<string, Player | undefined> = {};
+ 
+   // Initialize all slots with their nextSquare config (no player data yet)
+   Object.entries(bracketConfig).forEach(([id, config]) => {
+     bracket[id] = undefined;
+   });
+ 
+   // Sort players by seed
+   const sortedPlayers = [...players].sort((a, b) => (a.seed || 999) - (b.seed || 999));
+ 
+   sortedPlayers.forEach((player) => {
+     const seed = player.seed || 999;
+     let slotId: string | null = null;
+ 
+     if (seed === 1) {
+       slotId = 'r4-1';
+     } else if (seed === 2) {
+       slotId = 'r4-3';
+     } else if (seed >= 3 && seed <= 4) {
+       const oddSlot = (seed - 3) * 2 + 1;
+       slotId = `r3-${oddSlot}`;
+     } else if (seed >= 5 && seed <= 8) {
+       if (seed <= 6) {
+         const r3OddSlot = (seed - 5) * 2 + 5;
+         slotId = `r3-${r3OddSlot}`;
+       } else {
+         const r2OddSlot = (seed - 7) * 2 + 13;
+         slotId = `r2-${r2OddSlot}`;
+       }
+     } else if (seed >= 9 && seed <= 16) {
+       const index = seed - 9;
+       if (index < 6) {
+         const oddSlot = index * 2 + 1;
+         slotId = `r2-${oddSlot}`;
+       } else {
+         slotId = `r1-${seed - 16 + 16}`;
+       }
+     } else if (seed >= 17 && seed <= 31) {
+       slotId = `r1-${seed - 16}`;
+     }
+ 
+     if (slotId) {
+       // Merge player data with existing nextSquare config
+       bracket[slotId] = {
+         ...bracket[slotId],
+         ...player,
+         playoffSquare: slotId,
+       };
+     }
+   });
+ 
+   return bracket;
+ };
+ 
+ const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
+   const rounds: Record<string, Player[]> = {};
+ 
+   try {
+     Object.entries(bracket).forEach(([id, player]) => {
+       const match = id.match(/^r\d+/);
+ 
+       if (match) {
+         const roundKey = match[0];
+ 
+         if (!rounds[roundKey]) {
+           rounds[roundKey] = [];
+         }
+         if (player) {
+           rounds[roundKey].push(player);
+         } else {
+           rounds[roundKey].push({ playoffSquare: id, nextSquare: null } as Player);
+         }
+       }
+     });
+     const squaresAlreadyAssigned: string[] = [];
+ 
+     Object.keys(rounds).forEach(currentKey => {
+       const currentRoundNumber = parseInt(currentKey.replace('r', ''));
+       const nextKey = `r${currentRoundNumber + 1}`;
+       const currentPlayers = rounds[currentKey];
+       const nextPlayers = rounds[nextKey];
+ 
+       if (!nextPlayers) return;
+ 
+       for (let i = 0; i < currentPlayers.length; i++) {
+         if (currentPlayers[i] && currentPlayers[i + 1]) {
+           const player = currentPlayers[i];
+           const nextPlayer = currentPlayers[i + 1];
+           if (bracket[player.playoffSquare!]?.nextSquare) continue;
+ 
+           const nextEmptySquare = nextPlayers.find((p: Player) => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare!));
+           if (nextEmptySquare) {
+             player.nextSquare = nextEmptySquare.playoffSquare!;
+             nextPlayer.nextSquare = nextEmptySquare.playoffSquare!;
+             bracket[player.playoffSquare!] = {
+               ...player,
+               nextSquare: nextEmptySquare.playoffSquare!,
+             };
+             bracket[nextPlayer.playoffSquare!] = {
+               ...nextPlayer,
+               nextSquare: nextEmptySquare.playoffSquare!,
+             };
+             squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare!);
+           }
+         }
+       }
+     });
+   } catch (e) {
+     console.error("Error generating next squares:", e);
+   }
+ };
 
 // Draggable Player Component
 const DraggablePlayer: React.FC<{
@@ -264,10 +265,6 @@ const DroppableSlot: React.FC<{
   );
 };
 
-
-const TOURNAMENT_ID = 325; // Hardcoded for now
-
-// Parse PlayoffEntryDto[] from API to Record<string, Player | undefined>
 const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | undefined> => {
   const bracket: Record<string, Player | undefined> = {};
 
@@ -286,8 +283,18 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
 
 const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
+  const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
+
   const saveBracketMutation = useSavePlayoffBracket();
-  const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(TOURNAMENT_ID);
+  const { data: playoffTournaments, isLoading: loadingTournaments } = useAllPlayoffs();
+  const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(selectedTournamentId ?? 0);
+
+  // Auto-select first tournament when data loads
+  useEffect(() => {
+    if (playoffTournaments && playoffTournaments.length > 0 && selectedTournamentId === null) {
+      setSelectedTournamentId(playoffTournaments[0].id);
+    }
+  }, [playoffTournaments, selectedTournamentId]);
 
   // Parse API response to bracket state
   const initialBracket = useMemo(() => {
@@ -308,14 +315,45 @@ const Bracket: React.FC = () => {
 
   // Build payload for saving bracket - includes ALL slots (even empty ones)
   const buildPayload = (bracketState: Record<string, Player | undefined>): PlayoffEntryDto[] => {
+    if (!selectedTournamentId) return [];
     return Object.entries(bracketState).map(([playoffSquare, player]) => ({
-      tournamentId: TOURNAMENT_ID,
+      tournamentId: selectedTournamentId,
       playoffSquare,
       nextSquare: player?.nextSquare ?? null,
       userId: player?.userId ?? null,
+      userName: player?.userName ?? null,
       seed: player?.seed ?? null,
     }));
   };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results: { data: Array<{ userId?: string; userName?: string; seed?: string }> }) => {
+        const players: Player[] = results.data.map((row) => ({
+          userId: row.userId ? Number(row.userId) : null,
+          userName: row.userName || null,
+          seed: row.seed ? Number(row.seed) : null,
+          playoffSquare: undefined,
+          playoffName: undefined,
+          nextSquare: null,
+        }));
+        console.log("Players:", players);
+        // setBracket(generateBracketConfig(players.length));
+        const b = generateInitialSeeding(players, generateBracketConfig())
+        generateNextSquares(b)
+        setBracket(b)
+      },
+      error: (err: { message: string }) => {
+        console.error("CSV upload error:", err.message);
+      },
+    });
+  };
+
 
   const handleSaveBracket = () => {
     const payload = buildPayload(bracket);
@@ -370,7 +408,7 @@ const Bracket: React.FC = () => {
       setBracket(initialBracket);
     }
   }, [initialBracket]);
-console.log("bracket", initialBracket)
+console.log("bracket", initialBracket, playoffTournaments)
   // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
     const slot = bracket[id];
@@ -459,8 +497,26 @@ console.log("bracket", initialBracket)
     return pairs;
   };
 
-  // Loading state
-  if (isLoading) {
+  // Loading tournaments state
+  if (loadingTournaments) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
+        <span>Loading tournaments...</span>
+      </div>
+    );
+  }
+
+  // No tournaments available
+  if (!playoffTournaments || playoffTournaments.length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px', color: '#6b7280' }}>
+        <span>No playoff tournaments available</span>
+      </div>
+    );
+  }
+
+  // Loading bracket state
+  if (isLoading && selectedTournamentId) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
         <span>Loading bracket...</span>
@@ -469,7 +525,7 @@ console.log("bracket", initialBracket)
   }
 
   // Error state
-  if (isError) {
+  if (isError && selectedTournamentId) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px', color: '#ef4444' }}>
         <span>Error loading bracket: {error?.message || 'Unknown error'}</span>
@@ -477,35 +533,47 @@ console.log("bracket", initialBracket)
     );
   }
 
-  // Empty bracket state
-  if (Object.keys(bracket).length === 0) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px', color: '#6b7280' }}>
-        <span>No bracket data available</span>
-      </div>
-    );
-  }
-
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {/* Header with Save Button */}
+        {/* Header with Tournament Dropdown and Save Button */}
         <div style={toolbarStyle}>
+          {/* Tournament Dropdown */}
+          <select
+            value={selectedTournamentId ?? ''}
+            onChange={(e) => setSelectedTournamentId(Number(e.target.value))}
+            style={dropdownStyle}
+          >
+            {playoffTournaments.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+
           <button
             onClick={handleSaveBracket}
-            disabled={saveBracketMutation.isPending}
+            disabled={saveBracketMutation?.isPending || !selectedTournamentId}
             style={saveButtonStyle}
           >
-            {saveBracketMutation.isPending ? 'Saving...' : 'Save Bracket'}
+            {saveBracketMutation?.isPending ? 'Saving...' : 'Save Bracket'}
           </button>
-          {saveBracketMutation.isSuccess && (
+          <input
+            type='file'
+            accept=".csv"
+            onChange={handleFileUpload}
+            disabled={saveBracketMutation?.isPending}
+            style={saveButtonStyle}
+            // value='Upload CSV players'
+          />
+          {/* {saveBracketMutation?.isSuccess && (
             <span style={{ color: '#22c55e', marginLeft: '8px' }}>✓ Saved</span>
           )}
-          {saveBracketMutation.isError && (
+          {saveBracketMutation?.isError && (
             <span style={{ color: '#ef4444', marginLeft: '8px' }}>
-              Error: {saveBracketMutation.error?.message || 'Failed to save'}
+              Error: {saveBracketMutation?.error?.message || 'Failed to save'}
             </span>
-          )}
+          )} */}
         </div>
 
         <div style={mainContainerStyle}>
@@ -553,6 +621,17 @@ const toolbarStyle: React.CSSProperties = {
   padding: '12px 20px',
   borderBottom: '1px solid #e5e7eb',
   backgroundColor: '#f9fafb',
+  gap: '12px',
+};
+
+const dropdownStyle: React.CSSProperties = {
+  padding: '8px 12px',
+  border: '1px solid #d1d5db',
+  borderRadius: '6px',
+  fontSize: '14px',
+  backgroundColor: '#fff',
+  cursor: 'pointer',
+  minWidth: '200px',
 };
 
 const saveButtonStyle: React.CSSProperties = {

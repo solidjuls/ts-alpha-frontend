@@ -17,6 +17,12 @@ export interface PlayoffSaveResponse {
   message?: string;
 }
 
+// Response type for getAllPlayoffs
+export interface PlayoffTournament {
+  id: number;
+  tournamentName: string;
+}
+
 class PlayoffsService {
   private axiosInstance: AxiosInstance;
 
@@ -39,6 +45,14 @@ class PlayoffsService {
    */
   async savePlayoffBracket(entries: PlayoffEntryDto[]): Promise<PlayoffSaveResponse> {
     const response = await this.axiosInstance.post('/playoffs', entries);
+    return response.data;
+  }
+
+  /**
+   * Get all playoff tournaments for dropdown selection
+   */
+  async getAllPlayoffs(): Promise<PlayoffTournament[]> {
+    const response = await this.axiosInstance.get('/playoffs/getAll');
     return response.data;
   }
 }

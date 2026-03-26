@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse } from '../services/playoffs.service';
+import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament } from '../services/playoffs.service';
 
 // Query keys for playoffs
 export const PLAYOFFS_QUERY_KEYS = {
   all: ['playoffs'] as const,
+  list: () => [...PLAYOFFS_QUERY_KEYS.all, 'list'] as const,
   bracket: (tournamentId: number) => [...PLAYOFFS_QUERY_KEYS.all, 'bracket', tournamentId] as const,
   save: () => [...PLAYOFFS_QUERY_KEYS.all, 'save'] as const,
 };
@@ -25,6 +26,14 @@ export const useSavePlayoffBracket = () => {
     onError: (error) => {
       console.error('Error saving playoff bracket:', error);
     },
+  });
+};
+
+export const useAllPlayoffs = () => {
+  return useQuery<PlayoffTournament[], Error>({
+    queryKey: PLAYOFFS_QUERY_KEYS.list(),
+    queryFn: () => playoffsService.getAllPlayoffs(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
