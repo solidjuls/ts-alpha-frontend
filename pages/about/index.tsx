@@ -1083,6 +1083,21 @@ const AboutPage = () => (
 
           <li>
             <Inline>
+              <InternalLink href="/userprofile/3009">Raewon Jang</InternalLink> (rae1):{" "}
+              <ExternalLink href="https://www.youtube.com/@rae1ts-k6t" target="_blank" rel="noreferrer">
+                YouTube
+              </ExternalLink>
+              <LanguagePill title="Korean Speaker">
+                <FlagWrap>
+                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                </FlagWrap>
+                KR
+              </LanguagePill>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
               <InternalLink href="/userprofile/2606">Ricki McLaughlin</InternalLink> (Feallsanachail):{" "}
               <ExternalLink href="https://www.youtube.com/@feallsanachail" target="_blank" rel="noreferrer" $inactive>
                 YouTube
