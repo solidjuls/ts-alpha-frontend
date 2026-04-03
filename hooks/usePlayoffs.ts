@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament } from '../services/playoffs.service';
+import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament, SchedulePlayoffMatchRequest } from '../services/playoffs.service';
 
 // Query keys for playoffs
 export const PLAYOFFS_QUERY_KEYS = {
@@ -34,6 +34,18 @@ export const useAllPlayoffs = () => {
     queryKey: PLAYOFFS_QUERY_KEYS.list(),
     queryFn: () => playoffsService.getAllPlayoffs(),
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useSchedulePlayoffMatch = () => {
+  return useMutation<void, Error, SchedulePlayoffMatchRequest>({
+    mutationFn: (request) => playoffsService.schedulePlayoffMatch(request),
+    onSuccess: () => {
+      console.log('Playoff match scheduled successfully');
+    },
+    onError: (error) => {
+      console.error('Error scheduling playoff match:', error);
+    },
   });
 };
 

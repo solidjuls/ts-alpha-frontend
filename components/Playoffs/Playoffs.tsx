@@ -12,7 +12,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { styled } from 'styled-components';
-import { useSavePlayoffBracket, usePlayoffBracket, useAllPlayoffs } from '../../hooks/usePlayoffs';
+import { useSavePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 
  interface Player {
@@ -335,6 +335,7 @@ const Bracket: React.FC = () => {
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
 
   const saveBracketMutation = useSavePlayoffBracket();
+  const scheduleMatchMutation = useSchedulePlayoffMatch();
   const { data: playoffTournaments, isLoading: loadingTournaments } = useAllPlayoffs();
   const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(selectedTournamentId ?? 0);
 
@@ -409,6 +410,22 @@ const Bracket: React.FC = () => {
     const payload = buildPayload(bracket);
     console.log('Saving bracket payload:', payload);
     saveBracketMutation.mutate(payload);
+  };
+
+  // Schedule a match between two players (randomly assigns USA/USSR)
+  const handleScheduleMatch = (player1Id: number | null, player2Id: number | null) => {
+    if (!player1Id || !player2Id || !selectedTournamentId) return;
+
+    // Randomly assign USA/USSR
+    const [usaId, ussrId] = Math.random() < 0.5
+      ? [player1Id, player2Id]
+      : [player2Id, player1Id];
+
+    scheduleMatchMutation.mutate({
+      usaPlayerId: String(usaId),
+      ussrPlayerId: String(ussrId),
+      tournamentId: selectedTournamentId,
+    });
   };
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
@@ -635,20 +652,36 @@ console.log("bracket", bracket, playoffTournaments)
               <div key={col.title} style={columnStyle}>
                 <div style={headerStyle}>{col.title}</div>
                 <div style={roundFlexStyle}>
-                  {groupIntoPairs(col.ids).map((pair, matchIndex) => (
-                    <MatchContainer key={`match-${matchIndex}`}>
-                      {pair.map((id, i) => (
-                        <DroppableSlot
-                          key={id}
-                          id={id}
-                          player={bracket[id]}
-                          onAdvance={advance}
-                          side={col.side}
-                          isOdd={i % 2 !== 0}
-                        />
-                      ))}
-                    </MatchContainer>
-                  ))}
+                  {groupIntoPairs(col.ids).map((pair, matchIndex) => {
+                    const player1 = bracket[pair[0]];
+                    const player2 = bracket[pair[1]];
+                    const canSchedule = player1?.userId && player2?.userId;
+
+                    return (
+                      <MatchContainer key={`match-${matchIndex}`}>
+                        {pair.map((id, i) => (
+                          <DroppableSlot
+                            key={id}
+                            id={id}
+                            player={bracket[id]}
+                            onAdvance={advance}
+                            side={col.side}
+                            isOdd={i % 2 !== 0}
+                          />
+                        ))}
+                        {canSchedule && (
+                          <button
+                            onClick={() => handleScheduleMatch(player1?.userId ?? null, player2?.userId ?? null)}
+                            disabled={scheduleMatchMutation.isPending}
+                            style={scheduleButtonStyle}
+                            title="Schedule match"
+                          >
+                            ⚔
+                          </button>
+                        )}
+                      </MatchContainer>
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -695,6 +728,25 @@ const saveButtonStyle: React.CSSProperties = {
   fontSize: '14px',
   fontWeight: 500,
   cursor: 'pointer',
+};
+
+const scheduleButtonStyle: React.CSSProperties = {
+  position: 'absolute',
+  top: '50%',
+  right: '-8px',
+  transform: 'translateY(-50%)',
+  width: '20px',
+  height: '20px',
+  padding: 0,
+  backgroundColor: '#10b981',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '50%',
+  fontSize: '10px',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
 const mainContainerStyle: React.CSSProperties = {

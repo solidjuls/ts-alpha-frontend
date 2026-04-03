@@ -23,6 +23,13 @@ export interface PlayoffTournament {
   tournamentName: string;
 }
 
+// Request type for scheduling a playoff match
+export interface SchedulePlayoffMatchRequest {
+  usaPlayerId: string;
+  ussrPlayerId: string;
+  tournamentId: number;
+}
+
 class PlayoffsService {
   private axiosInstance: AxiosInstance;
 
@@ -54,6 +61,13 @@ class PlayoffsService {
   async getAllPlayoffs(): Promise<PlayoffTournament[]> {
     const response = await this.axiosInstance.get('/playoffs/getAll');
     return response.data;
+  }
+
+  /**
+   * Schedule a playoff match between two players
+   */
+  async schedulePlayoffMatch(request: SchedulePlayoffMatchRequest): Promise<void> {
+    await this.axiosInstance.post('/playoffs/schedule', request);
   }
 }
 
