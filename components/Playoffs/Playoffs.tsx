@@ -205,6 +205,55 @@ import { PlayoffEntryDto } from '../../services/playoffs.service';
    }
  };
 
+ // Player Pool Draggable Item
+const PoolPlayer: React.FC<{ player: Player }> = ({ player }) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `pool-${player.userId}`,
+    data: { player, fromSlot: 'pool' },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{
+        // ...poolPlayerStyle,
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      {player.userName}
+    </div>
+  );
+};
+
+// Player Pool Droppable Container
+const PlayerPoolDroppable: React.FC<{ playerPool: Player[] }> = ({ playerPool }) => {
+  const { setNodeRef, isOver } = useDroppable({ id: 'pool' });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        // ...poolContainerStyle,
+        borderColor: isOver ? '#22c55e' : '#e5e7eb',
+        background: isOver ? '#dcfce7' : '#f9fafb',
+      }}
+    >
+      <div >Player Pool ({playerPool.length})</div>
+      <div >
+        {playerPool.map((player) => (
+          <PoolPlayer key={player.userId} player={player} />
+        ))}
+        {playerPool.length === 0 && (
+          <span style={{ color: '#9ca3af', fontSize: '11px' }}>All players assigned</span>
+        )}
+      </div>
+    </div>
+  );
+};
+// poolHeaderStyle
+// poolListStyle
 // Draggable Player Component
 const DraggablePlayer: React.FC<{
   player: Player;
@@ -280,7 +329,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
 
   return bracket;
 };
-
+let playersGlobal = []
 const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
@@ -347,6 +396,7 @@ const Bracket: React.FC = () => {
         const b = generateInitialSeeding(players, generateBracketConfig())
         generateNextSquares(b)
         setBracket(b)
+        playersGlobal = players
       },
       error: (err: { message: string }) => {
         console.error("CSV upload error:", err.message);
@@ -408,7 +458,7 @@ const Bracket: React.FC = () => {
       setBracket(initialBracket);
     }
   }, [initialBracket]);
-console.log("bracket", initialBracket, playoffTournaments)
+console.log("bracket", bracket, playoffTournaments)
   // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
     const slot = bracket[id];
@@ -535,6 +585,7 @@ console.log("bracket", initialBracket, playoffTournaments)
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* Header with Tournament Dropdown and Save Button */}
         <div style={toolbarStyle}>
@@ -578,6 +629,7 @@ console.log("bracket", initialBracket, playoffTournaments)
 
         <div style={mainContainerStyle}>
           {/* Bracket */}
+          <PlayerPoolDroppable playerPool={playersGlobal} />
           <div style={viewportStyle}>
             {columns.map((col) => (
               <div key={col.title} style={columnStyle}>
