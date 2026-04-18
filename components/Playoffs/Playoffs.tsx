@@ -346,14 +346,10 @@ const Bracket: React.FC = () => {
     }
   }, [playoffTournaments, selectedTournamentId]);
 
-  // Parse API response to bracket state
   const initialBracket = useMemo(() => {
-    if (!bracketData || bracketData.length === 0) {
-      return {};
-    }
-    return parseBracketData(bracketData);
+    return parseBracketData(bracketData || []);
   }, [bracketData]);
-
+console.log("initialBracket", initialBracket, bracketData)
   // Pointer sensor with activation constraint
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -447,6 +443,7 @@ const Bracket: React.FC = () => {
         title: 'Octave Finals',
         ids: Array.from({ length: 12 }, (_, i) => `r3-${i + 1}`),
         side: 'left' as const,
+        // gap: 40px;
       },
       {
         title: 'Quarter Finals',
@@ -470,11 +467,8 @@ const Bracket: React.FC = () => {
   const [bracket, setBracket] = useState<Record<string, Player | undefined>>({});
 
   // Sync bracket state when API data is loaded
-  useEffect(() => {
-    if (Object.keys(initialBracket).length > 0) {
-      setBracket(initialBracket);
-    }
-  }, [initialBracket]);
+  useEffect(() => setBracket(initialBracket), [initialBracket]);
+  
 console.log("bracket", bracket, playoffTournaments)
   // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
@@ -758,12 +752,11 @@ const mainContainerStyle: React.CSSProperties = {
 
 const viewportStyle: React.CSSProperties = {
   display: 'flex',
-  height: '90vh',
+  height: '1000px',
   overflowX: 'auto',
   padding: '20px',
-  gap: '40px',
+  gap: '80px',
   alignItems: 'center',
-  justifyContent: 'space-between',
   backgroundColor: '#fff',
   flex: 1,
 };
@@ -826,7 +819,7 @@ const Square = styled.div<SquareProps>`
   justify-content: center;
   padding: 0 4px;
   z-index: 2;
-  font-size: 9px;
+  font-size: 12px;
   border-radius: 4px;
   transition: all 0.15s ease;
   position: relative;
@@ -854,7 +847,7 @@ const Square = styled.div<SquareProps>`
 
 
 const labelStyle: React.CSSProperties = {
-  fontSize: '7px',
+  fontSize: '12px',
   color: '#6b7280',
   marginBottom: '2px',
 };
@@ -873,7 +866,7 @@ const playerStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  fontSize: '9px',
+  fontSize: '12px',
   fontWeight: 500,
   gap: '4px',
 };
