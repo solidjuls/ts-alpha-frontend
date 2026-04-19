@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Papa from "papaparse";
 import {
   DndContext,
@@ -26,7 +26,7 @@ import { userRoles } from '../../utils/constants';
    seed: number | null;
    nextSquare: string | null;
  }
- 
+ const containerId = 'root-container'
 
   // Generate bracket structure dynamically based on player count
  // For 31 players:
@@ -340,11 +340,46 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
   return bracket;
 };
 let playersGlobal = []
+const BracketLink = ({ startId, endId, bracketData }) => {
+  const [path, setPath] = React.useState("");
+  
+  React.useLayoutEffect(() => {
+    const update = () => {
+      const startEl = document.getElementById(startId);
+      const endEl = document.getElementById(endId);
+      const parentEl = document.getElementById(containerId);
+
+      if (startEl && endEl && parentEl) {
+        const start = startEl.getBoundingClientRect();
+        const end = endEl.getBoundingClientRect();
+        const parent = parentEl.getBoundingClientRect();
+
+        // Calculate relative coordinates
+        const x1 = start.right - parent.left;
+        const y1 = (start.top + start.height / 2) - parent.top;
+        const x2 = end.left - parent.left;
+        const y2 = (end.top + end.height / 2) - parent.top;
+
+        // Create a squared-off "elbow" path
+        const midX = x1 + (x2 - x1) / 2;
+        setPath(`M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`);
+      }
+    }
+    // Wait for the browser to finish its current layout pass
+    const frame = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(frame);
+  }, [startId, endId, containerId, bracketData]);
+
+  return (
+    <path d={path} stroke="#9ca3af" strokeWidth="2" fill="none" />
+  );
+};
+
 const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
   const [copyMode, setCopyMode] = useState<boolean>(false);
-
+  const canvasRef = useRef(null);
   // Check if user is admin
   const { user } = useIsAuthenticated();
   const isAdmin = user?.role === userRoles.ADMIN || user?.role === userRoles.SUPERADMIN;
@@ -630,7 +665,37 @@ const Bracket: React.FC = () => {
       </div>
     );
   }
+const connections = [
+  { from: "match-Round-1-0", to: "match-Round-2-0" },
+  { from: "match-Round-1-1", to: "match-Round-2-1" },
+  { from: "match-Round-1-2", to: "match-Round-2-2" },
+  { from: "match-Round-1-3", to: "match-Round-2-3" },
+  { from: "match-Round-1-4", to: "match-Round-2-4" },
+  { from: "match-Round-1-5", to: "match-Round-2-5" },
+  { from: "match-Round-1-6", to: "match-Round-2-6" },
+  { from: "match-Round-1-7", to: "match-Round-2-7" },
 
+  { from: "match-Round-2-0", to: "match-Octave-Finals-0" },
+  { from: "match-Round-2-1", to: "match-Octave-Finals-1" },
+  { from: "match-Round-2-2", to: "match-Octave-Finals-2" },
+  { from: "match-Round-2-3", to: "match-Octave-Finals-3" },
+  { from: "match-Round-2-4", to: "match-Octave-Finals-4" },
+  { from: "match-Round-2-5", to: "match-Octave-Finals-4" },
+  { from: "match-Round-2-6", to: "match-Octave-Finals-5" },
+  { from: "match-Round-2-7", to: "match-Octave-Finals-5" },
+
+  { from: "match-Octave-Finals-0", to: "match-Quarter-Finals-0" },
+  { from: "match-Octave-Finals-1", to: "match-Quarter-Finals-1" },
+  { from: "match-Octave-Finals-2", to: "match-Quarter-Finals-2" },
+  { from: "match-Octave-Finals-3", to: "match-Quarter-Finals-2" },
+  { from: "match-Octave-Finals-4", to: "match-Quarter-Finals-3" },
+  { from: "match-Octave-Finals-5", to: "match-Quarter-Finals-3" },
+
+  { from: "match-Quarter-Finals-0", to: "match-Semi-Finals-0" },
+  { from: "match-Quarter-Finals-1", to: "match-Semi-Finals-0" },
+  { from: "match-Quarter-Finals-2", to: "match-Semi-Finals-1" },
+  { from: "match-Quarter-Finals-3", to: "match-Semi-Finals-1" },
+];
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       
@@ -690,11 +755,11 @@ const Bracket: React.FC = () => {
           )}
         </div>
 
-        <div style={mainContainerStyle}>
+        <div id="root-container" style={mainContainerStyle}>
           {/* Player Pool - admin only */}
           {isAdmin && <PlayerPoolDroppable playerPool={playersGlobal} />}
-          {/* Bracket */}
-          <div style={viewportStyle}>
+          {/* Bracketaaaa */}
+          <div ref={canvasRef} style={viewportStyle}> 
             {columns.map((col) => (
               <div key={col.title} style={columnStyle}>
                 <div style={headerStyle}>{col.title}</div>
@@ -703,9 +768,18 @@ const Bracket: React.FC = () => {
                     const player1 = bracket[pair[0]];
                     const player2 = bracket[pair[1]];
                     const canSchedule = player1?.userId && player2?.userId;
-
+                    const id=`match-${col.title}-${matchIndex}`
+                    const marginMap = {
+                      'match-Octave-Finals-4': '60px',
+                      'match-Octave-Finals-5': '60px',
+                      'match-Quarter-Finals-2': '60px',
+                      'match-Quarter-Finals-3': '120px',
+                      'match-Quarter-Finals-4': '120px',
+                      'match-Semi-Finals-0': '60px',
+                      'match-Semi-Finals-1': '120px'
+                    };
                     return (
-                      <MatchContainer key={`match-${matchIndex}`} id={`match-${col.title}-${matchIndex}`}>
+                      <MatchContainer key={`match-${matchIndex}`} id={id} extraMargin={marginMap[id]}>
                         {pair.map((id, i) => (
                           <DroppableSlot
                             key={id}
@@ -733,10 +807,19 @@ const Bracket: React.FC = () => {
                 </div>
               </div>
             ))}
+            <svg 
+              style={{ 
+                position: 'absolute', 
+                top: 0, left: 0, 
+                width: '100%', height: '100%', 
+                pointerEvents: 'none' 
+              }}
+            >
+              {connections.map(item =>  <BracketLink startId={item.from} endId={item.to} />)}
+            </svg>
           </div>
         </div>
       </div>
-
       {/* Drag Overlay */}
       <DragOverlay>
         {activePlayer ? (
@@ -825,6 +908,7 @@ const scheduleButtonStyle: React.CSSProperties = {
 
 const mainContainerStyle: React.CSSProperties = {
   display: 'flex',
+  position: 'relative',
   flexDirection: 'row',
   flex: 1,
   backgroundColor: '#fff',
@@ -851,7 +935,7 @@ const columnStyle: React.CSSProperties = {
 const roundFlexStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-around',
+
   flexGrow: 1,
   gap: '8px',
 };
@@ -865,6 +949,7 @@ const MatchContainer = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   background-color: lightgray;
+  margin-top: ${(props) => props.extraMargin};
 `;
 
 // &::before {
