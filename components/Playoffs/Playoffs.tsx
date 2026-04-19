@@ -14,6 +14,8 @@ import {
 import { styled } from 'styled-components';
 import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
+import { useIsAuthenticated } from '../../hooks/useAuth';
+import { userRoles } from '../../utils/constants';
 
  interface Player {
    id?: number;
@@ -207,20 +209,22 @@ import { PlayoffEntryDto } from '../../services/playoffs.service';
  };
 
  // Player Pool Draggable Item
-const PoolPlayer: React.FC<{ player: Player }> = ({ player }) => {
+const PoolPlayer: React.FC<{ player: Player; disabled?: boolean }> = ({ player, disabled }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `pool-${player.userId}`,
     data: { player, fromSlot: 'pool' },
+    disabled,
   });
 
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
+      {...(disabled ? {} : listeners)}
       {...attributes}
       style={{
         // ...poolPlayerStyle,
         opacity: isDragging ? 0.5 : 1,
+        cursor: disabled ? 'default' : 'grab',
       }}
     >
       {player.userName}
@@ -259,21 +263,23 @@ const PlayerPoolDroppable: React.FC<{ playerPool: Player[] }> = ({ playerPool })
 const DraggablePlayer: React.FC<{
   player: Player;
   slotId: string;
-}> = ({ player, slotId }) => {
+  disabled?: boolean;
+}> = ({ player, slotId, disabled }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `player-${player.userId}`,
     data: { player, fromSlot: slotId },
+    disabled,
   });
 
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
+      {...(disabled ? {} : listeners)}
       {...attributes}
       style={{
         ...playerStyle,
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'grab',
+        cursor: disabled ? 'default' : 'grab',
       }}
     >
       {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
@@ -289,9 +295,11 @@ const DroppableSlot: React.FC<{
   onAdvance: (id: string) => void;
   side: 'left' | 'right' | 'center';
   isOdd: boolean;
-}> = ({ id, player, onAdvance, side, isOdd }) => {
+  disabled?: boolean;
+}> = ({ id, player, onAdvance, side, isOdd, disabled }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: id,
+    disabled,
   });
 
   return (
@@ -299,15 +307,15 @@ const DroppableSlot: React.FC<{
       <label style={labelStyle}>{id}</label>
       <Square
         ref={setNodeRef}
-        onDoubleClick={() => player && onAdvance(id)}
+        onDoubleClick={() => !disabled && player && onAdvance(id)}
         isOver={isOver}
         isOdd={isOdd}
         player={player}
       >
         {player ? (
-          <DraggablePlayer player={player} slotId={id} />
+          <DraggablePlayer player={player} slotId={id} disabled={disabled} />
         ) : (
-          <span style={{ color: '#9ca3af', fontSize: '8px' }}>Drop here</span>
+          <span style={{ color: '#9ca3af', fontSize: '8px' }}>{disabled ? '' : 'Drop here'}</span>
         )}
       </Square>
       {/* {side !== 'center' && <div style={getLineStyle(side, isOdd)} />} */}
@@ -337,6 +345,10 @@ const Bracket: React.FC = () => {
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
   const [copyMode, setCopyMode] = useState<boolean>(false);
 
+  // Check if user is admin
+  const { user } = useIsAuthenticated();
+  const isAdmin = user?.role === userRoles.ADMIN || user?.role === userRoles.SUPERADMIN;
+
   const saveBracketMutation = useSavePlayoffBracket();
   const updateBracketMutation = useUpdatePlayoffBracket();
   const scheduleMatchMutation = useSchedulePlayoffMatch();
@@ -353,7 +365,7 @@ const Bracket: React.FC = () => {
   const initialBracket = useMemo(() => {
     return parseBracketData(bracketData || []);
   }, [bracketData]);
-console.log("initialBracket", initialBracket, bracketData)
+
   // Pointer sensor with activation constraint
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -480,8 +492,6 @@ console.log("initialBracket", initialBracket, bracketData)
   // Sync bracket state when API data is loaded
   useEffect(() => setBracket(initialBracket), [initialBracket]);
   
-console.log("bracket", bracket, playoffTournaments)
-  // 5. ADVANCEMENT LOGIC - nextSquare is now part of each slot
   const advance = (id: string) => {
     const slot = bracket[id];
     if (slot?.nextSquare && slot.userId) {
@@ -625,9 +635,9 @@ console.log("bracket", bracket, playoffTournaments)
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {/* Header with Tournament Dropdown and Save Button */}
+        {/* Header with Tournament Dropdown and Admin Controls */}
         <div style={toolbarStyle}>
-          {/* Tournament Dropdown */}
+          {/* Tournament Dropdown - visible to everyone */}
           <select
             value={selectedTournamentId ?? ''}
             onChange={(e) => setSelectedTournamentId(Number(e.target.value))}
@@ -640,53 +650,50 @@ console.log("bracket", bracket, playoffTournaments)
             ))}
           </select>
 
-          <button
-            onClick={handleSaveBracket}
-            disabled={saveBracketMutation?.isPending || !selectedTournamentId}
-            style={saveButtonStyle}
-          >
-            {saveBracketMutation?.isPending ? 'Saving...' : 'Save Bracket'}
-          </button>
+          {/* Admin-only controls */}
+          {isAdmin && (
+            <>
+              <button
+                onClick={handleSaveBracket}
+                disabled={saveBracketMutation?.isPending || !selectedTournamentId}
+                style={saveButtonStyle}
+              >
+                {saveBracketMutation?.isPending ? 'Saving...' : 'Save Bracket'}
+              </button>
 
-          <button
-            onClick={handleUpdateBracket}
-            disabled={updateBracketMutation?.isPending || !selectedTournamentId}
-            style={updateButtonStyle}
-          >
-            {updateBracketMutation?.isPending ? 'Updating...' : 'Update Bracket'}
-          </button>
+              <button
+                onClick={handleUpdateBracket}
+                disabled={updateBracketMutation?.isPending || !selectedTournamentId}
+                style={updateButtonStyle}
+              >
+                {updateBracketMutation?.isPending ? 'Updating...' : 'Update Bracket'}
+              </button>
 
-          <label style={checkboxLabelStyle}>
-            <input
-              type="checkbox"
-              checked={copyMode}
-              onChange={(e) => setCopyMode(e.target.checked)}
-              style={checkboxStyle}
-            />
-            Copy Mode
-          </label>
+              <label style={checkboxLabelStyle}>
+                <input
+                  type="checkbox"
+                  checked={copyMode}
+                  onChange={(e) => setCopyMode(e.target.checked)}
+                  style={checkboxStyle}
+                />
+                Copy Mode
+              </label>
 
-          <input
-            type='file'
-            accept=".csv"
-            onChange={handleFileUpload}
-            disabled={saveBracketMutation?.isPending}
-            style={saveButtonStyle}
-            // value='Upload CSV players'
-          />
-          {/* {saveBracketMutation?.isSuccess && (
-            <span style={{ color: '#22c55e', marginLeft: '8px' }}>✓ Saved</span>
+              <input
+                type='file'
+                accept=".csv"
+                onChange={handleFileUpload}
+                disabled={saveBracketMutation?.isPending}
+                style={saveButtonStyle}
+              />
+            </>
           )}
-          {saveBracketMutation?.isError && (
-            <span style={{ color: '#ef4444', marginLeft: '8px' }}>
-              Error: {saveBracketMutation?.error?.message || 'Failed to save'}
-            </span>
-          )} */}
         </div>
 
         <div style={mainContainerStyle}>
+          {/* Player Pool - admin only */}
+          {isAdmin && <PlayerPoolDroppable playerPool={playersGlobal} />}
           {/* Bracket */}
-          <PlayerPoolDroppable playerPool={playersGlobal} />
           <div style={viewportStyle}>
             {columns.map((col) => (
               <div key={col.title} style={columnStyle}>
@@ -707,9 +714,10 @@ console.log("bracket", bracket, playoffTournaments)
                             onAdvance={advance}
                             side={col.side}
                             isOdd={i % 2 !== 0}
+                            disabled={!isAdmin}
                           />
                         ))}
-                        {canSchedule && (
+                        {isAdmin && canSchedule && (
                           <button
                             onClick={() => handleScheduleMatch(player1?.userId ?? null, player2?.userId ?? null)}
                             disabled={scheduleMatchMutation.isPending}
