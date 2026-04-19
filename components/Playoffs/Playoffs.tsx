@@ -821,7 +821,7 @@ const connections = [
                 pointerEvents: 'none' 
               }}
             >
-              {connections.map(item =>  <BracketLink startId={item.from} endId={item.to} />)}
+              {connections.map((item, id) =>  <BracketLink key={id} startId={item.from} endId={item.to} />)}
             </svg>}
           </div>
         </div>
@@ -996,8 +996,8 @@ const Square = React.forwardRef<HTMLDivElement, SquareProps>(
       </div>
     );
   }
-);
-    
+)
+Square.displayName='Square'  
 // ffff
 const labelStyle: React.CSSProperties = {
   fontSize: '12px',
