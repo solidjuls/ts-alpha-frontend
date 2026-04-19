@@ -453,28 +453,28 @@ const Bracket: React.FC = () => {
   const columns = useMemo(() => {
     return [
       {
-        title: 'Round 1',
+        title: 'Round-1',
         ids: Array.from({ length: 16 }, (_, i) => `r1-${i + 1}`),
         side: 'left' as const,
       },
       {
-        title: 'Round 2',
+        title: 'Round-2',
         ids: Array.from({ length: 16 }, (_, i) => `r2-${i + 1}`),
         side: 'left' as const,
       },
       {
-        title: 'Octave Finals',
+        title: 'Octave-Finals',
         ids: Array.from({ length: 12 }, (_, i) => `r3-${i + 1}`),
         side: 'left' as const,
         // gap: 40px;
       },
       {
-        title: 'Quarter Finals',
+        title: 'Quarter-Finals',
         ids: Array.from({ length: 8 }, (_, i) => `r4-${i + 1}`),
         side: 'left' as const,
       },
       {
-        title: 'Semi Finals',
+        title: 'Semi-Finals',
         ids: Array.from({ length: 4 }, (_, i) => `r5-${i + 1}`),
         side: 'left' as const,
       },
@@ -705,7 +705,7 @@ const Bracket: React.FC = () => {
                     const canSchedule = player1?.userId && player2?.userId;
 
                     return (
-                      <MatchContainer key={`match-${matchIndex}`}>
+                      <MatchContainer key={`match-${matchIndex}`} id={`match-${col.title}-${matchIndex}`}>
                         {pair.map((id, i) => (
                           <DroppableSlot
                             key={id}
@@ -865,17 +865,17 @@ const MatchContainer = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   background-color: lightgray;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 28px;
-    bottom: 29px;
-    right: 0px;
-    width: 1px;
-    background-color: red;
-  }
 `;
+
+// &::before {
+//     content: '';
+//     position: absolute;
+//     top: 28px;
+//     bottom: 29px;
+//     right: 0px;
+//     width: 1px;
+//     background-color: red;
+//   }
 
 const containerStyle: React.CSSProperties = {
   position: 'relative',
@@ -913,18 +913,19 @@ const Square = styled.div<SquareProps>`
 
   box-shadow: ${(props) =>
     props.isOver ? '0 0 0 2px #22c55e' : 'none'};
-  &::before {
-    content: '';
-    position: absolute;
-    top: 32px;
-    bottom: 29px;
-    right: -47px;
-    width: ${props => props.isOdd ? '0px': '41px'};
-    height: ${props => props.isOdd ? '0px': '1px'};
-    background-color: red;
-  }
-`
-
+  
+`  
+// &::before {
+//         content: '';
+//         position: absolute;
+//         top: 32px;
+//         bottom: 29px;
+//         right: -47px;
+//         width: ${props => props.isOdd ? '0px': '41px'};
+//         height: ${props => props.isOdd ? '0px': '1px'};
+//         background-color: red;
+//       }
+    
 
 const labelStyle: React.CSSProperties = {
   fontSize: '12px',
