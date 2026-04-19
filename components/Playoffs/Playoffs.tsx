@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+'use client'
+import React, { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react';
 import Papa from "papaparse";
 import {
   DndContext,
@@ -11,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { styled } from 'styled-components';
+
 import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 import { useIsAuthenticated } from '../../hooks/useAuth';
@@ -342,33 +343,31 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
 let playersGlobal = []
 const BracketLink = ({ startId, endId, bracketData }) => {
   const [path, setPath] = React.useState("");
-  
-  React.useLayoutEffect(() => {
-    const update = () => {
-      const startEl = document.getElementById(startId);
-      const endEl = document.getElementById(endId);
-      const parentEl = document.getElementById(containerId);
+  const drawLines = () => {
+    const startEl = document.getElementById(startId);
+    const endEl = document.getElementById(endId);
+    const parentEl = document.getElementById(containerId);
 
-      if (startEl && endEl && parentEl) {
-        const start = startEl.getBoundingClientRect();
-        const end = endEl.getBoundingClientRect();
-        const parent = parentEl.getBoundingClientRect();
+    if (startEl && endEl && parentEl) {
+      const start = startEl.getBoundingClientRect();
+      const end = endEl.getBoundingClientRect();
+      const parent = parentEl.getBoundingClientRect();
 
-        // Calculate relative coordinates
-        const x1 = start.right - parent.left;
-        const y1 = (start.top + start.height / 2) - parent.top;
-        const x2 = end.left - parent.left;
-        const y2 = (end.top + end.height / 2) - parent.top;
+      // Calculate relative coordinates
+      const x1 = start.right - parent.left;
+      const y1 = (start.top + start.height / 2) - parent.top;
+      const x2 = end.left - parent.left;
+      const y2 = (end.top + end.height / 2) - parent.top;
 
-        // Create a squared-off "elbow" path
-        const midX = x1 + (x2 - x1) / 2;
-        setPath(`M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`);
-      }
+      // Create a squared-off "elbow" path
+      const midX = x1 + (x2 - x1) / 2;
+      setPath(`M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`);
     }
-    // Wait for the browser to finish its current layout pass
-    const frame = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frame);
-  }, [startId, endId, containerId, bracketData]);
+  }
+
+  useLayoutEffect(() => {
+    drawLines();
+  }, [drawLines, bracketData]);
 
   return (
     <path d={path} stroke="#9ca3af" strokeWidth="2" fill="none" />
@@ -630,6 +629,13 @@ const Bracket: React.FC = () => {
     return pairs;
   };
 
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  useEffect(() => {
+    // This only runs on the client after the first render
+    setIsHydrated(true);
+  }, []);
+
   // Loading tournaments state
   if (loadingTournaments) {
     return (
@@ -807,7 +813,7 @@ const connections = [
                 </div>
               </div>
             ))}
-            <svg 
+            {isHydrated && <svg 
               style={{ 
                 position: 'absolute', 
                 top: 0, left: 0, 
@@ -816,7 +822,7 @@ const connections = [
               }}
             >
               {connections.map(item =>  <BracketLink startId={item.from} endId={item.to} />)}
-            </svg>
+            </svg>}
           </div>
         </div>
       </div>
@@ -940,27 +946,23 @@ const roundFlexStyle: React.CSSProperties = {
   gap: '8px',
 };
 
-const MatchContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background-color: lightgray;
-  margin-top: ${(props) => props.extraMargin};
-`;
+interface MatchContainerProps {
+  id: string;
+  extraMargin?: string;
+  children: React.ReactNode;
+}
 
-// &::before {
-//     content: '';
-//     position: absolute;
-//     top: 28px;
-//     bottom: 29px;
-//     right: 0px;
-//     width: 1px;
-//     background-color: red;
-//   }
+const MatchContainer: React.FC<MatchContainerProps> = ({ id, extraMargin, children }) => {
+  return (
+    <div
+      id={id}
+      className="match-container"
+      style={extraMargin ? { marginTop: extraMargin } : undefined}
+    >
+      {children}
+    </div>
+  );
+};
 
 const containerStyle: React.CSSProperties = {
   position: 'relative',
@@ -974,44 +976,29 @@ interface SquareProps {
   isOver: boolean;
   isOdd: boolean;
   player: Player | undefined;
+  children: React.ReactNode;
+  onDoubleClick?: () => void;
 }
 
-const Square = styled.div<SquareProps>`
-  width: 100%;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  z-index: 2;
-  font-size: 12px;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-  position: relative;
+const Square = React.forwardRef<HTMLDivElement, SquareProps>(
+  ({ isOver, isOdd: _isOdd, player, children, onDoubleClick }, ref) => {
+    const classNames = ['square'];
+    if (player) classNames.push('square--has-player');
+    if (isOver) classNames.push('square--is-over');
 
-  /* Dynamic Props */
-  border: 2px solid ${(props) =>
-    props.isOver ? '#22c55e' : props.player ? '#3b82f6' : '#e5e7eb'};
-
-  background: ${(props) =>
-    props.isOver ? '#dcfce7' : props.player ? '#fff' : '#f9fafb'};
-
-  box-shadow: ${(props) =>
-    props.isOver ? '0 0 0 2px #22c55e' : 'none'};
-  
-`  
-// &::before {
-//         content: '';
-//         position: absolute;
-//         top: 32px;
-//         bottom: 29px;
-//         right: -47px;
-//         width: ${props => props.isOdd ? '0px': '41px'};
-//         height: ${props => props.isOdd ? '0px': '1px'};
-//         background-color: red;
-//       }
+    return (
+      <div
+        ref={ref}
+        className={classNames.join(' ')}
+        onDoubleClick={onDoubleClick}
+      >
+        {children}
+      </div>
+    );
+  }
+);
     
-
+// ffff
 const labelStyle: React.CSSProperties = {
   fontSize: '12px',
   color: '#6b7280',
