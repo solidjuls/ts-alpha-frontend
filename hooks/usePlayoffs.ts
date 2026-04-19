@@ -29,6 +29,18 @@ export const useSavePlayoffBracket = () => {
   });
 };
 
+export const useUpdatePlayoffBracket = () => {
+  return useMutation<PlayoffSaveResponse, Error, PlayoffEntryDto[]>({
+    mutationFn: (entries: PlayoffEntryDto[]) => playoffsService.updatePlayoffBracket(entries),
+    onSuccess: (data) => {
+      console.log('Playoff bracket updated successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Error updating playoff bracket:', error);
+    },
+  });
+};
+
 export const useAllPlayoffs = () => {
   return useQuery<PlayoffTournament[], Error>({
     queryKey: PLAYOFFS_QUERY_KEYS.list(),

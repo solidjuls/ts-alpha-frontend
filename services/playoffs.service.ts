@@ -3,6 +3,7 @@ import { createAuthenticatedAxios } from '../utils/api';
 
 // DTO for a single playoff entry
 export interface PlayoffEntryDto {
+  id?: number;
   tournamentId: number;
   nextSquare: string | null;
   playoffSquare: string;
@@ -52,6 +53,15 @@ class PlayoffsService {
    */
   async savePlayoffBracket(entries: PlayoffEntryDto[]): Promise<PlayoffSaveResponse> {
     const response = await this.axiosInstance.post('/playoffs', entries);
+    return response.data;
+  }
+
+  /**
+   * Update an existing playoff bracket
+   * @param entries Array of playoff entries (all slots, including empty ones)
+   */
+  async updatePlayoffBracket(entries: PlayoffEntryDto[]): Promise<PlayoffSaveResponse> {
+    const response = await this.axiosInstance.put('/playoffs', entries);
     return response.data;
   }
 

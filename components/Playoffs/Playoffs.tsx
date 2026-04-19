@@ -12,10 +12,11 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { styled } from 'styled-components';
-import { useSavePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
+import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 
  interface Player {
+   id?: number;
    userName: string | null;
    userId: number | null;
    playoffSquare?: string;
@@ -319,6 +320,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
 
   for (const entry of entries) {
       bracket[entry.playoffSquare] = {
+        id: entry.id,
         userId: entry.userId,
         userName: entry.userName,
         seed: entry.seed,
@@ -333,8 +335,10 @@ let playersGlobal = []
 const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
+  const [copyMode, setCopyMode] = useState<boolean>(false);
 
   const saveBracketMutation = useSavePlayoffBracket();
+  const updateBracketMutation = useUpdatePlayoffBracket();
   const scheduleMatchMutation = useSchedulePlayoffMatch();
   const { data: playoffTournaments, isLoading: loadingTournaments } = useAllPlayoffs();
   const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(selectedTournamentId ?? 0);
@@ -363,6 +367,7 @@ console.log("initialBracket", initialBracket, bracketData)
   const buildPayload = (bracketState: Record<string, Player | undefined>): PlayoffEntryDto[] => {
     if (!selectedTournamentId) return [];
     return Object.entries(bracketState).map(([playoffSquare, player]) => ({
+      id: player?.id,
       tournamentId: selectedTournamentId,
       playoffSquare,
       nextSquare: player?.nextSquare ?? null,
@@ -406,6 +411,12 @@ console.log("initialBracket", initialBracket, bracketData)
     const payload = buildPayload(bracket);
     console.log('Saving bracket payload:', payload);
     saveBracketMutation.mutate(payload);
+  };
+
+  const handleUpdateBracket = () => {
+    const payload = buildPayload(bracket);
+    console.log('Updating bracket payload:', payload);
+    updateBracketMutation.mutate(payload);
   };
 
   // Schedule a match between two players (randomly assigns USA/USSR)
@@ -495,14 +506,19 @@ console.log("bracket", bracket, playoffTournaments)
     setActivePlayer(player);
   };
 
-  // Helper to clear player data from a slot while preserving nextSquare
+  // Helper to clear player data from a slot while preserving id and nextSquare
   const clearSlot = (slotId: string, prev: Record<string, Player | undefined>): Player => ({
+    id: prev[slotId]?.id,
     nextSquare: prev[slotId]?.nextSquare ?? null,
+    userName: null,
+    userId: null,
+    seed: null,
   });
 
-  // Helper to place player in a slot while preserving nextSquare
+  // Helper to place player in a slot while preserving id and nextSquare
   const fillSlot = (slotId: string, player: Player, prev: Record<string, Player | undefined>): Player => ({
     ...player,
+    id: prev[slotId]?.id,
     nextSquare: prev[slotId]?.nextSquare ?? null,
     playoffSquare: slotId,
   });
@@ -536,17 +552,28 @@ console.log("bracket", bracket, playoffTournaments)
       }
     } else if (toSlot === 'pool') {
       // Dragging from bracket back to pool - clear slot but keep nextSquare
-      setBracket((prev) => ({ ...prev, [fromSlot]: clearSlot(fromSlot, prev) }));
+      if (!copyMode) {
+        setBracket((prev) => ({ ...prev, [fromSlot]: clearSlot(fromSlot, prev) }));
+      }
     } else {
-      // Dragging between bracket slots (swap)
+      // Dragging between bracket slots
       const existingSlot = bracket[toSlot];
       const hasExistingPlayer = !!existingSlot?.userId;
 
-      setBracket((prev) => ({
-        ...prev,
-        [fromSlot]: hasExistingPlayer ? fillSlot(fromSlot, existingSlot, prev) : clearSlot(fromSlot, prev),
-        [toSlot]: fillSlot(toSlot, player, prev),
-      }));
+      if (copyMode) {
+        // Copy mode: only fill target slot, keep source slot unchanged
+        setBracket((prev) => ({
+          ...prev,
+          [toSlot]: fillSlot(toSlot, player, prev),
+        }));
+      } else {
+        // Normal mode: swap players between slots
+        setBracket((prev) => ({
+          ...prev,
+          [fromSlot]: hasExistingPlayer ? fillSlot(fromSlot, existingSlot, prev) : clearSlot(fromSlot, prev),
+          [toSlot]: fillSlot(toSlot, player, prev),
+        }));
+      }
     }
   };
   // Group slot IDs into pairs (matches)
@@ -620,6 +647,25 @@ console.log("bracket", bracket, playoffTournaments)
           >
             {saveBracketMutation?.isPending ? 'Saving...' : 'Save Bracket'}
           </button>
+
+          <button
+            onClick={handleUpdateBracket}
+            disabled={updateBracketMutation?.isPending || !selectedTournamentId}
+            style={updateButtonStyle}
+          >
+            {updateBracketMutation?.isPending ? 'Updating...' : 'Update Bracket'}
+          </button>
+
+          <label style={checkboxLabelStyle}>
+            <input
+              type="checkbox"
+              checked={copyMode}
+              onChange={(e) => setCopyMode(e.target.checked)}
+              style={checkboxStyle}
+            />
+            Copy Mode
+          </label>
+
           <input
             type='file'
             accept=".csv"
@@ -721,6 +767,32 @@ const saveButtonStyle: React.CSSProperties = {
   borderRadius: '6px',
   fontSize: '14px',
   fontWeight: 500,
+  cursor: 'pointer',
+};
+
+const updateButtonStyle: React.CSSProperties = {
+  padding: '8px 16px',
+  backgroundColor: '#f59e0b',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '6px',
+  fontSize: '14px',
+  fontWeight: 500,
+  cursor: 'pointer',
+};
+
+const checkboxLabelStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '6px',
+  fontSize: '14px',
+  color: '#374151',
+  cursor: 'pointer',
+};
+
+const checkboxStyle: React.CSSProperties = {
+  width: '16px',
+  height: '16px',
   cursor: 'pointer',
 };
 
