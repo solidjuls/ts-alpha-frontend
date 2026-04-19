@@ -377,7 +377,7 @@ const BracketLink = ({ startId, endId, bracketData }) => {
 const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
-  const [copyMode, setCopyMode] = useState<boolean>(false);
+  const [copyMode, setCopyMode] = useState<boolean>(true);
   const canvasRef = useRef(null);
   // Check if user is admin
   const { user } = useIsAuthenticated();
