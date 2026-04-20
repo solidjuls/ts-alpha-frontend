@@ -305,7 +305,7 @@ const DroppableSlot: React.FC<{
 
   return (
     <div style={containerStyle}>
-      <label style={labelStyle}>{id}</label>
+      {/*<label style={labelStyle}>{id}</label>*/}
       <Square
         ref={setNodeRef}
         onDoubleClick={() => !disabled && player && onAdvance(id)}
@@ -786,6 +786,7 @@ const connections = [
                     };
                     return (
                       <MatchContainer key={`match-${matchIndex}`} id={id} extraMargin={marginMap[id]}>
+                        {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => handleScheduleMatch(player1?.userId, player2?.userId )}>Create Schedule</button>}
                         {pair.map((id, i) => (
                           <DroppableSlot
                             key={id}
@@ -797,16 +798,6 @@ const connections = [
                             disabled={!isAdmin}
                           />
                         ))}
-                        {isAdmin && canSchedule && (
-                          <button
-                            onClick={() => handleScheduleMatch(player1?.userId ?? null, player2?.userId ?? null)}
-                            disabled={scheduleMatchMutation.isPending}
-                            style={scheduleButtonStyle}
-                            title="Schedule match"
-                          >
-                            ⚔
-                          </button>
-                        )}
                       </MatchContainer>
                     );
                   })}
@@ -894,18 +885,11 @@ const checkboxStyle: React.CSSProperties = {
 };
 
 const scheduleButtonStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: '50%',
-  right: '-8px',
-  transform: 'translateY(-50%)',
-  width: '20px',
-  height: '20px',
   padding: 0,
-  backgroundColor: '#10b981',
-  color: '#fff',
+  color: 'black',
   border: 'none',
-  borderRadius: '50%',
-  fontSize: '10px',
+  fontSize: '12px',
+  marginBottom: '4px',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
