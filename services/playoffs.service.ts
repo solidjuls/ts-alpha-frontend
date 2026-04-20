@@ -10,6 +10,12 @@ export interface PlayoffEntryDto {
   userId: number | null;
   userName: string | null;
   seed: number | null;
+  winnerUserId: number | null;
+}
+
+// Request type for setting a winner
+export interface SetPlayoffWinnerRequest {
+  id: number;
 }
 
 // Response type from the API (adjust based on actual backend response)
@@ -24,7 +30,7 @@ export interface PlayoffTournament {
   tournamentName: string;
 }
 
-// Request type for scheduling a playoff match
+// Request type for scheduling a playoff match    justify-content: center;
 export interface SchedulePlayoffMatchRequest {
   usaPlayerId: string;
   ussrPlayerId: string;
@@ -78,6 +84,13 @@ class PlayoffsService {
    */
   async schedulePlayoffMatch(request: SchedulePlayoffMatchRequest): Promise<void> {
     await this.axiosInstance.post('/playoffs/schedule', request);
+  }
+
+  /**
+   * Set the winner of a playoff match
+   */
+  async setPlayoffWinner(request: SetPlayoffWinnerRequest): Promise<void> {
+    await this.axiosInstance.put('/playoffs/winner', request);
   }
 }
 

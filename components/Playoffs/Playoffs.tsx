@@ -13,7 +13,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 
-import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch } from '../../hooks/usePlayoffs';
+import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch, useSetPlayoffWinner } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto } from '../../services/playoffs.service';
 import { useIsAuthenticated } from '../../hooks/useAuth';
 import { userRoles } from '../../utils/constants';
@@ -26,6 +26,7 @@ import { userRoles } from '../../utils/constants';
    playoffName?: string;
    seed: number | null;
    nextSquare: string | null;
+   winnerUserId?: number | null;
  }
  const containerId = 'root-container'
 
@@ -264,28 +265,39 @@ const PlayerPoolDroppable: React.FC<{ playerPool: Player[] }> = ({ playerPool })
 const DraggablePlayer: React.FC<{
   player: Player;
   slotId: string;
+  isAdmin: boolean;
   disabled?: boolean;
-}> = ({ player, slotId, disabled }) => {
+  onSetWinner: Function;
+  isSettingWinner?: boolean;
+}> = ({ player, slotId, disabled, isAdmin, onSetWinner, isSettingWinner }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `player-${player.userId}`,
     data: { player, fromSlot: slotId },
     disabled,
   });
 
+  const isWinner = !!player.winnerUserId;
+
   return (
-    <div
-      ref={setNodeRef}
-      {...(disabled ? {} : listeners)}
-      {...attributes}
-      style={{
-        ...playerStyle,
-        opacity: isDragging ? 0.5 : 1,
-        cursor: disabled ? 'default' : 'grab',
-      }}
-    >
-      {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
-      {player.userName}
-    </div>
+      <div
+        ref={setNodeRef}
+        onDoubleClick={(e) => isAdmin && onSetWinner(e)}
+        {...(disabled ? {} : listeners)}
+        {...attributes}
+        style={{
+          ...playerStyle,
+          opacity: isDragging ? 0.5 : 1,
+          cursor: disabled ? 'default' : 'grab',
+          position: 'relative',
+          ...(isWinner && {
+            fontWeight: 600,
+            border: '2px solid red',
+          }),
+        }}
+      >
+        {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
+        {player.userName}
+      </div>
   );
 };
 
@@ -294,14 +306,24 @@ const DroppableSlot: React.FC<{
   id: string;
   player: Player | undefined;
   onAdvance: (id: string) => void;
+  isAdmin: boolean;
   side: 'left' | 'right' | 'center';
   isOdd: boolean;
   disabled?: boolean;
-}> = ({ id, player, onAdvance, side, isOdd, disabled }) => {
+  onSetWinner?: (id: number) => void;
+  isSettingWinner?: boolean;
+}> = ({ id, player, onAdvance, side, isOdd, isAdmin, disabled, onSetWinner, isSettingWinner }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: id,
     disabled,
   });
+
+    const handleSetWinner = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (player && player.id && onSetWinner) {
+        onSetWinner(player.id);
+      }
+    };
 
   return (
     <div style={containerStyle}>
@@ -314,7 +336,7 @@ const DroppableSlot: React.FC<{
         player={player}
       >
         {player ? (
-          <DraggablePlayer player={player} slotId={id} disabled={disabled} />
+          <DraggablePlayer player={player} isAdmin={isAdmin} slotId={id} disabled={disabled} onSetWinner={handleSetWinner} isSettingWinner={isSettingWinner} />
         ) : (
           <span style={{ color: '#9ca3af', fontSize: '8px' }}>{disabled ? '' : 'Drop here'}</span>
         )}
@@ -335,6 +357,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
         seed: entry.seed,
         nextSquare: entry.nextSquare,
         playoffSquare: entry.playoffSquare,
+        winnerUserId: entry.winnerUserId,
       };
   }
 
@@ -386,6 +409,7 @@ const Bracket: React.FC = () => {
   const saveBracketMutation = useSavePlayoffBracket();
   const updateBracketMutation = useUpdatePlayoffBracket();
   const scheduleMatchMutation = useSchedulePlayoffMatch();
+  const setWinnerMutation = useSetPlayoffWinner();
   const { data: playoffTournaments, isLoading: loadingTournaments } = useAllPlayoffs();
   const { data: bracketData, isLoading, isError, error } = usePlayoffBracket(selectedTournamentId ?? 0);
 
@@ -420,6 +444,7 @@ const Bracket: React.FC = () => {
       userId: player?.userId ?? null,
       userName: player?.userName ?? null,
       seed: player?.seed ?? null,
+      winnerUserId: player?.winnerUserId ?? null,
     }));
   };
 
@@ -479,6 +504,11 @@ const Bracket: React.FC = () => {
       ussrPlayerId: String(ussrId),
       tournamentId: selectedTournamentId,
     });
+  };
+
+  // Set a player as the winner of a match
+  const handleSetWinner = (id: number) => {
+    setWinnerMutation.mutate({ id });
   };
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
@@ -716,7 +746,7 @@ const connections = [
           >
             {playoffTournaments.map((t) => (
               <option key={t.id} value={t.id}>
-                {t.name}
+                {t.tournamentName}
               </option>
             ))}
           </select>
@@ -791,11 +821,14 @@ const connections = [
                           <DroppableSlot
                             key={id}
                             id={id}
+                            isAdmin={isAdmin}
                             player={bracket[id]}
+                            onSetWinner={handleSetWinner}
                             onAdvance={advance}
                             side={col.side}
                             isOdd={i % 2 !== 0}
                             disabled={!isAdmin}
+                            isSettingWinner={setWinnerMutation.isPending}
                           />
                         ))}
                       </MatchContainer>
@@ -894,6 +927,27 @@ const scheduleButtonStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+};
+
+const winnerButtonStyle: React.CSSProperties = {
+  position: 'absolute',
+  right: '2px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  width: '16px',
+  height: '16px',
+  padding: 0,
+  backgroundColor: '#10b981',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '50%',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  lineHeight: 1,
 };
 
 const mainContainerStyle: React.CSSProperties = {

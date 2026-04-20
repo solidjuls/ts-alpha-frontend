@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament, SchedulePlayoffMatchRequest } from '../services/playoffs.service';
+import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament, SchedulePlayoffMatchRequest, SetPlayoffWinnerRequest } from '../services/playoffs.service';
 
 // Query keys for playoffs
 export const PLAYOFFS_QUERY_KEYS = {
@@ -57,6 +57,18 @@ export const useSchedulePlayoffMatch = () => {
     },
     onError: (error) => {
       console.error('Error scheduling playoff match:', error);
+    },
+  });
+};
+
+export const useSetPlayoffWinner = () => {
+  return useMutation<void, Error, SetPlayoffWinnerRequest>({
+    mutationFn: (request) => playoffsService.setPlayoffWinner(request),
+    onSuccess: () => {
+      console.log('Playoff winner set successfully');
+    },
+    onError: (error) => {
+      console.error('Error setting playoff winner:', error);
     },
   });
 };
