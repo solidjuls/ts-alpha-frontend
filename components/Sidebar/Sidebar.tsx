@@ -68,6 +68,10 @@ const Items = ({
       <HorizontalNavText>Tournaments</HorizontalNavText>
     </UnstyledLink>
 
+    <UnstyledLink href="/playoffs" passHref onClick={onNavigate}>
+      <HorizontalNavText>Playoffs</HorizontalNavText>
+    </UnstyledLink>
+
     <UnstyledLink href="/hall-of-fame" passHref onClick={onNavigate}>
       <HorizontalNavText>Hall of Fame</HorizontalNavText>
     </UnstyledLink>
