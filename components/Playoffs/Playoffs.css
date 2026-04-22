@@ -40,3 +40,9 @@
   background: #dcfce7;
   box-shadow: 0 0 0 2px #22c55e;
 }
+
+.square--victory {
+  border: 2px solid red !important;
+  font-weight: 600;
+  background: #dcfce7;
+}

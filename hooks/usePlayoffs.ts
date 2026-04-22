@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import playoffsService, { PlayoffEntryDto, PlayoffSaveResponse, PlayoffTournament, SchedulePlayoffMatchRequest, SetPlayoffWinnerRequest } from '../services/playoffs.service';
 
 // Query keys for playoffs
@@ -62,10 +62,16 @@ export const useSchedulePlayoffMatch = () => {
 };
 
 export const useSetPlayoffWinner = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<void, Error, SetPlayoffWinnerRequest>({
     mutationFn: (request) => playoffsService.setPlayoffWinner(request),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       console.log('Playoff winner set successfully');
+      // Invalidate the bracket query to refetch updated data
+      queryClient.invalidateQueries({
+        queryKey: PLAYOFFS_QUERY_KEYS.bracket(variables.tournamentId),
+      });
     },
     onError: (error) => {
       console.error('Error setting playoff winner:', error);

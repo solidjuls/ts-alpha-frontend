@@ -335,11 +335,7 @@ const DraggablePlayer: React.FC<{
           ...playerStyle,
           opacity: isDragging ? 0.5 : 1,
           cursor: disabled ? 'default' : 'grab',
-          position: 'relative',
-          ...(isWinner && {
-            fontWeight: 600,
-            border: '2px solid red',
-          }),
+          position: 'relative'
         }}
       >
         {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
@@ -374,7 +370,6 @@ const DroppableSlot: React.FC<{
 
   return (
     <div style={containerStyle}>
-      {/*<label style={labelStyle}>{id}</label>*/}
       <Square
         ref={setNodeRef}
         onDoubleClick={() => !disabled && player && onAdvance(id)}
@@ -1080,6 +1075,7 @@ const Square = React.forwardRef<HTMLDivElement, SquareProps>(
     const classNames = ['square'];
     if (player) classNames.push('square--has-player');
     if (isOver) classNames.push('square--is-over');
+    if (player?.winnerUserId) classNames.push('square--victory')
 
     return (
       <div
@@ -1113,7 +1109,6 @@ const playerStyle: React.CSSProperties = {
   height: '100%',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
   fontSize: '12px',
   fontWeight: 500,
   gap: '4px',
