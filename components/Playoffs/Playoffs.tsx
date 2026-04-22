@@ -14,9 +14,10 @@ import {
 } from '@dnd-kit/core';
 
 import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch, useSetPlayoffWinner } from '../../hooks/usePlayoffs';
-import { PlayoffEntryDto } from '../../services/playoffs.service';
+import { PlayoffEntryDto, PlayoffTournament } from '../../services/playoffs.service';
 import { useIsAuthenticated } from '../../hooks/useAuth';
 import { userRoles } from '../../utils/constants';
+import styled from 'styled-components';
 
  interface Player {
    id?: number;
@@ -28,6 +29,52 @@ import { userRoles } from '../../utils/constants';
    nextSquare: string | null;
    winnerUserId?: number | null;
  }
+
+ interface TabButtonProps {
+  $active?: boolean;
+}
+
+ export const TabButton = styled.button<TabButtonProps>`
+  padding: 10px 18px;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  &:hover {
+    background-color: var(--ussr);
+    color: var(--alt-text);
+  }
+
+  background-color: ${({ $active }) =>
+    $active ? "var(--usa)" : "var(--bg-card)"};
+
+  color: ${({ $active }) =>
+    $active ? "var(--alt-text)" : "var(--primary-text)"};
+
+  border-right: 1px solid var(--border);
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+`;
+
+export const TabContainer = styled.div`
+  display: inline-flex;
+  align-self: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  overflow-x: auto; 
+  white-space: nowrap; 
+
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+`;
+
  const containerId = 'root-container'
 
   // Generate bracket structure dynamically based on player count
@@ -732,28 +779,37 @@ const connections = [
   { from: "match-Quarter-Finals-2", to: "match-Semi-Finals-1" },
   { from: "match-Quarter-Finals-3", to: "match-Semi-Finals-1" },
 ];
+
+  const activeTabButton = (tournament: PlayoffTournament, index: number) => {
+    if (selectedTournamentId) {
+      return selectedTournamentId === tournament.id;
+    }
+    return index === 0
+  }
+
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         {/* Header with Tournament Dropdown and Admin Controls */}
         <div style={toolbarStyle}>
-          {/* Tournament Dropdown - visible to everyone */}
-          <select
-            value={selectedTournamentId ?? ''}
-            onChange={(e) => setSelectedTournamentId(Number(e.target.value))}
-            style={dropdownStyle}
-          >
-            {playoffTournaments.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.tournamentName}
-              </option>
-            ))}
-          </select>
+          {playoffTournaments?.length > 0 && (
+            <TabContainer>
+              {playoffTournaments.map((tournament, index: number) => (
+                <TabButton
+                  key={tournament.id}
+                  $active={activeTabButton(tournament, index)}
+                  onClick={() => setSelectedTournamentId(tournament.id)}
+                >
+                  {tournament.name}
+                </TabButton>
+              ))}
+            </TabContainer>
+          )}
 
           {/* Admin-only controls */}
           {isAdmin && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: '4px'}}>
               <button
                 onClick={handleSaveBracket}
                 disabled={saveBracketMutation?.isPending || !selectedTournamentId}
@@ -787,7 +843,7 @@ const connections = [
                 disabled={saveBracketMutation?.isPending}
                 style={saveButtonStyle}
               />
-            </>
+            </div>
           )}
         </div>
 
@@ -864,6 +920,7 @@ const connections = [
 const toolbarStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'space-between',
   padding: '12px 20px',
   borderBottom: '1px solid #e5e7eb',
   backgroundColor: '#f9fafb',
