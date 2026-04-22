@@ -1006,19 +1006,26 @@ const mainContainerStyle: React.CSSProperties = {
   display: 'flex',
   position: 'relative',
   flexDirection: 'row',
-  flex: 1,
   backgroundColor: '#fff',
+  width: '1512px',
+  height: '1095px',
+  minWidth: '1512px',
+  minHeight: '1095px',
+  maxWidth: '1512px',
+  maxHeight: '1095px',
+  overflow: 'auto',
 };
 
 const viewportStyle: React.CSSProperties = {
   display: 'flex',
-  height: '1000px',
-  overflowX: 'auto',
+  width: '1512px',
+  height: '1095px',
+  minWidth: '1512px',
+  minHeight: '1095px',
   padding: '20px',
   gap: '80px',
   alignItems: 'center',
   backgroundColor: '#fff',
-  flex: 1,
 };
 
 const columnStyle: React.CSSProperties = {
