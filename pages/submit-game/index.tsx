@@ -106,6 +106,9 @@ const SubmitGameContainer = () => {
     }
   }, [router.isReady, router.query, setValue, user?.id, isRecreateMode, tournament]);
 
+  // Check if randomSides is enabled from URL query
+  const randomSides = router.query.randomSides === "1";
+
   const getScheduleId = () => {
     if (router?.query?.id) return { scheduleId: router?.query?.id }
     return undefined
@@ -116,8 +119,22 @@ const SubmitGameContainer = () => {
     let ussrPlayerId = "";
 
     if (data.usaPlayerId && data.ussrPlayerId) {
-      usaPlayerId = data.usaPlayerId;
-      ussrPlayerId = data.ussrPlayerId;
+      // Schedule mode with randomSides - need to assign based on playedAs selection
+      if (randomSides && data.playedAs) {
+        if (data.playedAs === "1") {
+          // User played as USA
+          usaPlayerId = user?.id as string;
+          ussrPlayerId = data.usaPlayerId === user?.id ? data.ussrPlayerId : data.usaPlayerId;
+        } else if (data.playedAs === "2") {
+          // User played as USSR
+          ussrPlayerId = user?.id as string;
+          usaPlayerId = data.usaPlayerId === user?.id ? data.ussrPlayerId : data.usaPlayerId;
+        }
+      } else {
+        // Normal schedule mode - use pre-assigned sides
+        usaPlayerId = data.usaPlayerId;
+        ussrPlayerId = data.ussrPlayerId;
+      }
     }
 
     else if (data.playedAs === "1") {
@@ -269,6 +286,7 @@ const SubmitGameContainer = () => {
       isScheduleMode={isScheduleMode}
       usaPlayerName={usaPlayerName}
       ussrPlayerName={ussrPlayerName}
+      randomSides={randomSides}
     />
   );
 };// Wrap with ProtectedRoute - requires logged in user

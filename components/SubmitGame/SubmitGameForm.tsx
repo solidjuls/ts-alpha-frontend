@@ -32,6 +32,7 @@ type SubmitGameFormProps = {
   isScheduleMode: boolean;
   usaPlayerName: string;
   ussrPlayerName: string;
+  randomSides: boolean;
 };
 
 const SubmitGameForm = ({
@@ -46,6 +47,7 @@ const SubmitGameForm = ({
   isScheduleMode,
   usaPlayerName,
   ussrPlayerName,
+  randomSides,
 }: SubmitGameFormProps) => {
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -118,6 +120,27 @@ const SubmitGameForm = ({
                 />
               )}
             />
+
+            {randomSides && (
+              <Controller
+                name="playedAs"
+                control={control}
+                rules={{ required: "Please select which side you played as" }}
+                render={({ field }) => (
+                  <DropdownWithLabel
+                    labelText="PlayedAs"
+                    placeholder="My Side"
+                    items={gameSides}
+                    selectedItem={field.value}
+                    selectedValueProperty="value"
+                    selectedInputProperty="text"
+                    error={!!errors.playedAs}
+                    css={{ width: dropdownWidth }}
+                    onSelect={field.onChange}
+                  />
+                )}
+              />
+            )}
           </>
         )}
 
