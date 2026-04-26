@@ -637,6 +637,7 @@ const Bracket: React.FC = () => {
     id: prev[slotId]?.id,
     nextSquare: prev[slotId]?.nextSquare ?? null,
     playoffSquare: slotId,
+    winnerUserId: null
   });
 
   const handleDragEnd = (event: DragEndEvent) => {
