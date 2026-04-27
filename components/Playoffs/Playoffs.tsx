@@ -77,186 +77,6 @@ export const TabContainer = styled.div`
 
  const containerId = 'root-container'
 
-  // Generate bracket structure dynamically based on player count
- // For 31 players:
- // - Seeds 17-31 (15 players): Round 1
- // - Seeds 9-16 (8 players): Round 2 (odd slots, even slots for R1 winners)
- // - Seeds 2-8 (7 players): Round 3 "Octave Finals" (odd slots, even for R2 winners)
- // - Seed 1 (1 player): Round 4 "Quarter Finals" (odd slot, even for R3 winner)
- // - Round 5: Semi Finals
- // - Round 6: Finals/Champion
- // Returns a hashmap where key is the square ID and value contains nextSquare
- const generateBracketConfig = (_playerCount: number = 31): Record<string, Player | undefined> => {
-   const config: Record<string, Player | undefined> = {};
- 
-   // Slot counts for 31 players bracket
-   // Each seeded player in rounds 2+ occupies an ODD slot, their opponent goes to the adjacent EVEN slot
-   const R1_SLOTS = 16; // Seeds 17-31 (15 players + 1 bye)
-   const R2_SLOTS = 16; // 8 odd (seeds 9-16) + 8 even (R1 winners)
-   const R3_SLOTS = 12; // 4 odd (seeds 5-8) + 4 even (R2 winners)
-   const R4_SLOTS = 8;  // 2 odd (seeds 2-4 distributed) + 2 even (R3 winners)
-   const R5_SLOTS = 4;  // Semi finals
- 
-   // Round 1: 16 slots -> feed into Round 2 EVEN slots
-   for (let i = 0; i < R1_SLOTS; i++) {
-     const id = `r1-${i + 1}`;
-     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-     config[id] = undefined// { nextSquare: null };
-   }
- 
-   // Round 2: 16 slots -> feed into Round 3 EVEN slots
-   for (let i = 0; i < R2_SLOTS; i++) {
-     const id = `r2-${i + 1}`;
-     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-     config[id] = undefined// { nextSquare: null };
-   }
- 
-   // Round 3 (Octave Finals): 12 slots -> feed into Round 4 EVEN slots
-   for (let i = 0; i < R3_SLOTS; i++) {
-     const id = `r3-${i + 1}`;
-     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-     config[id] = undefined// { nextSquare: null };
-   }
- 
-   // Round 4 (Quarter Finals): 8 slots -> feed into Round 5 EVEN slots
-   for (let i = 0; i < R4_SLOTS; i++) {
-     const id = `r4-${i + 1}`;
-     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-     config[id] = undefined// { nextSquare: null };
-   }
- 
-   // Round 5 (Semi Finals): 4 slots -> feed into Round 6
-   for (let i = 0; i < R5_SLOTS; i++) {
-     const id = `r5-${i + 1}`;
-     const nextPosition = Math.ceil((i + 1) / 2) * 2;
-     config[id] = undefined// { nextSquare: null };
-   }
- 
-   // Round 6 (Finals): 2 slots -> no next (champion)
-   config['r6-1'] = undefined// { nextSquare: null };
-   config['r6-2'] = undefined// { nextSquare: null };
- 
-   return config;
- };
- 
- // Auto-seed players based on their ranking
- // Seeded players go to ODD slots, their opponents (from previous round) go to adjacent EVEN slots
- const generateInitialSeeding = (
-   players: Player[],
-   bracketConfig: Record<string, Player | undefined>
- ): Record<string, Player | undefined> => {
-   const bracket: Record<string, Player | undefined> = {};
- 
-   // Initialize all slots with their nextSquare config (no player data yet)
-   Object.entries(bracketConfig).forEach(([id, config]) => {
-     bracket[id] = undefined;
-   });
- 
-   // Sort players by seed
-   const sortedPlayers = [...players].sort((a, b) => (a.seed || 999) - (b.seed || 999));
- 
-   sortedPlayers.forEach((player) => {
-     const seed = player.seed || 999;
-     let slotId: string | null = null;
- 
-     if (seed === 1) {
-       slotId = 'r4-1';
-     } else if (seed === 2) {
-       slotId = 'r4-3';
-     } else if (seed >= 3 && seed <= 4) {
-       const oddSlot = (seed - 3) * 2 + 1;
-       slotId = `r3-${oddSlot}`;
-     } else if (seed >= 5 && seed <= 8) {
-       if (seed <= 6) {
-         const r3OddSlot = (seed - 5) * 2 + 5;
-         slotId = `r3-${r3OddSlot}`;
-       } else {
-         const r2OddSlot = (seed - 7) * 2 + 13;
-         slotId = `r2-${r2OddSlot}`;
-       }
-     } else if (seed >= 9 && seed <= 16) {
-       const index = seed - 9;
-       if (index < 6) {
-         const oddSlot = index * 2 + 1;
-         slotId = `r2-${oddSlot}`;
-       } else {
-         slotId = `r1-${seed - 16 + 16}`;
-       }
-     } else if (seed >= 17 && seed <= 31) {
-       slotId = `r1-${seed - 16}`;
-     }
- 
-     if (slotId) {
-       // Merge player data with existing nextSquare config
-       bracket[slotId] = {
-         ...bracket[slotId],
-         ...player,
-         playoffSquare: slotId,
-       };
-     }
-   });
- 
-   return bracket;
- };
- 
- const generateNextSquares = (bracket: Record<string, Player | undefined>) => {
-   const rounds: Record<string, Player[]> = {};
- 
-   try {
-     Object.entries(bracket).forEach(([id, player]) => {
-       const match = id.match(/^r\d+/);
- 
-       if (match) {
-         const roundKey = match[0];
- 
-         if (!rounds[roundKey]) {
-           rounds[roundKey] = [];
-         }
-         if (player) {
-           rounds[roundKey].push(player);
-         } else {
-           rounds[roundKey].push({ playoffSquare: id, nextSquare: null } as Player);
-         }
-       }
-     });
-     const squaresAlreadyAssigned: string[] = [];
- 
-     Object.keys(rounds).forEach(currentKey => {
-       const currentRoundNumber = parseInt(currentKey.replace('r', ''));
-       const nextKey = `r${currentRoundNumber + 1}`;
-       const currentPlayers = rounds[currentKey];
-       const nextPlayers = rounds[nextKey];
- 
-       if (!nextPlayers) return;
- 
-       for (let i = 0; i < currentPlayers.length; i++) {
-         if (currentPlayers[i] && currentPlayers[i + 1]) {
-           const player = currentPlayers[i];
-           const nextPlayer = currentPlayers[i + 1];
-           if (bracket[player.playoffSquare!]?.nextSquare) continue;
- 
-           const nextEmptySquare = nextPlayers.find((p: Player) => !p.userId && !squaresAlreadyAssigned.includes(p.playoffSquare!));
-           if (nextEmptySquare) {
-             player.nextSquare = nextEmptySquare.playoffSquare!;
-             nextPlayer.nextSquare = nextEmptySquare.playoffSquare!;
-             bracket[player.playoffSquare!] = {
-               ...player,
-               nextSquare: nextEmptySquare.playoffSquare!,
-             };
-             bracket[nextPlayer.playoffSquare!] = {
-               ...nextPlayer,
-               nextSquare: nextEmptySquare.playoffSquare!,
-             };
-             squaresAlreadyAssigned.push(nextEmptySquare.playoffSquare!);
-           }
-         }
-       }
-     });
-   } catch (e) {
-     console.error("Error generating next squares:", e);
-   }
- };
-
  // Player Pool Draggable Item
 const PoolPlayer: React.FC<{ player: Player; disabled?: boolean }> = ({ player, disabled }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -370,6 +190,7 @@ const DroppableSlot: React.FC<{
 
   return (
     <div style={containerStyle}>
+      {/* <span style={labelStyle}>{id}</span> */}
       <Square
         ref={setNodeRef}
         onDoubleClick={() => !disabled && player && onAdvance(id)}
@@ -405,7 +226,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
 
   return bracket;
 };
-let playersGlobal = []
+
 const BracketLink = ({ startId, endId, bracketData }) => {
   const [path, setPath] = React.useState("");
   const drawLines = () => {
@@ -443,6 +264,7 @@ const Bracket: React.FC = () => {
   const [activePlayer, setActivePlayer] = useState<Player | null>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<number | null>(null);
   const [copyMode, setCopyMode] = useState<boolean>(true);
+  const [playerPool, setPlayerPool] = useState<Player[]>([]);
   const canvasRef = useRef(null);
   // Check if user is admin
   const { user } = useIsAuthenticated();
@@ -506,12 +328,9 @@ const Bracket: React.FC = () => {
           playoffName: undefined,
           nextSquare: null,
         }));
-        console.log("Players:", players);
-        // setBracket(generateBracketConfig(players.length));
-        const b = generateInitialSeeding(players, generateBracketConfig())
-        generateNextSquares(b)
-        setBracket(b)
-        playersGlobal = players
+        console.log("Players loaded to pool:", players);
+        // Add all players to the pool - brackets will be configured manually via drag & drop
+        setPlayerPool(players);
       },
       error: (err: { message: string }) => {
         console.error("CSV upload error:", err.message);
@@ -556,7 +375,7 @@ const Bracket: React.FC = () => {
   // Bracket config is now merged into bracket state (each slot has nextSquare)
 
   // 2. COLUMN CONFIGURATION FOR 6 ROUNDS (matching slot counts from generateBracketConfig)
-  const columns = useMemo(() => {
+  const columnsMain = useMemo(() => {
     return [
       {
         title: 'Round-1',
@@ -587,6 +406,51 @@ const Bracket: React.FC = () => {
       {
         title: 'FINALS',
         ids: ['r6-1'],
+        side: 'center' as const,
+      },
+    ];
+  }, []);
+  const columnsSilver = useMemo(() => {
+    return [
+      {
+        title: 'RoundS-1',
+        ids: Array.from({ length: 20 }, (_, i) => `r1-${i + 1}`),
+        side: 'left' as const,
+      },
+      {
+        title: 'RoundS-2',
+        ids: Array.from({ length: 26 }, (_, i) => `r2-${i + 1}`),
+        side: 'left' as const,
+      },
+      {
+        title: 'RoundS-3',
+        ids: Array.from({ length: 22 }, (_, i) => `r3-${i + 1}`),
+        side: 'left' as const,
+        // gap: 40px;
+      },
+      {
+        title: 'RoundS-4',
+        ids: Array.from({ length: 18 }, (_, i) => `r4-${i + 1}`),
+        side: 'left' as const,
+      },
+      {
+        title: 'RoundS-5',
+        ids: Array.from({ length: 16 }, (_, i) => `r5-${i + 1}`),
+        side: 'left' as const,
+      },
+      {
+        title: 'RoundS-6',
+        ids: Array.from({ length: 8 }, (_, i) => `r6-${i + 1}`),
+        side: 'center' as const,
+      },
+      {
+        title: 'RoundS-7',
+        ids: Array.from({ length: 4 }, (_, i) => `r7-${i + 1}`),
+        side: 'center' as const,
+      },
+      {
+        title: 'RoundS-8',
+        ids: ['r8-1','r8-2'],
         side: 'center' as const,
       },
     ];
@@ -744,7 +608,7 @@ const Bracket: React.FC = () => {
       </div>
     );
   }
-const connections = [
+const connectionsMain = [
   { from: "match-Round-1-0", to: "match-Round-2-0" },
   { from: "match-Round-1-1", to: "match-Round-2-1" },
   { from: "match-Round-1-2", to: "match-Round-2-2" },
@@ -775,6 +639,73 @@ const connections = [
   { from: "match-Quarter-Finals-2", to: "match-Semi-Finals-1" },
   { from: "match-Quarter-Finals-3", to: "match-Semi-Finals-1" },
 ];
+const connectionsSilver = [
+  { from: "match-RoundS-1-0", to: "match-RoundS-2-2" },
+  { from: "match-RoundS-1-1", to: "match-RoundS-2-3" },
+  { from: "match-RoundS-1-2", to: "match-RoundS-2-4" },
+  { from: "match-RoundS-1-3", to: "match-RoundS-2-5" },
+  { from: "match-RoundS-1-4", to: "match-RoundS-2-6" },
+  { from: "match-RoundS-1-5", to: "match-RoundS-2-7" },
+  { from: "match-RoundS-1-6", to: "match-RoundS-2-9" },
+  { from: "match-RoundS-1-7", to: "match-RoundS-2-10" },
+  { from: "match-RoundS-1-8", to: "match-RoundS-2-11" },
+  { from: "match-RoundS-1-9", to: "match-RoundS-2-12" },
+
+
+  { from: "match-RoundS-2-0", to: "match-RoundS-3-0" },
+  { from: "match-RoundS-2-1", to: "match-RoundS-3-1" },
+  { from: "match-RoundS-2-2", to: "match-RoundS-3-2" },
+  { from: "match-RoundS-2-3", to: "match-RoundS-3-2" },
+  { from: "match-RoundS-2-4", to: "match-RoundS-3-3" },
+  { from: "match-RoundS-2-5", to: "match-RoundS-3-3" },
+  { from: "match-RoundS-2-6", to: "match-RoundS-3-4" },
+  { from: "match-RoundS-2-7", to: "match-RoundS-3-5" },
+  { from: "match-RoundS-2-8", to: "match-RoundS-3-6" },
+  { from: "match-RoundS-2-9", to: "match-RoundS-3-7" },
+  { from: "match-RoundS-2-10", to: "match-RoundS-3-8" },
+  { from: "match-RoundS-2-11", to: "match-RoundS-3-9" },
+  { from: "match-RoundS-2-12", to: "match-RoundS-3-10" },
+  { from: "match-RoundS-2-13", to: "match-RoundS-3-11" },
+
+  { from: "match-RoundS-3-0", to: "match-RoundS-4-0" },
+  { from: "match-RoundS-3-1", to: "match-RoundS-4-0" },
+  { from: "match-RoundS-3-2", to: "match-RoundS-4-1" },
+  { from: "match-RoundS-3-3", to: "match-RoundS-4-2" },
+  { from: "match-RoundS-3-4", to: "match-RoundS-4-3" },
+  { from: "match-RoundS-3-5", to: "match-RoundS-4-4" },
+  { from: "match-RoundS-3-6", to: "match-RoundS-4-5" },
+  { from: "match-RoundS-3-7", to: "match-RoundS-4-5" },
+  { from: "match-RoundS-3-8", to: "match-RoundS-4-6" },
+  { from: "match-RoundS-3-9", to: "match-RoundS-4-7" },
+  { from: "match-RoundS-3-10", to: "match-RoundS-4-8" },
+
+  { from: "match-RoundS-4-0", to: "match-RoundS-5-0" },
+  { from: "match-RoundS-4-1", to: "match-RoundS-5-1" },
+  { from: "match-RoundS-4-2", to: "match-RoundS-5-1" },
+  { from: "match-RoundS-4-3", to: "match-RoundS-5-2" },
+  { from: "match-RoundS-4-4", to: "match-RoundS-5-3" },
+  { from: "match-RoundS-4-5", to: "match-RoundS-5-4" },
+  { from: "match-RoundS-4-6", to: "match-RoundS-5-5" },
+  { from: "match-RoundS-4-7", to: "match-RoundS-5-6" },
+  { from: "match-RoundS-4-8", to: "match-RoundS-5-7" },
+
+  { from: "match-RoundS-5-0", to: "match-RoundS-6-0" },
+  { from: "match-RoundS-5-1", to: "match-RoundS-6-0" },
+  { from: "match-RoundS-5-2", to: "match-RoundS-6-1" },
+  { from: "match-RoundS-5-3", to: "match-RoundS-6-1" },
+  { from: "match-RoundS-5-4", to: "match-RoundS-6-2" },
+  { from: "match-RoundS-5-5", to: "match-RoundS-6-2" },
+  { from: "match-RoundS-5-6", to: "match-RoundS-6-3" },
+  { from: "match-RoundS-5-7", to: "match-RoundS-6-3" },
+
+  { from: "match-RoundS-6-0", to: "match-RoundS-7-0" },
+  { from: "match-RoundS-6-1", to: "match-RoundS-7-0" },
+  { from: "match-RoundS-6-2", to: "match-RoundS-7-1" },
+  { from: "match-RoundS-6-3", to: "match-RoundS-7-1" },
+
+  { from: "match-RoundS-7-0", to: "match-RoundS-8-0" },
+  { from: "match-RoundS-7-1", to: "match-RoundS-8-0" },
+]
 
   const activeTabButton = (tournament: PlayoffTournament, index: number) => {
     if (selectedTournamentId) {
@@ -782,7 +713,9 @@ const connections = [
     }
     return index === 0
   }
-
+  const columns = selectedTournamentId === 326 ? columnsMain : columnsSilver
+  const connections = selectedTournamentId === 326 ? connectionsMain : connectionsSilver
+  console.log("bracket", bracket)
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       
@@ -797,7 +730,7 @@ const connections = [
                   $active={activeTabButton(tournament, index)}
                   onClick={() => setSelectedTournamentId(tournament.id)}
                 >
-                  {tournament.name}
+                  {tournament.tournamentName}
                 </TabButton>
               ))}
             </TabContainer>
@@ -845,8 +778,8 @@ const connections = [
 
         <div id="root-container" style={mainContainerStyle}>
           {/* Player Pool - admin only */}
-          {isAdmin && <PlayerPoolDroppable playerPool={playersGlobal} />}
-          {/* Bracketaaaa */}
+          {isAdmin && <PlayerPoolDroppable playerPool={playerPool} />}
+          {/* Bracket */}
           <div ref={canvasRef} style={viewportStyle}> 
             {columns.map((col) => (
               <div key={col.title} style={columnStyle}>
@@ -858,6 +791,24 @@ const connections = [
                     const canSchedule = player1?.userId && player2?.userId;
                     const id=`match-${col.title}-${matchIndex}`
                     const marginMap = {
+                      'match-RoundS-8-0': '380px',
+                      'match-RoundS-7-1': '280px',
+                      'match-RoundS-7-0': '200px',
+                      'match-RoundS-6-3': '120px',
+                      'match-RoundS-6-2': '120px',
+                      'match-RoundS-6-1': '120px',
+                      'match-RoundS-6-0': '120px',
+                      'match-RoundS-5-4': '60px',
+                      'match-RoundS-5-3': '40px',
+                      'match-RoundS-5-2': '60px',
+                      'match-RoundS-5-1': '60px',
+                      'match-RoundS-5-0': '80px',
+                      'match-RoundS-4-5': '80px',
+                      'match-RoundS-4-3': '100px',
+                      'match-RoundS-4-0': '100px',
+                      'match-RoundS-1-0': '130px',
+                      'match-RoundS-3-0': '80px',
+                      'match-RoundS-3-4': '100px',
                       'match-Octave-Finals-4': '60px',
                       'match-Octave-Finals-5': '60px',
                       'match-Quarter-Finals-2': '60px',
@@ -1009,20 +960,20 @@ const mainContainerStyle: React.CSSProperties = {
   flexDirection: 'row',
   backgroundColor: '#fff',
   width: '1512px',
-  height: '1095px',
+  height: '1395px',
   minWidth: '1512px',
-  minHeight: '1095px',
+  minHeight: '1395px',
   maxWidth: '1512px',
-  maxHeight: '1095px',
+  maxHeight: '1395px',
   overflow: 'auto',
 };
 
 const viewportStyle: React.CSSProperties = {
   display: 'flex',
   width: '1512px',
-  height: '1095px',
+  height: '1395px',
   minWidth: '1512px',
-  minHeight: '1095px',
+  minHeight: '1395px',
   padding: '20px',
   gap: '80px',
   alignItems: 'center',
