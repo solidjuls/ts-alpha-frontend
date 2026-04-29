@@ -27,7 +27,7 @@ export interface PlayoffSaveResponse {
 // Response type for getAllPlayoffs
 export interface PlayoffTournament {
   id: number;
-  tournamentName: string;
+  name: string;
 }
 
 // Request type for scheduling a playoff match    justify-content: center;

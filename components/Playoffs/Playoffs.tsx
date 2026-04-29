@@ -713,8 +713,9 @@ const connectionsSilver = [
     }
     return index === 0
   }
-  const columns = selectedTournamentId === 326 ? columnsMain : columnsSilver
-  const connections = selectedTournamentId === 326 ? connectionsMain : connectionsSilver
+  if (!selectedTournamentId) return null
+  const columns = [326,327].includes(selectedTournamentId) ? columnsMain : columnsSilver
+  const connections = [326,327].includes(selectedTournamentId) ? connectionsMain : connectionsSilver
   console.log("bracket", bracket)
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -730,7 +731,7 @@ const connectionsSilver = [
                   $active={activeTabButton(tournament, index)}
                   onClick={() => setSelectedTournamentId(tournament.id)}
                 >
-                  {tournament.tournamentName}
+                  {tournament.name}
                 </TabButton>
               ))}
             </TabContainer>
