@@ -380,19 +380,19 @@ const Bracket: React.FC = () => {
         title: 'Round 1',
         key: 'Round-1',
         subtitle: 'May 1 - May 14',
-        ids: Array.from({ length: 16 }, (_, i) => `r1-${i + 1}`),
+        ids: Array.from({ length: 18 }, (_, i) => `r1-${i + 1}`),
       },
       {
         title: 'Round 2',
         key: 'Round-2',
         subtitle: 'May 15 - May 28',
-        ids: Array.from({ length: 16 }, (_, i) => `r2-${i + 1}`),
+        ids: Array.from({ length: 14 }, (_, i) => `r2-${i + 1}`),
       },
       {
         title: 'Octave-Finals',
         key: 'Octave-Finals',
         subtitle: 'May 29 - June 11',
-        ids: Array.from({ length: 12 }, (_, i) => `r3-${i + 1}`),
+        ids: Array.from({ length: 14 }, (_, i) => `r3-${i + 1}`),
         // gap: 40px;
       },
       {
