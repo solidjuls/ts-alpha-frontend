@@ -18,6 +18,7 @@ import { PlayoffEntryDto, PlayoffTournament } from '../../services/playoffs.serv
 import { useIsAuthenticated } from '../../hooks/useAuth';
 import { userRoles } from '../../utils/constants';
 import styled from 'styled-components';
+import { connectionsMain, connectionsSilver, marginMap } from './constants';
 
  interface Player {
    id?: number;
@@ -170,12 +171,11 @@ const DroppableSlot: React.FC<{
   player: Player | undefined;
   onAdvance: (id: string) => void;
   isAdmin: boolean;
-  side: 'left' | 'right' | 'center';
   isOdd: boolean;
   disabled?: boolean;
   onSetWinner?: (id: number) => void;
   isSettingWinner?: boolean;
-}> = ({ id, player, onAdvance, side, isOdd, isAdmin, disabled, onSetWinner, isSettingWinner }) => {
+}> = ({ id, player, onAdvance, isOdd, isAdmin, disabled, onSetWinner, isSettingWinner }) => {
   const { isOver, setNodeRef } = useDroppable({
     id: id,
     disabled,
@@ -204,7 +204,6 @@ const DroppableSlot: React.FC<{
           <span style={{ color: '#9ca3af', fontSize: '8px' }}>{disabled ? '' : ''}</span>
         )}
       </Square>
-      {/* {side !== 'center' && <div style={getLineStyle(side, isOdd)} />} */}
     </div>
   );
 };
@@ -378,80 +377,93 @@ const Bracket: React.FC = () => {
   const columnsMain = useMemo(() => {
     return [
       {
-        title: 'Round-1',
+        title: 'Round 1',
+        key: 'Round-1',
+        subtitle: 'May 1 - May 14',
         ids: Array.from({ length: 16 }, (_, i) => `r1-${i + 1}`),
-        side: 'left' as const,
       },
       {
-        title: 'Round-2',
+        title: 'Round 2',
+        key: 'Round-2',
+        subtitle: 'May 15 - May 28',
         ids: Array.from({ length: 16 }, (_, i) => `r2-${i + 1}`),
-        side: 'left' as const,
       },
       {
         title: 'Octave-Finals',
+        key: 'Octave-Finals',
+        subtitle: 'May 29 - June 11',
         ids: Array.from({ length: 12 }, (_, i) => `r3-${i + 1}`),
-        side: 'left' as const,
         // gap: 40px;
       },
       {
         title: 'Quarter-Finals',
+        key: 'Quarter-Finals',
+        subtitle: 'June 12 - June 25',
         ids: Array.from({ length: 8 }, (_, i) => `r4-${i + 1}`),
-        side: 'left' as const,
       },
       {
         title: 'Semi-Finals',
+        key: 'Semi-Finals',
+        subtitle: 'June 26 - Jul 9',
         ids: Array.from({ length: 4 }, (_, i) => `r5-${i + 1}`),
-        side: 'left' as const,
       },
       {
         title: 'FINALS',
+        key: 'main-finals',
         ids: ['r6-1'],
-        side: 'center' as const,
       },
     ];
   }, []);
   const columnsSilver = useMemo(() => {
     return [
       {
-        title: 'RoundS-1',
+        title: 'Round 1',
+        key: 'Round-1',
+        subtitle: 'May 1 - May 14',
         ids: Array.from({ length: 20 }, (_, i) => `r1-${i + 1}`),
-        side: 'left' as const,
       },
       {
-        title: 'RoundS-2',
+        title: 'Round 2',
+        key: 'Round-2',
+        subtitle: 'May 15 - May 28',
         ids: Array.from({ length: 26 }, (_, i) => `r2-${i + 1}`),
-        side: 'left' as const,
       },
       {
-        title: 'RoundS-3',
+        title: 'Round 3',
+        key: 'Round-3',
+        subtitle: 'May 29 - June 11',
         ids: Array.from({ length: 22 }, (_, i) => `r3-${i + 1}`),
-        side: 'left' as const,
         // gap: 40px;
       },
       {
-        title: 'RoundS-4',
+        title: 'Round 4',
+        key: 'Round-4',
+        subtitle: 'June 12 - June 25',
         ids: Array.from({ length: 18 }, (_, i) => `r4-${i + 1}`),
-        side: 'left' as const,
       },
       {
-        title: 'RoundS-5',
+        title: 'Round 5',
+        key: 'Round-5',
+        subtitle: 'June 26 - Jul 9',
         ids: Array.from({ length: 16 }, (_, i) => `r5-${i + 1}`),
-        side: 'left' as const,
       },
       {
-        title: 'RoundS-6',
+        title: 'Round 6',
+        key: 'Round-6',
+        subtitle: 'Jul 10 - Jul 23',
         ids: Array.from({ length: 8 }, (_, i) => `r6-${i + 1}`),
-        side: 'center' as const,
       },
       {
-        title: 'RoundS-7',
+        title: 'Round 7',
+        key: 'Round-7',
+        subtitle: 'Jul 24 - Aug 6',
         ids: Array.from({ length: 4 }, (_, i) => `r7-${i + 1}`),
-        side: 'center' as const,
       },
       {
-        title: 'RoundS-8',
+        title: 'Round 8',
+        key: 'Round-8',
         ids: ['r8-1','r8-2'],
-        side: 'center' as const,
+        subtitle: 'Aug 7 - Aug 20',
       },
     ];
   }, []);
@@ -608,104 +620,6 @@ const Bracket: React.FC = () => {
       </div>
     );
   }
-const connectionsMain = [
-  { from: "match-Round-1-0", to: "match-Round-2-0" },
-  { from: "match-Round-1-1", to: "match-Round-2-1" },
-  { from: "match-Round-1-2", to: "match-Round-2-2" },
-  { from: "match-Round-1-3", to: "match-Round-2-3" },
-  { from: "match-Round-1-4", to: "match-Round-2-4" },
-  { from: "match-Round-1-5", to: "match-Round-2-5" },
-  { from: "match-Round-1-6", to: "match-Round-2-6" },
-  { from: "match-Round-1-7", to: "match-Round-2-7" },
-
-  { from: "match-Round-2-0", to: "match-Octave-Finals-0" },
-  { from: "match-Round-2-1", to: "match-Octave-Finals-1" },
-  { from: "match-Round-2-2", to: "match-Octave-Finals-2" },
-  { from: "match-Round-2-3", to: "match-Octave-Finals-3" },
-  { from: "match-Round-2-4", to: "match-Octave-Finals-4" },
-  { from: "match-Round-2-5", to: "match-Octave-Finals-4" },
-  { from: "match-Round-2-6", to: "match-Octave-Finals-5" },
-  { from: "match-Round-2-7", to: "match-Octave-Finals-5" },
-
-  { from: "match-Octave-Finals-0", to: "match-Quarter-Finals-0" },
-  { from: "match-Octave-Finals-1", to: "match-Quarter-Finals-1" },
-  { from: "match-Octave-Finals-2", to: "match-Quarter-Finals-2" },
-  { from: "match-Octave-Finals-3", to: "match-Quarter-Finals-2" },
-  { from: "match-Octave-Finals-4", to: "match-Quarter-Finals-3" },
-  { from: "match-Octave-Finals-5", to: "match-Quarter-Finals-3" },
-
-  { from: "match-Quarter-Finals-0", to: "match-Semi-Finals-0" },
-  { from: "match-Quarter-Finals-1", to: "match-Semi-Finals-0" },
-  { from: "match-Quarter-Finals-2", to: "match-Semi-Finals-1" },
-  { from: "match-Quarter-Finals-3", to: "match-Semi-Finals-1" },
-];
-const connectionsSilver = [
-  { from: "match-RoundS-1-0", to: "match-RoundS-2-2" },
-  { from: "match-RoundS-1-1", to: "match-RoundS-2-3" },
-  { from: "match-RoundS-1-2", to: "match-RoundS-2-4" },
-  { from: "match-RoundS-1-3", to: "match-RoundS-2-5" },
-  { from: "match-RoundS-1-4", to: "match-RoundS-2-6" },
-  { from: "match-RoundS-1-5", to: "match-RoundS-2-7" },
-  { from: "match-RoundS-1-6", to: "match-RoundS-2-9" },
-  { from: "match-RoundS-1-7", to: "match-RoundS-2-10" },
-  { from: "match-RoundS-1-8", to: "match-RoundS-2-11" },
-  { from: "match-RoundS-1-9", to: "match-RoundS-2-12" },
-
-
-  { from: "match-RoundS-2-0", to: "match-RoundS-3-0" },
-  { from: "match-RoundS-2-1", to: "match-RoundS-3-1" },
-  { from: "match-RoundS-2-2", to: "match-RoundS-3-2" },
-  { from: "match-RoundS-2-3", to: "match-RoundS-3-2" },
-  { from: "match-RoundS-2-4", to: "match-RoundS-3-3" },
-  { from: "match-RoundS-2-5", to: "match-RoundS-3-3" },
-  { from: "match-RoundS-2-6", to: "match-RoundS-3-4" },
-  { from: "match-RoundS-2-7", to: "match-RoundS-3-5" },
-  { from: "match-RoundS-2-8", to: "match-RoundS-3-6" },
-  { from: "match-RoundS-2-9", to: "match-RoundS-3-7" },
-  { from: "match-RoundS-2-10", to: "match-RoundS-3-8" },
-  { from: "match-RoundS-2-11", to: "match-RoundS-3-9" },
-  { from: "match-RoundS-2-12", to: "match-RoundS-3-10" },
-  { from: "match-RoundS-2-13", to: "match-RoundS-3-11" },
-
-  { from: "match-RoundS-3-0", to: "match-RoundS-4-0" },
-  { from: "match-RoundS-3-1", to: "match-RoundS-4-0" },
-  { from: "match-RoundS-3-2", to: "match-RoundS-4-1" },
-  { from: "match-RoundS-3-3", to: "match-RoundS-4-2" },
-  { from: "match-RoundS-3-4", to: "match-RoundS-4-3" },
-  { from: "match-RoundS-3-5", to: "match-RoundS-4-4" },
-  { from: "match-RoundS-3-6", to: "match-RoundS-4-5" },
-  { from: "match-RoundS-3-7", to: "match-RoundS-4-5" },
-  { from: "match-RoundS-3-8", to: "match-RoundS-4-6" },
-  { from: "match-RoundS-3-9", to: "match-RoundS-4-7" },
-  { from: "match-RoundS-3-10", to: "match-RoundS-4-8" },
-
-  { from: "match-RoundS-4-0", to: "match-RoundS-5-0" },
-  { from: "match-RoundS-4-1", to: "match-RoundS-5-1" },
-  { from: "match-RoundS-4-2", to: "match-RoundS-5-1" },
-  { from: "match-RoundS-4-3", to: "match-RoundS-5-2" },
-  { from: "match-RoundS-4-4", to: "match-RoundS-5-3" },
-  { from: "match-RoundS-4-5", to: "match-RoundS-5-4" },
-  { from: "match-RoundS-4-6", to: "match-RoundS-5-5" },
-  { from: "match-RoundS-4-7", to: "match-RoundS-5-6" },
-  { from: "match-RoundS-4-8", to: "match-RoundS-5-7" },
-
-  { from: "match-RoundS-5-0", to: "match-RoundS-6-0" },
-  { from: "match-RoundS-5-1", to: "match-RoundS-6-0" },
-  { from: "match-RoundS-5-2", to: "match-RoundS-6-1" },
-  { from: "match-RoundS-5-3", to: "match-RoundS-6-1" },
-  { from: "match-RoundS-5-4", to: "match-RoundS-6-2" },
-  { from: "match-RoundS-5-5", to: "match-RoundS-6-2" },
-  { from: "match-RoundS-5-6", to: "match-RoundS-6-3" },
-  { from: "match-RoundS-5-7", to: "match-RoundS-6-3" },
-
-  { from: "match-RoundS-6-0", to: "match-RoundS-7-0" },
-  { from: "match-RoundS-6-1", to: "match-RoundS-7-0" },
-  { from: "match-RoundS-6-2", to: "match-RoundS-7-1" },
-  { from: "match-RoundS-6-3", to: "match-RoundS-7-1" },
-
-  { from: "match-RoundS-7-0", to: "match-RoundS-8-0" },
-  { from: "match-RoundS-7-1", to: "match-RoundS-8-0" },
-]
 
   const activeTabButton = (tournament: PlayoffTournament, index: number) => {
     if (selectedTournamentId) {
@@ -716,6 +630,7 @@ const connectionsSilver = [
   if (!selectedTournamentId) return null
   const columns = [326,327].includes(selectedTournamentId) ? columnsMain : columnsSilver
   const connections = [326,327].includes(selectedTournamentId) ? connectionsMain : connectionsSilver
+  const idMatchContainer = [326,327].includes(selectedTournamentId) ? 'match' : 'match-silver'
   console.log("bracket", bracket)
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -784,42 +699,20 @@ const connectionsSilver = [
           <div ref={canvasRef} style={viewportStyle}> 
             {columns.map((col) => (
               <div key={col.title} style={columnStyle}>
-                <div style={headerStyle}>{col.title}</div>
+                <div style={headerStyle}>
+                  <span>{col.title}</span>
+                  <br/>
+                  <span>{col.subtitle}</span>
+                </div>
                 <div style={roundFlexStyle}>
                   {groupIntoPairs(col.ids).map((pair, matchIndex) => {
                     const player1 = bracket[pair[0]];
                     const player2 = bracket[pair[1]];
                     const canSchedule = player1?.userId && player2?.userId;
-                    const id=`match-${col.title}-${matchIndex}`
-                    const marginMap = {
-                      'match-RoundS-8-0': '380px',
-                      'match-RoundS-7-1': '280px',
-                      'match-RoundS-7-0': '200px',
-                      'match-RoundS-6-3': '120px',
-                      'match-RoundS-6-2': '120px',
-                      'match-RoundS-6-1': '120px',
-                      'match-RoundS-6-0': '120px',
-                      'match-RoundS-5-4': '60px',
-                      'match-RoundS-5-3': '40px',
-                      'match-RoundS-5-2': '60px',
-                      'match-RoundS-5-1': '60px',
-                      'match-RoundS-5-0': '80px',
-                      'match-RoundS-4-5': '80px',
-                      'match-RoundS-4-3': '100px',
-                      'match-RoundS-4-0': '100px',
-                      'match-RoundS-1-0': '130px',
-                      'match-RoundS-3-0': '80px',
-                      'match-RoundS-3-4': '100px',
-                      'match-Octave-Finals-4': '60px',
-                      'match-Octave-Finals-5': '60px',
-                      'match-Quarter-Finals-2': '60px',
-                      'match-Quarter-Finals-3': '120px',
-                      'match-Quarter-Finals-4': '120px',
-                      'match-Semi-Finals-0': '60px',
-                      'match-Semi-Finals-1': '120px'
-                    };
+                    const id=`${idMatchContainer}-${col.key}-${matchIndex}`
+                    
                     return (
-                      <MatchContainer key={`match-${matchIndex}`} id={id} extraMargin={marginMap[id]}>
+                      <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
                         {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => handleScheduleMatch(player1?.userId, player2?.userId )}>Create Schedule</button>}
                         {pair.map((id, i) => (
                           <DroppableSlot
@@ -1083,18 +976,6 @@ const dragOverlayStyle: React.CSSProperties = {
   fontWeight: 600,
   boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
 };
-
-const getLineStyle = (side: 'left' | 'right', isBottom: boolean): React.CSSProperties => ({
-  position: 'absolute',
-  width: '70px',
-  height: '100%',
-  [side === 'left' ? 'right' : 'left']: '-20px',
-  top: isBottom ? '0' : '50%',
-  borderRight: side === 'left' ? '1px solid #cbd5e1' : 'none',
-  borderLeft: side === 'right' ? '1px solid #cbd5e1' : 'none',
-  borderTop: !isBottom ? '1px solid #cbd5e1' : 'none',
-  borderBottom: isBottom ? '1px solid #cbd5e1' : 'none',
-});
 
 export type { Player };
 export default Bracket;
