@@ -158,7 +158,7 @@ const DraggablePlayer: React.FC<{
           position: 'relative'
         }}
       >
-        {player.seed && <span style={seedBadgeStyle}>#{player.seed}</span>}
+        {player.seed && <span >{player.seed}</span>}
         {player.userName}
       </div>
   );
@@ -201,7 +201,7 @@ const DroppableSlot: React.FC<{
         {player ? (
           <DraggablePlayer player={player} isAdmin={isAdmin} slotId={id} disabled={disabled} onSetWinner={handleSetWinner} isSettingWinner={isSettingWinner} />
         ) : (
-          <span style={{ color: '#9ca3af', fontSize: '8px' }}>{disabled ? '' : 'Drop here'}</span>
+          <span style={{ color: '#9ca3af', fontSize: '8px' }}>{disabled ? '' : ''}</span>
         )}
       </Square>
       {/* {side !== 'center' && <div style={getLineStyle(side, isOdd)} />} */}
@@ -960,11 +960,11 @@ const mainContainerStyle: React.CSSProperties = {
   position: 'relative',
   flexDirection: 'row',
   backgroundColor: '#fff',
-  width: '1512px',
+  // width: '1512px',
   height: '1395px',
   minWidth: '1512px',
   minHeight: '1395px',
-  maxWidth: '1512px',
+  // maxWidth: '1512px',
   maxHeight: '1395px',
   overflow: 'auto',
 };
@@ -984,14 +984,14 @@ const viewportStyle: React.CSSProperties = {
 const columnStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  minWidth: '120px',
+  // minWidth: '120px',
   height: '100%',
 };
 
 const roundFlexStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-
+  minWidth: '180px',
   flexGrow: 1,
   gap: '8px',
 };
@@ -1072,15 +1072,6 @@ const playerStyle: React.CSSProperties = {
   fontSize: '12px',
   fontWeight: 500,
   gap: '4px',
-};
-
-const seedBadgeStyle: React.CSSProperties = {
-  backgroundColor: '#3b82f6',
-  color: '#fff',
-  padding: '1px 4px',
-  borderRadius: '3px',
-  fontSize: '7px',
-  fontWeight: 600,
 };
 
 const dragOverlayStyle: React.CSSProperties = {
