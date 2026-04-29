@@ -713,7 +713,12 @@ const Bracket: React.FC = () => {
                     
                     return (
                       <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
-                        {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => handleScheduleMatch(player1?.userId, player2?.userId )}>Create Schedule</button>}
+                        {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => {
+                          const confirmed = window.confirm(`A schedule ${player1?.userName} vs ${player2?.userName} will be created. Confirm?`);
+                          if (confirmed) {
+                            handleScheduleMatch(player1?.userId, player2?.userId);
+                          }
+                        }}>Create Schedule</button>}
                         {pair.map((id, i) => (
                           <DroppableSlot
                             key={id}
@@ -722,7 +727,6 @@ const Bracket: React.FC = () => {
                             player={bracket[id]}
                             onSetWinner={handleSetWinner}
                             onAdvance={advance}
-                            side={col.side}
                             isOdd={i % 2 !== 0}
                             disabled={!isAdmin}
                             isSettingWinner={setWinnerMutation.isPending}
