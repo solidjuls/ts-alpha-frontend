@@ -36,6 +36,10 @@ const getTournamentIdFromURL = (id: string | undefined) => {
   return []
 }
 
+const getHardcodedTournamentITSL = (tId: string) => {
+  if (["325", "326", "327", "328"].includes(tId)) return "318"
+  return tId
+}
 const SubmitGameContainer = () => {
   const { user } = useAuth();
   const router = useRouter();
@@ -69,13 +73,16 @@ const SubmitGameContainer = () => {
   const { data: usersResponse, isLoading: loadingUsers } = useAllUsers(1, 2000);
 
   const { data: tournaments, isLoading: loadingTournaments } = useOngoingTournamentsWithoutSchedule({ enabled: !router?.query?.tid });
-  const { data: tournament, isLoading: loadingTournament } = useTournamentsById(getTournamentIdFromURL(router?.query?.tid as string));
+  const { data: tournament, isLoading: loadingTournament } = useTournamentsById(getTournamentIdFromURL(getHardcodedTournamentITSL(router?.query?.tid as string)));
 
   const submitGameMutation = useSubmitGame();
   const recreateGameMutation = useRecreateGame();
 
   // Detect if we're in recreate mode
   const isRecreateMode = router.query.oldId || router.query.id;
+
+  // Check if randomSides is enabled from URL query
+  const randomSides = router.query.randomSides === "1";
 
   // Prefill form from URL query parameters
   useEffect(() => {
@@ -104,10 +111,7 @@ const SubmitGameContainer = () => {
         setValue("ussrPlayerId", idUssr);
       }
     }
-  }, [router.isReady, router.query, setValue, user?.id, isRecreateMode, tournament]);
-
-  // Check if randomSides is enabled from URL query
-  const randomSides = router.query.randomSides === "1";
+  }, [router.isReady, router.query, setValue, user?.id, isRecreateMode, tournament, randomSides]);
 
   const getScheduleId = () => {
     if (router?.query?.id) return { scheduleId: router?.query?.id }
@@ -267,7 +271,7 @@ const SubmitGameContainer = () => {
   // Determine if we're in schedule mode (coming from schedule with player IDs)
   const usaPlayerId = watch("usaPlayerId");
   const ussrPlayerId = watch("ussrPlayerId");
-  const isScheduleMode = !!(usaPlayerId && ussrPlayerId);
+  const isScheduleMode = !!(usaPlayerId && ussrPlayerId)
 
   // Get user names for the player IDs in schedule mode
   const usaPlayerName = usersParsed.find(user => user.value === usaPlayerId)?.text;

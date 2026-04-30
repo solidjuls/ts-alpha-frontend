@@ -94,9 +94,9 @@ const SubmitGameForm = ({
               control={control}
               render={({ field }) => (
                 <SizedText
-                  labelText="USA Player"
+                  labelText={randomSides ? "Player 1" : "USA Player"}
                   inputValue={usaPlayerName}
-                  placeholder="USA Player"
+                  placeholder={randomSides ? "Player 1" : "USA Player"}
                   onInputValueChange={() => {}} // Read-only
                   key="usaPlayerId"
                   disabled
@@ -110,9 +110,9 @@ const SubmitGameForm = ({
               control={control}
               render={({ field }) => (
                 <SizedText
-                  labelText="USSR Player"
+                  labelText={randomSides ? "Player 2" : "USSR Player"}
                   inputValue={ussrPlayerName}
-                  placeholder="USSR Player"
+                  placeholder={randomSides ? "Player 2" : "USSR Player"}
                   onInputValueChange={() => {}} // Read-only
                   key="ussrPlayerId"
                   disabled

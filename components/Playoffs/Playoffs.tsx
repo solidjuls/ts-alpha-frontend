@@ -350,19 +350,15 @@ const Bracket: React.FC = () => {
     updateBracketMutation.mutate(payload);
   };
 
-  // Schedule a match between two players (randomly assigns USA/USSR)
+  // Schedule a match between two players
   const handleScheduleMatch = (player1Id: number | null, player2Id: number | null) => {
     if (!player1Id || !player2Id || !selectedTournamentId) return;
 
-    // Randomly assign USA/USSR
-    const [usaId, ussrId] = Math.random() < 0.5
-      ? [player1Id, player2Id]
-      : [player2Id, player1Id];
-
     scheduleMatchMutation.mutate({
-      usaPlayerId: String(usaId),
-      ussrPlayerId: String(ussrId),
+      usaPlayerId: String(player1Id),
+      ussrPlayerId: String(player2Id),
       tournamentId: selectedTournamentId,
+      randomSides: true,
     });
   };
 

@@ -30,11 +30,12 @@ export interface PlayoffTournament {
   name: string;
 }
 
-// Request type for scheduling a playoff match    justify-content: center;
+// Request type for scheduling a playoff match
 export interface SchedulePlayoffMatchRequest {
   usaPlayerId: string;
   ussrPlayerId: string;
   tournamentId: number;
+  randomSides?: boolean;
 }
 
 class PlayoffsService {

@@ -114,6 +114,7 @@ export const zGameAPI = z.object({
 
 export const zGameRecreateAPI = zGameAPI.extend({
   oldId: z.string(),
+  scheduleId: z.string().optional(),
   gameDate: z.string(),
 });
 

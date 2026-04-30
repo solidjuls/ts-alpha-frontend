@@ -91,6 +91,7 @@ const RecreateFormContainer = () => {
   } = useForm<RecreateGameFormData>({
     defaultValues: {
       oldId: "",
+      scheduleId: "",
       gameCode: "",
       usaPlayerId: "",
       ussrPlayerId: "",
@@ -128,6 +129,7 @@ const RecreateFormContainer = () => {
 
   const normalizeData = (data: RecreateGameFormData): GameRecreate => ({
     oldId: data.oldId || "",
+    scheduleId: data.scheduleId || undefined,
     gameDate: new Date().toISOString(),
     tournamentId: data.tournamentId,
     usaPlayerId: data.usaPlayerId || "",
