@@ -351,7 +351,7 @@ const Bracket: React.FC = () => {
   };
 
   // Schedule a match between two players
-  const handleScheduleMatch = (player1Id: number | null, player2Id: number | null) => {
+  const handleScheduleMatch = (player1Id: number | null, player2Id: number | null, dueDate?: Date) => {
     if (!player1Id || !player2Id || !selectedTournamentId) return;
 
     scheduleMatchMutation.mutate({
@@ -359,6 +359,7 @@ const Bracket: React.FC = () => {
       ussrPlayerId: String(player2Id),
       tournamentId: selectedTournamentId,
       randomSides: true,
+      due_date: dueDate?.toISOString(),
     });
   };
 
@@ -369,6 +370,17 @@ const Bracket: React.FC = () => {
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
 
+  // Helper to parse the right side date from subtitle (e.g., "May 1 - May 14" -> Date for May 14)
+  const parseDueDate = (subtitle?: string): Date | undefined => {
+    if (!subtitle) return undefined;
+    const parts = subtitle.split(' - ');
+    if (parts.length !== 2) return undefined;
+    const rightDate = parts[1].trim(); // e.g., "May 14", "June 11", "Jul 9"
+    const currentYear = new Date().getFullYear();
+    const parsed = new Date(`${rightDate}, ${currentYear}`);
+    return isNaN(parsed.getTime()) ? undefined : parsed;
+  };
+
   // 2. COLUMN CONFIGURATION FOR 6 ROUNDS (matching slot counts from generateBracketConfig)
   const columnsMain = useMemo(() => {
     return [
@@ -376,18 +388,21 @@ const Bracket: React.FC = () => {
         title: 'Round 1',
         key: 'Round-1',
         subtitle: 'May 1 - May 14',
+        dueDate: parseDueDate('May 1 - May 14'),
         ids: Array.from({ length: 18 }, (_, i) => `r1-${i + 1}`),
       },
       {
         title: 'Round 2',
         key: 'Round-2',
         subtitle: 'May 15 - May 28',
+        dueDate: parseDueDate('May 15 - May 28'),
         ids: Array.from({ length: 14 }, (_, i) => `r2-${i + 1}`),
       },
       {
         title: 'Octave-Finals',
         key: 'Octave-Finals',
         subtitle: 'May 29 - June 11',
+        dueDate: parseDueDate('May 29 - June 11'),
         ids: Array.from({ length: 14 }, (_, i) => `r3-${i + 1}`),
         // gap: 40px;
       },
@@ -395,18 +410,21 @@ const Bracket: React.FC = () => {
         title: 'Quarter-Finals',
         key: 'Quarter-Finals',
         subtitle: 'June 12 - June 25',
+        dueDate: parseDueDate('June 12 - June 25'),
         ids: Array.from({ length: 8 }, (_, i) => `r4-${i + 1}`),
       },
       {
         title: 'Semi-Finals',
         key: 'Semi-Finals',
         subtitle: 'June 26 - Jul 9',
+        dueDate: parseDueDate('June 26 - Jul 9'),
         ids: Array.from({ length: 4 }, (_, i) => `r5-${i + 1}`),
       },
       {
         title: 'FINALS',
         key: 'main-finals',
         ids: ['r6-1'],
+        dueDate: undefined,
       },
     ];
   }, []);
@@ -416,18 +434,21 @@ const Bracket: React.FC = () => {
         title: 'Round 1',
         key: 'Round-1',
         subtitle: 'May 1 - May 14',
+        dueDate: parseDueDate('May 1 - May 14'),
         ids: Array.from({ length: 20 }, (_, i) => `r1-${i + 1}`),
       },
       {
         title: 'Round 2',
         key: 'Round-2',
         subtitle: 'May 15 - May 28',
+        dueDate: parseDueDate('May 15 - May 28'),
         ids: Array.from({ length: 26 }, (_, i) => `r2-${i + 1}`),
       },
       {
         title: 'Round 3',
         key: 'Round-3',
         subtitle: 'May 29 - June 11',
+        dueDate: parseDueDate('May 29 - June 11'),
         ids: Array.from({ length: 22 }, (_, i) => `r3-${i + 1}`),
         // gap: 40px;
       },
@@ -435,24 +456,28 @@ const Bracket: React.FC = () => {
         title: 'Round 4',
         key: 'Round-4',
         subtitle: 'June 12 - June 25',
+        dueDate: parseDueDate('June 12 - June 25'),
         ids: Array.from({ length: 18 }, (_, i) => `r4-${i + 1}`),
       },
       {
         title: 'Round 5',
         key: 'Round-5',
         subtitle: 'June 26 - Jul 9',
+        dueDate: parseDueDate('June 26 - Jul 9'),
         ids: Array.from({ length: 16 }, (_, i) => `r5-${i + 1}`),
       },
       {
         title: 'Round 6',
         key: 'Round-6',
         subtitle: 'Jul 10 - Jul 23',
+        dueDate: parseDueDate('Jul 10 - Jul 23'),
         ids: Array.from({ length: 8 }, (_, i) => `r6-${i + 1}`),
       },
       {
         title: 'Round 7',
         key: 'Round-7',
         subtitle: 'Jul 24 - Aug 6',
+        dueDate: parseDueDate('Jul 24 - Aug 6'),
         ids: Array.from({ length: 4 }, (_, i) => `r7-${i + 1}`),
       },
       {
@@ -460,6 +485,7 @@ const Bracket: React.FC = () => {
         key: 'Round-8',
         ids: ['r8-1','r8-2'],
         subtitle: 'Aug 7 - Aug 20',
+        dueDate: parseDueDate('Aug 7 - Aug 20'),
       },
     ];
   }, []);
@@ -712,7 +738,7 @@ const Bracket: React.FC = () => {
                         {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => {
                           const confirmed = window.confirm(`A schedule ${player1?.userName} vs ${player2?.userName} will be created. Confirm?`);
                           if (confirmed) {
-                            handleScheduleMatch(player1?.userId, player2?.userId);
+                            handleScheduleMatch(player1?.userId, player2?.userId, col.dueDate);
                           }
                         }}>Create Schedule</button>}
                         {pair.map((id, i) => (
