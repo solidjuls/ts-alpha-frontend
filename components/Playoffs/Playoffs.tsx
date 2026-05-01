@@ -12,7 +12,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-
+import { Spinner } from "@radix-ui/themes";
 import { useSavePlayoffBracket, useUpdatePlayoffBracket, usePlayoffBracket, useAllPlayoffs, useSchedulePlayoffMatch, useSetPlayoffWinner } from '../../hooks/usePlayoffs';
 import { PlayoffEntryDto, PlayoffTournament } from '../../services/playoffs.service';
 import { useIsAuthenticated } from '../../hooks/useAuth';
@@ -625,15 +625,6 @@ const Bracket: React.FC = () => {
     );
   }
 
-  // Loading bracket state
-  if (isLoading && selectedTournamentId) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
-        <span>Loading bracket...</span>
-      </div>
-    );
-  }
-
   // Error state
   if (isError && selectedTournamentId) {
     return (
@@ -655,11 +646,8 @@ const Bracket: React.FC = () => {
   const idMatchContainer = [326,327].includes(selectedTournamentId) ? 'match' : 'match-silver'
   console.log("bracket", bracket)
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        {/* Header with Tournament Dropdown and Admin Controls */}
-        <div style={toolbarStyle}>
+    <>
+      <div style={toolbarStyle}>
           {playoffTournaments?.length > 0 && (
             <TabContainer>
               {playoffTournaments.map((tournament, index: number) => (
@@ -712,74 +700,83 @@ const Bracket: React.FC = () => {
               />
             </div>
           )}
-        </div>
+      </div>
+      {(isLoading && selectedTournamentId) ?
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', padding: '40px' }}>
+          <Spinner />
+        </div> :
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {/* Header with Tournament Dropdown and Admin Controls */}
 
-        <div id="root-container" style={mainContainerStyle}>
-          {/* Player Pool - admin only */}
-          {isAdmin && <PlayerPoolDroppable playerPool={playerPool} />}
-          {/* Bracket */}
-          <div ref={canvasRef} style={viewportStyle}> 
-            {columns.map((col) => (
-              <div key={col.title} style={columnStyle}>
-                <div style={headerStyle}>
-                  <span>{col.title}</span>
-                  <br/>
-                  <span>{col.subtitle}</span>
+          <div id="root-container" style={mainContainerStyle}>
+            {/* Player Pool - admin only */}
+            {isAdmin && <PlayerPoolDroppable playerPool={playerPool} />}
+            {/* Bracket */}
+            <div ref={canvasRef} style={viewportStyle}> 
+              {columns.map((col) => (
+                <div key={col.title} style={columnStyle}>
+                  <div style={headerStyle}>
+                    <span>{col.title}</span>
+                    <br/>
+                    <span>{col.subtitle}</span>
+                  </div>
+                  <div style={roundFlexStyle}>
+                    {groupIntoPairs(col.ids).map((pair, matchIndex) => {
+                      const player1 = bracket[pair[0]];
+                      const player2 = bracket[pair[1]];
+                      const canSchedule = player1?.userId && player2?.userId;
+                      const id=`${idMatchContainer}-${col.key}-${matchIndex}`
+                      
+                      return (
+                        <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
+                          {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => {
+                            const confirmed = window.confirm(`A schedule ${player1?.userName} vs ${player2?.userName} will be created. Confirm?`);
+                            if (confirmed) {
+                              handleScheduleMatch(player1?.userId, player2?.userId, col.dueDate);
+                            }
+                          }}>Create Schedule</button>}
+                          {pair.map((id, i) => (
+                            <DroppableSlot
+                              key={id}
+                              id={id}
+                              isAdmin={isAdmin}
+                              player={bracket[id]}
+                              onSetWinner={handleSetWinner}
+                              onAdvance={advance}
+                              isOdd={i % 2 !== 0}
+                              disabled={!isAdmin}
+                              isSettingWinner={setWinnerMutation.isPending}
+                            />
+                          ))}
+                        </MatchContainer>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div style={roundFlexStyle}>
-                  {groupIntoPairs(col.ids).map((pair, matchIndex) => {
-                    const player1 = bracket[pair[0]];
-                    const player2 = bracket[pair[1]];
-                    const canSchedule = player1?.userId && player2?.userId;
-                    const id=`${idMatchContainer}-${col.key}-${matchIndex}`
-                    
-                    return (
-                      <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
-                        {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => {
-                          const confirmed = window.confirm(`A schedule ${player1?.userName} vs ${player2?.userName} will be created. Confirm?`);
-                          if (confirmed) {
-                            handleScheduleMatch(player1?.userId, player2?.userId, col.dueDate);
-                          }
-                        }}>Create Schedule</button>}
-                        {pair.map((id, i) => (
-                          <DroppableSlot
-                            key={id}
-                            id={id}
-                            isAdmin={isAdmin}
-                            player={bracket[id]}
-                            onSetWinner={handleSetWinner}
-                            onAdvance={advance}
-                            isOdd={i % 2 !== 0}
-                            disabled={!isAdmin}
-                            isSettingWinner={setWinnerMutation.isPending}
-                          />
-                        ))}
-                      </MatchContainer>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-            {isHydrated && <svg 
-              style={{ 
-                position: 'absolute', 
-                top: 0, left: 0, 
-                width: '100%', height: '100%', 
-                pointerEvents: 'none' 
-              }}
-            >
-              {connections.map((item, id) =>  <BracketLink key={id} startId={item.from} endId={item.to} />)}
-            </svg>}
+              ))}
+              {isHydrated && <svg 
+                style={{ 
+                  position: 'absolute', 
+                  top: 0, left: 0, 
+                  width: '100%', height: '100%', 
+                  pointerEvents: 'none' 
+                }}
+              >
+                {connections.map((item, id) =>  <BracketLink key={id} startId={item.from} endId={item.to} />)}
+              </svg>}
+            </div>
           </div>
         </div>
-      </div>
-      {/* Drag Overlay */}
-      <DragOverlay>
-        {activePlayer ? (
-          <div style={dragOverlayStyle}>{activePlayer.userName}</div>
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+        {/* Drag Overlay */}
+        <DragOverlay>
+          {activePlayer ? (
+            <div style={dragOverlayStyle}>{activePlayer.userName}</div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>}
+    </>
   );
 };
 

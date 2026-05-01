@@ -13,7 +13,9 @@ export const usePlayoffBracket = (tournamentId: number) => {
   return useQuery<PlayoffEntryDto[], Error>({
     queryKey: PLAYOFFS_QUERY_KEYS.bracket(tournamentId),
     queryFn: () => playoffsService.getPlayoffBracket(tournamentId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // no caching
+    staleTime: 0,
+    gcTime: 0,
   });
 };
 
