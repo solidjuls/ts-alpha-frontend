@@ -37,7 +37,7 @@ const getTournamentIdFromURL = (id: string | undefined) => {
 }
 
 const getHardcodedTournamentITSL = (tId: string) => {
-  if (["325", "326", "327", "328"].includes(tId)) return "318"
+  if (["345", "346", "347", "348"].includes(tId)) return "318"
   return tId
 }
 const SubmitGameContainer = () => {
