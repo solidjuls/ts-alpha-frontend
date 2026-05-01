@@ -32,6 +32,7 @@ type SubmitGameFormProps = {
   isScheduleMode: boolean;
   usaPlayerName: string;
   ussrPlayerName: string;
+  randomSides: boolean;
 };
 
 const SubmitGameForm = ({
@@ -46,6 +47,7 @@ const SubmitGameForm = ({
   isScheduleMode,
   usaPlayerName,
   ussrPlayerName,
+  randomSides,
 }: SubmitGameFormProps) => {
   return (
     <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -92,9 +94,9 @@ const SubmitGameForm = ({
               control={control}
               render={({ field }) => (
                 <SizedText
-                  labelText="USA Player"
+                  labelText={randomSides ? "Player 1" : "USA Player"}
                   inputValue={usaPlayerName}
-                  placeholder="USA Player"
+                  placeholder={randomSides ? "Player 1" : "USA Player"}
                   onInputValueChange={() => {}} // Read-only
                   key="usaPlayerId"
                   disabled
@@ -108,9 +110,9 @@ const SubmitGameForm = ({
               control={control}
               render={({ field }) => (
                 <SizedText
-                  labelText="USSR Player"
+                  labelText={randomSides ? "Player 2" : "USSR Player"}
                   inputValue={ussrPlayerName}
-                  placeholder="USSR Player"
+                  placeholder={randomSides ? "Player 2" : "USSR Player"}
                   onInputValueChange={() => {}} // Read-only
                   key="ussrPlayerId"
                   disabled
@@ -118,6 +120,27 @@ const SubmitGameForm = ({
                 />
               )}
             />
+
+            {randomSides && (
+              <Controller
+                name="playedAs"
+                control={control}
+                rules={{ required: "Please select which side you played as" }}
+                render={({ field }) => (
+                  <DropdownWithLabel
+                    labelText="PlayedAs"
+                    placeholder="My Side"
+                    items={gameSides}
+                    selectedItem={field.value}
+                    selectedValueProperty="value"
+                    selectedInputProperty="text"
+                    error={!!errors.playedAs}
+                    css={{ width: dropdownWidth }}
+                    onSelect={field.onChange}
+                  />
+                )}
+              />
+            )}
           </>
         )}
 

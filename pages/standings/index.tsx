@@ -30,7 +30,6 @@ import {
 
 type Division = "TORUN" | "SEATTLE";
 
-
 const Standings = () => {
   const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
 

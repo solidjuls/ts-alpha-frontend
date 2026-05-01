@@ -45,6 +45,22 @@ export interface CreateTournamentRequest {
   description?: string;
 }
 
+export interface CreateSubtournamentRequest {
+  tournamentName: string;
+  description?: string;
+  startingDate?: Date;
+  status: number;
+}
+
+export interface SubtournamentResponse {
+  id: number;
+  tournamentName: string;
+  parentId: number;
+  type: 'playoff';
+  description: string;
+  startingDate: Date;
+}
+
 export interface UpdateTournamentRequest {
   id: number;
   tournamentName?: string;
@@ -314,6 +330,18 @@ class TournamentsService {
   // GET /api/tournaments/ongoing-without-schedule - Get ongoing tournaments with no scheduled games
   async getOngoingTournamentsWithoutSchedule(): Promise<Tournament[]> {
     const response = await this.axiosInstance.get('/tournaments/ongoing-without-schedule');
+    return response.data;
+  }
+
+  // POST /api/tournaments/:id/subtournament - Create a subtournament (playoff)
+  async createSubtournament(
+    parentId: number,
+    data: CreateSubtournamentRequest
+  ): Promise<SubtournamentResponse> {
+    const response = await this.axiosInstance.post(
+      `/tournaments/${parentId}/subtournament`,
+      data
+    );
     return response.data;
   }
 }

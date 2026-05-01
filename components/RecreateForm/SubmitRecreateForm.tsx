@@ -28,6 +28,7 @@ const typeaheadWidth = "350px";
 // Define the form data interface
 export interface RecreateGameFormData {
   oldId: string;
+  scheduleId?: string;
   gameCode: string;
   usaPlayerId: string;
   ussrPlayerId: string;
@@ -108,6 +109,23 @@ const SubmitRecreateForm = ({
                   onInputValueChange={field.onChange}
                   css={dropdownCss}
                   error={!!errors.oldId}
+                />
+              )}
+            />
+          </Cell>
+
+          <Cell>
+            <Controller
+              name="scheduleId"
+              control={control}
+              render={({ field }) => (
+                <TextComponent
+                  labelText="Schedule ID (optional)"
+                  inputValue={field.value || ""}
+                  placeholder="Enter Schedule ID"
+                  onInputValueChange={field.onChange}
+                  css={dropdownCss}
+                  error={!!errors.scheduleId}
                 />
               )}
             />
