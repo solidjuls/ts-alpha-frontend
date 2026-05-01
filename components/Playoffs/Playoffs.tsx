@@ -640,9 +640,9 @@ const Bracket: React.FC = () => {
     return index === 0
   }
   if (!selectedTournamentId) return null
-  const columns = [326,327].includes(selectedTournamentId) ? columnsMain : columnsSilver
-  const connections = [326,327].includes(selectedTournamentId) ? connectionsMain : connectionsSilver
-  const idMatchContainer = [326,327].includes(selectedTournamentId) ? 'match' : 'match-silver'
+  const columns = [345,347].includes(selectedTournamentId) ? columnsMain : columnsSilver
+  const connections = [345,347].includes(selectedTournamentId) ? connectionsMain : connectionsSilver
+  const idMatchContainer = [345,347].includes(selectedTournamentId) ? 'match' : 'match-silver'
 
   return (
     <>
