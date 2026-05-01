@@ -327,7 +327,6 @@ const Bracket: React.FC = () => {
           playoffName: undefined,
           nextSquare: null,
         }));
-        console.log("Players loaded to pool:", players);
         // Add all players to the pool - brackets will be configured manually via drag & drop
         setPlayerPool(players);
       },
@@ -644,7 +643,7 @@ const Bracket: React.FC = () => {
   const columns = [326,327].includes(selectedTournamentId) ? columnsMain : columnsSilver
   const connections = [326,327].includes(selectedTournamentId) ? connectionsMain : connectionsSilver
   const idMatchContainer = [326,327].includes(selectedTournamentId) ? 'match' : 'match-silver'
-  console.log("bracket", bracket)
+
   return (
     <>
       <div style={toolbarStyle}>

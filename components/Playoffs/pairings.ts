@@ -69,7 +69,7 @@ class Tournament {
   public advanceWinner(matchId: string, player: Player) {
     const currentMatch = this.bracket.get(matchId);
     if (!currentMatch?.nextMatchId) {
-      console.log(`${player.name} is the Tournament Champion!`);
+
       return;
     }
 
@@ -82,10 +82,9 @@ class Tournament {
       nextMatch.player2 = player;
     }
     
-    console.log(`Moved ${player.name} to ${nextMatch.id}`);
+
   }
 }
 
 // Usage
 const myTournament = new Tournament();
-console.log(myTournament.bracket.get('R1-M1')); // Should show Players 17 & 18

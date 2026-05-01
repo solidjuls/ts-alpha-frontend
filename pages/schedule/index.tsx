@@ -304,7 +304,6 @@ const Schedule = () => {
   const currentTournament = selectedTournament || availableTournaments?.find(t => t.id === dataSchedule?.defaultTournament);
   const isUserAdminForTournament = currentTournament?.adminId?.includes(userId);
 
-  console.log("scheduleData", isUserAdminForTournament, currentTournament);
 
   const clearLocalState = () => {
     setSelectedUserId(null);
