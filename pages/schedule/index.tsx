@@ -355,17 +355,18 @@ const Schedule = () => {
     return index === 0
   }
 
-  let updatedScheduleData = scheduleData;
+  let updatedScheduleData = scheduleData?.filter(game => !game.gameResultsId);
   // if no filters are set
   const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && currentPage === 1;
   if (noFilters && scheduleData && scheduleData.length > 0) {
     // split all completed games, order them by completed game date and then add them back
-    const incompletedGames = scheduleData?.filter(game => !game.gameDate);
-    const orderedCompletedGames = incompletedGames?.sort((a, b) => {
-      return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
-    });
-    updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
+    const incompletedGames = scheduleData?.filter(game => !game.gameResultsId);
+    // const orderedCompletedGames = incompletedGames?.sort((a, b) => {
+    //   return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
+    // });
+    // updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
   }
+
   return (
     <>
       <Head>
