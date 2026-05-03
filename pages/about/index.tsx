@@ -974,6 +974,15 @@ const AboutPage = () => (
 
           <li>
             <Inline>
+              <InternalLink href="/userprofile/2273">Kevin Smith</InternalLink> (AngryDukling):{" "}
+              <ExternalLink href="https://www.youtube.com/@kevinsmith7226" target="_blank" rel="noreferrer">
+                YouTube
+              </ExternalLink>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
               <InternalLink href="/userprofile/2356">Marc Nuño</InternalLink> (AlfaMayor):{" "}
               <ExternalLink href="https://www.youtube.com/@AlfaMayor" target="_blank" rel="noreferrer">
                 YouTube
