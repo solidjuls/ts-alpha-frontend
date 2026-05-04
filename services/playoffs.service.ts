@@ -34,8 +34,8 @@ export interface PlayoffTournament {
 export interface SchedulePlayoffMatchRequest {
   usaPlayerId: string;
   ussrPlayerId: string;
-  usaSeed: string;
-  ussrSeed: string;
+  usaSeed: number;
+  ussrSeed: number;
   tournamentId: number;
   randomSides?: boolean;
   due_date?: string;
