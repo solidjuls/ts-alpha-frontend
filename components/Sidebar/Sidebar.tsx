@@ -46,6 +46,10 @@ const Items = ({
       <HorizontalNavText>Standings</HorizontalNavText>
     </UnstyledLink>
 
+    <UnstyledLink href="/playoffs" passHref onClick={onNavigate}>
+      <HorizontalNavText>Playoffs</HorizontalNavText>
+    </UnstyledLink>
+    
     <UnstyledLink href="/userprofile" passHref onClick={onNavigate}>
       <HorizontalNavText>
         <FormattedMessage id="profileText" defaultMessage="Profile" />
@@ -66,10 +70,6 @@ const Items = ({
 
     <UnstyledLink href="/tournaments" passHref onClick={onNavigate}>
       <HorizontalNavText>Tournaments</HorizontalNavText>
-    </UnstyledLink>
-
-    <UnstyledLink href="/playoffs" passHref onClick={onNavigate}>
-      <HorizontalNavText>Playoffs</HorizontalNavText>
     </UnstyledLink>
 
     <UnstyledLink href="/hall-of-fame" passHref onClick={onNavigate}>

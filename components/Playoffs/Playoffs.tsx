@@ -19,14 +19,15 @@ import { useIsAuthenticated } from '../../hooks/useAuth';
 import { userRoles } from '../../utils/constants';
 import styled from 'styled-components';
 import { connectionsMain, connectionsSilver, marginMap } from './constants';
+import { CreatePlayoffsSchedule } from './CreatePlayoffsSchedule';
 
- interface Player {
+ export interface Player {
    id?: number;
    userName: string | null;
    userId: number | null;
    playoffSquare?: string;
    playoffName?: string;
-   seed: number | null;
+   seed: string;
    nextSquare: string | null;
    winnerUserId?: number | null;
  }
@@ -216,7 +217,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
         id: entry.id,
         userId: entry.userId,
         userName: entry.userName,
-        seed: entry.seed,
+        seed: entry.seed?.toString() || "",
         nextSquare: entry.nextSquare,
         playoffSquare: entry.playoffSquare,
         winnerUserId: entry.winnerUserId,
@@ -350,16 +351,23 @@ const Bracket: React.FC = () => {
   };
 
   // Schedule a match between two players
-  const handleScheduleMatch = (player1Id: number | null, player2Id: number | null, dueDate?: Date) => {
-    if (!player1Id || !player2Id || !selectedTournamentId) return;
+  const handleScheduleMatch = (props: {playerUsa: Player
+    playerUssr: Player
+    bo: string
+    dueDate?: Date | undefined}) => {
+      const { playerUsa, playerUssr, bo, dueDate } = props
+      if (!playerUsa || !playerUssr || !selectedTournamentId) return;
 
-    scheduleMatchMutation.mutate({
-      usaPlayerId: String(player1Id),
-      ussrPlayerId: String(player2Id),
-      tournamentId: selectedTournamentId,
-      randomSides: true,
-      due_date: dueDate?.toISOString(),
-    });
+      scheduleMatchMutation.mutate({
+        usaPlayerId: String(playerUsa.userId),
+        ussrPlayerId: String(playerUssr.userId),
+        usaSeed: playerUsa.seed,
+        ussrSeed: playerUssr.seed,
+        tournamentId: selectedTournamentId,
+        randomSides: true,
+        due_date: dueDate?.toISOString(),
+        bo: "1",
+      });
   };
 
   // Set a player as the winner of a match
@@ -525,7 +533,7 @@ const Bracket: React.FC = () => {
     nextSquare: prev[slotId]?.nextSquare ?? null,
     userName: null,
     userId: null,
-    seed: null,
+    seed: "",
   });
 
   // Helper to place player in a slot while preserving id and nextSquare
@@ -723,19 +731,14 @@ const Bracket: React.FC = () => {
                   </div>
                   <div style={roundFlexStyle}>
                     {groupIntoPairs(col.ids).map((pair, matchIndex) => {
-                      const player1 = bracket[pair[0]];
-                      const player2 = bracket[pair[1]];
-                      const canSchedule = player1?.userId && player2?.userId;
+                      const playerUsa = bracket[pair[0]];
+                      const playerUssr = bracket[pair[1]];
+                      const canSchedule = playerUsa?.userId && playerUssr?.userId;
                       const id=`${idMatchContainer}-${col.key}-${matchIndex}`
                       
                       return (
                         <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
-                          {isAdmin && canSchedule && <button title="Schedule match" style={scheduleButtonStyle} disabled={scheduleMatchMutation.isPending} onClick={() => {
-                            const confirmed = window.confirm(`A schedule ${player1?.userName} vs ${player2?.userName} will be created. Confirm?`);
-                            if (confirmed) {
-                              handleScheduleMatch(player1?.userId, player2?.userId, col.dueDate);
-                            }
-                          }}>Create Schedule</button>}
+                          {isAdmin && canSchedule && <CreatePlayoffsSchedule playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} disabled={scheduleMatchMutation.isPending} onClick={handleScheduleMatch} />}
                           {pair.map((id, i) => (
                             <DroppableSlot
                               key={id}
@@ -837,17 +840,7 @@ const checkboxStyle: React.CSSProperties = {
   cursor: 'pointer',
 };
 
-const scheduleButtonStyle: React.CSSProperties = {
-  padding: 0,
-  color: 'black',
-  border: 'none',
-  fontSize: '12px',
-  marginBottom: '4px',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
+
 
 const winnerButtonStyle: React.CSSProperties = {
   position: 'absolute',
