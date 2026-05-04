@@ -27,7 +27,7 @@ import { CreatePlayoffsSchedule } from './CreatePlayoffsSchedule';
    userId: number | null;
    playoffSquare?: string;
    playoffName?: string;
-   seed: string;
+   seed: number;
    nextSquare: string | null;
    winnerUserId?: number | null;
  }
@@ -217,7 +217,7 @@ const parseBracketData = (entries: PlayoffEntryDto[]): Record<string, Player | u
         id: entry.id,
         userId: entry.userId,
         userName: entry.userName,
-        seed: entry.seed?.toString() || "",
+        seed: entry.seed,
         nextSquare: entry.nextSquare,
         playoffSquare: entry.playoffSquare,
         winnerUserId: entry.winnerUserId,
@@ -323,7 +323,7 @@ const Bracket: React.FC = () => {
         const players: Player[] = results.data.map((row) => ({
           userId: row.userId ? Number(row.userId) : null,
           userName: row.userName || null,
-          seed: row.seed ? Number(row.seed) : null,
+          seed: row.seed ? Number(row.seed) : 99,
           playoffSquare: undefined,
           playoffName: undefined,
           nextSquare: null,
@@ -533,7 +533,7 @@ const Bracket: React.FC = () => {
     nextSquare: prev[slotId]?.nextSquare ?? null,
     userName: null,
     userId: null,
-    seed: "",
+    seed: 99,
   });
 
   // Helper to place player in a slot while preserving id and nextSquare
