@@ -20,6 +20,7 @@ import { userRoles } from '../../utils/constants';
 import styled from 'styled-components';
 import { connectionsMain, connectionsSilver, marginMap } from './constants';
 import { CreatePlayoffsSchedule } from './CreatePlayoffsSchedule';
+import { Flex } from 'components/Atoms';
 
  export interface Player {
    id?: number;
@@ -748,19 +749,21 @@ const Bracket: React.FC = () => {
                       return (
                         <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
                           {isAdmin && canSchedule && <CreatePlayoffsSchedule defaultBO={getDefaultBO(selectedTournamentId)} playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} onClick={handleScheduleMatch} />}
-                          {pair.map((id, i) => (
-                            <DroppableSlot
-                              key={id}
-                              id={id}
-                              isAdmin={isAdmin}
-                              player={bracket[id]}
-                              onSetWinner={handleSetWinner}
-                              onAdvance={advance}
-                              isOdd={i % 2 !== 0}
-                              disabled={!isAdmin}
-                              isSettingWinner={setWinnerMutation.isPending}
-                            />
-                          ))}
+                          <Flex style={{ flexDirection: 'column', width: '100%'}}>
+                            {pair.map((id, i) => (
+                              <DroppableSlot
+                                key={id}
+                                id={id}
+                                isAdmin={isAdmin}
+                                player={bracket[id]}
+                                onSetWinner={handleSetWinner}
+                                onAdvance={advance}
+                                isOdd={i % 2 !== 0}
+                                disabled={!isAdmin}
+                                isSettingWinner={setWinnerMutation.isPending}
+                              />
+                            ))}
+                          </Flex>
                         </MatchContainer>
                       );
                     })}

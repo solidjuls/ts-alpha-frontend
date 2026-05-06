@@ -99,7 +99,7 @@ const CreatePlayoffsSchedule: React.FC<CreatePlayoffScheduleProps> = ({ defaultB
   return (
     <>
       <button onClick={() => setOpen(true)}>
-        Open
+        O
       </button>
 
       <ConfirmModal
