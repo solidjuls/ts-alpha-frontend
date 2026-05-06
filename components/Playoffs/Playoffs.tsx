@@ -79,7 +79,16 @@ export const TabContainer = styled.div`
 
  const containerId = 'root-container'
 
- // Player Pool Draggable Item
+ const getDefaultBO = (tournamentId: number) => {
+  if ([345, 347].includes(tournamentId)) {
+    return "3"
+  }
+  if ([346, 348].includes(tournamentId)) {
+    return "1"
+  }
+  return "1"
+ }
+
 const PoolPlayer: React.FC<{ player: Player; disabled?: boolean }> = ({ player, disabled }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `pool-${player.userId}`,
@@ -366,7 +375,7 @@ const Bracket: React.FC = () => {
         tournamentId: selectedTournamentId,
         randomSides: true,
         due_date: dueDate?.toISOString(),
-        bo: "1",
+        bo,
       });
   };
 
@@ -738,7 +747,7 @@ const Bracket: React.FC = () => {
                       
                       return (
                         <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
-                          {isAdmin && canSchedule && <CreatePlayoffsSchedule playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} disabled={scheduleMatchMutation.isPending} onClick={handleScheduleMatch} />}
+                          {isAdmin && canSchedule && <CreatePlayoffsSchedule defaultBO={getDefaultBO(selectedTournamentId)} playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} onClick={handleScheduleMatch} />}
                           {pair.map((id, i) => (
                             <DroppableSlot
                               key={id}
