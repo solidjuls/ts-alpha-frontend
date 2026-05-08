@@ -911,7 +911,7 @@ const columnStyle: React.CSSProperties = {
 const roundFlexStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  minWidth: '180px',
+  minWidth: '200px',
   flexGrow: 1,
   gap: '8px',
 };
