@@ -20,6 +20,7 @@ import { userRoles } from '../../utils/constants';
 import styled from 'styled-components';
 import { connectionsMain, connectionsSilver, marginMap } from './constants';
 import { CreatePlayoffsSchedule } from './CreatePlayoffsSchedule';
+import { Flex } from 'components/Atoms';
 
  export interface Player {
    id?: number;
@@ -79,7 +80,16 @@ export const TabContainer = styled.div`
 
  const containerId = 'root-container'
 
- // Player Pool Draggable Item
+ const getDefaultBO = (tournamentId: number) => {
+  if ([345, 347].includes(tournamentId)) {
+    return "3"
+  }
+  if ([346, 348].includes(tournamentId)) {
+    return "1"
+  }
+  return "1"
+ }
+
 const PoolPlayer: React.FC<{ player: Player; disabled?: boolean }> = ({ player, disabled }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `pool-${player.userId}`,
@@ -269,7 +279,6 @@ const Bracket: React.FC = () => {
   // Check if user is admin
   const { user } = useIsAuthenticated();
   const isAdmin = user?.role === userRoles.ADMIN || user?.role === userRoles.SUPERADMIN;
-
   const saveBracketMutation = useSavePlayoffBracket();
   const updateBracketMutation = useUpdatePlayoffBracket();
   const scheduleMatchMutation = useSchedulePlayoffMatch();
@@ -366,13 +375,13 @@ const Bracket: React.FC = () => {
         tournamentId: selectedTournamentId,
         randomSides: true,
         due_date: dueDate?.toISOString(),
-        bo: "1",
+        bo,
       });
   };
 
   // Set a player as the winner of a match
   const handleSetWinner = (id: number) => {
-    setWinnerMutation.mutate({ id });
+    setWinnerMutation.mutate({ id, tournamentId: selectedTournamentId });
   };
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
@@ -738,20 +747,22 @@ const Bracket: React.FC = () => {
                       
                       return (
                         <MatchContainer key={id} id={id} extraMargin={marginMap[id]}>
-                          {isAdmin && canSchedule && <CreatePlayoffsSchedule playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} disabled={scheduleMatchMutation.isPending} onClick={handleScheduleMatch} />}
-                          {pair.map((id, i) => (
-                            <DroppableSlot
-                              key={id}
-                              id={id}
-                              isAdmin={isAdmin}
-                              player={bracket[id]}
-                              onSetWinner={handleSetWinner}
-                              onAdvance={advance}
-                              isOdd={i % 2 !== 0}
-                              disabled={!isAdmin}
-                              isSettingWinner={setWinnerMutation.isPending}
-                            />
-                          ))}
+                          {isAdmin && canSchedule && <CreatePlayoffsSchedule defaultBO={getDefaultBO(selectedTournamentId)} playerUsa={playerUsa} playerUssr={playerUssr} dueDate={col.dueDate} onClick={handleScheduleMatch} />}
+                          <Flex style={{ flexDirection: 'column', width: '100%'}}>
+                            {pair.map((id, i) => (
+                              <DroppableSlot
+                                key={id}
+                                id={id}
+                                isAdmin={isAdmin}
+                                player={bracket[id]}
+                                onSetWinner={handleSetWinner}
+                                onAdvance={advance}
+                                isOdd={i % 2 !== 0}
+                                disabled={!isAdmin}
+                                isSettingWinner={setWinnerMutation.isPending}
+                              />
+                            ))}
+                          </Flex>
                         </MatchContainer>
                       );
                     })}
@@ -899,7 +910,7 @@ const columnStyle: React.CSSProperties = {
 const roundFlexStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  minWidth: '180px',
+  minWidth: '200px',
   flexGrow: 1,
   gap: '8px',
 };
@@ -949,7 +960,11 @@ const Square = React.forwardRef<HTMLDivElement, SquareProps>(
       <div
         ref={ref}
         className={classNames.join(' ')}
-        onDoubleClick={onDoubleClick}
+        onDoubleClick={() => {
+          onDoubleClick?.()
+          // optimistic response
+          classNames.push('square--victory')
+        }}
       >
         {children}
       </div>

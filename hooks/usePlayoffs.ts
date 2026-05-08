@@ -69,7 +69,6 @@ export const useSetPlayoffWinner = () => {
   return useMutation<void, Error, SetPlayoffWinnerRequest>({
     mutationFn: (request) => playoffsService.setPlayoffWinner(request),
     onSuccess: (_data, variables) => {
-      console.log('Playoff winner set successfully');
       // Invalidate the bracket query to refetch updated data
       queryClient.invalidateQueries({
         queryKey: PLAYOFFS_QUERY_KEYS.bracket(variables.tournamentId),

@@ -2,7 +2,7 @@
 .match-container {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 2px;
   padding: 4px;
   border: 1px solid #e5e7eb;
