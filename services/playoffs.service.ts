@@ -16,6 +16,7 @@ export interface PlayoffEntryDto {
 // Request type for setting a winner
 export interface SetPlayoffWinnerRequest {
   id: number;
+  tournamentId: number // to invalidate the bracket query
 }
 
 // Response type from the API (adjust based on actual backend response)

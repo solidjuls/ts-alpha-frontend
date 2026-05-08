@@ -279,7 +279,6 @@ const Bracket: React.FC = () => {
   // Check if user is admin
   const { user } = useIsAuthenticated();
   const isAdmin = user?.role === userRoles.ADMIN || user?.role === userRoles.SUPERADMIN;
-
   const saveBracketMutation = useSavePlayoffBracket();
   const updateBracketMutation = useUpdatePlayoffBracket();
   const scheduleMatchMutation = useSchedulePlayoffMatch();
@@ -382,7 +381,7 @@ const Bracket: React.FC = () => {
 
   // Set a player as the winner of a match
   const handleSetWinner = (id: number) => {
-    setWinnerMutation.mutate({ id });
+    setWinnerMutation.mutate({ id, tournamentId: selectedTournamentId });
   };
 
   // Bracket config is now merged into bracket state (each slot has nextSquare)
@@ -961,7 +960,11 @@ const Square = React.forwardRef<HTMLDivElement, SquareProps>(
       <div
         ref={ref}
         className={classNames.join(' ')}
-        onDoubleClick={onDoubleClick}
+        onDoubleClick={() => {
+          onDoubleClick?.()
+          // optimistic response
+          classNames.push('square--victory')
+        }}
       >
         {children}
       </div>
