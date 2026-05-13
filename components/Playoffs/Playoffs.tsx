@@ -75,6 +75,9 @@ export const TabContainer = styled.div`
   background-color: var(--bg-card);
 `;
 
+const FIXED_WIDTH = "1512px"
+const FIXED_HEIGHT = "1395px"
+
  const containerId = 'root-container'
 
  const getDefaultBO = (tournamentId: number) => {
@@ -770,7 +773,7 @@ const Bracket: React.FC = () => {
                 style={{ 
                   position: 'absolute', 
                   top: 0, left: 0, 
-                  width: '100%', height: '100%', 
+                  width: '2520px', height: '2520px', 
                   pointerEvents: 'none' 
                 }}
               >
@@ -844,20 +847,18 @@ const mainContainerStyle: React.CSSProperties = {
   position: 'relative',
   flexDirection: 'row',
   backgroundColor: '#fff',
-  // width: '1512px',
-  height: '1395px',
-  minHeight: '1395px',
-  // maxWidth: '1512px',
-  maxHeight: '1395px',
+  height: FIXED_HEIGHT,
+  minHeight: FIXED_HEIGHT,
+  maxHeight: FIXED_HEIGHT,
   overflow: 'auto',
 };
 
 const viewportStyle: React.CSSProperties = {
   display: 'flex',
-  width: '1512px',
-  height: '1395px',
-  minWidth: '1512px',
-  minHeight: '1395px',
+  width: FIXED_WIDTH,
+  height: FIXED_HEIGHT,
+  minWidth: FIXED_WIDTH,
+  minHeight: FIXED_HEIGHT,
   padding: '20px',
   gap: '80px',
   alignItems: 'center',

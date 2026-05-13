@@ -26,7 +26,8 @@ export const marginMap = {
     'match-Quarter-Finals-3': '120px',
     'match-Quarter-Finals-4': '120px',
     'match-Semi-Finals-0': '60px',
-    'match-Semi-Finals-1': '120px'
+    'match-Semi-Finals-1': '120px',
+    'match-main-finals-0': '180px'
 };
 
 export const connectionsMain = [
@@ -61,6 +62,9 @@ export const connectionsMain = [
   { from: "match-Quarter-Finals-1", to: "match-Semi-Finals-0" },
   { from: "match-Quarter-Finals-2", to: "match-Semi-Finals-1" },
   { from: "match-Quarter-Finals-3", to: "match-Semi-Finals-1" },
+
+    { from: "match-Semi-Finals-0", to: "match-main-finals-0" },
+  { from: "match-Semi-Finals-1", to: "match-main-finals-0" },
 ];
 
 export const connectionsSilver = [
