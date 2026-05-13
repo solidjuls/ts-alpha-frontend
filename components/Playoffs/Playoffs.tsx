@@ -68,9 +68,6 @@ import { Flex } from 'components/Atoms';
 export const TabContainer = styled.div`
   display: inline-flex;
   align-self: flex-start;
-  width: fit-content;
-  max-width: 100%;
-  overflow-x: auto; 
   white-space: nowrap; 
 
   border-radius: 8px;
@@ -802,16 +799,7 @@ const toolbarStyle: React.CSSProperties = {
   borderBottom: '1px solid #e5e7eb',
   backgroundColor: '#f9fafb',
   gap: '12px',
-};
-
-const dropdownStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  border: '1px solid #d1d5db',
-  borderRadius: '6px',
-  fontSize: '14px',
-  backgroundColor: '#fff',
-  cursor: 'pointer',
-  minWidth: '200px',
+  overflow: 'scroll'
 };
 
 const saveButtonStyle: React.CSSProperties = {
@@ -851,29 +839,6 @@ const checkboxStyle: React.CSSProperties = {
   cursor: 'pointer',
 };
 
-
-
-const winnerButtonStyle: React.CSSProperties = {
-  position: 'absolute',
-  right: '2px',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  width: '16px',
-  height: '16px',
-  padding: 0,
-  backgroundColor: '#10b981',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '50%',
-  fontSize: '12px',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  lineHeight: 1,
-};
-
 const mainContainerStyle: React.CSSProperties = {
   display: 'flex',
   position: 'relative',
@@ -881,7 +846,6 @@ const mainContainerStyle: React.CSSProperties = {
   backgroundColor: '#fff',
   // width: '1512px',
   height: '1395px',
-  minWidth: '1512px',
   minHeight: '1395px',
   // maxWidth: '1512px',
   maxHeight: '1395px',
@@ -972,12 +936,6 @@ const Square = React.forwardRef<HTMLDivElement, SquareProps>(
   }
 )
 Square.displayName='Square'  
-// ffff
-const labelStyle: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#6b7280',
-  marginBottom: '2px',
-};
 
 const headerStyle: React.CSSProperties = {
   fontSize: '11px',
