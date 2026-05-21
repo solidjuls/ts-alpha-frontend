@@ -14,11 +14,11 @@ import {
   PlayerInfo,
   PlayerName,
   PlayerEmail,
-  PlayerRating,
   RightSide,
   WarnButton,
   DangerButton
  } from "./TournamentPlayersList.styled";
+import { UnstyledLink } from "styles/games.styled";
 
 interface TournamentPlayersListProps {
   tournamentId: string;
@@ -87,7 +87,6 @@ const TournamentPlayersList = ({
       "email",
       "name",
       "countryCode",
-      "rating",
       "phoneNumber",
       "playdekName",
       "registeredAt",
@@ -126,10 +125,12 @@ const TournamentPlayersList = ({
         ) : (
           players.map((player) => (
             <ResponsiveRow key={player.registrationId}>
-              <PlayerInfo>
-                <PlayerName title={player.name}>{player.name} ({player.rating})</PlayerName>
-                <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
-              </PlayerInfo>
+              <UnstyledLink href={`/userprofile/${player.userId}`}>
+                <PlayerInfo>
+                  <PlayerName title={player.name}>{player.name} </PlayerName>
+                  <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
+                </PlayerInfo>
+              </UnstyledLink>
               <RightSide>
 
 
