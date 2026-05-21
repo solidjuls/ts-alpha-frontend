@@ -44,6 +44,7 @@ export interface AddScheduleParams {
   tournamentId: string;
   usaPlayerId: string;
   ussrPlayerId: string;
+  randomSides: boolean;
   dueDate: string;
   gameCode: string;
 }
@@ -121,6 +122,7 @@ class ScheduleService {
         usa: params.usaPlayerId,
         ussr: params.ussrPlayerId,
         t: params.tournamentId,
+        randomSides: params.randomSides,
         d: params.dueDate,
         gc: params.gameCode
       }

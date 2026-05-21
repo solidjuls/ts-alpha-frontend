@@ -51,6 +51,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   const [usaPlayer, setUsaPlayer] = React.useState("");
   const [ussrPlayer, setUssrPlayer] = React.useState("");
   const [gameCode, setGameCode] = React.useState("");
+  const [random, setRandom] = React.useState(false)
   const [dueDate, setDueDate] = React.useState<Date>(new Date());
   const [isCreatingSchedule, setIsCreatingSchedule] = React.useState(false);
   const [scheduleMessage, setScheduleMessage] = React.useState("");
@@ -116,15 +117,11 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
         tournamentId: tournament,
         usaPlayerId: usaPlayer,
         ussrPlayerId: ussrPlayer,
+        randomSides: random,
         dueDate: dueDate.toISOString(),
         gameCode: gameCode || "", // Optional field
       });
 
-      // Reset form on success
-      setUsaPlayer("");
-      setUssrPlayer("");
-      setGameCode("");
-      setDueDate(new Date());
       setScheduleMessage("Schedule created successfully!");
 
       // Clear success message after 3 seconds
@@ -176,7 +173,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
             </Flex>
           </ScheduleSection>
           <ScheduleSection>
-            <SectionTitle>Update Schedule</SectionTitle>
+            <SectionTitle>Create Schedule</SectionTitle>
 
             <FormRow>
               <UserTypeahead
@@ -228,7 +225,7 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
                   setScheduleMessage("");
                 }}
               />
-
+              <Checkbox text='Random' checked={random} onCheckedChange={() => setRandom(!random)} />
               <Button
                 onClick={handleCreateSchedule}
                 disabled={isCreatingSchedule || !usaPlayer || !ussrPlayer || !dueDate}
