@@ -67,6 +67,7 @@ export const PlayerInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2px;
+  cursor: pointer;
   min-width: 0;
 `;
 
