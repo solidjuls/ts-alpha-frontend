@@ -266,7 +266,7 @@ const AboutPage = () => (
             <strong>Regional/National Leagues</strong> - Local leagues feeding into the Champions League.
             <NestedList>
               <li>
-                Arab Tournament - <InternalLink href="/userprofile/3163">Driss Kadata</InternalLink>
+                Arab Tournament - <InternalLink href="/userprofile/1661">Bechara Fayad</InternalLink>
               </li>
               <li>
                 Atlantic League (US) - <InternalLink href="/userprofile/2232">Justin Abramson</InternalLink>
