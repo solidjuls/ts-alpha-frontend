@@ -220,6 +220,11 @@ export const TournamentText = styled(Text)`
   font-size: small;
   color: inherit;
 `;
+export const HigherSeedText = styled(Text)`
+  font-size: small;
+  color: inherit;
+  margin-left: 12px;
+`;
 
 export const ColumnUnstyledLink = styled(UnstyledLink)`
   display: flex;

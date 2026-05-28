@@ -17,6 +17,7 @@ export interface ScheduleItem {
   gameResultsId: string | null;
   gameCode: string;
   randomSides: boolean;
+  bestOf: number | null;
   idUsa: string;
   idUssr: string;
 }
