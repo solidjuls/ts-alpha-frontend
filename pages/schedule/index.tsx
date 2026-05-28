@@ -97,7 +97,7 @@ const PlayerInfoBox = ({
   bestOf
 }: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf">) => {
   let textType = 'Fixed Sides'
-  if (bestOf && bestOf > 0) {
+  if (bestOf && bestOf > 0 && randomSides) {
     textType = 'Higher seed chooses'
   } else if (randomSides) {
     textType = 'Random game'
