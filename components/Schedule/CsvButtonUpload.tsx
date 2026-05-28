@@ -23,14 +23,15 @@ export default function CsvUploadButton({ tournament } : { tournament: string })
       "game_code",
       "usa_player_id",
       "ussr_player_id"
+      // "random"
     ];
     const headers = results.meta.fields;
 
-    const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
-    if (!isHeaderValid) {
-      setStatus(`❌ Invalid schema! Expected headers: ${expectedHeaders.join(', ')}, but got: ${headers?.join(', ') || 'none'}`);
-      return;
-    }
+    // const isHeaderValid = JSON.stringify(headers) === JSON.stringify(expectedHeaders);
+    // if (!isHeaderValid) {
+    //   setStatus(`❌ Invalid schema! Expected headers: ${expectedHeaders.join(', ')}, but got: ${headers?.join(', ') || 'none'}`);
+    //   return;
+    // }
 
     let valid = true;
     results.data.forEach((row: any, i: number) => {

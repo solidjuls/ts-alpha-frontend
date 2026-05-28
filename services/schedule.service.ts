@@ -17,6 +17,7 @@ export interface ScheduleItem {
   gameResultsId: string | null;
   gameCode: string;
   randomSides: boolean;
+  bestOf: number | null;
   idUsa: string;
   idUssr: string;
 }
@@ -71,6 +72,7 @@ export interface CsvScheduleRow {
   game_code: string;
   usa_player_id: string;
   ussr_player_id: string;
+  random?: 1 | 0
 }
 
 export interface UploadCsvScheduleParams {

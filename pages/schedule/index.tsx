@@ -36,6 +36,7 @@ import {
   PageTitle,
   SpinnerContainer,
   DeleteButton,
+  HigherSeedText,
 } from "components/Schedule/Schedule.styled";
 import { useDeleteSchedule } from "hooks/useSchedule";
 
@@ -64,7 +65,8 @@ const resolveLink = ({
   idUssr,
   tournamentId,
   gameCode,
-  randomSides
+  randomSides,
+  bestOf
 }: {
   gameResultsId: string | null;
   id: string;
@@ -73,10 +75,15 @@ const resolveLink = ({
   tournamentId: string;
   gameCode: string;
   randomSides: boolean;
+  bestOf: number | null;
 }) => {
-  if (!gameResultsId)
-    return `/submit-game${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode, randomSides })}`;
-
+  if (!gameResultsId) {
+    let randomMode = randomSides
+    if (bestOf && bestOf > 0) {
+      if(!randomMode) randomMode = true
+    }
+    return `/submit-game${generateQueryParams({ id, idUsa, idUssr, tournamentId, gameCode, randomSides: randomMode })}`;
+  }
   return `/games/${gameResultsId}`;
 };
 
@@ -86,31 +93,40 @@ const PlayerInfoBox = ({
   countryUsa,
   countryUssr,
   gameWinner,
-  randomSides
-}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides">) => {
+  randomSides,
+  bestOf
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf">) => {
+  let textType = 'Fixed Sides'
+  if (bestOf && bestOf > 0) {
+    textType = 'Higher seed chooses'
+  } else if (randomSides) {
+    textType = 'Random game'
+  }
   return (
-    <FlexRow>
-      <PlayerInfoContainer>
-        {countryUsa && <FlagIcon code={countryUsa} />}
-        <Text
-          fontSize="medium"
-          strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
-        >
-          {nameUsa}
-        </Text>
-      </PlayerInfoContainer>
-      <span>vs</span>
-      <PlayerInfoContainer style={{ justifyContent: "space-between" }}>
-        {countryUssr && <FlagIcon code={countryUssr} />}
-        <Text
-          fontSize="medium"
-          strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
-        >
-          {nameUssr}
-        </Text>
-      </PlayerInfoContainer>
-      <strong>{randomSides && '(Random)'}</strong>
-    </FlexRow>
+    <Flex style={{ flexDirection: 'column'}}>
+      <FlexRow>
+        <PlayerInfoContainer>
+          {countryUsa && <FlagIcon code={countryUsa} />}
+          <Text
+            fontSize="medium"
+            strong={getWinnerText(gameWinner as GameWinner) === "USA" ? "bold" : undefined}
+          >
+            {nameUsa}
+          </Text>
+        </PlayerInfoContainer>
+        <span>vs</span>
+        <PlayerInfoContainer style={{ justifyContent: "space-between" }}>
+          {countryUssr && <FlagIcon code={countryUssr} />}
+          <Text
+            fontSize="medium"
+            strong={getWinnerText(gameWinner as GameWinner) === "USSR" ? "bold" : undefined}
+          >
+            {nameUssr}
+          </Text>
+        </PlayerInfoContainer>
+      </FlexRow>
+      <HigherSeedText>{textType}</HigherSeedText>
+    </Flex>
   );
 };
 
@@ -170,6 +186,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             tournamentId: schedule.tournamentId,
             gameCode: schedule.gameCode,
             randomSides: schedule.randomSides,
+            bestOf: schedule.bestOf
           })}
         >
           <TournamentInfoFlex>
@@ -185,6 +202,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             nameUsa={schedule.nameUsa}
             nameUssr={schedule.nameUssr}
             randomSides={schedule.randomSides}
+            bestOf={schedule.bestOf}
           />
         </ColumnUnstyledLink>
       </PlayerInfo>
