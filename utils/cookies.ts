@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
+import { jwtDecode } from 'jwt-decode';
 
 // Token storage key
 const TOKEN_KEY = 'auth_token';
@@ -33,11 +34,7 @@ export const removeToken = (): void => {
 // Decode token without verification (client-side) - for reading claims
 export const decodeToken = (token: string): UserPayload | null => {
   try {
-    // Split the JWT and decode the payload (middle part)
-    const base64Payload = token.split('.')[1];
-    if (!base64Payload) return null;
-
-    const payload = JSON.parse(atob(base64Payload));
+    const payload = jwtDecode(token);
     return {
       id: payload.id,
       name: payload.name,
@@ -60,12 +57,7 @@ export const getUserFromToken = (): UserPayload | null => {
 // Check if token is expired (client-side)
 export const isTokenExpired = (token: string): boolean => {
   try {
-    const base64Payload = token.split('.')[1];
-    if (!base64Payload) {
-      return true;
-    }
-
-    const payload = JSON.parse(atob(base64Payload));
+    const payload = jwtDecode(token);
     if (!payload.exp) {
       return false; // No expiration
     }

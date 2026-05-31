@@ -157,7 +157,6 @@ export const authService = {
   impersonate: async (data: ImpersonateRequest): Promise<LoginResponse> => {
     const response = await authApi.post('/auth/impersonate', data);
     const responseData = response.data;
-
     // Save token to localStorage
     if (responseData.token) {
       setToken(responseData.token);
@@ -175,7 +174,6 @@ export const authService = {
   // Logout user
   logout: async (): Promise<{ success: boolean }> => {
     removeToken();
-
     // Optionally call backend to invalidate session (if needed)
     try {
       await authApi.post('/auth/logout');
