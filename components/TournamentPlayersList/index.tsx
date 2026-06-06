@@ -88,6 +88,7 @@ const TournamentPlayersList = ({
       "name",
       "countryCode",
       "phoneNumber",
+      "rating",
       "playdekName",
       "registeredAt",
       "userId",
@@ -127,7 +128,7 @@ const TournamentPlayersList = ({
             <ResponsiveRow key={player.registrationId}>
               <UnstyledLink href={`/userprofile/${player.userId}`}>
                 <PlayerInfo>
-                  <PlayerName title={player.name}>{player.name} </PlayerName>
+                  <PlayerName title={player.name}>{player.name} ({player.rating})</PlayerName>
                   <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
                 </PlayerInfo>
               </UnstyledLink>
