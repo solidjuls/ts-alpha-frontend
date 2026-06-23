@@ -439,7 +439,7 @@ const Bracket: React.FC = () => {
       {
         title: 'FINALS',
         key: 'main-finals',
-        ids: ['r6-1'],
+        ids: ['r6-1','r6-2'],
         dueDate: undefined,
       },
     ];
