@@ -159,7 +159,7 @@ const AboutPage = () => (
             players, 20-game regular season + playoffs).
           </li>
           <li>
-            <ExternalLink href="https://docs.google.com/spreadsheets/d/1h9T_3mAAAhV34ldcqQ549pOCEGy1EjMGl8Fc7XWmb18/">
+            <ExternalLink href="https://docs.google.com/spreadsheets/d/1N84mRjQIGvJcFAYfxe1G7GDaTNmMP0rX2KeLvD9QgzQ/edit?gid=1370440505#gid=1370440505">
               OTSL
             </ExternalLink>{" "}
             - A smaller, more casual two-tiered league with non-geographic divisions.
@@ -395,9 +395,9 @@ const AboutPage = () => (
         </Paragraph>
 
         <Paragraph>
-          To sign up for tournaments and create a user profile, please use this{" "}
-          <ExternalLink href="https://forms.gle/3tj6uSNHnY9vr8KH9" target="_blank" rel="noreferrer">
-            Google form
+          To sign up for tournaments and create a user profile, please {" "}
+          <ExternalLink href="https://twilight-struggle.com/register" target="_blank" rel="noreferrer">
+            register
           </ExternalLink>
           .
         </Paragraph>
