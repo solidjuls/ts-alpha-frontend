@@ -14,6 +14,7 @@ import {
   useAddToWaitlist,
   useRemoveFromWaitlist,
   useToggleWaitlist,
+  useGenerateResultText,
 } from "hooks/useTournaments";
 import { useRouter } from "next/router";
 import { userRoles } from "utils/constants";
@@ -24,6 +25,12 @@ import { useAuth } from "contexts/AuthProviderNew";
 import TournamentEditForm from "components/TournamentEditForm";
 import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
+import LabelCopy from "components/LabelCopy/LabelCopy";
+import { LabelCopyBox } from "components/LabelCopy/LabelCopyBox";
+import countryFlags from "public/country_flags.json";
+import { getWinnerText } from "utils/games";
+import type { GameWinner } from "types/game.types";
+import type { ResultTextItem } from "services/tournaments.service";
 import {
   tournamentStatusHelpers,
   ACTION_TO_STATUS,
@@ -138,6 +145,10 @@ const TournamentDetail = () => {
   const [showManualRegistration, setShowManualRegistration] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [isManualRegistering, setIsManualRegistering] = useState(false);
+  const [showTextResults, setShowTextResults] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [resultTextItems, setResultTextItems] = useState<ResultTextItem[]>([]);
+  const [copiedAll, setCopiedAll] = useState(false);
 
   const { data, isLoading, refetch } = useTournamentsById([id as string]);
 
@@ -147,6 +158,7 @@ const TournamentDetail = () => {
   const addToWaitlistMutation = useAddToWaitlist();
   const removeFromWaitlistMutation = useRemoveFromWaitlist();
   const toggleWaitlistMutation = useToggleWaitlist();
+  const generateResultTextMutation = useGenerateResultText();
 
   const tournament = data?.[0];
 
@@ -315,6 +327,62 @@ const TournamentDetail = () => {
     }
   };
 
+  interface CountryFlags {
+    [countryCode: string]: string;
+  }
+
+  const generateResultTextString = (item: ResultTextItem): string => {
+    const flags: CountryFlags = countryFlags as CountryFlags;
+    const endTurnText =
+      item.endTurn === 11 ? "Final Scoring" : `Turn ${item.endTurn}`;
+    const endModeText = item.endMode ?? "";
+
+    if (item.gameWinner === "3") {
+      return `${item.tournamentName}: ${item.game_code} - ${item.usaPlayer} ${flags[item.usaCountryCode?.toLowerCase()]} (USA) tied with ${item.ussrPlayer} ${flags[item.ussrCountryCode?.toLowerCase()]} in ${endTurnText} (${endModeText})`;
+    }
+
+    let winnerName = "";
+    let loserName = "";
+
+    if (item.gameWinner === "1") {
+      winnerName = `${item.usaPlayer} ${flags[item.usaCountryCode?.toLowerCase()]}`;
+      loserName = `${item.ussrPlayer} ${flags[item.ussrCountryCode?.toLowerCase()]}`;
+    } else if (item.gameWinner === "2") {
+      winnerName = `${item.ussrPlayer} ${flags[item.ussrCountryCode?.toLowerCase()]}`;
+      loserName = `${item.usaPlayer} ${flags[item.usaCountryCode?.toLowerCase()]}`;
+    }
+
+    return `${item.tournamentName}: ${item.game_code} - ${winnerName} (${getWinnerText(
+      item.gameWinner as GameWinner
+    )}) has defeated ${loserName} in ${endTurnText} (${endModeText})`;
+  };
+
+  const handleGenerateResultText = async () => {
+    if (!tournament || !selectedDate) return;
+
+    try {
+      const result = await generateResultTextMutation.mutateAsync({
+        tournamentId: parseInt(tournament.id),
+        date: selectedDate,
+      });
+      setResultTextItems(result);
+    } catch (e) {
+      console.error("Generate result text error:", e);
+      alert("Failed to generate result text. Please try again.");
+    }
+  };
+
+  const handleCopyAll = async () => {
+    const allText = resultTextItems.map(generateResultTextString).join("\n\n");
+    try {
+      await navigator.clipboard.writeText(allText);
+      setCopiedAll(true);
+      setTimeout(() => setCopiedAll(false), 2000);
+    } catch (e) {
+      console.error("Failed to copy text: ", e);
+    }
+  };
+
   return (
     <DetailContainer>
       <Page>
@@ -376,6 +444,10 @@ const TournamentDetail = () => {
 
                 <PillButton onClick={() => setShowManualRegistration((v) => !v)}>
                   {showManualRegistration ? "Cancel Registration" : "Register User"}
+                </PillButton>
+
+                <PillButton onClick={() => setShowTextResults((v) => !v)}>
+                  {showTextResults ? "Cancel Text Results" : "Text Results"}
                 </PillButton>
 
                 {availableActions.map((action) => {
@@ -460,6 +532,65 @@ const TournamentDetail = () => {
             onCancel={() => setIsEditing(false)}
           />
         )}
+
+        {/* Text Results */}
+        {isUserAdmin && showTextResults && (
+          <InlineFormCard>
+            <CardBody>
+              <FormHeader>
+                <FormTitle>Generate Result Text</FormTitle>
+                <FormDescription>
+                  Select a date and generate result text for all games played on that date.
+                </FormDescription>
+              </FormHeader>
+
+              <FormRow>
+                <FormField>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      border: "1px solid var(--border)",
+                      background: "var(--bg-card)",
+                      color: "var(--primary-text)",
+                    }}
+                  />
+                </FormField>
+
+                <PillButton
+                  onClick={handleGenerateResultText}
+                  disabled={!selectedDate || generateResultTextMutation.isPending}
+                >
+                  {generateResultTextMutation.isPending ? (
+                    <Spinner size="1" />
+                  ) : (
+                    "Generate"
+                  )}
+                </PillButton>
+              </FormRow>
+
+              {resultTextItems.length > 0 && (
+                <LabelCopyBox>
+                  {resultTextItems.map((item, index) => (
+                    <div key={index} style={{ marginBottom: index < resultTextItems.length - 1 ? "8px" : 0 }}>
+                      <LabelCopy text={generateResultTextString(item)} />
+                    </div>
+                  ))}
+                  <div style={{ marginTop: "12px", textAlign: "right" }}>
+                    <PillButton onClick={handleCopyAll}>
+                      {copiedAll ? "Copied!" : "Copy All"}
+                    </PillButton>
+                  </div>
+                </LabelCopyBox>
+              )}
+            </CardBody>
+          </InlineFormCard>
+        )}
+
         <Flex>
           {/* Registered players */}
           <TournamentPlayersList

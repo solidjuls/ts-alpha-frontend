@@ -13,6 +13,7 @@ import tournamentsService, {
   RemoveTournamentAdminRequest,
   AddToWaitlistRequest,
   RemoveFromWaitlistRequest,
+  ResultTextItem,
 } from '../services/tournaments.service';
 
 // Query keys for tournaments
@@ -421,6 +422,17 @@ export const useCreateSubtournament = () => {
     },
     onError: (error: any) => {
       console.error('Create subtournament failed:', error);
+    },
+  });
+};
+
+// Generate result text for a tournament on a given date
+export const useGenerateResultText = () => {
+  return useMutation<ResultTextItem[], Error, { tournamentId: number; date: string }>({
+    mutationFn: ({ tournamentId, date }) =>
+      tournamentsService.generateResultText(tournamentId, date),
+    onError: (error: any) => {
+      console.error('Generate result text failed:', error);
     },
   });
 };
