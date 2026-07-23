@@ -426,11 +426,11 @@ export const useCreateSubtournament = () => {
   });
 };
 
-// Generate result text for a tournament on a given date
+// Generate result text for a tournament in a date range
 export const useGenerateResultText = () => {
-  return useMutation<ResultTextItem[], Error, { tournamentId: number; date: string }>({
-    mutationFn: ({ tournamentId, date }) =>
-      tournamentsService.generateResultText(tournamentId, date),
+  return useMutation<ResultTextItem[], Error, { tournamentId: number; startDate: string; endDate: string; video: number }>({
+    mutationFn: ({ tournamentId, startDate, endDate, video }) =>
+      tournamentsService.generateResultText(tournamentId, startDate, endDate, video),
     onError: (error: any) => {
       console.error('Generate result text failed:', error);
     },

@@ -27,6 +27,7 @@ import TournamentPlayersList from "components/TournamentPlayersList";
 import TournamentWaitlist from "components/TournamentWaitlist";
 import LabelCopy from "components/LabelCopy/LabelCopy";
 import { LabelCopyBox } from "components/LabelCopy/LabelCopyBox";
+import { Checkbox } from "components/Checkbox/Checkbox";
 import countryFlags from "public/country_flags.json";
 import { getWinnerText } from "utils/games";
 import type { GameWinner } from "types/game.types";
@@ -146,7 +147,9 @@ const TournamentDetail = () => {
   const [selectedUser, setSelectedUser] = useState<string>("");
   const [isManualRegistering, setIsManualRegistering] = useState(false);
   const [showTextResults, setShowTextResults] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [withVideo, setWithVideo] = useState(false);
   const [resultTextItems, setResultTextItems] = useState<ResultTextItem[]>([]);
   const [copiedAll, setCopiedAll] = useState(false);
 
@@ -358,12 +361,14 @@ const TournamentDetail = () => {
   };
 
   const handleGenerateResultText = async () => {
-    if (!tournament || !selectedDate) return;
+    if (!tournament || !startDate || !endDate) return;
 
     try {
       const result = await generateResultTextMutation.mutateAsync({
         tournamentId: parseInt(tournament.id),
-        date: selectedDate,
+        startDate,
+        endDate,
+        video: withVideo ? 1 : 0,
       });
       setResultTextItems(result);
     } catch (e) {
@@ -540,16 +545,17 @@ const TournamentDetail = () => {
               <FormHeader>
                 <FormTitle>Generate Result Text</FormTitle>
                 <FormDescription>
-                  Select a date and generate result text for all games played on that date.
+                  Select a date range and generate result text for games played in that period.
                 </FormDescription>
               </FormHeader>
 
-              <FormRow>
+              <FormRow style={{ alignItems: "flex-end" }}>
                 <FormField>
+                  <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600 }}>From</label>
                   <input
                     type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
                     style={{
                       width: "100%",
                       padding: "8px",
@@ -561,14 +567,39 @@ const TournamentDetail = () => {
                   />
                 </FormField>
 
+                <FormField>
+                  <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600 }}>To</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      border: "1px solid var(--border)",
+                      background: "var(--bg-card)",
+                      color: "var(--primary-text)",
+                    }}
+                  />
+                </FormField>
+
+                <div style={{ paddingBottom: "1px" }}>
+                  <Checkbox
+                    checked={withVideo}
+                    text="with video"
+                    onCheckedChange={setWithVideo}
+                  />
+                </div>
+
                 <PillButton
                   onClick={handleGenerateResultText}
-                  disabled={!selectedDate || generateResultTextMutation.isPending}
+                  disabled={!startDate || !endDate || generateResultTextMutation.isPending}
                 >
                   {generateResultTextMutation.isPending ? (
                     <Spinner size="1" />
                   ) : (
-                    "Generate"
+                    "Get the results"
                   )}
                 </PillButton>
               </FormRow>

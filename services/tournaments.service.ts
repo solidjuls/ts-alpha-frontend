@@ -358,10 +358,10 @@ class TournamentsService {
     return response.data;
   }
 
-  // GET /api/tournaments/generate-result-text - Generate result text for a tournament on a given date
-  async generateResultText(tournamentId: number, date: string): Promise<ResultTextItem[]> {
+  // GET /api/tournaments/generate-result-text - Generate result text for a tournament in a date range
+  async generateResultText(tournamentId: number, startDate: string, endDate: string, video: number): Promise<ResultTextItem[]> {
     const response = await this.axiosInstance.get('/tournaments/generate-result-text', {
-      params: { tournamentId, date },
+      params: { tournamentId, startDate, endDate, video },
     });
     return response.data;
   }
