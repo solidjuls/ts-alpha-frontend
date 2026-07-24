@@ -355,6 +355,12 @@ const TournamentDetail = () => {
       loserName = `${item.usaPlayer} ${flags[item.usaCountryCode?.toLowerCase()]}`;
     }
 
+    if (item.videoURL) {
+      return `${item.tournamentName}: ${item.game_code} - ${winnerName} (${getWinnerText(
+        item.gameWinner as GameWinner
+      )}) vs ${loserName} in ${endTurnText} (${endModeText})\n${item.videoURL}`;
+    }
+
     return `${item.tournamentName}: ${item.game_code} - ${winnerName} (${getWinnerText(
       item.gameWinner as GameWinner
     )}) has defeated ${loserName} in ${endTurnText} (${endModeText})`;
