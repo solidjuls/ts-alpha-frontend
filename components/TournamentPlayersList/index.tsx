@@ -107,6 +107,7 @@ const TournamentPlayersList = ({
     link.click();
   };
 
+  const renderPlayerRating = (rating: number | null) => rating ? `(${rating})` : ``
   return (
     <PlayersCard>
       <CardHeader>
@@ -128,7 +129,7 @@ const TournamentPlayersList = ({
             <ResponsiveRow key={player.registrationId}>
               <UnstyledLink href={`/userprofile/${player.userId}`}>
                 <PlayerInfo>
-                  <PlayerName title={player.name}>{player.name} ({player.rating})</PlayerName>
+                  <PlayerName title={player.name}>{`${player.name} ${renderPlayerRating(player.rating)}`}</PlayerName>
                   <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
                 </PlayerInfo>
               </UnstyledLink>

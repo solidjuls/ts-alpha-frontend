@@ -127,6 +127,19 @@ export interface GenerateScheduleResponse {
   generatedPairs: number;
 }
 
+export interface ResultTextItem {
+  tournamentName: string;
+  game_code: string;
+  gameWinner: string;
+  endTurn: number | null;
+  endMode: string | null;
+  videoURL: string;
+  usaCountryCode: string;
+  ussrCountryCode: string;
+  usaPlayer: string;
+  ussrPlayer: string;
+}
+
 export interface AddToWaitlistRequest {
   userId?: string;    // For admin adding someone else, optional for self
 }
@@ -342,6 +355,14 @@ class TournamentsService {
       `/tournaments/${parentId}/subtournament`,
       data
     );
+    return response.data;
+  }
+
+  // GET /api/tournaments/generate-result-text - Generate result text for a tournament in a date range
+  async generateResultText(tournamentId: number, startDate: string, endDate: string, video: number): Promise<ResultTextItem[]> {
+    const response = await this.axiosInstance.get('/tournaments/generate-result-text', {
+      params: { tournamentId, startDate, endDate, video },
+    });
     return response.data;
   }
 }

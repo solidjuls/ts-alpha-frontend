@@ -15,7 +15,8 @@ import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
 import countryFlags from "public/country_flags.json";
 import LabelCopy from "components/LabelCopy/LabelCopy";
-import { 
+import { LabelCopyBox } from "components/LabelCopy/LabelCopyBox";
+import {
   GameContainer,
   PlayersHeader,
   PlayerNameBlock,
@@ -33,7 +34,6 @@ import {
   UnstyledLink,
   AdminActions,
   AdminButton,
-  LabelCopyBox,
   NumericText,
   MetaSpacer
  } from "../../styles/games.styled";
