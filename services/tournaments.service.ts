@@ -149,6 +149,50 @@ export interface RemoveFromWaitlistRequest {
   waitlistId?: string; // For removing by waitlist ID (admin action)
 }
 
+export interface ScheduleAdminPlayer {
+  userId: string;
+  fullName: string;
+  rating: number;
+  countryId: string;
+}
+
+export interface ScheduleAdminForfeitedPlayer extends ScheduleAdminPlayer {}
+
+export interface ScheduleAdminScheduleWithoutPair {
+  scheduleId: string;
+  gameCode: string;
+  dueDate: string;
+  existingPlayer: ScheduleAdminPlayer & { side: string };
+}
+
+export interface ScheduleAdminPlayerBelowTarget extends ScheduleAdminPlayer {
+  currentGames: number;
+  gamesNeeded: number;
+}
+
+export interface ScheduleAdminWaitlistPlayer extends ScheduleAdminPlayer {
+  waitlistedAt: string;
+}
+
+export interface ScheduleAdminSummary {
+  targetGamesPerPlayer: number;
+  totalActivePlayers: number;
+  totalForfeitedPlayers: number;
+  totalSchedulesWithoutPair: number;
+  totalPlayersBelowTarget: number;
+  totalWaitlistPlayers: number;
+}
+
+export interface ScheduleAdminResponse {
+  tournamentId: string;
+  tournamentName: string;
+  forfeitedPlayers: ScheduleAdminForfeitedPlayer[];
+  schedulesWithoutPair: ScheduleAdminScheduleWithoutPair[];
+  playersBelowTarget: ScheduleAdminPlayerBelowTarget[];
+  waitlistPlayers: ScheduleAdminWaitlistPlayer[];
+  summary: ScheduleAdminSummary;
+}
+
 class TournamentsService {
   private axiosInstance: AxiosInstance;
 
@@ -363,6 +407,12 @@ class TournamentsService {
     const response = await this.axiosInstance.get('/tournaments/generate-result-text', {
       params: { tournamentId, startDate, endDate, video },
     });
+    return response.data;
+  }
+
+  // GET /api/tournaments/:id/schedule-admin - Get schedule admin data for a tournament
+  async getScheduleAdmin(tournamentId: string): Promise<ScheduleAdminResponse> {
+    const response = await this.axiosInstance.get(`/tournaments/${tournamentId}/schedule-admin`);
     return response.data;
   }
 }

@@ -419,7 +419,8 @@ const Schedule = () => {
 
             {/* Admin Controls */}
             {isUserAdminForTournament && currentTournament && (
-              <ScheduleFilter
+              <Flex style={{ alignItems: "center", gap: "12px" }}>
+                <ScheduleFilter
                 noSchedule={!updatedScheduleData || updatedScheduleData.length === 0}
                 tournament={currentTournament.id}
                 onPlayerSelect={handlePlayerSelect}
@@ -429,6 +430,10 @@ const Schedule = () => {
                 showFullSchedule={showFullSchedule}
                 showOnlyPending={showOnlyPending}
               />
+                <Link href={`/schedule-admin/${currentTournament.id}`} style={{ whiteSpace: "nowrap" }}>
+                  Schedule Admin
+                </Link>
+              </Flex>
             )}
 
             {error && (
