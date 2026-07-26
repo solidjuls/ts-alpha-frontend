@@ -38,8 +38,6 @@ const Standings = () => {
     division: selectedDivision,
   });
 
-  return <ErrorBox>We’re updating the standings. They’ll be back shortly.</ErrorBox>;
-
   const grouped = standings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
