@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Checkbox } from "components/Checkbox";
 import ReplacePlayers from './ReplacePlayers';
-import CsvUploadButton from './CsvButtonUpload';
 import UserTypeahead from 'components/UserTypeahead';
 // DropdownItemType is now used internally by UserTypeahead
 
@@ -139,7 +138,6 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
       <Checkbox text="Show Admin Options" checked={checked} onCheckedChange={setChecked} />
       {checked && (
         <Panel>
-          <CsvUploadButton tournament={tournament} />
           <ScheduleSection>
             <SectionTitle>Filter Schedule</SectionTitle>
             <Checkbox
