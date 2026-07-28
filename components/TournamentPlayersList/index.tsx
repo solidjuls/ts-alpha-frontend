@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRegisteredPlayers, useUnregisterFromTournament, useForfeitPlayer } from "hooks/useTournaments";
-import { RegisteredPlayer } from "services/tournaments.service";
+import { RegisteredPlayer, tournamentsService } from "services/tournaments.service";
 import {
   PlayersCard,
   CardHeader,
@@ -81,8 +81,13 @@ const TournamentPlayersList = ({
     }
   };
 
-  const exportDataCSV = (data?: RegisteredPlayer[]) => {
-    if (!data) return;
+  const exportDataCSV = async (data?: RegisteredPlayer[]) => {
+    if (!data || data.length === 0) return;
+
+    const userIds = data.map((p) => p.userId).filter((id): id is string => !!id);
+    const ratings = userIds.length > 0 ? await tournamentsService.getPlayersRatings(userIds) : [];
+    const ratingMap = new Map(ratings.map((r) => [r.userId, r.rating]));
+
     const headers = [
       "email",
       "name",
@@ -97,7 +102,16 @@ const TournamentPlayersList = ({
       "data:text/csv;charset=utf-8," +
       headers.join(",") +
       "\n" +
-      data.map((d: any) => headers.map((h: any) => d[h]).join(",")).join("\n");
+      data
+        .map((d) =>
+          headers
+            .map((h) => {
+              if (h === "rating") return ratingMap.get(d.userId ?? "") ?? "";
+              return (d as any)[h];
+            })
+            .join(",")
+        )
+        .join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -107,7 +121,6 @@ const TournamentPlayersList = ({
     link.click();
   };
 
-  const renderPlayerRating = (rating: number | null) => rating ? `(${rating})` : ``
   return (
     <PlayersCard>
       <CardHeader>
@@ -129,7 +142,7 @@ const TournamentPlayersList = ({
             <ResponsiveRow key={player.registrationId}>
               <UnstyledLink href={`/userprofile/${player.userId}`}>
                 <PlayerInfo>
-                  <PlayerName title={player.name}>{`${player.name} ${renderPlayerRating(player.rating)}`}</PlayerName>
+                  <PlayerName title={player.name}>{player.name}</PlayerName>
                   <PlayerEmail title={player.email}>{player.email}</PlayerEmail>
                 </PlayerInfo>
               </UnstyledLink>

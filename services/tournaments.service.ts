@@ -21,11 +21,15 @@ export interface RegisteredPlayer {
   phoneNumber: string;
   playdekName: string;
   status: string;
-  rating: number;
   registeredAt: Date;
   userId?: string;
   name: string;
   countryCode?: string;
+}
+
+export interface PlayerRating {
+  userId: string;
+  rating: number;
 }
 
 export interface WaitlistPlayer {
@@ -413,6 +417,12 @@ class TournamentsService {
   // GET /api/tournaments/:id/schedule-admin - Get schedule admin data for a tournament
   async getScheduleAdmin(tournamentId: string): Promise<ScheduleAdminResponse> {
     const response = await this.axiosInstance.get(`/tournaments/${tournamentId}/schedule-admin`);
+    return response.data;
+  }
+
+  // POST /api/tournaments/get-players-ratings - Get ratings for a list of user IDs
+  async getPlayersRatings(userIds: string[]): Promise<PlayerRating[]> {
+    const response = await this.axiosInstance.post('/tournaments/get-players-ratings', { userIds });
     return response.data;
   }
 }
