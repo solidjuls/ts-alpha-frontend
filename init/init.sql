@@ -57,8 +57,8 @@ CREATE TABLE users (
   KEY users_country_id_foreign (country_id),
   KEY users_first_name_index (first_name),
   KEY users_last_name_index (last_name),
-  KEY users_city_id_foreign (cityId),
-  CONSTRAINT users_city_id_foreign FOREIGN KEY (cityId) REFERENCES cities (id),
+  KEY users_city_id_foreign (city_id),
+  CONSTRAINT users_city_id_foreign FOREIGN KEY (city_id) REFERENCES cities (id),
   CONSTRAINT users_country_id_foreign FOREIGN KEY (country_id) REFERENCES countries (id)
 ) ENGINE=InnoDB AUTO_INCREMENT=1524 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
