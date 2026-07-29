@@ -22,6 +22,7 @@ interface UserProfileFormData {
   lastName: string;
   email: string;
   playdek_name: string;
+  discord_user_id: string;
   phone: string;
   preferredGamingPlatform: string;
   preferredGameDuration: string;
@@ -37,6 +38,8 @@ interface PasswordFormData {
 
 const inputWidth = "300px";
 const dropdownWidth = "322px";
+const discordUserIdPattern = /^\d{17,20}$/;
+const helperTextStyle = { maxWidth: inputWidth, marginTop: "4px", opacity: 0.8 };
 
 
 
@@ -62,6 +65,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
       lastName: data.last_name || "",
       email: data.email || "",
       playdek_name: data.playdek_name || "",
+      discord_user_id: data.discord_user_id || "",
       phone: data.phone_number || "",
       preferredGamingPlatform: data.preferred_gaming_platform || "",
       preferredGameDuration: data.preferred_game_duration || "",
@@ -92,11 +96,19 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
       setErrorMsg("");
       setConfirmationMsg("");
 
+      const discordUserId = formData.discord_user_id.trim();
+
+      if (discordUserId && !discordUserIdPattern.test(discordUserId)) {
+        setErrorMsg("The Discord User ID must be 17 to 20 digits. Leave it empty to remove it.");
+        return;
+      }
+
       const updateData: UpdateUserData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         playdek_name: formData.playdek_name,
         email: data.email,
+        discord_user_id: discordUserId,
         phone: formData.phone || undefined,
         preferredGamingPlatform: formData.preferredGamingPlatform || undefined,
         preferredGameDuration: formData.preferredGameDuration || undefined,
@@ -173,6 +185,20 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           error={!!profileErrors.playdek_name}
           maxLength={100}
         />
+
+        <EditTextComponent
+          labelText="Discord User ID"
+          inputValue={watchProfile("discord_user_id") || ""}
+          onInputValueChange={(value) => setProfileValue("discord_user_id", value, { shouldValidate: true })}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
+          error={!!profileErrors.discord_user_id}
+          maxLength={20}
+        />
+        <Text fontSize="small" style={helperTextStyle}>
+          The Discord bot mentions you in the result announcements for your games. To find your ID,
+          turn on Developer Mode in Discord under Settings, Advanced. Then right-click your own name
+          and select Copy User ID. Leave this empty to remove it.
+        </Text>
 
         <EditTextComponent
           labelText="Phone"
