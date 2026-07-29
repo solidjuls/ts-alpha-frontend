@@ -407,7 +407,86 @@ const ScheduleAdminPage = () => {
           </div>
           {replaceMessage && <span style={{ fontSize: "13px" }}>{replaceMessage}</span>}
         </div>
+        {/* Data Boxes */}
+        {(() => {
+          // Compute projected state when in preview mode
+          const previewPlayerGameAdditions = new Map<string, number>();
+          if (autoFixResult) {
+            for (const o of autoFixResult.filledOrphans) {
+              previewPlayerGameAdditions.set(o.existingPlayerId, (previewPlayerGameAdditions.get(o.existingPlayerId) || 0) + 1);
+              previewPlayerGameAdditions.set(o.opponentPlayerId, (previewPlayerGameAdditions.get(o.opponentPlayerId) || 0) + 1);
+            }
+            for (const p of autoFixResult.newPairings) {
+              previewPlayerGameAdditions.set(p.usaPlayerId, (previewPlayerGameAdditions.get(p.usaPlayerId) || 0) + 1);
+              previewPlayerGameAdditions.set(p.ussrPlayerId, (previewPlayerGameAdditions.get(p.ussrPlayerId) || 0) + 1);
+            }
+          }
 
+          const resolvedOrphanIds = new Set<string>();
+          if (autoFixResult) {
+            for (const o of autoFixResult.filledOrphans) {
+              resolvedOrphanIds.add(o.scheduleId);
+            }
+          }
+
+          const remainingOrphans = (data?.schedulesWithoutPair || []).filter(
+            s => !resolvedOrphanIds.has(s.scheduleId)
+          );
+
+          const projectedPlayersBelow = (data?.playersBelowTarget || [])
+            .map(p => {
+              const additional = previewPlayerGameAdditions.get(p.userId) || 0;
+              return { ...p, projectedGames: p.currentGames + additional };
+            })
+            .filter(p => p.projectedGames < (data?.summary.targetGamesPerPlayer || 20));
+
+          return (
+            <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
+              <div style={boxStyle}>
+                <div style={titleStyle}>Forfeited Players ({data?.summary.totalForfeitedPlayers ?? 0})</div>
+                {data?.forfeitedPlayers.map((p) => (
+                  <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
+                ))}
+                {data?.forfeitedPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
+              </div>
+              <div style={boxStyle}>
+                <div style={titleStyle}>
+                  Schedules Without Pair ({autoFixResult ? remainingOrphans.length : (data?.summary.totalSchedulesWithoutPair ?? 0)})
+                  {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
+                </div>
+                {(autoFixResult ? remainingOrphans : (data?.schedulesWithoutPair || [])).map((s) => (
+                  <div key={s.scheduleId} style={rowStyle} title={s.existingPlayer.fullName}>
+                    {s.existingPlayer.fullName} ({s.existingPlayer.rating}) — {s.gameCode}
+                  </div>
+                ))}
+                {(autoFixResult ? remainingOrphans : (data?.schedulesWithoutPair || [])).length === 0 && (
+                  <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
+                )}
+              </div>
+              <div style={boxStyle}>
+                <div style={titleStyle}>Waitlisted Players ({data?.summary.totalWaitlistPlayers ?? 0})</div>
+                {data?.waitlistPlayers.map((p) => (
+                  <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
+                ))}
+                {data?.waitlistPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
+              </div>
+              <div style={boxStyle}>
+                <div style={titleStyle}>
+                  Players Below {data?.summary.targetGamesPerPlayer ?? 20} Games ({autoFixResult ? projectedPlayersBelow.length : (data?.summary.totalPlayersBelowTarget ?? 0)})
+                  {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
+                </div>
+                {(autoFixResult ? projectedPlayersBelow : (data?.playersBelowTarget || [])).map((p) => (
+                  <div key={p.userId} style={rowStyle} title={p.fullName}>
+                    {p.fullName} ({p.rating}) — {autoFixResult ? (p as any).projectedGames : p.currentGames}/{data?.summary.targetGamesPerPlayer || 20} games
+                  </div>
+                ))}
+                {(autoFixResult ? projectedPlayersBelow : (data?.playersBelowTarget || [])).length === 0 && (
+                  <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
         {/* Auto Fix Schedules */}
         <div style={sectionStyle}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: autoFixResult ? "16px" : "0" }}>
@@ -537,87 +616,6 @@ const ScheduleAdminPage = () => {
             );
           })()}
         </div>
-
-        {/* Data Boxes */}
-        {(() => {
-          // Compute projected state when in preview mode
-          const previewPlayerGameAdditions = new Map<string, number>();
-          if (autoFixResult) {
-            for (const o of autoFixResult.filledOrphans) {
-              previewPlayerGameAdditions.set(o.existingPlayerId, (previewPlayerGameAdditions.get(o.existingPlayerId) || 0) + 1);
-              previewPlayerGameAdditions.set(o.opponentPlayerId, (previewPlayerGameAdditions.get(o.opponentPlayerId) || 0) + 1);
-            }
-            for (const p of autoFixResult.newPairings) {
-              previewPlayerGameAdditions.set(p.usaPlayerId, (previewPlayerGameAdditions.get(p.usaPlayerId) || 0) + 1);
-              previewPlayerGameAdditions.set(p.ussrPlayerId, (previewPlayerGameAdditions.get(p.ussrPlayerId) || 0) + 1);
-            }
-          }
-
-          const resolvedOrphanIds = new Set<string>();
-          if (autoFixResult) {
-            for (const o of autoFixResult.filledOrphans) {
-              resolvedOrphanIds.add(o.scheduleId);
-            }
-          }
-
-          const remainingOrphans = (data?.schedulesWithoutPair || []).filter(
-            s => !resolvedOrphanIds.has(s.scheduleId)
-          );
-
-          const projectedPlayersBelow = (data?.playersBelowTarget || [])
-            .map(p => {
-              const additional = previewPlayerGameAdditions.get(p.userId) || 0;
-              return { ...p, projectedGames: p.currentGames + additional };
-            })
-            .filter(p => p.projectedGames < (data?.summary.targetGamesPerPlayer || 20));
-
-          return (
-            <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
-              <div style={boxStyle}>
-                <div style={titleStyle}>Forfeited Players ({data?.summary.totalForfeitedPlayers ?? 0})</div>
-                {data?.forfeitedPlayers.map((p) => (
-                  <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
-                ))}
-                {data?.forfeitedPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
-              </div>
-              <div style={boxStyle}>
-                <div style={titleStyle}>
-                  Schedules Without Pair ({autoFixResult ? remainingOrphans.length : (data?.summary.totalSchedulesWithoutPair ?? 0)})
-                  {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
-                </div>
-                {(autoFixResult ? remainingOrphans : (data?.schedulesWithoutPair || [])).map((s) => (
-                  <div key={s.scheduleId} style={rowStyle} title={s.existingPlayer.fullName}>
-                    {s.existingPlayer.fullName} ({s.existingPlayer.rating}) — {s.gameCode}
-                  </div>
-                ))}
-                {(autoFixResult ? remainingOrphans : (data?.schedulesWithoutPair || [])).length === 0 && (
-                  <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
-                )}
-              </div>
-              <div style={boxStyle}>
-                <div style={titleStyle}>Waitlisted Players ({data?.summary.totalWaitlistPlayers ?? 0})</div>
-                {data?.waitlistPlayers.map((p) => (
-                  <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
-                ))}
-                {data?.waitlistPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
-              </div>
-              <div style={boxStyle}>
-                <div style={titleStyle}>
-                  Players Below {data?.summary.targetGamesPerPlayer ?? 20} Games ({autoFixResult ? projectedPlayersBelow.length : (data?.summary.totalPlayersBelowTarget ?? 0)})
-                  {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
-                </div>
-                {(autoFixResult ? projectedPlayersBelow : (data?.playersBelowTarget || [])).map((p) => (
-                  <div key={p.userId} style={rowStyle} title={p.fullName}>
-                    {p.fullName} ({p.rating}) — {autoFixResult ? (p as any).projectedGames : p.currentGames}/{data?.summary.targetGamesPerPlayer || 20} games
-                  </div>
-                ))}
-                {(autoFixResult ? projectedPlayersBelow : (data?.playersBelowTarget || [])).length === 0 && (
-                  <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
-                )}
-              </div>
-            </div>
-          );
-        })()}
       </div>
     </>
   );
