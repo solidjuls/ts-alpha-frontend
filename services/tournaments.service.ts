@@ -157,7 +157,7 @@ export interface ScheduleAdminPlayer {
   userId: string;
   fullName: string;
   rating: number;
-  countryId: string;
+  tldCode: string;
 }
 
 export interface ScheduleAdminForfeitedPlayer extends ScheduleAdminPlayer {}
@@ -194,6 +194,7 @@ export interface ScheduleAdminResponse {
   schedulesWithoutPair: ScheduleAdminScheduleWithoutPair[];
   playersBelowTarget: ScheduleAdminPlayerBelowTarget[];
   waitlistPlayers: ScheduleAdminWaitlistPlayer[];
+  previousOpponents: Record<string, string[]>;
   summary: ScheduleAdminSummary;
 }
 
