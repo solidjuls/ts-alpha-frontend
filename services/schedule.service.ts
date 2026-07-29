@@ -56,6 +56,13 @@ export interface UpdateScheduleParams {
   gameCode?: string;
 }
 
+export interface UpdateScheduleOpponentParams {
+  id: string;
+  opponentId: string;
+  dueDate: string;
+  randomSides: boolean;
+}
+
 export interface ReplacePlayerParams {
   tournamentId: string;
   oldPlayerId: string;
@@ -65,6 +72,15 @@ export interface ReplacePlayerParams {
 export interface RemovePlayerParams {
   tournamentId: string;
   playerId: string;
+}
+
+export interface BatchScheduleItem {
+  t: string;
+  usa: string;
+  ussr: string;
+  randomSides: boolean;
+  d: string;
+  gc: string;
 }
 
 export interface CsvScheduleRow {
@@ -143,6 +159,18 @@ class ScheduleService {
     return response.data;
   }
 
+  async updateScheduleOpponent(params: UpdateScheduleOpponentParams): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post('/schedule', {
+      data: {
+        id: params.id,
+        opponent_id: params.opponentId,
+        due_date: params.dueDate,
+        random_sides: params.randomSides,
+      }
+    });
+    return response.data;
+  }
+
   async replacePlayer(params: ReplacePlayerParams): Promise<any> {
     const response = await this.axiosInstance.patch('/schedule', {
       data: {
@@ -178,6 +206,11 @@ class ScheduleService {
 
   async getScheduleHealth(): Promise<{ status: string }> {
     const response = await this.axiosInstance.get('/schedule/health');
+    return response.data;
+  }
+
+  async createSchedulesBatch(schedules: BatchScheduleItem[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.put('/schedule', { data: schedules });
     return response.data;
   }
 }
