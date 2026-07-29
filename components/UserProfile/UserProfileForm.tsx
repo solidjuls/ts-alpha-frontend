@@ -220,9 +220,9 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           </Text>
         )}
         <Text fontSize="small" style={helperTextStyle}>
-          The Discord bot mentions you in the result announcements for your games. To find your ID,
-          turn on Developer Mode in Discord under Settings, Advanced. Then right-click your own name
-          and select Copy User ID. Leave this empty to remove it.
+          This ID can be used to mention you on Discord when results of your games are posted. To
+          find it, turn on Developer Mode in Discord under Settings -&gt; Advanced. Then, right-click
+          your own name and select Copy User ID.
         </Text>
 
         <EditTextComponent
