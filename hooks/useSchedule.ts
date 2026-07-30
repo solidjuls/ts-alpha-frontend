@@ -9,7 +9,8 @@ import scheduleService, {
   RemovePlayerParams,
   UploadCsvScheduleParams,
   CsvUploadResponse,
-  BatchScheduleItem
+  BatchScheduleItem,
+  CreateScheduleDto
 } from '../services/schedule.service';
 
 // Query keys for React Query
@@ -192,6 +193,20 @@ export const useUpdateScheduleOpponent = () => {
     },
     onError: (error: any) => {
       console.error('Update schedule opponent failed:', error);
+    },
+  });
+};
+
+export const useCreateSchedulesBulk = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (schedules: CreateScheduleDto[]) => scheduleService.createSchedulesBulk(schedules),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+    onError: (error: any) => {
+      console.error('Bulk schedule creation failed:', error);
     },
   });
 };

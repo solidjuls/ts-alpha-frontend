@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
 import { useScheduleAdmin } from "hooks/useTournaments";
-import { useUploadCsvSchedule, useAddSchedule, useReplacePlayer, useCreateSchedulesBatch, useUpdateScheduleOpponent } from "hooks/useSchedule";
+import { useUploadCsvSchedule, useAddSchedule, useReplacePlayer, useCreateSchedulesBulk } from "hooks/useSchedule";
 import { CsvScheduleRow } from "services/schedule.service";
 import UserTypeahead from "components/UserTypeahead";
 import DateComponent from "components/EditFormComponents/DateComponent";
@@ -90,8 +90,7 @@ const ScheduleAdminPage = () => {
   const uploadCsvMutation = useUploadCsvSchedule();
   const addScheduleMutation = useAddSchedule();
   const replacePlayerMutation = useReplacePlayer();
-  const createSchedulesBatchMutation = useCreateSchedulesBatch();
-  const updateScheduleOpponentMutation = useUpdateScheduleOpponent();
+  const createSchedulesBulkMutation = useCreateSchedulesBulk();
 
   // CSV Upload state
   const [file, setFile] = useState<CsvScheduleRow[] | null>(null);
@@ -245,7 +244,7 @@ const ScheduleAdminPage = () => {
     setPersistMessage("");
   };
 
-  const handlePersistSchedules = () => {
+  const handlePersistSchedules = async () => {
     if (!autoFixResult || !data) return;
 
     const playerMap = new Map<string, { fullName: string; rating: number; tldCode: string }>();
@@ -262,24 +261,25 @@ const ScheduleAdminPage = () => {
       const usaId = o.existingPlayerSide === 'usa' ? o.existingPlayerId : o.opponentPlayerId;
       const ussrId = o.existingPlayerSide === 'ussr' ? o.existingPlayerId : o.opponentPlayerId;
       return {
-        scheduleId: o.scheduleId,
-        t: data.tournamentId,
+        scheduleId: Number(o.scheduleId),
         usa: usaId,
         ussr: ussrId,
-        randomSides: o.randomSides,
-        d: o.dueDate,
+        t: Number(data.tournamentId),
+        d: new Date(o.dueDate),
+        r: o.randomSides,
         gc: o.gameCode,
+        randomSides: o.randomSides,
       };
     });
 
     const newSchedules = autoFixResult.newPairings.map(p => ({
-      scheduleId: null,
-      t: data.tournamentId,
       usa: p.usaPlayerId,
       ussr: p.ussrPlayerId,
-      randomSides: p.randomSides,
-      d: p.dueDate,
+      t: Number(data.tournamentId),
+      d: new Date(p.dueDate),
+      r: p.randomSides,
       gc: p.gameCode,
+      randomSides: p.randomSides,
     }));
 
     const allSchedules = [...updatedSchedules, ...newSchedules];
@@ -289,17 +289,22 @@ const ScheduleAdminPage = () => {
     console.log('═══════════════════════════════════════');
     console.log(`\n📋 Updated schedules (${updatedSchedules.length}):`);
     updatedSchedules.forEach(s => {
-      console.log(`  [${s.scheduleId}] ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${new Date(s.d).toLocaleDateString()}`);
+      console.log(`  [${s.scheduleId}] ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${s.d.toLocaleDateString()}`);
     });
     console.log(`\n🆕 New schedules (${newSchedules.length}):`);
     newSchedules.forEach((s, i) => {
-      console.log(`  ${i + 1}. ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${new Date(s.d).toLocaleDateString()}`);
+      console.log(`  ${i + 1}. ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${s.d.toLocaleDateString()}`);
     });
-    console.log('\n📦 Payload (all schedules):', allSchedules);
+    console.log('\n📦 Payload:', allSchedules);
     console.log('═══════════════════════════════════════');
 
-    setAutoFixResult(null);
-    setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new (check console)`);
+    try {
+      await createSchedulesBulkMutation.mutateAsync(allSchedules);
+      setAutoFixResult(null);
+      setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new schedules`);
+    } catch (err: any) {
+      setPersistMessage(err?.response?.data?.message || "Failed to persist schedules");
+    }
     setTimeout(() => setPersistMessage(""), 5000);
   };
 
@@ -516,7 +521,7 @@ const ScheduleAdminPage = () => {
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: autoFixResult ? "16px" : "0" }}>
             <button
               onClick={handleAutoFix}
-              disabled={!data || createSchedulesBatchMutation.isPending || updateScheduleOpponentMutation.isPending}
+              disabled={!data || createSchedulesBulkMutation.isPending}
               style={{ ...btnStyle, backgroundColor: "var(--usa)", color: "var(--alt-text)", opacity: !data ? 0.5 : 1 }}
             >
               Auto Fix Schedules
@@ -525,14 +530,14 @@ const ScheduleAdminPage = () => {
               <>
                 <button
                   onClick={handlePersistSchedules}
-                  disabled={createSchedulesBatchMutation.isPending || updateScheduleOpponentMutation.isPending}
-                  style={{ ...btnStyle, backgroundColor: "var(--usa)", color: "var(--alt-text)", opacity: createSchedulesBatchMutation.isPending || updateScheduleOpponentMutation.isPending ? 0.5 : 1 }}
+                  disabled={createSchedulesBulkMutation.isPending}
+                  style={{ ...btnStyle, backgroundColor: "var(--usa)", color: "var(--alt-text)", opacity: createSchedulesBulkMutation.isPending ? 0.5 : 1 }}
                 >
-                  {(createSchedulesBatchMutation.isPending || updateScheduleOpponentMutation.isPending) ? <Spinner size="2" /> : "Persist Schedules"}
+                  {(createSchedulesBulkMutation.isPending) ? <Spinner size="2" /> : "Persist Schedules"}
                 </button>
                 <button
                   onClick={handleUndoPreview}
-                  disabled={createSchedulesBatchMutation.isPending || updateScheduleOpponentMutation.isPending}
+                  disabled={createSchedulesBulkMutation.isPending}
                   style={{ ...btnStyle, backgroundColor: "var(--ussr)", color: "var(--alt-text)" }}
                 >
                   Undo

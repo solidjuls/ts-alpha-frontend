@@ -83,6 +83,17 @@ export interface BatchScheduleItem {
   gc: string;
 }
 
+export interface CreateScheduleDto {
+  scheduleId?: number;
+  usa: string;
+  ussr: string;
+  t: number;
+  d: Date;
+  r: boolean;
+  gc: string;
+  randomSides?: boolean;
+}
+
 export interface CsvScheduleRow {
   due_date: string;
   game_code: string;
@@ -211,6 +222,11 @@ class ScheduleService {
 
   async createSchedulesBatch(schedules: BatchScheduleItem[]): Promise<{ message: string }> {
     const response = await this.axiosInstance.put('/schedule', { data: schedules });
+    return response.data;
+  }
+
+  async createSchedulesBulk(schedules: CreateScheduleDto[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.put('/schedule/create-schedules-bulk', { data: schedules });
     return response.data;
   }
 }
