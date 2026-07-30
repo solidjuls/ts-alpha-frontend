@@ -46,6 +46,12 @@ export interface AutoFixResult {
   warnings: string[];
 }
 
+function generateGameCode(): string {
+  const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+  const numbers = String(Math.floor(100 + Math.random() * 900));
+  return `${letter}${numbers}`;
+}
+
 export function autoFixSchedules(input: AutoFixInput): AutoFixResult {
   const {
     players,
@@ -193,7 +199,7 @@ export function autoFixSchedules(input: AutoFixInput): AutoFixResult {
     newPairings.push({
       usaPlayerId: usaPlayer.userId,
       ussrPlayerId: ussrPlayer.userId,
-      gameCode: '',
+      gameCode: generateGameCode(),
       randomSides: false,
       dueDate: defaultDueDate.toISOString(),
     });

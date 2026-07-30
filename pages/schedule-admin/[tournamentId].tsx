@@ -245,38 +245,62 @@ const ScheduleAdminPage = () => {
     setPersistMessage("");
   };
 
-  const handlePersistSchedules = async () => {
-    if (!autoFixResult || !tournamentId) return;
-    try {
-      // Phase 1: Update orphaned schedules with new opponents
-      for (const orphan of autoFixResult.filledOrphans) {
-        await updateScheduleOpponentMutation.mutateAsync({
-          id: orphan.scheduleId,
-          opponentId: orphan.opponentPlayerId,
-          dueDate: orphan.dueDate,
-          randomSides: orphan.randomSides,
-        });
-      }
+  const handlePersistSchedules = () => {
+    if (!autoFixResult || !data) return;
 
-      // Phase 2: Batch create new pairings
-      if (autoFixResult.newPairings.length > 0) {
-        const batchItems = autoFixResult.newPairings.map(p => ({
-          t: tournamentId,
-          usa: p.usaPlayerId,
-          ussr: p.ussrPlayerId,
-          randomSides: p.randomSides,
-          d: p.dueDate,
-          gc: p.gameCode,
-        }));
-        await createSchedulesBatchMutation.mutateAsync(batchItems);
-      }
-
-      setAutoFixResult(null);
-      setPersistMessage("Schedules persisted successfully!");
-      setTimeout(() => setPersistMessage(""), 3000);
-    } catch (err: any) {
-      setPersistMessage(err?.response?.data?.message || "Failed to persist schedules");
+    const playerMap = new Map<string, { fullName: string; rating: number; tldCode: string }>();
+    for (const p of data.playersBelowTarget) {
+      playerMap.set(p.userId, { fullName: p.fullName, rating: p.rating, tldCode: p.tldCode });
     }
+    for (const s of data.schedulesWithoutPair) {
+      playerMap.set(s.existingPlayer.userId, { fullName: s.existingPlayer.fullName, rating: s.existingPlayer.rating, tldCode: s.existingPlayer.tldCode });
+    }
+    const name = (id: string) => playerMap.get(id)?.fullName ?? id;
+    const rating = (id: string) => playerMap.get(id)?.rating ?? '?';
+
+    const updatedSchedules = autoFixResult.filledOrphans.map(o => {
+      const usaId = o.existingPlayerSide === 'usa' ? o.existingPlayerId : o.opponentPlayerId;
+      const ussrId = o.existingPlayerSide === 'ussr' ? o.existingPlayerId : o.opponentPlayerId;
+      return {
+        scheduleId: o.scheduleId,
+        t: data.tournamentId,
+        usa: usaId,
+        ussr: ussrId,
+        randomSides: o.randomSides,
+        d: o.dueDate,
+        gc: o.gameCode,
+      };
+    });
+
+    const newSchedules = autoFixResult.newPairings.map(p => ({
+      scheduleId: null,
+      t: data.tournamentId,
+      usa: p.usaPlayerId,
+      ussr: p.ussrPlayerId,
+      randomSides: p.randomSides,
+      d: p.dueDate,
+      gc: p.gameCode,
+    }));
+
+    const allSchedules = [...updatedSchedules, ...newSchedules];
+
+    console.log('═══════════════════════════════════════');
+    console.log('[Persist] Final state for tournament:', data.tournamentName);
+    console.log('═══════════════════════════════════════');
+    console.log(`\n📋 Updated schedules (${updatedSchedules.length}):`);
+    updatedSchedules.forEach(s => {
+      console.log(`  [${s.scheduleId}] ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${new Date(s.d).toLocaleDateString()}`);
+    });
+    console.log(`\n🆕 New schedules (${newSchedules.length}):`);
+    newSchedules.forEach((s, i) => {
+      console.log(`  ${i + 1}. ${name(s.usa)} (${rating(s.usa)}) vs ${name(s.ussr)} (${rating(s.ussr)}) — ${s.gc} — ${new Date(s.d).toLocaleDateString()}`);
+    });
+    console.log('\n📦 Payload (all schedules):', allSchedules);
+    console.log('═══════════════════════════════════════');
+
+    setAutoFixResult(null);
+    setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new (check console)`);
+    setTimeout(() => setPersistMessage(""), 5000);
   };
 
   if (isLoading) {
