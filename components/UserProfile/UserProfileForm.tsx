@@ -22,6 +22,7 @@ interface UserProfileFormData {
   lastName: string;
   email: string;
   playdek_name: string;
+  discord_user_id: string;
   phone: string;
   preferredGamingPlatform: string;
   preferredGameDuration: string;
@@ -37,6 +38,19 @@ interface PasswordFormData {
 
 const inputWidth = "300px";
 const dropdownWidth = "322px";
+const helperTextStyle = { maxWidth: inputWidth, marginTop: "4px", opacity: 0.8 };
+
+const discordUserIdProblem = (value: string): string | null => {
+  if (!value) return null;
+
+  if (!/^\d+$/.test(value)) return "The Discord User ID contains only digits. Copy it again from Discord.";
+
+  if (value.length < 17 || value.length > 20) {
+    return `The Discord User ID is 17 to 20 digits long. This one has ${value.length}.`;
+  }
+
+  return null;
+};
 
 
 
@@ -55,6 +69,8 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
     handleSubmit: handleSubmitProfile,
     formState,
     setValue: setProfileValue,
+    setError: setProfileError,
+    clearErrors: clearProfileErrors,
     watch: watchProfile,
   } = useForm<UserProfileFormData>({
     defaultValues: {
@@ -62,6 +78,7 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
       lastName: data.last_name || "",
       email: data.email || "",
       playdek_name: data.playdek_name || "",
+      discord_user_id: data.discord_user_id || "",
       phone: data.phone_number || "",
       preferredGamingPlatform: data.preferred_gaming_platform || "",
       preferredGameDuration: data.preferred_game_duration || "",
@@ -92,11 +109,23 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
       setErrorMsg("");
       setConfirmationMsg("");
 
+      const discordUserId = formData.discord_user_id.trim();
+
+      const discordUserIdError = discordUserIdProblem(discordUserId);
+
+      if (discordUserIdError) {
+        setProfileError("discord_user_id", { message: discordUserIdError });
+        return;
+      }
+
+      clearProfileErrors("discord_user_id");
+
       const updateData: UpdateUserData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         playdek_name: formData.playdek_name,
         email: data.email,
+        discord_user_id: discordUserId,
         phone: formData.phone || undefined,
         preferredGamingPlatform: formData.preferredGamingPlatform || undefined,
         preferredGameDuration: formData.preferredGameDuration || undefined,
@@ -173,6 +202,28 @@ const UserProfileForm: React.FC<UserProfileFormProps> = ({ data }) => {
           error={!!profileErrors.playdek_name}
           maxLength={100}
         />
+
+        <EditTextComponent
+          labelText="Discord User ID"
+          inputValue={watchProfile("discord_user_id") || ""}
+          onInputValueChange={(value) => {
+            clearProfileErrors("discord_user_id");
+            setProfileValue("discord_user_id", value);
+          }}
+          css={{ width: inputWidth, color: "var(--primary-text)" }}
+          error={!!profileErrors.discord_user_id}
+          maxLength={20}
+        />
+        {profileErrors.discord_user_id && (
+          <Text type="error" fontSize="small" style={helperTextStyle}>
+            {profileErrors.discord_user_id.message}
+          </Text>
+        )}
+        <Text fontSize="small" style={helperTextStyle}>
+          This ID can be used to mention you on Discord when results of your games are posted. To
+          find it, turn on Developer Mode in Discord under Settings -&gt; Advanced. Then, right-click
+          your own name and select Copy User ID.
+        </Text>
 
         <EditTextComponent
           labelText="Phone"
