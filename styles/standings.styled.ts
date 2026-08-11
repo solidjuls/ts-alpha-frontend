@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { DefaultTheme } from "styled-components";
 import { media } from "theme";
 
 /* ---------- Layout ---------- */
@@ -163,7 +163,7 @@ export const StyledTable = styled.table`
     width: 100%;
     border-collapse: collapse;
     min-width: 0;
-
+    max-width: 715px;
     @media (min-width: 768px) {
         min-width: 520px;
     }
@@ -187,10 +187,24 @@ export const StyledHeaderCellCentered = styled(StyledHeaderCell)`
   text-align: center;
 `;
 
+type PlayoffColor = 'green' | 'blue' | 'orange';
+interface StyledRowProps {
+  $playoffColor?: 'green' | 'blue' | 'orange';
+}
 
-export const StyledRow = styled.tr`
-    &:hover td {
-        background: transparent;
+const getPlayoffBackground = (playoffColor: PlayoffColor, theme: DefaultTheme): string => {
+  if (playoffColor === undefined || playoffColor === null) return "transparent";
+  if (playoffColor === 'green') return `${theme.colors.greenAlpha} !important`; 
+  if (playoffColor === 'blue') return `${theme.colors.blueAlpha} !important`;
+  if (playoffColor === 'orange') return `${theme.colors.orangeAlpha} !important`;
+  return "transparent";
+};
+
+export const StyledRow = styled.tr<StyledRowProps>`
+  background: ${({ $playoffColor, theme }) => getPlayoffBackground($playoffColor, theme)};
+
+  &:hover td {
+    background: transparent;
   }
 `;
 
@@ -226,7 +240,6 @@ export const PlayerInfoContainer = styled.div`
   align-items: center;
   gap: 8px;
   min-width: 0;
-
   /* specifically truncate the name text */
   .playerName {
     min-width: 0;

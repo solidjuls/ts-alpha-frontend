@@ -51,6 +51,26 @@ const Standings = () => {
     });
   }
 
+  // retrieve the first player of each grouped[key]
+  const firstPlayers = grouped && Object.values(grouped).map((group) => group[0]);
+
+  // the playoffs players are the firstPlayers, plus the first 67 players inside standings, ordered by playoffOrder. Players are unique
+  const playoffsPlayers = firstPlayers?.concat(standings?.filter((player) => !firstPlayers.includes(player)) || []);
+
+  const getPlayoffColorTables = (index: number, playoffOrder: number) => {
+    if (index === 0) return 'green';
+    if (playoffOrder <= 31) return 'blue';
+
+    return undefined;
+  };
+
+  const getPlayoffColorRoad = (index: number, playoffOrder: number) => {
+    if (index >= 0 && index <= 7) return 'green';
+    if (index > 7 && playoffOrder <= 31) return 'blue';
+    if (playoffOrder > 31 && playoffOrder <= 67) return 'orange';
+    return undefined;
+  };
+
   return (
     <PageContainer>
       <PageHeader>
@@ -92,7 +112,7 @@ const Standings = () => {
 
                   <tbody>
                     {players.map((player, index) => (
-                      <StyledRow key={player.userId}>
+                      <StyledRow key={player.userId} $playoffColor={getPlayoffColorTables(index, player.playoffOrder)}>
                         <RankCell>
                           <Text fontSize="small">{index + 1}</Text>
                         </RankCell>
@@ -125,6 +145,54 @@ const Standings = () => {
             </StandingGroup>
           ))}
       </StandingsContainer>
+      {grouped &&
+        <div>
+          <h2>Road to playoffs</h2>
+          <TableScroll>
+            <StyledTable>
+              <StyledHeading>
+                <tr>
+                  <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
+                  <StyledHeaderCell>Player</StyledHeaderCell>
+                  <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
+                  <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
+                  <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
+                </tr>
+              </StyledHeading>
+              <tbody>
+                {playoffsPlayers?.map((player, index) => (
+                  <StyledRow key={player.userId} $playoffColor={getPlayoffColorRoad(index, player.playoffOrder)}>
+                    <RankCell>
+                      <Text fontSize="small">{index + 1}</Text>
+                    </RankCell>
+
+                    <PlayerCell>
+                      <PlayerInfoContainer>
+                        {player.tldCode && <FlagIcon code={player.tldCode} />}
+                        <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
+                      </PlayerInfoContainer>
+                    </PlayerCell>
+
+                    <StatCell>
+                      <Text fontSize="small">
+                        {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                      </Text>
+                    </StatCell>
+
+                    <StatCell>
+                      <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
+                    </StatCell>
+
+                    <StatCell>
+                      <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
+                    </StatCell>
+                  </StyledRow>
+                  ))}
+              </tbody>
+            </StyledTable>
+          </TableScroll>
+        </div>
+      }
     </PageContainer>
   );
 };
