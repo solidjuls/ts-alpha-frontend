@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import { GetServerSideProps } from "next";
-import { 
+import { useRouter } from "next/router";
+import {
   Page,
   Card,
   Title,
@@ -18,11 +18,7 @@ interface VerificationResult {
   message: string;
 }
 
-interface EmailVerifyConfirmProps {
-  result: VerificationResult;
-}
-
-const EmailVerifyConfirmComponent: React.FC<EmailVerifyConfirmProps> = ({ result }) => {
+const EmailVerifyConfirmComponent: React.FC<{ result: VerificationResult }> = ({ result }) => {
   const bannerVariant = result.status === "success" ? "success" : "error";
 
   return (
@@ -78,11 +74,50 @@ const EmailVerifyConfirmComponent: React.FC<EmailVerifyConfirmProps> = ({ result
   );
 };
 
-/* =========================
-   Page
-   ========================= */
+const EmailVerifyConfirmPage: React.FC = () => {
+  const router = useRouter();
+  const [result, setResult] = useState<VerificationResult | null>(null);
 
-const EmailVerifyConfirmPage: React.FC<EmailVerifyConfirmProps> = ({ result }) => {
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const { token } = router.query;
+
+    if (!token || typeof token !== "string") {
+      setResult({
+        status: "invalid",
+        message: "Invalid verification link. Please check your email and try again.",
+      });
+      return;
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002/api";
+
+    fetch(`${apiUrl}/auth/email-verify/confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (response.ok && data.success) {
+          setResult({ status: "success", message: data.message });
+        } else {
+          setResult({
+            status: "error",
+            message: data.message || "An error occurred while verifying your email.",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Email verification error:", error);
+        setResult({
+          status: "error",
+          message: "An error occurred while verifying your email. Please try again.",
+        });
+      });
+  }, [router.isReady, router.query]);
+
   return (
     <>
       <Head>
@@ -91,70 +126,17 @@ const EmailVerifyConfirmPage: React.FC<EmailVerifyConfirmProps> = ({ result }) =
       </Head>
 
       <Page>
-        <EmailVerifyConfirmComponent result={result} />
+        {result ? (
+          <EmailVerifyConfirmComponent result={result} />
+        ) : (
+          <Card>
+            <Title>Email Verification</Title>
+            <InfoText>Verifying your email...</InfoText>
+          </Card>
+        )}
       </Page>
     </>
   );
 };
 
 export default EmailVerifyConfirmPage;
-
-/* =========================
-   SSR
-   ========================= */
-
-export const getServerSideProps: GetServerSideProps<EmailVerifyConfirmProps> = async (context) => {
-  const { token } = context.params!;
-
-  if (!token || typeof token !== "string") {
-    return {
-      props: {
-        result: {
-          status: "invalid",
-          message: "Invalid verification link. Please check your email and try again.",
-        },
-      },
-    };
-  }
-
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002/api";
-    const response = await fetch(`${apiUrl}/auth/email-verify/confirm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      return {
-        props: {
-          result: {
-            status: "success",
-            message: data.message,
-          },
-        },
-      };
-    }
-
-    return {
-      props: {
-        result: {
-          status: "error",
-          message: data.message || "An error occurred while verifying your email.",
-        },
-      },
-    };
-  } catch (error) {
-    console.error("Email verification error:", error);
-    return {
-      props: {
-        result: {
-          status: "error",
-          message: "An error occurred while verifying your email. Please try again.",
-        },
-      },
-    };
-  }
-};

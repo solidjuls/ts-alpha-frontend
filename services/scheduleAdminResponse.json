@@ -1,0 +1,982 @@
+{
+    "tournamentId": "318",
+    "tournamentName": "ITSL - Season 15",
+    "forfeitedPlayers": [
+        {
+            "userId": "3139",
+            "fullName": "Scott Siepker",
+            "rating": 4841,
+            "tldCode": "US"
+        },
+        {
+            "userId": "1928",
+            "fullName": "Franck Rondepierre",
+            "rating": 5711,
+            "tldCode": "FR"
+        },
+        {
+            "userId": "2835",
+            "fullName": "Xandre Puig",
+            "rating": 4814,
+            "tldCode": "CAT"
+        },
+        {
+            "userId": "2159",
+            "fullName": "Johannes Strobel",
+            "rating": 5605,
+            "tldCode": "DE"
+        },
+        {
+            "userId": "3148",
+            "fullName": "Alper Karabacak",
+            "rating": 4755,
+            "tldCode": "TR"
+        },
+        {
+            "userId": "2012",
+            "fullName": "Hicham Vanborm",
+            "rating": 5787,
+            "tldCode": "BE"
+        },
+        {
+            "userId": "1798",
+            "fullName": "Daniel Squindo",
+            "rating": 5893,
+            "tldCode": "IT"
+        },
+        {
+            "userId": "3115",
+            "fullName": "Elia Grobberio",
+            "rating": 4938,
+            "tldCode": "IT"
+        },
+        {
+            "userId": "2241",
+            "fullName": "Kaiyan Fan",
+            "rating": 5997,
+            "tldCode": "CN"
+        },
+        {
+            "userId": "3020",
+            "fullName": "David Culla",
+            "rating": 5386,
+            "tldCode": "ES"
+        },
+        {
+            "userId": "2219",
+            "fullName": "Juan Antonio Salas",
+            "rating": 4879,
+            "tldCode": "ES"
+        },
+        {
+            "userId": "3097",
+            "fullName": "Nevenko Lazovic",
+            "rating": 4775,
+            "tldCode": "RS"
+        },
+        {
+            "userId": "3134",
+            "fullName": "Jonathan Austin",
+            "rating": 4877,
+            "tldCode": "CA"
+        },
+        {
+            "userId": "3141",
+            "fullName": "Paul McFarland",
+            "rating": null,
+            "tldCode": "UK"
+        },
+        {
+            "userId": "2589",
+            "fullName": "Rania Kouim",
+            "rating": 5702,
+            "tldCode": "GR"
+        },
+        {
+            "userId": "3137",
+            "fullName": "Evan Pannuto",
+            "rating": 4818,
+            "tldCode": "US"
+        },
+        {
+            "userId": "1558",
+            "fullName": "Aleksei Lobunko",
+            "rating": 5639,
+            "tldCode": "NL"
+        },
+        {
+            "userId": "2743",
+            "fullName": "Tasos Manolopoulos",
+            "rating": 5607,
+            "tldCode": "GR"
+        },
+        {
+            "userId": "3099",
+            "fullName": "Shreyas Muthusamy",
+            "rating": 4548,
+            "tldCode": "US"
+        },
+        {
+            "userId": "3043",
+            "fullName": "Jeff Gray",
+            "rating": 4470,
+            "tldCode": "US"
+        },
+        {
+            "userId": "1967",
+            "fullName": "Giancarlo Corcuera",
+            "rating": 4658,
+            "tldCode": "PE"
+        },
+        {
+            "userId": "2877",
+            "fullName": "Zidane Lamrani",
+            "rating": 5102,
+            "tldCode": "MA"
+        },
+        {
+            "userId": "3005",
+            "fullName": "Tobias Marshall",
+            "rating": 3946,
+            "tldCode": "UK"
+        },
+        {
+            "userId": "2344",
+            "fullName": "Makis Bahtsevanis",
+            "rating": 6429,
+            "tldCode": "GR"
+        },
+        {
+            "userId": "2084",
+            "fullName": "Jarib Flores",
+            "rating": 6425,
+            "tldCode": "ES"
+        },
+        {
+            "userId": "2431",
+            "fullName": "Michael Panettieri",
+            "rating": 5775,
+            "tldCode": "US"
+        },
+        {
+            "userId": "1877",
+            "fullName": "Eduardo Sans",
+            "rating": 5704,
+            "tldCode": "ES"
+        },
+        {
+            "userId": "2850",
+            "fullName": "Yongjun Park",
+            "rating": 6230,
+            "tldCode": "KR"
+        },
+        {
+            "userId": "2415",
+            "fullName": "Max Goldman",
+            "rating": 6547,
+            "tldCode": "CA"
+        },
+        {
+            "userId": "1862",
+            "fullName": "Dmitry Nikishin",
+            "rating": 4748,
+            "tldCode": "RU"
+        },
+        {
+            "userId": "3104",
+            "fullName": "Rong Yu",
+            "rating": 5592,
+            "tldCode": "CN"
+        },
+        {
+            "userId": "2489",
+            "fullName": "Nick Doumpas",
+            "rating": 5725,
+            "tldCode": "GR"
+        },
+        {
+            "userId": "2985",
+            "fullName": "Riley Dosh",
+            "rating": 4731,
+            "tldCode": "US"
+        },
+        {
+            "userId": "2859",
+            "fullName": "Yun Jeong",
+            "rating": 6165,
+            "tldCode": "KR"
+        },
+        {
+            "userId": "3128",
+            "fullName": "Taylor Sorensen",
+            "rating": 4897,
+            "tldCode": "US"
+        },
+        {
+            "userId": "3160",
+            "fullName": "Palin Leen",
+            "rating": 4878,
+            "tldCode": "CN"
+        },
+        {
+            "userId": "3163",
+            "fullName": "Driss Kadata",
+            "rating": 3953,
+            "tldCode": "MA"
+        },
+        {
+            "userId": "3164",
+            "fullName": "Maxwell Thrall",
+            "rating": 4776,
+            "tldCode": "US"
+        },
+        {
+            "userId": "2558",
+            "fullName": "Peter Telesca",
+            "rating": 5923,
+            "tldCode": "US"
+        },
+        {
+            "userId": "2987",
+            "fullName": "Steve Kuhn",
+            "rating": 5399,
+            "tldCode": "US"
+        },
+        {
+            "userId": "2559",
+            "fullName": "Peter Vieren",
+            "rating": 5576,
+            "tldCode": "BE"
+        },
+        {
+            "userId": "3039",
+            "fullName": "Otto Wefer",
+            "rating": 5206,
+            "tldCode": "SE"
+        }
+    ],
+    "schedulesWithoutPair": [
+        {
+            "scheduleId": "11875",
+            "gameCode": "J492",
+            "dueDate": "2026-05-15T00:00:00.000Z",
+            "existingPlayer": {
+                "userId": "1757",
+                "fullName": "Chris Xu",
+                "rating": 5923,
+                "tldCode": "CN",
+                "side": "usa"
+            }
+        },
+        {
+            "scheduleId": "13201",
+            "gameCode": "J911",
+            "dueDate": "2026-07-31T00:00:00.000Z",
+            "existingPlayer": {
+                "userId": "1739",
+                "fullName": "Yamei Chen",
+                "rating": 7060,
+                "tldCode": "CN",
+                "side": "ussr"
+            }
+        },
+        {
+            "scheduleId": "13212",
+            "gameCode": "J491",
+            "dueDate": "2026-07-13T00:00:00.000Z",
+            "existingPlayer": {
+                "userId": "1739",
+                "fullName": "Yamei Chen",
+                "rating": 7060,
+                "tldCode": "CN",
+                "side": "ussr"
+            }
+        },
+        {
+            "scheduleId": "13213",
+            "gameCode": "J492",
+            "dueDate": "2026-07-13T00:00:00.000Z",
+            "existingPlayer": {
+                "userId": "1739",
+                "fullName": "Yamei Chen",
+                "rating": 7060,
+                "tldCode": "CN",
+                "side": "usa"
+            }
+        },
+        {
+            "scheduleId": "13214",
+            "gameCode": "J493",
+            "dueDate": "2026-07-13T00:00:00.000Z",
+            "existingPlayer": {
+                "userId": "1739",
+                "fullName": "Yamei Chen",
+                "rating": 7060,
+                "tldCode": "CN",
+                "side": "ussr"
+            }
+        }
+    ],
+    "playersBelowTarget": [
+        {
+            "userId": "1556",
+            "fullName": "Alejandro Granese",
+            "rating": 4287,
+            "tldCode": "CL",
+            "currentGames": 17,
+            "gamesNeeded": 3
+        },
+        {
+            "userId": "2774",
+            "fullName": "Tom Dworschak",
+            "rating": 4628,
+            "tldCode": "US",
+            "currentGames": 16,
+            "gamesNeeded": 4
+        },
+        {
+            "userId": "2995",
+            "fullName": "Giorgio Boggio",
+            "rating": 5786,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "2787",
+            "fullName": "Toms Reiziņš",
+            "rating": 3857,
+            "tldCode": "LV",
+            "currentGames": 18,
+            "gamesNeeded": 2
+        },
+        {
+            "userId": "3155",
+            "fullName": "Joris Vandenbroeck",
+            "rating": 5378,
+            "tldCode": "BE",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "1604",
+            "fullName": "Andrew Ahern",
+            "rating": 4923,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "1822",
+            "fullName": "David Hayes",
+            "rating": 4744,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "3085",
+            "fullName": "Jiang Jiang",
+            "rating": 4869,
+            "tldCode": "CN",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "1770",
+            "fullName": "Claudio Valerio",
+            "rating": 4593,
+            "tldCode": "IT",
+            "currentGames": 13,
+            "gamesNeeded": 7
+        },
+        {
+            "userId": "1940",
+            "fullName": "Fredrik Adlercreutz",
+            "rating": 6059,
+            "tldCode": "SE",
+            "currentGames": 16,
+            "gamesNeeded": 4
+        },
+        {
+            "userId": "3072",
+            "fullName": "Roshan Melwani",
+            "rating": 4607,
+            "tldCode": "HK",
+            "currentGames": 17,
+            "gamesNeeded": 3
+        },
+        {
+            "userId": "1961",
+            "fullName": "George Young",
+            "rating": 4121,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "2077",
+            "fullName": "Jan Wimmer",
+            "rating": 6392,
+            "tldCode": "US",
+            "currentGames": 16,
+            "gamesNeeded": 4
+        },
+        {
+            "userId": "1665",
+            "fullName": "Benjamin Babus",
+            "rating": 5535,
+            "tldCode": "HU",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "2951",
+            "fullName": "Chris Flynn",
+            "rating": 5216,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "2430",
+            "fullName": "Michael Mitchell",
+            "rating": 4300,
+            "tldCode": "US",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "3019",
+            "fullName": "Pawel Olszak",
+            "rating": 4364,
+            "tldCode": "PL",
+            "currentGames": 15,
+            "gamesNeeded": 5
+        },
+        {
+            "userId": "2583",
+            "fullName": "Rafał Maksymiuk",
+            "rating": 3847,
+            "tldCode": "PL",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "1540",
+            "fullName": "Adrian Ziarko",
+            "rating": 4978,
+            "tldCode": "PL",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        },
+        {
+            "userId": "2246",
+            "fullName": "Kant Han",
+            "rating": 5050,
+            "tldCode": "CN",
+            "currentGames": 13,
+            "gamesNeeded": 7
+        },
+        {
+            "userId": "1552",
+            "fullName": "Albert Malafronte",
+            "rating": 5019,
+            "tldCode": "US",
+            "currentGames": 14,
+            "gamesNeeded": 6
+        },
+        {
+            "userId": "3170",
+            "fullName": "Zihang Zhou",
+            "rating": 5956,
+            "tldCode": "CN",
+            "currentGames": 19,
+            "gamesNeeded": 1
+        }
+    ],
+    "waitlistPlayers": [],
+    "previousOpponents": {
+        "1540": [
+            "1974",
+            "2224",
+            "3064",
+            "2367",
+            "2583",
+            "3146",
+            "2971",
+            "1817",
+            "3157",
+            "1689",
+            "3171",
+            "3058",
+            "3084",
+            "2878",
+            "2101",
+            "3162",
+            "1853",
+            "2393",
+            "2012"
+        ],
+        "1552": [
+            "2449",
+            "2395",
+            "3038",
+            "3123",
+            "1961",
+            "1624",
+            "2165",
+            "2481",
+            "2541",
+            "2437",
+            "1797",
+            "1984",
+            "1778",
+            "2780"
+        ],
+        "1556": [
+            "3013",
+            "2947",
+            "2481",
+            "2375",
+            "1645",
+            "2429",
+            "3038",
+            "1635",
+            "2996",
+            "2983",
+            "1814",
+            "2232",
+            "1724",
+            "1652",
+            "3009",
+            "2141",
+            "2555"
+        ],
+        "1604": [
+            "2203",
+            "1652",
+            "1739",
+            "3145",
+            "1689",
+            "2165",
+            "3051",
+            "1961",
+            "3057",
+            "2956",
+            "2312",
+            "3083",
+            "2414",
+            "1946",
+            "2235",
+            "2836",
+            "1572",
+            "2399",
+            "2141"
+        ],
+        "1665": [
+            "1830",
+            "2224",
+            "1974",
+            "1910",
+            "3063",
+            "2356",
+            "1921",
+            "1597",
+            "2621",
+            "2836",
+            "2085",
+            "1913",
+            "2679",
+            "2012",
+            "3069",
+            "1677",
+            "2953",
+            "2956",
+            "3076"
+        ],
+        "1739": [
+            "1734",
+            "1604",
+            "3104",
+            "3035",
+            "3085",
+            "3139",
+            "3145",
+            "2327",
+            "2730",
+            "1600",
+            "1757",
+            "3051",
+            "2190",
+            "1961",
+            "1946",
+            "2438",
+            "3076",
+            "1822",
+            "1778",
+            "2122",
+            "3034"
+        ],
+        "1757": [
+            "2730",
+            "1734",
+            "2414",
+            "2624",
+            "2190",
+            "2438",
+            "1724",
+            "2977",
+            "3076",
+            "1658",
+            "1822",
+            "2577",
+            "1739",
+            "3138",
+            "2271",
+            "3035",
+            "3085",
+            "1652",
+            "3009",
+            "2645",
+            "2415",
+            "1946"
+        ],
+        "1770": [
+            "2101",
+            "2439",
+            "2634",
+            "1877",
+            "2577",
+            "3014",
+            "1940",
+            "2623",
+            "2190",
+            "1838",
+            "2981",
+            "1600",
+            "2648"
+        ],
+        "1822": [
+            "3035",
+            "2399",
+            "2525",
+            "3085",
+            "2559",
+            "3013",
+            "2645",
+            "2730",
+            "2787",
+            "1757",
+            "1838",
+            "2190",
+            "2438",
+            "3123",
+            "1815",
+            "3076",
+            "1734",
+            "1739",
+            "3014"
+        ],
+        "1940": [
+            "1781",
+            "2101",
+            "1921",
+            "1597",
+            "2439",
+            "2577",
+            "2012",
+            "1677",
+            "1770",
+            "1913",
+            "3146",
+            "2438",
+            "2623",
+            "1910",
+            "1838",
+            "1974"
+        ],
+        "1961": [
+            "2813",
+            "2481",
+            "3051",
+            "2437",
+            "1552",
+            "1946",
+            "1604",
+            "1778",
+            "2780",
+            "2296",
+            "2271",
+            "3104",
+            "1527",
+            "1739",
+            "3145",
+            "2449",
+            "3123",
+            "3155",
+            "2429"
+        ],
+        "2077": [
+            "1645",
+            "3038",
+            "3089",
+            "3039",
+            "2996",
+            "1814",
+            "3076",
+            "2415",
+            "1724",
+            "2556",
+            "2141",
+            "1661",
+            "2555",
+            "2995",
+            "2375",
+            "3171"
+        ],
+        "2246": [
+            "1946",
+            "3099",
+            "2774",
+            "2960",
+            "2429",
+            "2847",
+            "2375",
+            "2973",
+            "1853",
+            "1624",
+            "2415",
+            "1734",
+            "3168"
+        ],
+        "2430": [
+            "3034",
+            "3058",
+            "2558",
+            "2836",
+            "2762",
+            "2977",
+            "1913",
+            "2438",
+            "2229",
+            "1597",
+            "2774",
+            "1974",
+            "2995",
+            "2555",
+            "2645",
+            "1550",
+            "2449",
+            "3145",
+            "2232"
+        ],
+        "2583": [
+            "3020",
+            "3097",
+            "3069",
+            "2248",
+            "2878",
+            "1540",
+            "3170",
+            "1938",
+            "2393",
+            "1815",
+            "3021",
+            "2645",
+            "3100",
+            "1974",
+            "1838",
+            "2367",
+            "1853",
+            "3157",
+            "3171"
+        ],
+        "2774": [
+            "3145",
+            "2977",
+            "2246",
+            "2203",
+            "2232",
+            "2229",
+            "3015",
+            "1734",
+            "2951",
+            "3072",
+            "2430",
+            "3034",
+            "2375",
+            "2995",
+            "3058",
+            "2645"
+        ],
+        "2787": [
+            "2983",
+            "2606",
+            "1938",
+            "3069",
+            "2251",
+            "3162",
+            "3100",
+            "2248",
+            "1634",
+            "1822",
+            "1658",
+            "3013",
+            "2981",
+            "1838",
+            "1910",
+            "3170",
+            "1661",
+            "2327"
+        ],
+        "2951": [
+            "2995",
+            "2645",
+            "2973",
+            "3163",
+            "3145",
+            "2232",
+            "2803",
+            "3035",
+            "2774",
+            "2962",
+            "3034",
+            "3058",
+            "1645",
+            "2762",
+            "2122",
+            "2437",
+            "2977",
+            "2229",
+            "3171"
+        ],
+        "2995": [
+            "2951",
+            "3034",
+            "2415",
+            "1572",
+            "3058",
+            "2762",
+            "3089",
+            "3076",
+            "2977",
+            "2786",
+            "2229",
+            "2367",
+            "2430",
+            "2077",
+            "2774",
+            "2960",
+            "2645",
+            "2232",
+            "1689"
+        ],
+        "3019": [
+            "2886",
+            "2673",
+            "2784",
+            "2082",
+            "2648",
+            "3146",
+            "1853",
+            "2074",
+            "2813",
+            "2012",
+            "2541",
+            "2085",
+            "1630",
+            "3003",
+            "1817"
+        ],
+        "3072": [
+            "2778",
+            "2254",
+            "2082",
+            "3146",
+            "2781",
+            "1877",
+            "1853",
+            "2085",
+            "2962",
+            "2774",
+            "1597",
+            "2960",
+            "2990",
+            "3003",
+            "2786",
+            "2784",
+            "2971"
+        ],
+        "3085": [
+            "2438",
+            "3076",
+            "2165",
+            "1984",
+            "1822",
+            "1739",
+            "3038",
+            "3034",
+            "2251",
+            "3035",
+            "1781",
+            "1734",
+            "2813",
+            "2395",
+            "2559",
+            "1624",
+            "1757",
+            "2190",
+            "3051"
+        ],
+        "3155": [
+            "3100",
+            "2296",
+            "2781",
+            "2159",
+            "2082",
+            "2537",
+            "2983",
+            "2953",
+            "1797",
+            "3009",
+            "3084",
+            "2481",
+            "3033",
+            "3171",
+            "2256",
+            "1635",
+            "3014",
+            "1677",
+            "1961"
+        ],
+        "3170": [
+            "2990",
+            "2971",
+            "2583",
+            "3069",
+            "2330",
+            "2645",
+            "2254",
+            "1877",
+            "2248",
+            "1597",
+            "2787",
+            "1938",
+            "2786",
+            "2778",
+            "1624",
+            "2085",
+            "2847",
+            "3083"
+        ]
+    },
+    "summary": {
+        "targetGamesPerPlayer": 20,
+        "totalActivePlayers": 174,
+        "totalForfeitedPlayers": 42,
+        "totalSchedulesWithoutPair": 5,
+        "totalPlayersBelowTarget": 22,
+        "totalWaitlistPlayers": 0
+    }
+}
