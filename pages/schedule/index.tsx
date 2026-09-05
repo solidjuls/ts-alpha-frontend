@@ -292,7 +292,6 @@ const Schedule = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
-  const [showOnlyPending, setShowOnlyPending] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const deleteScheduleMutation = useDeleteSchedule();
@@ -311,7 +310,7 @@ const Schedule = () => {
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
     pageSize: 20,
-    onlyPending: showOnlyPending,
+    onlyPending: false,
     orderBy: 'dueDate',
     orderDirection: 'asc'
   });
@@ -326,7 +325,6 @@ const Schedule = () => {
   const clearLocalState = () => {
     setSelectedUserId(null);
     setShowFullSchedule(false);
-    setShowOnlyPending(false);
     setCurrentPage(1);
   }
 
@@ -335,20 +333,9 @@ const Schedule = () => {
     setCurrentPage(1); // Reset to first page when changing player
   };
 
-  const handlePlayerRemove = (playerId: string) => {
-    // The actual removal is handled by the ScheduleFilter component
-    // This callback is just for any additional logic if needed
-    console.log("Player removed:", playerId);
-  };
-
   const handleShowFullScheduleChange = (showFull: boolean) => {
     setShowFullSchedule(showFull);
     setCurrentPage(1); // Reset to first page when changing view
-  };
-
-  const handleShowOnlyPendingChange = (showPending: boolean) => {
-    setShowOnlyPending(showPending);
-    setCurrentPage(1); // Reset to first page when changing filter
   };
 
   const onPageChange = (page: string) => {
@@ -375,7 +362,7 @@ const Schedule = () => {
 
   let updatedScheduleData = scheduleData?.filter(game => !game.gameResultsId);
   // if no filters are set
-  const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && currentPage === 1;
+  const noFilters = !selectedUserId && !showFullSchedule && currentPage === 1;
   if (noFilters && scheduleData && scheduleData.length > 0) {
     // split all completed games, order them by completed game date and then add them back
     const incompletedGames = scheduleData?.filter(game => !game.gameResultsId);
@@ -417,19 +404,16 @@ const Schedule = () => {
               </TabContainer>
             )}
 
+            {/* Filters */}
+            <ScheduleFilter
+              onPlayerSelect={handlePlayerSelect}
+              onShowFullScheduleChange={handleShowFullScheduleChange}
+              showFullSchedule={showFullSchedule}
+            />
+
             {/* Admin Controls */}
             {isUserAdminForTournament && currentTournament && (
               <Flex style={{ alignItems: "center", gap: "12px" }}>
-                <ScheduleFilter
-                noSchedule={!updatedScheduleData || updatedScheduleData.length === 0}
-                tournament={currentTournament.id}
-                onPlayerSelect={handlePlayerSelect}
-                onPlayerRemove={handlePlayerRemove}
-                onShowFullScheduleChange={handleShowFullScheduleChange}
-                onShowOnlyPendingChange={handleShowOnlyPendingChange}
-                showFullSchedule={showFullSchedule}
-                showOnlyPending={showOnlyPending}
-              />
                 <Link href={`/schedule-admin/${currentTournament.id}`} style={{ whiteSpace: "nowrap" }}>
                   Schedule Admin
                 </Link>
