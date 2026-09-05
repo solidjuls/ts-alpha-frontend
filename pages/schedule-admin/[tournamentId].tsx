@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
 import { useScheduleAdmin } from "hooks/useTournaments";
-import { useUploadCsvSchedule, useAddSchedule, useReplacePlayer, useCreateSchedulesBulk } from "hooks/useSchedule";
+import { useUploadCsvSchedule, useAddSchedule, useReplacePlayer, useRemovePlayer, useCreateSchedulesBulk } from "hooks/useSchedule";
 import { CsvScheduleRow } from "services/schedule.service";
 import UserTypeahead from "components/UserTypeahead";
 import DateComponent from "components/EditFormComponents/DateComponent";
@@ -14,6 +14,7 @@ import { Checkbox } from "components/Checkbox";
 import { FlagIcon } from "components/FlagIcon";
 import { autoFixSchedules, AutoFixResult } from "utils/autoFixSchedules";
 import { ScheduleAdminPlayer } from "services/tournaments.service";
+import { Backbutton } from "components/Backbutton";
 
 const boxStyle: React.CSSProperties = {
   flex: 1,
@@ -90,6 +91,7 @@ const ScheduleAdminPage = () => {
   const uploadCsvMutation = useUploadCsvSchedule();
   const addScheduleMutation = useAddSchedule();
   const replacePlayerMutation = useReplacePlayer();
+  const removePlayerMutation = useRemovePlayer();
   const createSchedulesBulkMutation = useCreateSchedulesBulk();
 
   // CSV Upload state
@@ -100,6 +102,7 @@ const ScheduleAdminPage = () => {
   const [usaPlayer, setUsaPlayer] = useState("");
   const [ussrPlayer, setUssrPlayer] = useState("");
   const [gameCode, setGameCode] = useState("");
+  const [bestOf, setBestOf] = useState<number | null>(null);
   const [random, setRandom] = useState(false);
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [scheduleMessage, setScheduleMessage] = useState("");
@@ -109,9 +112,16 @@ const ScheduleAdminPage = () => {
   const [newUser, setNewUser] = useState("");
   const [replaceMessage, setReplaceMessage] = useState("");
 
+  // Remove Player state
+  const [playerToRemove, setPlayerToRemove] = useState("");
+  const [removeMessage, setRemoveMessage] = useState("");
+
   // Auto Fix state
   const [autoFixResult, setAutoFixResult] = useState<AutoFixResult | null>(null);
   const [persistMessage, setPersistMessage] = useState("");
+
+  // Filter state
+  const [showOnlyPending, setShowOnlyPending] = useState(false);
 
   const completeCSVSchema = (results: any) => {
     let valid = true;
@@ -184,6 +194,7 @@ const ScheduleAdminPage = () => {
         randomSides: random,
         dueDate: dueDate.toISOString(),
         gameCode: gameCode || "",
+        bestOf,
       });
       setScheduleMessage("Schedule created successfully!");
       setTimeout(() => setScheduleMessage(""), 3000);
@@ -205,6 +216,22 @@ const ScheduleAdminPage = () => {
     } catch {
       setReplaceMessage("Error updating players. Please try again.");
     }
+  };
+
+  const handleRemovePlayer = async () => {
+    if (!tournamentId || !playerToRemove) return;
+    setRemoveMessage("");
+    try {
+      await removePlayerMutation.mutateAsync({
+        tournamentId,
+        playerId: playerToRemove,
+      });
+      setRemoveMessage("Player removed successfully");
+      setPlayerToRemove("");
+    } catch (err: any) {
+      setRemoveMessage(err?.response?.data?.message || "Error removing player. Please try again.");
+    }
+    setTimeout(() => setRemoveMessage(""), 3000);
   };
 
   const handleAutoFix = () => {
@@ -336,6 +363,7 @@ const ScheduleAdminPage = () => {
         <link rel="icon" href="/ts-icon.webp" />
       </Head>
       <div style={{ padding: "24px" }}>
+        <Backbutton />
         <h1>{data?.tournamentName || "Schedule Admin"}</h1>
 
         {/* CSV Upload */}
@@ -384,6 +412,20 @@ const ScheduleAdminPage = () => {
                 onChange={(e) => { setGameCode(e.target.value); setScheduleMessage(""); }}
                 style={{ width: "80px", height: "35px", padding: "4px 8px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-main)", color: "var(--primary-text)" }}
               />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600 }}>Best Of</label>
+              <select
+                value={bestOf ?? ""}
+                onChange={(e) => { setBestOf(e.target.value ? Number(e.target.value) : null); setScheduleMessage(""); }}
+                style={{ width: "80px", height: "35px", padding: "4px 8px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-main)", color: "var(--primary-text)" }}
+              >
+                <option value="">—</option>
+                <option value="1">1</option>
+                <option value="3">3</option>
+                <option value="5">5</option>
+                <option value="7">7</option>
+              </select>
             </div>
             <DateComponent
               labelText="Due Date"
@@ -436,6 +478,42 @@ const ScheduleAdminPage = () => {
           </div>
           {replaceMessage && <span style={{ fontSize: "13px" }}>{replaceMessage}</span>}
         </div>
+
+        {/* Remove Player */}
+        <div style={sectionStyle}>
+          <h4 style={sectionTitleStyle}>Remove Player</h4>
+          <div style={formRowStyle}>
+            <UserTypeahead
+              labelText="Player"
+              selectedItem={playerToRemove}
+              placeholder="Player to Remove..."
+              width="150px"
+              onBlur={() => {}}
+              onSelect={(item) => setPlayerToRemove(item?.value || "")}
+            />
+            <button
+              onClick={handleRemovePlayer}
+              disabled={!playerToRemove || removePlayerMutation.isPending}
+              style={{ ...btnStyle, opacity: !playerToRemove || removePlayerMutation.isPending ? 0.5 : 1 }}
+            >
+              {removePlayerMutation.isPending ? <Spinner size="2" /> : "Remove Player"}
+            </button>
+          </div>
+          {removeMessage && (
+            <span style={{ fontSize: "13px", color: removeMessage.includes("success") ? "var(--usa)" : "var(--ussr)" }}>
+              {removeMessage}
+            </span>
+          )}
+        </div>
+        {/* Filter */}
+        <div style={{ marginTop: "16px" }}>
+          <Checkbox
+            text="Show Only Pending Games"
+            checked={showOnlyPending}
+            onCheckedChange={setShowOnlyPending}
+          />
+        </div>
+
         {/* Data Boxes */}
         {(() => {
           // Compute projected state when in preview mode
