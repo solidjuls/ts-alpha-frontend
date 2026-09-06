@@ -6,7 +6,7 @@ import { DropdownItemType } from "types/types";
 import { UsersListResponse } from "services/users.service";
 
 export interface UserTypeaheadProps {
-  labelText: string;
+  labelText?: string;
   selectedItem: string | number | null;
   onSelect: (value: DropdownItemType | null) => void;
   placeholder: string;

@@ -21,11 +21,15 @@ export interface RegisteredPlayer {
   phoneNumber: string;
   playdekName: string;
   status: string;
-  rating: number;
   registeredAt: Date;
   userId?: string;
   name: string;
   countryCode?: string;
+}
+
+export interface PlayerRating {
+  userId: string;
+  rating: number;
 }
 
 export interface WaitlistPlayer {
@@ -147,6 +151,51 @@ export interface AddToWaitlistRequest {
 export interface RemoveFromWaitlistRequest {
   userId?: string;    // For removing by user ID
   waitlistId?: string; // For removing by waitlist ID (admin action)
+}
+
+export interface ScheduleAdminPlayer {
+  userId: string;
+  fullName: string;
+  rating: number;
+  tldCode: string;
+}
+
+export interface ScheduleAdminForfeitedPlayer extends ScheduleAdminPlayer {}
+
+export interface ScheduleAdminScheduleWithoutPair {
+  scheduleId: string;
+  gameCode: string;
+  dueDate: string;
+  existingPlayer: ScheduleAdminPlayer & { side: string };
+}
+
+export interface ScheduleAdminPlayerBelowTarget extends ScheduleAdminPlayer {
+  currentGames: number;
+  gamesNeeded: number;
+}
+
+export interface ScheduleAdminWaitlistPlayer extends ScheduleAdminPlayer {
+  waitlistedAt: string;
+}
+
+export interface ScheduleAdminSummary {
+  targetGamesPerPlayer: number;
+  totalActivePlayers: number;
+  totalForfeitedPlayers: number;
+  totalSchedulesWithoutPair: number;
+  totalPlayersBelowTarget: number;
+  totalWaitlistPlayers: number;
+}
+
+export interface ScheduleAdminResponse {
+  tournamentId: string;
+  tournamentName: string;
+  forfeitedPlayers: ScheduleAdminForfeitedPlayer[];
+  schedulesWithoutPair: ScheduleAdminScheduleWithoutPair[];
+  playersBelowTarget: ScheduleAdminPlayerBelowTarget[];
+  waitlistPlayers: ScheduleAdminWaitlistPlayer[];
+  previousOpponents: Record<string, string[]>;
+  summary: ScheduleAdminSummary;
 }
 
 class TournamentsService {
@@ -363,6 +412,18 @@ class TournamentsService {
     const response = await this.axiosInstance.get('/tournaments/generate-result-text', {
       params: { tournamentId, startDate, endDate, video },
     });
+    return response.data;
+  }
+
+  // GET /api/tournaments/:id/schedule-admin - Get schedule admin data for a tournament
+  async getScheduleAdmin(tournamentId: string): Promise<ScheduleAdminResponse> {
+    const response = await this.axiosInstance.get(`/tournaments/${tournamentId}/schedule-admin`);
+    return response.data;
+  }
+
+  // POST /api/tournaments/get-players-ratings - Get ratings for a list of user IDs
+  async getPlayersRatings(userIds: string[]): Promise<PlayerRating[]> {
+    const response = await this.axiosInstance.post('/tournaments/get-players-ratings', { userIds });
     return response.data;
   }
 }

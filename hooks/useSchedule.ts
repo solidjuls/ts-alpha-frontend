@@ -4,10 +4,13 @@ import scheduleService, {
   GetScheduleParams,
   AddScheduleParams,
   UpdateScheduleParams,
+  UpdateScheduleOpponentParams,
   ReplacePlayerParams,
   RemovePlayerParams,
   UploadCsvScheduleParams,
-  CsvUploadResponse
+  CsvUploadResponse,
+  BatchScheduleItem,
+  CreateScheduleDto
 } from '../services/schedule.service';
 
 // Query keys for React Query
@@ -162,5 +165,48 @@ export const useScheduleHealth = (
     queryFn: () => scheduleService.getScheduleHealth(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     ...options,
+  });
+};
+
+// Hook for batch creating schedules
+export const useCreateSchedulesBatch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (schedules: BatchScheduleItem[]) => scheduleService.createSchedulesBatch(schedules),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+    onError: (error: any) => {
+      console.error('Batch schedule creation failed:', error);
+    },
+  });
+};
+
+export const useUpdateScheduleOpponent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (params: UpdateScheduleOpponentParams) => scheduleService.updateScheduleOpponent(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+    onError: (error: any) => {
+      console.error('Update schedule opponent failed:', error);
+    },
+  });
+};
+
+export const useCreateSchedulesBulk = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (schedules: CreateScheduleDto[]) => scheduleService.createSchedulesBulk(schedules),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });
+    },
+    onError: (error: any) => {
+      console.error('Bulk schedule creation failed:', error);
+    },
   });
 };

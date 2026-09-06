@@ -10,6 +10,8 @@ import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { GameWinner } from "types/game.types";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
+import UserTypeahead from "components/UserTypeahead";
+import { Checkbox } from "components/Checkbox";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
@@ -292,7 +294,8 @@ const Schedule = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
-  const [showOnlyPending, setShowOnlyPending] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const deleteScheduleMutation = useDeleteSchedule();
@@ -311,7 +314,7 @@ const Schedule = () => {
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
     pageSize: 20,
-    onlyPending: showOnlyPending,
+    onlyPending: false,
     orderBy: 'dueDate',
     orderDirection: 'asc'
   });
@@ -325,30 +328,20 @@ const Schedule = () => {
 
   const clearLocalState = () => {
     setSelectedUserId(null);
+    setSelectedPlayer("");
     setShowFullSchedule(false);
-    setShowOnlyPending(false);
     setCurrentPage(1);
   }
 
   const handlePlayerSelect = (playerId: string) => {
+    setSelectedPlayer(playerId);
     setSelectedUserId(playerId);
-    setCurrentPage(1); // Reset to first page when changing player
-  };
-
-  const handlePlayerRemove = (playerId: string) => {
-    // The actual removal is handled by the ScheduleFilter component
-    // This callback is just for any additional logic if needed
-    console.log("Player removed:", playerId);
+    setCurrentPage(1);
   };
 
   const handleShowFullScheduleChange = (showFull: boolean) => {
     setShowFullSchedule(showFull);
     setCurrentPage(1); // Reset to first page when changing view
-  };
-
-  const handleShowOnlyPendingChange = (showPending: boolean) => {
-    setShowOnlyPending(showPending);
-    setCurrentPage(1); // Reset to first page when changing filter
   };
 
   const onPageChange = (page: string) => {
@@ -375,7 +368,7 @@ const Schedule = () => {
 
   let updatedScheduleData = scheduleData?.filter(game => !game.gameResultsId);
   // if no filters are set
-  const noFilters = !selectedUserId && !showFullSchedule && !showOnlyPending && currentPage === 1;
+  const noFilters = !selectedUserId && !showFullSchedule && currentPage === 1;
   if (noFilters && scheduleData && scheduleData.length > 0) {
     // split all completed games, order them by completed game date and then add them back
     const incompletedGames = scheduleData?.filter(game => !game.gameResultsId);
@@ -383,6 +376,26 @@ const Schedule = () => {
     //   return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
     // });
     // updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
+  }
+
+  if (isLoading) {
+    return (
+      <>
+        <Head>
+          <title>My Schedule - Twilight Struggle</title>
+          <meta
+            name="description"
+            content="View your tournament schedule and upcoming games in Twilight Struggle competitions."
+          />
+          <link rel="icon" href="/ts-icon.webp" />
+        </Head>
+        <LoadingContainer>
+          <CenteredResultsWrapper>
+            <Spinner />
+          </CenteredResultsWrapper>
+        </LoadingContainer>
+      </>
+    );
   }
 
   return (
@@ -417,18 +430,40 @@ const Schedule = () => {
               </TabContainer>
             )}
 
-            {/* Admin Controls */}
-            {isUserAdminForTournament && currentTournament && (
-              <ScheduleFilter
-                noSchedule={!updatedScheduleData || updatedScheduleData.length === 0}
-                tournament={currentTournament.id}
-                onPlayerSelect={handlePlayerSelect}
-                onPlayerRemove={handlePlayerRemove}
-                onShowFullScheduleChange={handleShowFullScheduleChange}
-                onShowOnlyPendingChange={handleShowOnlyPendingChange}
-                showFullSchedule={showFullSchedule}
-                showOnlyPending={showOnlyPending}
+            {/* Filters — visible to all users */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", marginTop: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
+              <UserTypeahead
+                selectedItem={selectedPlayer}
+                placeholder="Filter by Player"
+                width="275px"
+                onBlur={() => {
+                  setSelectedPlayer("");
+                  handlePlayerSelect("");
+                }}
+                onSelect={(item) => {
+                  handlePlayerSelect(item?.value || "");
+                }}
               />
+              <Checkbox
+                text="Show Full Schedule"
+                checked={showFullSchedule}
+                onCheckedChange={(checked) => handleShowFullScheduleChange(checked)}
+              />
+            </div>
+
+            {/* Admin Controls — visible only to tournament admin */}
+            {isUserAdminForTournament && currentTournament && (
+              <Flex style={{ alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                <Checkbox
+                  text="Show Admin Panel"
+                  checked={showAdminPanel}
+                  onCheckedChange={setShowAdminPanel}
+                />
+              </Flex>
+            )}
+
+            {isUserAdminForTournament && showAdminPanel && currentTournament && (
+              <ScheduleFilter tournamentId={currentTournament.id} />
             )}
 
             {error && (
