@@ -1,42 +1,28 @@
-import * as React from 'react';
-import { Checkbox } from "components/Checkbox";
-import UserTypeahead from 'components/UserTypeahead';
+import React from "react";
+import CsvUpload from "./CsvUpload";
+import CreateSchedule from "./CreateSchedule";
+import ReplacePlayer from "./ReplacePlayer";
+import RemovePlayer from "./RemovePlayer";
 
 interface ScheduleFilterProps {
-  onPlayerSelect?: (playerId: string) => void;
-  onShowFullScheduleChange?: (showFull: boolean) => void;
-  showFullSchedule?: boolean;
+  tournamentId: string;
 }
 
-const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
-  onPlayerSelect,
-  onShowFullScheduleChange,
-  showFullSchedule = false
-}) => {
-  const [selectedPlayer, setSelectedPlayer] = React.useState("");
-
+const ScheduleFilter: React.FC<ScheduleFilterProps> = ({ tournamentId }) => {
   return (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", marginTop: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
-      <UserTypeahead
-        selectedItem={selectedPlayer}
-        placeholder="Filter by Player"
-        width="275px"
-        onBlur={() => {
-          setSelectedPlayer("");
-          onPlayerSelect?.("");
-        }}
-        onSelect={(item) => {
-          setSelectedPlayer(item?.value || "");
-          onPlayerSelect?.(item?.value || "");
-        }}
-      />
-      <Checkbox
-        text="Show Full Schedule"
-        checked={showFullSchedule}
-        onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
-      />
+    <div style={{ marginTop: "12px", marginBottom: "12px" }}>
+      <CsvUpload tournamentId={tournamentId} />
+      <CreateSchedule tournamentId={tournamentId} />
+      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <ReplacePlayer tournamentId={tournamentId} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <RemovePlayer tournamentId={tournamentId} />
+        </div>
+      </div>
     </div>
   );
 };
 
-export default ScheduleFilter
+export default ScheduleFilter;

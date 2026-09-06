@@ -10,6 +10,8 @@ import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
 import { GameWinner } from "types/game.types";
 import ScheduleFilter from "../../components/Schedule/ScheduleFilter";
+import UserTypeahead from "components/UserTypeahead";
+import { Checkbox } from "components/Checkbox";
 import { getWinnerText } from "utils/games";
 import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
@@ -292,6 +294,8 @@ const Schedule = () => {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const deleteScheduleMutation = useDeleteSchedule();
@@ -324,13 +328,15 @@ const Schedule = () => {
 
   const clearLocalState = () => {
     setSelectedUserId(null);
+    setSelectedPlayer("");
     setShowFullSchedule(false);
     setCurrentPage(1);
   }
 
   const handlePlayerSelect = (playerId: string) => {
+    setSelectedPlayer(playerId);
     setSelectedUserId(playerId);
-    setCurrentPage(1); // Reset to first page when changing player
+    setCurrentPage(1);
   };
 
   const handleShowFullScheduleChange = (showFull: boolean) => {
@@ -372,6 +378,26 @@ const Schedule = () => {
     // updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
   }
 
+  if (isLoading) {
+    return (
+      <>
+        <Head>
+          <title>My Schedule - Twilight Struggle</title>
+          <meta
+            name="description"
+            content="View your tournament schedule and upcoming games in Twilight Struggle competitions."
+          />
+          <link rel="icon" href="/ts-icon.webp" />
+        </Head>
+        <LoadingContainer>
+          <CenteredResultsWrapper>
+            <Spinner />
+          </CenteredResultsWrapper>
+        </LoadingContainer>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -404,20 +430,40 @@ const Schedule = () => {
               </TabContainer>
             )}
 
-            {/* Filters */}
-            <ScheduleFilter
-              onPlayerSelect={handlePlayerSelect}
-              onShowFullScheduleChange={handleShowFullScheduleChange}
-              showFullSchedule={showFullSchedule}
-            />
+            {/* Filters — visible to all users */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", marginTop: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
+              <UserTypeahead
+                selectedItem={selectedPlayer}
+                placeholder="Filter by Player"
+                width="275px"
+                onBlur={() => {
+                  setSelectedPlayer("");
+                  handlePlayerSelect("");
+                }}
+                onSelect={(item) => {
+                  handlePlayerSelect(item?.value || "");
+                }}
+              />
+              <Checkbox
+                text="Show Full Schedule"
+                checked={showFullSchedule}
+                onCheckedChange={(checked) => handleShowFullScheduleChange(checked)}
+              />
+            </div>
 
-            {/* Admin Controls */}
+            {/* Admin Controls — visible only to tournament admin */}
             {isUserAdminForTournament && currentTournament && (
-              <Flex style={{ alignItems: "center", gap: "12px" }}>
-                <Link href={`/schedule-admin/${currentTournament.id}`} style={{ whiteSpace: "nowrap" }}>
-                  Go to Schedule Admin page
-                </Link>
+              <Flex style={{ alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+                <Checkbox
+                  text="Show Admin Panel"
+                  checked={showAdminPanel}
+                  onCheckedChange={setShowAdminPanel}
+                />
               </Flex>
+            )}
+
+            {isUserAdminForTournament && showAdminPanel && currentTournament && (
+              <ScheduleFilter tournamentId={currentTournament.id} />
             )}
 
             {error && (
