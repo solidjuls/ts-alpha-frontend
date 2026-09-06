@@ -100,7 +100,8 @@ export interface CsvScheduleRow {
   game_code: string;
   usa_player_id: string;
   ussr_player_id: string;
-  random?: 1 | 0
+  random?: 1 | 0;
+  best_of?: 1 | 3 | 5 | 7;
 }
 
 export interface UploadCsvScheduleParams {
