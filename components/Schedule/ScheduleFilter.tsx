@@ -16,17 +16,11 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
   const [selectedPlayer, setSelectedPlayer] = React.useState("");
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", flexWrap: "wrap" }}>
-      <Checkbox
-        text="Show Full Schedule"
-        checked={showFullSchedule}
-        onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
-      />
+    <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", marginTop: "12px", marginBottom: "12px", flexWrap: "wrap" }}>
       <UserTypeahead
-        labelText="Filter by Player"
         selectedItem={selectedPlayer}
-        placeholder="Type the Player Name..."
-        width="175px"
+        placeholder="Filter by Player"
+        width="275px"
         onBlur={() => {
           setSelectedPlayer("");
           onPlayerSelect?.("");
@@ -35,6 +29,11 @@ const ScheduleFilter: React.FC<ScheduleFilterProps> = ({
           setSelectedPlayer(item?.value || "");
           onPlayerSelect?.(item?.value || "");
         }}
+      />
+      <Checkbox
+        text="Show Full Schedule"
+        checked={showFullSchedule}
+        onCheckedChange={(checked) => onShowFullScheduleChange?.(checked)}
       />
     </div>
   );

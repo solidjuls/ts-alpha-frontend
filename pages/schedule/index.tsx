@@ -415,7 +415,7 @@ const Schedule = () => {
             {isUserAdminForTournament && currentTournament && (
               <Flex style={{ alignItems: "center", gap: "12px" }}>
                 <Link href={`/schedule-admin/${currentTournament.id}`} style={{ whiteSpace: "nowrap" }}>
-                  Schedule Admin
+                  Go to Schedule Admin page
                 </Link>
               </Flex>
             )}
