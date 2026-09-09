@@ -14,7 +14,7 @@ export const PageContainer = styled.div`
 export const PageHeader = styled.div`
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
   min-width: 0;
@@ -42,6 +42,7 @@ export const Title = styled.h2`
 export const TabContainer = styled.div`
   display: inline-flex;
   align-self: flex-start;
+  margin-left: auto;
   width: fit-content;
   max-width: 100%;
   overflow-x: auto;
