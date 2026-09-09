@@ -184,7 +184,7 @@ const AboutPage = () => (
           <li>
             <strong>RATS</strong> - A series of asynchronous leagues (
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing"
+              href="https://docs.google.com/spreadsheets/d/1qngh9Sw9RXnNYdf4VO5nuofjf6nKBtpJBwoftNlpreE/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
@@ -192,7 +192,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185"
+              href="https://docs.google.com/spreadsheets/d/1v9kZeXBTVppOlZu3Q1oRjCZ9Jzw9lLMyhuMSmQBdczo/edit?gid=1723138185#gid=1723138185"
               target="_blank"
               rel="noreferrer"
             >
@@ -200,7 +200,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817"
+              href="https://docs.google.com/spreadsheets/d/1bc-Ya8gQZVIWtaitha5K1ZUFTcD6pg8s9hP169x6rL4/edit?gid=2025014817#gid=2025014817"
               target="_blank"
               rel="noreferrer"
             >
@@ -208,7 +208,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874"
+              href="https://docs.google.com/spreadsheets/d/1VWpKZGABRZN6sC-dCwPLh3lIH9plOeOMw95M2wwSpME/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
@@ -216,7 +216,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing"
+              href="https://docs.google.com/spreadsheets/d/1XoNxU1TgXYwJ2QNtaguMKumfbINGJHvqDAJ3nqowlu8/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
