@@ -178,13 +178,13 @@ const AboutPage = () => (
             >
               Evergreen Cup
             </ExternalLink>{" "}
-            - A single-elimination tournament with 10 days to complete each round. Four cups are held per year with the
+            - A single-elimination tournament with 10 days to complete each round. A number of cups are held per year with the
             top players competing for the championship at the end.
           </li>
           <li>
             <strong>RATS</strong> - A series of asynchronous leagues (
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1ivRRIPGt-iQsRj8_Mi_6y0GtbQ8lXhrZgm6Bsid8wDs/edit?usp=sharing"
+              href="https://docs.google.com/spreadsheets/d/1qngh9Sw9RXnNYdf4VO5nuofjf6nKBtpJBwoftNlpreE/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
@@ -192,7 +192,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1dzL5lhVCkImqEI63V6fpvcWKIIgFj-dyp2URi3o0a04/edit?gid=1723138185"
+              href="https://docs.google.com/spreadsheets/d/1v9kZeXBTVppOlZu3Q1oRjCZ9Jzw9lLMyhuMSmQBdczo/edit?gid=1723138185#gid=1723138185"
               target="_blank"
               rel="noreferrer"
             >
@@ -200,7 +200,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1UgJg4ciPpudJ0VhmTBk2N41NV2QP8C3yukvsQQZXVoY/edit?gid=2025014817"
+              href="https://docs.google.com/spreadsheets/d/1bc-Ya8gQZVIWtaitha5K1ZUFTcD6pg8s9hP169x6rL4/edit?gid=2025014817#gid=2025014817"
               target="_blank"
               rel="noreferrer"
             >
@@ -208,7 +208,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1b5-KpwKhB8tyWLioxABaZ5M3Cv_aYxKbmnBF8NteoMg/edit?gid=1457881874"
+              href="https://docs.google.com/spreadsheets/d/1VWpKZGABRZN6sC-dCwPLh3lIH9plOeOMw95M2wwSpME/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
@@ -216,7 +216,7 @@ const AboutPage = () => (
             </ExternalLink>
             ,{" "}
             <ExternalLink
-              href="https://docs.google.com/spreadsheets/d/1s83QIQSoFFWLeAq_Q_RRGq0yr6sUDavny7H9GdcL1Pg/edit?usp=sharing"
+              href="https://docs.google.com/spreadsheets/d/1XoNxU1TgXYwJ2QNtaguMKumfbINGJHvqDAJ3nqowlu8/edit?usp=sharing"
               target="_blank"
               rel="noreferrer"
             >
@@ -291,7 +291,6 @@ const AboutPage = () => (
               <li>
                 French League - <InternalLink href="/userprofile/1928">Franck Rondepierre</InternalLink>
               </li>
-              <li>Greek League</li>
               <li>
                 Italian League - <InternalLink href="/userprofile/1597">Andrea Ciappi</InternalLink> and{" "}
                 <InternalLink href="/userprofile/1600">Andrea Mancuso</InternalLink>
@@ -316,7 +315,6 @@ const AboutPage = () => (
               <li>
                 Western US League - <InternalLink href="/userprofile/2525">Patrick Gong</InternalLink>
               </li>
-              <li>UK League</li>
             </NestedList>
           </li>
         </List>
@@ -560,7 +558,7 @@ const AboutPage = () => (
           <li>
             <Inline>
               <InternalLink href="/userprofile/1572">Alex Yoosup Lim</InternalLink> (FreeTibet):{" "}
-              <ExternalLink href="https://www.youtube.com/@Alex-YSL" target="_blank" rel="noreferrer">
+              <ExternalLink href="https://www.youtube.com/@Alex-YSL" target="_blank" rel="noreferrer" $inactive>
                 YouTube
               </ExternalLink>{" "}
               <LanguagePill title="Korean Speaker">
@@ -599,7 +597,7 @@ const AboutPage = () => (
           <li>
             <Inline>
               <InternalLink href="/userprofile/1630">Anton Skott</InternalLink> (stenskott):{" "}
-              <ExternalLink href="https://www.twitch.tv/stenskott_" target="_blank" rel="noreferrer">
+              <ExternalLink href="https://www.twitch.tv/stenskott_" target="_blank" rel="noreferrer" $inactive>
                 Twitch
               </ExternalLink>{" "}
               -{" "}
@@ -630,10 +628,6 @@ const AboutPage = () => (
               <ExternalLink href="https://www.twitch.tv/thegoddessashlee" target="_blank" rel="noreferrer">
                 Twitch
               </ExternalLink>{" "}
-              -{" "}
-              <ExternalLink href="https://www.youtube.com/@ashleefreeman1219" target="_blank" rel="noreferrer">
-                YouTube
-              </ExternalLink>
             </Inline>
           </li>
 
@@ -671,7 +665,7 @@ const AboutPage = () => (
           <li>
             <Inline>
               <InternalLink href="/userprofile/1781">Crow Crowlas</InternalLink> (Cardlinger):{" "}
-              <ExternalLink href="https://www.twitch.tv/crowcrowlas" target="_blank" rel="noreferrer">
+              <ExternalLink href="https://www.twitch.tv/crowcrowlas" target="_blank" rel="noreferrer" $inactive>
                 Twitch
               </ExternalLink>{" "}
               -{" "}
@@ -832,6 +826,15 @@ const AboutPage = () => (
 
           <li>
             <Inline>
+              <InternalLink href="/userprofile/3038">Joshua Mauer</InternalLink> (Selenara):{" "}
+              <ExternalLink href="https://www.twitch.tv/selenarats" target="_blank" rel="noreferrer">
+                Twitch
+              </ExternalLink>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
               <InternalLink href="/userprofile/2215">Josiah Emery</InternalLink> (aunthemod):{" "}
               <ExternalLink href="https://www.youtube.com/channel/UCe4Z-vDM3eAuOS_180DLw5A" target="_blank" rel="noreferrer">
                 YouTube
@@ -851,7 +854,7 @@ const AboutPage = () => (
           <li>
             <Inline>
               <InternalLink href="/userprofile/2229">JunRu Li</InternalLink> (whitesheep412):{" "}
-              <ExternalLink href="https://v.douyu.com/author/08Aeq1GZeAqL" target="_blank" rel="noreferrer" $inactive>
+              <ExternalLink href="https://v.douyu.com/author/08Aeq1GZeAqL" target="_blank" rel="noreferrer">
                 Douyu
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
@@ -956,6 +959,15 @@ const AboutPage = () => (
                 </FlagWrap>
                 CN
               </LanguagePill>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
+              <InternalLink href="/userprofile/2271">Jim Haefele</InternalLink> (SuperYeti):{" "}
+              <ExternalLink href="https://www.twitch.tv/thesuperyeti" target="_blank" rel="noreferrer">
+                Twitch
+              </ExternalLink>{" "}
             </Inline>
           </li>
 
@@ -1184,15 +1196,6 @@ const AboutPage = () => (
 
           <li>
             <Inline>
-              <InternalLink href="/userprofile/2705">Sophie Askew</InternalLink> (passengera34):{" "}
-              <ExternalLink href="https://www.youtube.com/@soaskew" target="_blank" rel="noreferrer" $inactive>
-                YouTube
-              </ExternalLink>
-            </Inline>
-          </li>
-
-          <li>
-            <Inline>
               <strong>Team Catalunya:</strong>{" "}
               <ExternalLink href="https://www.youtube.com/@twilightcatalunya9604" target="_blank" rel="noreferrer">
                 YouTube
@@ -1249,6 +1252,15 @@ const AboutPage = () => (
                 rel="noreferrer"
                 $inactive
               >
+                YouTube
+              </ExternalLink>
+            </Inline>
+          </li>
+
+          <li>
+            <Inline>
+              <InternalLink href="/userprofile/3209">Tim Engelhardt</InternalLink> (badBlackShark):{" "}
+              <ExternalLink href="https://www.youtube.com/@badBlackShark" target="_blank" rel="noreferrer">
                 YouTube
               </ExternalLink>
             </Inline>
