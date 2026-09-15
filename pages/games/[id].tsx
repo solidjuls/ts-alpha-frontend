@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { GetServerSideProps } from "next";
+import { useRouter } from "next/router";
 import type { GameType } from "services/games.service";
 import type { GameWinner } from "types/game.types";
 import { Span } from "components/Atoms";
@@ -38,10 +38,6 @@ import {
   MetaSpacer
  } from "../../styles/games.styled";
  import { DangerButton } from "components/DangerButton/DangerButton";
-
-type GameProps = {
-  gameId: string;
-};
 
 type GameContentProps = {
   data: GameType;
@@ -312,8 +308,10 @@ const deleteGame = async () => {
    Page wrapper
    ============================ */
 
-const Game: React.FC<GameProps> = ({ gameId }) => {
-  const { data, isLoading, error } = useGames({ id: gameId });
+const Game: React.FC = () => {
+  const router = useRouter();
+  const gameId = router.query.id as string | undefined;
+  const { data, isLoading, error } = useGames({ id: gameId }, { enabled: !!gameId });
 
   if (error) {
     return (
@@ -358,10 +356,6 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
       </GameContainer>
     </DetailContainer>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  return { props: { gameId: params?.id } };
 };
 
 export default Game;
