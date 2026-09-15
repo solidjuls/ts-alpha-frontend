@@ -301,16 +301,6 @@ const deleteGame = async () => {
                 Recreate Game
               </UnstyledLink>
             </AdminButton>
-            <AdminButton
-              onClick={resyncGame}
-              disabled={resyncGameMutation.isPending}
-            >
-              {resyncGameMutation.isPending ? (
-                <Spinner size="2" />
-              ) : (
-                "Re-post to Discord"
-              )}
-            </AdminButton>
             <DangerButton
               onClick={deleteGame}
               disabled={deleteGameMutation.isPending}
@@ -322,8 +312,26 @@ const deleteGame = async () => {
               )}
             </DangerButton>
           </AdminActions>
-          {resyncMessage && <div>{resyncMessage}</div>}
           {deleteSuccessMessage && <div>Game Deleted Successfully</div>}
+        </>
+      )}
+
+      {(user?.role === userRoles.SUPERADMIN ||
+        user?.role === userRoles.ADMIN) && (
+        <>
+          <AdminActions>
+            <AdminButton
+              onClick={resyncGame}
+              disabled={resyncGameMutation.isPending}
+            >
+              {resyncGameMutation.isPending ? (
+                <Spinner size="2" />
+              ) : (
+                "Re-post to Discord"
+              )}
+            </AdminButton>
+          </AdminActions>
+          {resyncMessage && <div>{resyncMessage}</div>}
         </>
       )}
 
