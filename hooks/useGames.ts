@@ -188,7 +188,7 @@ export const useDeleteGame = () => {
   });
 };
 
-// Hook for sending a game to shrkbot again. Nothing on the site changes, so no query is invalidated.
+// Hook for sending a game to shrkbot again
 export const useResyncGame = () => {
   return useMutation({
     mutationFn: (gameId: string) => gamesService.resyncGame(gameId),
