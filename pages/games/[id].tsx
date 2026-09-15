@@ -9,7 +9,7 @@ import { DetailContainer } from "components/DetailContainer";
 import Text from "components/Text";
 import { Spinner } from "@radix-ui/themes";
 import { getWinnerText, getTurnText } from "utils/games";
-import { useGames, useDeleteGame } from "hooks/useGames";
+import { useGames, useDeleteGame, useResyncGame } from "hooks/useGames";
 import { dateFormat } from "utils/dates";
 import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
@@ -168,10 +168,23 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
   } = data;
 
   const [deleteSuccessMessage, setDeleteSuccessMessage] = useState(false);
+  const [resyncMessage, setResyncMessage] = useState("");
 
   const linkToRecreate = `/recreateform?id=${id}&gameDate=${gameDate}&endMode=${endMode}&usaPlayerId=${usaPlayerId}&ussrPlayerId=${ussrPlayerId}&gameWinner=${gameWinner}&gameCode=${game_code}&tournamentId=${tournamentId}&endTurn=${endTurn}&video1=${data.video1 || ""}`;
 
   const deleteGameMutation = useDeleteGame();
+  const resyncGameMutation = useResyncGame();
+
+  const resyncGame = async () => {
+    setResyncMessage("");
+
+    try {
+      await resyncGameMutation.mutateAsync(id);
+      setResyncMessage("Sent to shrkbot.");
+    } catch (error: any) {
+      setResyncMessage(error?.response?.data?.message || "Could not send the result to shrkbot.");
+    }
+  };
 
 const deleteGame = async () => {
   const confirmed = window.confirm(
@@ -283,6 +296,16 @@ const deleteGame = async () => {
                 Recreate Game
               </UnstyledLink>
             </AdminButton>
+            <AdminButton
+              onClick={resyncGame}
+              disabled={resyncGameMutation.isPending}
+            >
+              {resyncGameMutation.isPending ? (
+                <Spinner size="2" />
+              ) : (
+                "Re-post to Discord"
+              )}
+            </AdminButton>
             <DangerButton
               onClick={deleteGame}
               disabled={deleteGameMutation.isPending}
@@ -294,6 +317,7 @@ const deleteGame = async () => {
               )}
             </DangerButton>
           </AdminActions>
+          {resyncMessage && <div>{resyncMessage}</div>}
           {deleteSuccessMessage && <div>Game Deleted Successfully</div>}
         </>
       )}
