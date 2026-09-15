@@ -182,7 +182,12 @@ const GameContent: React.FC<GameContentProps> = ({ data }) => {
       await resyncGameMutation.mutateAsync(id);
       setResyncMessage("Sent to shrkbot.");
     } catch (error: any) {
-      setResyncMessage(error?.response?.data?.message || "Could not send the result to shrkbot.");
+      const detail = error?.response?.data?.message;
+      setResyncMessage(
+        detail
+          ? `Could not send the result to shrkbot: ${detail}`
+          : "Could not send the result to shrkbot."
+      );
     }
   };
 
