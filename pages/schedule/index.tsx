@@ -378,7 +378,7 @@ const Schedule = () => {
     // updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
   }
 
-  if (isLoading) {
+  if (isLoading || !updatedScheduleData) {
     return (
       <>
         <Head>
