@@ -3,14 +3,14 @@ import Head from "next/head";
 import Link from "next/link";
 import { FormattedMessage } from "react-intl";
 import { Spinner } from "@radix-ui/themes";
-import { useRegister } from "../../hooks/useAuth";
+import { useCreateUser } from "hooks/useUsers";
 import { Label } from "components/Label";
 import { DropdownWithLabel } from "components/EditFormComponents";
 import CountrySearchTypeahead from "components/Register/CountrySearchTypeahead";
 import CitySearchTypeahead from "components/Register/CitySearchTypeahead";
 import { platforms, gameDurations } from "utils/constants";
 import { DropdownItemType } from "types/types";
-import { 
+import {
   PageShell,
   Card,
   Header,
@@ -28,12 +28,7 @@ import {
   Alert,
   AlertList,
   AlertTitle
- } from "styles/register.styled";
-
-
-/* -----------------------
-   Component
------------------------- */
+} from "styles/register.styled";
 
 const RegisterFormComponent: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -51,7 +46,7 @@ const RegisterFormComponent: React.FC = () => {
   });
 
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const registerMutation = useRegister();
+  const createMutation = useCreateUser();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -93,18 +88,18 @@ const RegisterFormComponent: React.FC = () => {
     if (!validateForm()) return;
 
     try {
-      await registerMutation.mutateAsync({
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
+      await createMutation.mutateAsync({
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        name: formData.playdek_name.trim(),
         email: formData.email.trim(),
         password: formData.password,
         confirmPassword: formData.confirmPassword,
-        playdek_name: formData.playdek_name.trim(),
-        countryId: formData.countryId.trim() || undefined,
-        cityId: formData.cityId.trim() || undefined,
-        phoneNumber: formData.phoneNumber.trim() || undefined,
+        phone_number: formData.phoneNumber.trim() || undefined,
         preferredGamingPlatform: formData.preferredGamingPlatform.trim() || undefined,
         preferredGameDuration: formData.preferredGameDuration.trim() || undefined,
+        city: formData.cityId ? Number(formData.cityId) : undefined,
+        country: formData.countryId ? Number(formData.countryId) : undefined,
       });
     } catch (error) {
       console.error("Registration error:", error);
@@ -113,11 +108,11 @@ const RegisterFormComponent: React.FC = () => {
 
   const allErrors = [
     ...validationErrors,
-    ...(registerMutation.error?.response?.data?.message
-      ? [registerMutation.error.response.data.message]
+    ...(createMutation.error?.response?.data?.message
+      ? [createMutation.error.response.data.message]
       : []),
-    ...(registerMutation.error?.message && !registerMutation.error?.response
-      ? [registerMutation.error.message]
+    ...(createMutation.error?.message && !createMutation.error?.response
+      ? [createMutation.error.message]
       : []),
   ];
 
@@ -141,7 +136,7 @@ const RegisterFormComponent: React.FC = () => {
               id="firstName"
               value={formData.firstName}
               onChange={(e) => handleInputChange("firstName", e.target.value)}
-              disabled={registerMutation.isPending}
+              disabled={createMutation.isPending}
               required
             />
           </Field>
@@ -155,7 +150,7 @@ const RegisterFormComponent: React.FC = () => {
               id="lastName"
               value={formData.lastName}
               onChange={(e) => handleInputChange("lastName", e.target.value)}
-              disabled={registerMutation.isPending}
+              disabled={createMutation.isPending}
               required
             />
           </Field>
@@ -170,7 +165,7 @@ const RegisterFormComponent: React.FC = () => {
             id="email"
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
-            disabled={registerMutation.isPending}
+            disabled={createMutation.isPending}
             required
           />
         </Field>
@@ -184,7 +179,7 @@ const RegisterFormComponent: React.FC = () => {
             id="playdek_name"
             value={formData.playdek_name}
             onChange={(e) => handleInputChange("playdek_name", e.target.value)}
-            disabled={registerMutation.isPending}
+            disabled={createMutation.isPending}
             placeholder="Playdek Username..."
             required
           />
@@ -200,7 +195,7 @@ const RegisterFormComponent: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               handleInputChange("password", e.target.value)
             }
-            disabled={registerMutation.isPending}
+            disabled={createMutation.isPending}
             required
           />
           <HelpText>Password must be at least 8 characters long.</HelpText>
@@ -216,7 +211,7 @@ const RegisterFormComponent: React.FC = () => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               handleInputChange("confirmPassword", e.target.value)
             }
-            disabled={registerMutation.isPending}
+            disabled={createMutation.isPending}
             required
           />
         </Field>
@@ -262,7 +257,7 @@ const RegisterFormComponent: React.FC = () => {
             id="phone"
             value={formData.phoneNumber}
             onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-            disabled={registerMutation.isPending}
+            disabled={createMutation.isPending}
             placeholder="Phone Number (Optional)"
           />
         </Field>
@@ -302,8 +297,8 @@ const RegisterFormComponent: React.FC = () => {
           </Alert>
         )}
 
-        <SubmitButton type="submit" disabled={registerMutation.isPending}>
-          {registerMutation.isPending ? <Spinner size="3" /> : <b>Create Account</b>}
+        <SubmitButton type="submit" disabled={createMutation.isPending}>
+          {createMutation.isPending ? <Spinner size="3" /> : <b>Create Account</b>}
         </SubmitButton>
 
         <FooterRow>

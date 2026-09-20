@@ -1,13 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import authService, {
   LoginRequest,
   ImpersonateRequest,
   ResetPasswordRequest,
   ResetPasswordConfirmRequest,
-  CreateUserRequest,
-  RegisterRequest,
   EmailVerifyRequest,
   EmailVerifyConfirmRequest
 } from '../services/auth.service';
@@ -87,32 +84,6 @@ export const useImpersonate = () => {
   });
 };
 
-// Hook for registration mutation
-export const useRegister = () => {
-  const queryClient = useQueryClient();
-  const router = useRouter();
-
-  return useMutation({
-    mutationFn: (userData: RegisterRequest) => authService.register(userData),
-    onSuccess: (data) => {
-      // Update the profile cache with the registration response
-
-      queryClient.setQueryData(authKeys.profile(), {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.playdek_name,
-        role: data.user.role,
-      });
-
-      // Redirect to home page
-      router.push('/');
-    },
-    onError: (error: any) => {
-      console.error('Registration failed:', error);
-    },
-  });
-};
-
 // Hook for logout mutation
 export const useLogout = () => {
   return useMutation({
@@ -136,16 +107,6 @@ export const useLogout = () => {
 //     },
 //   });
 // };
-
-// Hook for creating user (for testing)
-export const useCreateUser = () => {
-  return useMutation({
-    mutationFn: (userData: CreateUserRequest) => authService.createUser(userData),
-    onError: (error: any) => {
-      console.error('User creation failed:', error);
-    },
-  });
-};
 
 // Hook for health check
 export const useAuthHealth = () => {
