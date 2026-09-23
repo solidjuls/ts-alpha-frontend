@@ -389,11 +389,13 @@ const Schedule = () => {
           />
           <link rel="icon" href="/ts-icon.webp" />
         </Head>
-        <LoadingContainer>
-          <CenteredResultsWrapper>
-            <Spinner />
-          </CenteredResultsWrapper>
-        </LoadingContainer>
+        <ResponsiveContainer>
+          <LoadingContainer>
+            <CenteredResultsWrapper>
+              <Spinner />
+            </CenteredResultsWrapper>
+          </LoadingContainer>
+        </ResponsiveContainer>
       </>
     );
   }
