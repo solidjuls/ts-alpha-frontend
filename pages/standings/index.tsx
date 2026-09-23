@@ -35,7 +35,7 @@ const tournamentOptions = [
 ];
 
 const Standings = () => {
-  const [tournamentId, setTournamentId] = useState("318");
+  const [tournamentId, setTournamentId] = useState("359");
   const [selectedDivision, setSelectedDivision] = useState<string>("");
 
   const { data: standings, isFetching, error } = useStandings({

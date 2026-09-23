@@ -310,7 +310,7 @@ const Schedule = () => {
 
   const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
     userId: selectedUserId,
-    a: Number(showFullSchedule),
+    fullSchedule: Number(showFullSchedule),
     tournamentId: selectedTournament?.id || "",
     page: currentPage,
     pageSize: 20,
