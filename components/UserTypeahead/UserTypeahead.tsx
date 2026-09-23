@@ -15,7 +15,6 @@ export interface UserTypeaheadProps {
   error?: boolean;
   debounceTime?: number;
   minChars?: number;
-  listWidth?: string;
   pageSize?: number;
   width?: string;
 }
@@ -29,7 +28,6 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
   error = false,
   debounceTime = 300,
   minChars = 1,
-  listWidth = "250px",
   pageSize = 100,
   width = "250px",
   ...rest
@@ -76,7 +74,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
           placeholder={placeholder}
         />
         {filteredUsers.length > 0 && (
-          <Typeahead.List style={{ width: listWidth, backgroundColor: "var(--bg-card)" }}>
+          <Typeahead.List style={{ width, backgroundColor: "var(--bg-card)" }}>
             {filteredUsers.map(({ value, text }, index) => (
               <Typeahead.Item 
                 key={value} 
@@ -92,7 +90,7 @@ const UserTypeahead: React.FC<UserTypeaheadProps> = ({
           </Typeahead.List>
         )}
         {!isLoading && input.length >= minChars && filteredUsers.length === 0 && (
-          <Typeahead.List style={{ width: listWidth}}>
+          <Typeahead.List style={{ width }}>
             <div style={{ padding: '8px', textAlign: 'center', color: 'var(--primary-text)', backgroundColor: "var(--bg-card)" }}>
               No Users Found
             </div>
