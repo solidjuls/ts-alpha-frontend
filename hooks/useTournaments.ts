@@ -14,6 +14,7 @@ import tournamentsService, {
   AddToWaitlistRequest,
   RemoveFromWaitlistRequest,
   ResultTextItem,
+  ScheduleAdminResponse,
 } from '../services/tournaments.service';
 
 // Query keys for tournaments
@@ -434,5 +435,14 @@ export const useGenerateResultText = () => {
     onError: (error: any) => {
       console.error('Generate result text failed:', error);
     },
+  });
+};
+
+// Get schedule admin data for a tournament
+export const useScheduleAdmin = (tournamentId: string) => {
+  return useQuery({
+    queryKey: [...tournamentKeys.all, 'schedule-admin', tournamentId],
+    queryFn: () => tournamentsService.getScheduleAdmin(tournamentId),
+    enabled: !!tournamentId,
   });
 };

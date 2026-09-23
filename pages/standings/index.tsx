@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStandings, PlayerStanding } from "hooks/useStandings";
 import { Spinner } from "@radix-ui/themes";
-import { 
+import DropdownMenu from "components/DropdownMenu";
+import {
   PageContainer,
   PageHeader,
   Title,
@@ -28,17 +29,34 @@ import {
   ErrorBox
  } from "styles/standings.styled";
 
-type Division = "TORUN" | "SEATTLE";
+const tournamentOptions = [
+  { value: "318", text: "ITSL - Season 15" },
+  { value: "359", text: "ITSL - Season 16" },
+];
 
 const Standings = () => {
-  const [selectedDivision, setSelectedDivision] = useState<Division>("TORUN");
+  const [tournamentId, setTournamentId] = useState("359");
+  const [selectedDivision, setSelectedDivision] = useState<string>("");
 
   const { data: standings, isFetching, error } = useStandings({
-    tournamentId: "318",
-    division: selectedDivision,
+    tournamentId,
   });
 
-  const grouped = standings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
+  const divisions = useMemo(() => {
+    if (!standings) return [];
+    const unique = [...new Set(standings.map((p) => p.secondaryName).filter(Boolean))] as string[];
+    return unique;
+  }, [standings]);
+
+  const activeDivision = selectedDivision && divisions.includes(selectedDivision)
+    ? selectedDivision
+    : divisions[0] || "";
+
+  const filteredStandings = activeDivision
+    ? standings?.filter((p) => p.secondaryName === activeDivision)
+    : standings;
+
+  const grouped = filteredStandings?.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
     if (!acc[player.standingName]) acc[player.standingName] = [];
     acc[player.standingName].push(player);
     return acc;
@@ -56,14 +74,29 @@ const Standings = () => {
       <PageHeader>
         <Title>Standings</Title>
 
-        <TabContainer>
-          <TabButton $active={selectedDivision === "TORUN"} onClick={() => setSelectedDivision("TORUN")}>
-            TORUN
-          </TabButton>
-          <TabButton $active={selectedDivision === "SEATTLE"} onClick={() => setSelectedDivision("SEATTLE")}>
-            SEATTLE
-          </TabButton>
-        </TabContainer>
+        <DropdownMenu
+          items={tournamentOptions}
+          selectedItem={tournamentId}
+          onSelect={(value) => {
+            setTournamentId(value);
+            setSelectedDivision("");
+          }}
+          width="250px"
+        />
+
+        {divisions.length > 0 && (
+          <TabContainer>
+            {divisions.map((division) => (
+              <TabButton
+                key={division}
+                $active={activeDivision === division}
+                onClick={() => setSelectedDivision(division)}
+              >
+                {division}
+              </TabButton>
+            ))}
+          </TabContainer>
+        )}
       </PageHeader>
 
       <StandingsContainer>

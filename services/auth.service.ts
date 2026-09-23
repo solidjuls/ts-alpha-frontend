@@ -53,52 +53,6 @@ export interface LoginResponse {
   tournaments: number[];
 }
 
-export interface CreateUserRequest {
-  email: string;
-  password: string;
-  playdek_name: string;
-  first_name?: string;
-  last_name?: string;
-  role_id?: number;
-}
-
-export interface CreateUserResponse {
-  success: boolean;
-  user: {
-    name: string;
-    email: string;
-    id: string;
-    role: number;
-    tournaments: number[];
-  };
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  playdek_name: string;
-  countryId?: string;
-  cityId?: string;
-  phoneNumber?: string;
-  preferredGamingPlatform?: string;
-  preferredGameDuration?: string;
-}
-
-export interface RegisterResponse {
-  success: boolean;
-  message: string;
-  user: {
-    playdek_name: string;
-    email: string;
-    id: string;
-    role: number;
-    tournaments: number[];
-  };
-}
-
 export interface ResetPasswordRequest {
   mail: string;
 }
@@ -165,12 +119,6 @@ export const authService = {
     return responseData;
   },
 
-  // Register new user
-  register: async (userData: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await authApi.post('/auth/register', userData);
-    return response.data;
-  },
-
   // Logout user
   logout: async (): Promise<{ success: boolean }> => {
     removeToken();
@@ -199,12 +147,6 @@ export const authService = {
   // Confirm password reset (set new password)
   resetPasswordConfirm: async (data: ResetPasswordConfirmRequest): Promise<ResetPasswordConfirmResponse> => {
     const response = await authApi.post('/auth/reset-password', data);
-    return response.data;
-  },
-
-  // Create new user (for testing purposes)
-  createUser: async (userData: CreateUserRequest): Promise<CreateUserResponse> => {
-    const response = await authApi.post('/auth/create-user', userData);
     return response.data;
   },
 

@@ -33,7 +33,7 @@ export interface ScheduleListResponse {
 export interface GetScheduleParams {
   userId?: string;
   tournamentId?: string;
-  a?: number;
+  fullSchedule?: number;
   page?: number;
   pageSize?: number;
   onlyPending?: boolean;
@@ -48,12 +48,20 @@ export interface AddScheduleParams {
   randomSides: boolean;
   dueDate: string;
   gameCode: string;
+  bestOf?: number | null;
 }
 
 export interface UpdateScheduleParams {
   id: string;
   dueDate?: string;
   gameCode?: string;
+}
+
+export interface UpdateScheduleOpponentParams {
+  id: string;
+  opponentId: string;
+  dueDate: string;
+  randomSides: boolean;
 }
 
 export interface ReplacePlayerParams {
@@ -67,12 +75,33 @@ export interface RemovePlayerParams {
   playerId: string;
 }
 
+export interface BatchScheduleItem {
+  t: string;
+  usa: string;
+  ussr: string;
+  randomSides: boolean;
+  d: string;
+  gc: string;
+}
+
+export interface CreateScheduleDto {
+  scheduleId?: number;
+  usa: string;
+  ussr: string;
+  t: number;
+  d: Date;
+  r: boolean;
+  gc: string;
+  randomSides?: boolean;
+}
+
 export interface CsvScheduleRow {
   due_date: string;
   game_code: string;
   usa_player_id: string;
   ussr_player_id: string;
-  random?: 1 | 0
+  random?: 1 | 0;
+  best_of?: 1 | 3 | 5 | 7;
 }
 
 export interface UploadCsvScheduleParams {
@@ -99,7 +128,7 @@ class ScheduleService {
 
     if (params.userId) queryParams.append('userId', params.userId);
     if (params.tournamentId) queryParams.append('tournamentId', params.tournamentId);
-    if (params.a) queryParams.append('a', params.a.toString());
+    if (params.fullSchedule) queryParams.append('fullSchedule', params.fullSchedule.toString());
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.pageSize) queryParams.append('pageSize', params.pageSize.toString());
     if (params.onlyPending) queryParams.append('onlyPending', 'true');
@@ -126,7 +155,8 @@ class ScheduleService {
         t: params.tournamentId,
         randomSides: params.randomSides,
         d: params.dueDate,
-        gc: params.gameCode
+        gc: params.gameCode,
+        best_of: params.bestOf
       }
     });
     return response.data;
@@ -138,6 +168,18 @@ class ScheduleService {
         id: params.id,
         due_date: params.dueDate,
         game_code: params.gameCode,
+      }
+    });
+    return response.data;
+  }
+
+  async updateScheduleOpponent(params: UpdateScheduleOpponentParams): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post('/schedule', {
+      data: {
+        id: params.id,
+        opponent_id: params.opponentId,
+        due_date: params.dueDate,
+        random_sides: params.randomSides,
       }
     });
     return response.data;
@@ -178,6 +220,16 @@ class ScheduleService {
 
   async getScheduleHealth(): Promise<{ status: string }> {
     const response = await this.axiosInstance.get('/schedule/health');
+    return response.data;
+  }
+
+  async createSchedulesBatch(schedules: BatchScheduleItem[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.put('/schedule', { data: schedules });
+    return response.data;
+  }
+
+  async createSchedulesBulk(schedules: CreateScheduleDto[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.put('/schedule/create-schedules-bulk', { data: schedules });
     return response.data;
   }
 }
