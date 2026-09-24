@@ -24,6 +24,7 @@ export interface Theme {
     greenAlpha: string;
     yellowAlpha: string;
     blueAlpha: string;
+    orangeAlpha: string;
   };
   fontSizes: {
     fontSizeS: string;
@@ -63,12 +64,13 @@ export const theme: Theme = {
     skeletonColorSecondary: "#bcc9d1",
     infoForm: "white",
     greyLight: "#eeeeee",
-    primary: "hsl(205,5%,7%)", // gray900
-    secondary: "hsl(205,5%,25%)", // gray700
-    tertiary: "hsl(205,5%,35%)", // gray500
+    primary: "hsl(205,5%,7%)",
+    secondary: "hsl(205,5%,25%)",
+    tertiary: "hsl(205,5%,35%)",
     link: "#b12236",
     linkHover: "#365f65",
     redAlpha: "rgba(255, 0, 0, 0.4)",
+    orangeAlpha: "rgba(255, 159, 10, 0.4)",
     greenAlpha: "rgba(0, 128, 0, 0.4)",
     yellowAlpha: "rgba(255, 215, 0, 0.4)",
     blueAlpha: "rgba(0, 0, 255, 0.4)",
