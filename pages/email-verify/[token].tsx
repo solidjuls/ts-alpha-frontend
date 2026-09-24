@@ -23,6 +23,7 @@ interface EmailVerifyConfirmProps {
 }
 
 const EmailVerifyConfirmComponent: React.FC<EmailVerifyConfirmProps> = ({ result }) => {
+  if (!result) return null;
   const bannerVariant = result.status === "success" ? "success" : "error";
 
   return (
@@ -103,58 +104,58 @@ export default EmailVerifyConfirmPage;
    SSR
    ========================= */
 
-export const getServerSideProps: GetServerSideProps<EmailVerifyConfirmProps> = async (context) => {
-  const { token } = context.params!;
+// export const getServerSideProps: GetServerSideProps<EmailVerifyConfirmProps> = async (context) => {
+//   const { token } = context.params!;
 
-  if (!token || typeof token !== "string") {
-    return {
-      props: {
-        result: {
-          status: "invalid",
-          message: "Invalid verification link. Please check your email and try again.",
-        },
-      },
-    };
-  }
+//   if (!token || typeof token !== "string") {
+//     return {
+//       props: {
+//         result: {
+//           status: "invalid",
+//           message: "Invalid verification link. Please check your email and try again.",
+//         },
+//       },
+//     };
+//   }
 
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002/api";
-    const response = await fetch(`${apiUrl}/auth/email-verify/confirm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
+//   try {
+//     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002/api";
+//     const response = await fetch(`${apiUrl}/auth/email-verify/confirm`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ token }),
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (response.ok && data.success) {
-      return {
-        props: {
-          result: {
-            status: "success",
-            message: data.message,
-          },
-        },
-      };
-    }
+//     if (response.ok && data.success) {
+//       return {
+//         props: {
+//           result: {
+//             status: "success",
+//             message: data.message,
+//           },
+//         },
+//       };
+//     }
 
-    return {
-      props: {
-        result: {
-          status: "error",
-          message: data.message || "An error occurred while verifying your email.",
-        },
-      },
-    };
-  } catch (error) {
-    console.error("Email verification error:", error);
-    return {
-      props: {
-        result: {
-          status: "error",
-          message: "An error occurred while verifying your email. Please try again.",
-        },
-      },
-    };
-  }
-};
+//     return {
+//       props: {
+//         result: {
+//           status: "error",
+//           message: data.message || "An error occurred while verifying your email.",
+//         },
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Email verification error:", error);
+//     return {
+//       props: {
+//         result: {
+//           status: "error",
+//           message: "An error occurred while verifying your email. Please try again.",
+//         },
+//       },
+//     };
+//   }
+// };

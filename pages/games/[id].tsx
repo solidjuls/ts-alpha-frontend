@@ -360,8 +360,4 @@ const Game: React.FC<GameProps> = ({ gameId }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
-  return { props: { gameId: params?.id } };
-};
-
 export default Game;
