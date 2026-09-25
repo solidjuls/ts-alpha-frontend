@@ -71,7 +71,6 @@ const ScheduleAdminPage = () => {
   const [usaPlayer, setUsaPlayer] = useState("");
   const [ussrPlayer, setUssrPlayer] = useState("");
   const [gameCode, setGameCode] = useState("");
-  const [bestOf, setBestOf] = useState<number | null>(null);
   const [random, setRandom] = useState(false);
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [scheduleMessage, setScheduleMessage] = useState("");
@@ -165,7 +164,6 @@ const ScheduleAdminPage = () => {
         randomSides: random,
         dueDate: dueDate.toISOString(),
         gameCode: gameCode || "",
-        bestOf,
       });
       setScheduleMessage("Schedule created successfully!");
       setTimeout(() => setScheduleMessage(""), 3000);
@@ -282,20 +280,6 @@ const ScheduleAdminPage = () => {
                 onChange={(e) => { setGameCode(e.target.value); setScheduleMessage(""); }}
                 style={{ width: "80px", height: "35px", padding: "4px 8px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-main)", color: "var(--primary-text)" }}
               />
-            </div>
-            <div>
-              <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600 }}>Best Of</label>
-              <select
-                value={bestOf ?? ""}
-                onChange={(e) => { setBestOf(e.target.value ? Number(e.target.value) : null); setScheduleMessage(""); }}
-                style={{ width: "80px", height: "35px", padding: "4px 8px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg-main)", color: "var(--primary-text)" }}
-              >
-                <option value="">—</option>
-                <option value="1">1</option>
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="7">7</option>
-              </select>
             </div>
             <DateComponent
               labelText="Due Date"
