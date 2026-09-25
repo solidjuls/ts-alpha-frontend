@@ -20,9 +20,11 @@ import {
 
 const Items = ({
   role,
+  isLoggedIn,
   onNavigate,
 }: {
   role?: string;
+  isLoggedIn: boolean;
   onNavigate?: () => void;
 }) => (
   <>
@@ -50,11 +52,13 @@ const Items = ({
       <HorizontalNavText>Playoffs</HorizontalNavText>
     </UnstyledLink>
     
-    <UnstyledLink href="/userprofile" passHref onClick={onNavigate}>
-      <HorizontalNavText>
-        <FormattedMessage id="profileText" defaultMessage="Profile" />
-      </HorizontalNavText>
-    </UnstyledLink>
+    {isLoggedIn && (
+      <UnstyledLink href="/userprofile" passHref onClick={onNavigate}>
+        <HorizontalNavText>
+          <FormattedMessage id="profileText" defaultMessage="Profile" />
+        </HorizontalNavText>
+      </UnstyledLink>
+    )}
 
     {role === userRoles.SUPERADMIN && (
       <UnstyledLink href="/recreateform" passHref onClick={onNavigate}>
@@ -91,7 +95,7 @@ const HorizontalNavigation = () => {
   return (
     <HorizontalNavigationLayout>
       <HorizontalItemsContainer>
-        <Items role={user?.role} />
+        <Items role={user?.role} isLoggedIn={!!user} />
       </HorizontalItemsContainer>
 
       <Flex>
@@ -121,7 +125,7 @@ const VerticalSidebar = () => {
       {open && (
   <MobileMenu>
     <HorizontalItemsContainer>
-      <Items role={user?.role} onNavigate={() => setOpen(false)} />
+      <Items role={user?.role} isLoggedIn={!!user} onNavigate={() => setOpen(false)} />
     </HorizontalItemsContainer>
 
     <MobileAuthRow>
