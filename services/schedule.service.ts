@@ -48,7 +48,6 @@ export interface AddScheduleParams {
   randomSides: boolean;
   dueDate: string;
   gameCode: string;
-  bestOf?: number | null;
 }
 
 export interface UpdateScheduleParams {
@@ -156,7 +155,6 @@ class ScheduleService {
         randomSides: params.randomSides,
         d: params.dueDate,
         gc: params.gameCode,
-        best_of: params.bestOf
       }
     });
     return response.data;

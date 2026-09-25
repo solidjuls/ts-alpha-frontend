@@ -42,7 +42,6 @@ const CreateSchedule = ({ tournamentId }: { tournamentId: string }) => {
   const [usaPlayer, setUsaPlayer] = useState("");
   const [ussrPlayer, setUssrPlayer] = useState("");
   const [gameCode, setGameCode] = useState("");
-  const [bestOf, setBestOf] = useState<number | null>(null);
   const [random, setRandom] = useState(false);
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [scheduleMessage, setScheduleMessage] = useState("");
@@ -56,10 +55,6 @@ const CreateSchedule = ({ tournamentId }: { tournamentId: string }) => {
       setScheduleMessage("USA and USSR players must be different");
       return;
     }
-    if (bestOf !== null && ![1, 3, 5, 7].includes(bestOf)) {
-      setScheduleMessage("Best Of must be 1, 3, 5, or 7");
-      return;
-    }
     setScheduleMessage("");
     try {
       await addScheduleMutation.mutateAsync({
@@ -69,7 +64,6 @@ const CreateSchedule = ({ tournamentId }: { tournamentId: string }) => {
         randomSides: random,
         dueDate: dueDate.toISOString(),
         gameCode: gameCode || "",
-        bestOf,
       });
       setScheduleMessage("Schedule created successfully!");
       setTimeout(() => setScheduleMessage(""), 3000);
@@ -107,20 +101,6 @@ const CreateSchedule = ({ tournamentId }: { tournamentId: string }) => {
             maxLength={4}
             width="80px"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setGameCode(e.target.value); setScheduleMessage(""); }}
-          />
-        </div>
-        <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 600 }}>Best Of</label>
-          <Input
-            type="text"
-            placeholder="1|3|5|7"
-            value={bestOf !== null ? String(bestOf) : ""}
-            width="80px"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const val = e.target.value.replace(/[^1357]/g, "");
-              setBestOf(val ? Number(val) : null);
-              setScheduleMessage("");
-            }}
           />
         </div>
         <DateComponent
