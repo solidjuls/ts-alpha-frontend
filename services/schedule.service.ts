@@ -94,6 +94,23 @@ export interface CreateScheduleDto {
   randomSides?: boolean;
 }
 
+export interface UpcomingScheduleItem {
+  idUsa: string;
+  idUssr: string;
+  nameUsa: string;
+  nameUssr: string;
+  emailUsa: string;
+  emailUssr: string;
+  gameCode: string;
+  dueDate: string;
+}
+
+export interface GetUpcomingScheduleParams {
+  tournamentId: string;
+  days: 1 | 5 | 15 | 30;
+  includePast?: boolean;
+}
+
 export interface CsvScheduleRow {
   due_date: string;
   game_code: string;
@@ -223,6 +240,16 @@ class ScheduleService {
 
   async createSchedulesBatch(schedules: BatchScheduleItem[]): Promise<{ message: string }> {
     const response = await this.axiosInstance.put('/schedule', { data: schedules });
+    return response.data;
+  }
+
+  async getUpcomingSchedules(params: GetUpcomingScheduleParams): Promise<UpcomingScheduleItem[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('tournamentId', params.tournamentId);
+    queryParams.append('days', params.days.toString());
+    if (params.includePast) queryParams.append('includePast', 'true');
+
+    const response = await this.axiosInstance.get(`/schedule/upcoming?${queryParams.toString()}`);
     return response.data;
   }
 
