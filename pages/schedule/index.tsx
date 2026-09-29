@@ -4,7 +4,6 @@ import Head from "next/head";
 import { Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
-import Link from "next/link";
 import { FlagIcon } from "components/FlagIcon";
 import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
@@ -259,7 +258,7 @@ const SchedulePanel = ({
     return (
       <LoadingContainer>
         <CenteredResultsWrapper>
-          You do not have a schedule available. Report your results using the <Link href="/submit-game">Submit Form</Link>.
+          There are no schedules for this tournament.
         </CenteredResultsWrapper>
       </LoadingContainer>
     );
