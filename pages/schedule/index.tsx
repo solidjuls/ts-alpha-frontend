@@ -16,7 +16,8 @@ import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
 import { Tournament } from "services/tournaments.service";
-import { userRoles } from "utils/constants";
+import { userRoles, tournamentStatus } from "utils/constants";
+import { useTournamentsByStatus } from "hooks/useTournaments";
 import ProtectedRoute from "components/ProtectedRoute";
 import {
   PlayerInfo,
@@ -299,13 +300,7 @@ const Schedule = () => {
 
   const deleteScheduleMutation = useDeleteSchedule();
 
-  // Only fetch schedules when tournament changes or filters change (not for initial load)
-  // const shouldFetchSchedule = currentPage !== 1 ||
-  //   selectedTournament !== initialTournaments[0] ||
-  //   showFullSchedule ||
-  //   showOnlyPending;
-
-  // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
+  const { data: ongoingTournaments } = useTournamentsByStatus([tournamentStatus.ongoing]);
 
   const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
     userId: selectedUserId,
@@ -320,7 +315,7 @@ const Schedule = () => {
 
   const scheduleData = dataSchedule?.results;
   const scheduleTotalPages = dataSchedule?.totalPages;
-  const availableTournaments = dataSchedule?.userTournaments;
+  const availableTournaments = ongoingTournaments;
   const currentTournament = selectedTournament || availableTournaments?.find(t => t.id === dataSchedule?.defaultTournament);
   const isUserAdminForTournament = currentTournament?.adminId?.includes(userId);
 
