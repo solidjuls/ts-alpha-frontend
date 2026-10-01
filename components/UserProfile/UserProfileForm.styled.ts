@@ -4,7 +4,7 @@ export const formStyles = {
   backgroundColor: "var(--bg-card)",
   padding: "12px",
   alignSelf: "center",
-  "@sm": {
-    width: "100%",
-  },
+  width: "400px",
+  maxWidth: "100%",
+  boxSizing: "border-box" as const,
 };

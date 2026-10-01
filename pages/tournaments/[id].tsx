@@ -278,10 +278,14 @@ const TournamentDetail = () => {
       }
       await refetch();
       setOptimisticRegistered(null);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Registration error:", e);
       setOptimisticRegistered(null);
-      alert("Registration update failed. Please try again.");
+      const apiMessage = e?.response?.data?.message;
+      alert(apiMessage
+        ? `Registration update failed: ${apiMessage}`
+        : "Registration update failed. Please try again."
+      );
     }
   };
 

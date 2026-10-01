@@ -246,10 +246,10 @@ const SubmitGameContainer = () => {
       await submitGameMutation.mutateAsync(normalizedData);
 
       router.push("/");
-    } catch (e) {
+    } catch (e: any) {
       const errorMessage = isRecreateMode
         ? "There was an error recreating the game"
-        : "There was an error submitting the result";
+        : `There was an error submitting the result. ${e?.response?.data?.message}`;
       setError("root", { type: "manual", message: errorMessage });
     }
   };
