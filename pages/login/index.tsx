@@ -58,12 +58,14 @@ const clearCredentials = () => {
    ========================= */
 
 const LoginFormComponent: React.FC = () => {
+  const router = useRouter();
   const [mail, setMail] = useState<string>("");
   const [pwd, setPwd] = useState<string>("");
   const [saveCred, setSaveCred] = useState<boolean>(true);
   const [validationError, setValidationError] = useState<string>("");
 
   const loginMutation = useLogin();
+  const showRegistrationSuccess = router.query.registered === "1";
 
   useEffect(() => {
     const credentials = getCredentials();
@@ -160,6 +162,10 @@ const LoginFormComponent: React.FC = () => {
             checked={saveCred}
           />
         </CheckboxRow>
+
+        {showRegistrationSuccess && (
+          <Message $variant="success">Account created successfully</Message>
+        )}
 
         {errorMessage && (
           <Message $variant="error">
