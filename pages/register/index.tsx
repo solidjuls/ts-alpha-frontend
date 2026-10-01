@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FormattedMessage } from "react-intl";
 import { Spinner } from "@radix-ui/themes";
 import { useCreateUser } from "hooks/useUsers";
@@ -31,6 +32,7 @@ import {
 } from "styles/register.styled";
 
 const RegisterFormComponent: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -61,8 +63,6 @@ const RegisterFormComponent: React.FC = () => {
     if (!formData.email.trim()) errors.push("Email is required");
     if (!formData.password.trim()) errors.push("Password is required");
     if (!formData.confirmPassword.trim()) errors.push("Password confirmation is required");
-    if (!formData.playdek_name.trim()) errors.push("Playdek name is required");
-
     if (!formData.countryId.trim()) errors.push("Country is required");
     if (!formData.cityId.trim()) errors.push("City is required");
 
@@ -101,6 +101,7 @@ const RegisterFormComponent: React.FC = () => {
         city: formData.cityId ? Number(formData.cityId) : undefined,
         country: formData.countryId ? Number(formData.countryId) : undefined,
       });
+      router.push("/login?registered=1");
     } catch (error) {
       console.error("Registration error:", error);
     }
@@ -181,7 +182,6 @@ const RegisterFormComponent: React.FC = () => {
             onChange={(e) => handleInputChange("playdek_name", e.target.value)}
             disabled={createMutation.isPending}
             placeholder="Playdek Username..."
-            required
           />
         </Field>
 
