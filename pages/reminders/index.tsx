@@ -1,20 +1,20 @@
 import Head from "next/head";
 import { useState } from "react";
 import { Spinner } from "@radix-ui/themes";
-import { CheckIcon } from "@radix-ui/react-icons";
 import ProtectedRoute from "components/ProtectedRoute";
 import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
 import { useUpcomingSchedules } from "hooks/useSchedule";
 import { useScheduleAdmin } from "hooks/useTournaments";
-import { UpcomingScheduleItem } from "services/schedule.service";
+import { UpcomingScheduleItem, ReminderEmailPayload, scheduleService } from "services/schedule.service";
 import {
   PageTitle,
   ResponsiveContainer,
   LoadingContainer,
   CenteredResultsWrapper,
 } from "components/Schedule/Schedule.styled";
-import { StyledCheckbox, StyledIndicator } from "components/Checkbox/Checkbox.styled";
+import { Checkbox } from "components/Checkbox";
+import { Button } from "components/Button";
 
 const REMINDER_TOURNAMENT_ID = "359";
 
@@ -101,6 +101,8 @@ const RemindersContent = () => {
   const [days, setDays] = useState<1 | 5 | 15 | 30>(15);
   const [includePast, setIncludePast] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isSending, setIsSending] = useState(false);
+  const [sendResult, setSendResult] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const { data: scheduleData } = useScheduleAdmin(REMINDER_TOURNAMENT_ID);
   const isTournamentAdmin = scheduleData?.tournament?.adminId?.includes(userId) ?? false;
@@ -163,6 +165,46 @@ const RemindersContent = () => {
     });
   };
 
+  const calculateDaysLeft = (dueDateStr: string): number => {
+    const due = new Date(dueDateStr);
+    due.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.round((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  const buildReminderPayload = (items: UpcomingScheduleItem[]): ReminderEmailPayload[] =>
+    items.map((item) => ({
+      gameCode: item.gameCode,
+      daysLeft: calculateDaysLeft(item.dueDate),
+      dueDate: item.dueDate,
+      usaEmail: item.emailUsa,
+      ussrEmail: item.emailUssr,
+      usaPlayerFullName: item.nameUsa,
+      usaPlaydekName: item.playdekUsa,
+      ussrPlayerFullName: item.nameUssr,
+      ussrPlaydekName: item.playdekUssr,
+      usaTimezone: item.timezoneUsa,
+      ussrTimezone: item.timezoneUssr,
+    }));
+
+  const handleSendEmails = async () => {
+    const selectedRows = rows.filter((item) => selectedIds.has(rowKey(item)));
+    if (selectedRows.length === 0) return;
+
+    setIsSending(true);
+    setSendResult(null);
+    try {
+      const payload = buildReminderPayload(selectedRows);
+      await scheduleService.sendReminderEmails(payload);
+      setSendResult({ type: "success", message: `Reminder emails sent for ${selectedRows.length} game(s).` });
+    } catch {
+      setSendResult({ type: "error", message: "Failed to send reminder emails. Please try again." });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -191,27 +233,40 @@ const RemindersContent = () => {
               </select>
             </div>
 
-            <div
-              role="checkbox"
-              aria-checked={includePast}
-              tabIndex={0}
-              onClick={() => setIncludePast((v) => !v)}
-              onKeyDown={(e) => {
-                if (e.key === " " || e.key === "Enter") {
-                  e.preventDefault();
-                  setIncludePast((v) => !v);
-                }
-              }}
-              style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}
-            >
-              <StyledCheckbox checked={includePast}>
-                <StyledIndicator>
-                  <CheckIcon width={20} height={20} />
-                </StyledIndicator>
-              </StyledCheckbox>
-              <span style={{ fontSize: "14px", color: "var(--primary-text)" }}>Include overdue</span>
-            </div>
+            <Checkbox
+              checked={includePast}
+              text="Include overdue"
+              onCheckedChange={(v) => setIncludePast(v)}
+            />
           </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
+            <Button
+              onClick={handleSendEmails}
+              disabled={selectedIds.size === 0 || isSending}
+              style={{
+                gap: "8px",
+              }}
+            >
+              {isSending && <Spinner size="1" />}
+              {isSending ? "Sending..." : `Send Emails${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
+            </Button>
+          </div>
+
+          {sendResult && (
+            <div
+              style={{
+                padding: "10px 16px",
+                borderRadius: "6px",
+                fontSize: "14px",
+                backgroundColor: sendResult.type === "success" ? "rgba(0, 180, 80, 0.1)" : "rgba(220, 40, 40, 0.1)",
+                color: sendResult.type === "success" ? "#00b450" : "#dc2828",
+                border: `1px solid ${sendResult.type === "success" ? "rgba(0, 180, 80, 0.3)" : "rgba(220, 40, 40, 0.3)"}`,
+              }}
+            >
+              {sendResult.message}
+            </div>
+          )}
 
           {isLoading ? (
             <LoadingContainer>
@@ -231,11 +286,12 @@ const RemindersContent = () => {
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, width: "40px" }}>
-                      <StyledCheckbox checked={allSelected} onCheckedChange={toggleAll}>
-                        <StyledIndicator>
-                          <CheckIcon width={16} height={16} />
-                        </StyledIndicator>
-                      </StyledCheckbox>
+                      <Checkbox
+                        checked={allSelected}
+                        text=""
+                        onCheckedChange={() => toggleAll()}
+                        css={{ margin: 0 }}
+                      />
                     </th>
                     <th style={thStyle}>USA</th>
                     <th style={thStyle}>USSR</th>
@@ -259,14 +315,12 @@ const RemindersContent = () => {
                         }}
                       >
                         <td style={tdStyle}>
-                          <StyledCheckbox
+                          <Checkbox
                             checked={isSelected}
+                            text=""
                             onCheckedChange={() => toggleRow(item)}
-                          >
-                            <StyledIndicator>
-                              <CheckIcon width={16} height={16} />
-                            </StyledIndicator>
-                          </StyledCheckbox>
+                            css={{ margin: 0 }}
+                          />
                         </td>
                         <td style={tdStyle}>
                           <div style={nameStyle}>{item.nameUsa}</div>

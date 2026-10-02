@@ -103,6 +103,24 @@ export interface UpcomingScheduleItem {
   emailUssr: string;
   gameCode: string;
   dueDate: string;
+  playdekUsa: string;
+  playdekUssr: string;
+  timezoneUsa: string;
+  timezoneUssr: string;
+}
+
+export interface ReminderEmailPayload {
+  gameCode: string;
+  daysLeft: number;
+  dueDate: string;
+  usaEmail: string;
+  ussrEmail: string;
+  usaPlayerFullName: string;
+  usaPlaydekName: string;
+  ussrPlayerFullName: string;
+  ussrPlaydekName: string;
+  usaTimezone: string;
+  ussrTimezone: string;
 }
 
 export interface GetUpcomingScheduleParams {
@@ -255,6 +273,11 @@ class ScheduleService {
 
   async createSchedulesBulk(schedules: CreateScheduleDto[]): Promise<{ message: string }> {
     const response = await this.axiosInstance.put('/schedule/create-schedules-bulk', { data: schedules });
+    return response.data;
+  }
+
+  async sendReminderEmails(payload: ReminderEmailPayload[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post('/email/reminders', payload);
     return response.data;
   }
 }
