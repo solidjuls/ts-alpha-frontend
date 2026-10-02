@@ -110,7 +110,7 @@ export const CheckOpponentProfileCell = styled.div`
   border: 1px solid var(--border);
   box-shadow: var(--shadow-soft);
 
-  ${media.md} {
+  ${media.sm} {
     display: none;
   }
 
