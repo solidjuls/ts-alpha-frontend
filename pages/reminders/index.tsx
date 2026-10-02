@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Spinner } from "@radix-ui/themes";
 import ProtectedRoute from "components/ProtectedRoute";
 import { useAuth } from "contexts/AuthProviderNew";
@@ -15,6 +15,42 @@ import {
 } from "components/Schedule/Schedule.styled";
 import { Checkbox } from "components/Checkbox";
 import { Button } from "components/Button";
+
+type ReminderType = 1 | 5 | 15 | 30;
+
+interface SentReminderRecord {
+  gameCode: string;
+  idUsa: string;
+  idUssr: string;
+  emailSentAt: string;
+}
+
+type SentRemindersMap = Record<ReminderType, Record<string, SentReminderRecord>>;
+
+const REMINDER_EMAILS_STORAGE_KEY = "reminderEmailsSent";
+
+const getEmptySentReminders = (): SentRemindersMap => ({
+  30: {},
+  15: {},
+  5: {},
+  1: {},
+});
+
+const loadSentReminders = (): SentRemindersMap => {
+  if (typeof window === "undefined") return getEmptySentReminders();
+  try {
+    const raw = localStorage.getItem(REMINDER_EMAILS_STORAGE_KEY);
+    if (!raw) return getEmptySentReminders();
+    return { ...getEmptySentReminders(), ...JSON.parse(raw) };
+  } catch {
+    return getEmptySentReminders();
+  }
+};
+
+const saveSentReminders = (map: SentRemindersMap) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(REMINDER_EMAILS_STORAGE_KEY, JSON.stringify(map));
+};
 
 const REMINDER_TOURNAMENT_ID = "359";
 
@@ -93,6 +129,8 @@ const emailStyle: React.CSSProperties = {
 };
 
 const rowHoverBg = "var(--bg-main)";
+const rowSentBg = "rgba(0, 180, 80, 0.08)";
+const rowSentColor = "#00b450";
 
 const RemindersContent = () => {
   const { user } = useAuth();
@@ -103,6 +141,29 @@ const RemindersContent = () => {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [sentReminders, setSentReminders] = useState<SentRemindersMap>(getEmptySentReminders);
+
+  useEffect(() => {
+    setSentReminders(loadSentReminders());
+  }, []);
+
+  const isEmailSent = useCallback(
+    (item: UpcomingScheduleItem) => {
+      const record = sentReminders[days]?.[item.gameCode];
+      if (!record) return false;
+      return record.idUsa === item.idUsa && record.idUssr === item.idUssr;
+    },
+    [sentReminders, days],
+  );
+
+  const getSentDate = useCallback(
+    (item: UpcomingScheduleItem) => {
+      const record = sentReminders[days]?.[item.gameCode];
+      if (!record || record.idUsa !== item.idUsa || record.idUssr !== item.idUssr) return null;
+      return record.emailSentAt;
+    },
+    [sentReminders, days],
+  );
 
   const { data: scheduleData } = useScheduleAdmin(REMINDER_TOURNAMENT_ID);
   const isTournamentAdmin = scheduleData?.tournament?.adminId?.includes(userId) ?? false;
@@ -189,7 +250,9 @@ const RemindersContent = () => {
     }));
 
   const handleSendEmails = async () => {
-    const selectedRows = rows.filter((item) => selectedIds.has(rowKey(item)));
+    const selectedRows = rows.filter(
+      (item) => selectedIds.has(rowKey(item)) && !isEmailSent(item),
+    );
     if (selectedRows.length === 0) return;
 
     setIsSending(true);
@@ -197,6 +260,22 @@ const RemindersContent = () => {
     try {
       const payload = buildReminderPayload(selectedRows);
       await scheduleService.sendReminderEmails(payload);
+
+      const today = new Date().toISOString().split("T")[0];
+      setSentReminders((prev) => {
+        const next = { ...prev, [days]: { ...prev[days] } };
+        selectedRows.forEach((item) => {
+          next[days][item.gameCode] = {
+            gameCode: item.gameCode,
+            idUsa: item.idUsa,
+            idUssr: item.idUssr,
+            emailSentAt: today,
+          };
+        });
+        saveSentReminders(next);
+        return next;
+      });
+
       setSendResult({ type: "success", message: `Reminder emails sent for ${selectedRows.length} game(s).` });
     } catch {
       setSendResult({ type: "error", message: "Failed to send reminder emails. Please try again." });
@@ -297,21 +376,26 @@ const RemindersContent = () => {
                     <th style={thStyle}>USSR</th>
                     <th style={thStyle}>Game Code</th>
                     <th style={thStyle}>Due Date</th>
+                    <th style={thStyle}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((item) => {
                     const key = rowKey(item);
                     const isSelected = selectedIds.has(key);
+                    const sent = isEmailSent(item);
+                    const sentDate = getSentDate(item);
                     return (
                       <tr
                         key={key}
-                        style={{ backgroundColor: isSelected ? rowHoverBg : undefined }}
+                        style={{
+                          backgroundColor: sent ? rowSentBg : isSelected ? rowHoverBg : undefined,
+                        }}
                         onMouseEnter={(e) => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = rowHoverBg;
+                          if (!isSelected && !sent) e.currentTarget.style.backgroundColor = rowHoverBg;
                         }}
                         onMouseLeave={(e) => {
-                          if (!isSelected) e.currentTarget.style.backgroundColor = "";
+                          if (!isSelected && !sent) e.currentTarget.style.backgroundColor = "";
                         }}
                       >
                         <td style={tdStyle}>
@@ -320,6 +404,7 @@ const RemindersContent = () => {
                             text=""
                             onCheckedChange={() => toggleRow(item)}
                             css={{ margin: 0 }}
+                            disabled={sent}
                           />
                         </td>
                         <td style={tdStyle}>
@@ -332,6 +417,15 @@ const RemindersContent = () => {
                         </td>
                         <td style={tdStyle}>{item.gameCode}</td>
                         <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{formatDueDate(item.dueDate)}</td>
+                        <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                          {sent ? (
+                            <span style={{ color: rowSentColor, fontSize: "13px" }}>
+                              Sent {sentDate ? formatDueDate(sentDate) : ""}
+                            </span>
+                          ) : (
+                            <span style={{ opacity: 0.5, fontSize: "13px" }}>Not sent</span>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
