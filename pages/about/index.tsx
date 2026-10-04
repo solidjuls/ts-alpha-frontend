@@ -665,7 +665,7 @@ const AboutPage = () => (
           <li>
             <Inline>
               <InternalLink href="/userprofile/1781">Crow Crowlas</InternalLink> (Cardlinger):{" "}
-              <ExternalLink href="https://www.twitch.tv/crowcrowlas" target="_blank" rel="noreferrer" $inactive>
+              <ExternalLink href="https://www.twitch.tv/crowcrowlas" target="_blank" rel="noreferrer">
                 Twitch
               </ExternalLink>{" "}
               -{" "}
