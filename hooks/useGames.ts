@@ -188,6 +188,16 @@ export const useDeleteGame = () => {
   });
 };
 
+// Hook for sending a game to shrkbot again
+export const useResyncGame = () => {
+  return useMutation({
+    mutationFn: (gameId: string) => gamesService.resyncGame(gameId),
+    onError: (error: any) => {
+      console.error('Resync game failed:', error);
+    },
+  });
+};
+
 // Hook for getting win type chart data
 export const useWinTypeChartData = (
   userId: string,

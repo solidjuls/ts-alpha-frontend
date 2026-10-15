@@ -172,6 +172,11 @@ class GamesService {
     });
   }
 
+  async resyncGame(gameId: string): Promise<any> {
+    const response = await this.axiosInstance.post(`/games/${gameId}/resync`);
+    return response.data;
+  }
+
   async getChartData(params: GetChartDataParams): Promise<WinTypeStats> {
     const queryParams = new URLSearchParams();
     queryParams.append('userId', params.userId);
