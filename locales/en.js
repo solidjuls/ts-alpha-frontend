@@ -12,6 +12,7 @@ module.exports = {
     endType: "How Did It End?",
     gameDate: "Game Date",
     videoLink1: "Video Link",
+    tournamentType: "Tournament Type",
     videoLink2: "Video Link 2",
     videoLink3: "Video Link 3",
     mail: "Email",
