@@ -19,6 +19,7 @@ import { Tournament } from "services/tournaments.service";
 import { userRoles, tournamentStatus } from "utils/constants";
 import { useTournamentsByStatus } from "hooks/useTournaments";
 import ProtectedRoute from "components/ProtectedRoute";
+import { format as formatDate } from "date-fns";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -39,6 +40,7 @@ import {
   SpinnerContainer,
   DeleteButton,
   HigherSeedText,
+  DueDateText,
 } from "components/Schedule/Schedule.styled";
 import { useDeleteSchedule } from "hooks/useSchedule";
 
@@ -96,8 +98,9 @@ const PlayerInfoBox = ({
   countryUssr,
   gameWinner,
   randomSides,
-  bestOf
-}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf">) => {
+  bestOf,
+  dueDate,
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf" | "dueDate">) => {
   let textType = 'Fixed Sides'
   if (bestOf && bestOf > 0 && randomSides) {
     textType = 'Higher seed chooses'
@@ -127,7 +130,10 @@ const PlayerInfoBox = ({
           </Text>
         </PlayerInfoContainer>
       </FlexRow>
-      <HigherSeedText>{textType}</HigherSeedText>
+      <Flex style={{ alignItems: 'center' }}>
+        <HigherSeedText>{textType}</HigherSeedText>
+        <DueDateText>{' - Due Date: '}{formatDate(new Date(dueDate), "yyyy/MM/dd")}</DueDateText>
+      </Flex>
     </Flex>
   );
 };
@@ -205,6 +211,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             nameUssr={schedule.nameUssr}
             randomSides={schedule.randomSides}
             bestOf={schedule.bestOf}
+            dueDate={schedule.dueDate}
           />
         </ColumnUnstyledLink>
       </PlayerInfo>
@@ -213,16 +220,18 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
           <Text fontSize="small">OPPONENT PROFILE</Text>
         </UnstyledLink>
       </CheckOpponentProfileCell>
-      <DueDateCell>
-        <DueDateDisplay
-          dueDate={schedule.dueDate}
-          scheduleId={schedule.id}
-          gameDate={schedule.gameDate || ""}
-          admin={isAdmin}
-          onDelete={isAdmin ? onDelete: undefined}
-          isDeleting={isDeleting}
-        />
-      </DueDateCell>
+      {isAdmin && (
+        <DueDateCell>
+          <DueDateDisplay
+            dueDate={schedule.dueDate}
+            scheduleId={schedule.id}
+            gameDate={schedule.gameDate || ""}
+            admin={isAdmin}
+            onDelete={onDelete}
+            isDeleting={isDeleting}
+          />
+        </DueDateCell>
+      )}
     </Flex>
   );
 };
