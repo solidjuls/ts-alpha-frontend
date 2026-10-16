@@ -28,6 +28,7 @@ export interface ScheduleListResponse {
   currentPage: number;
   totalPages: number;
   defaultTournament: string;
+  userTournaments?: Tournament[];
 }
 
 export interface GetScheduleParams {

@@ -100,7 +100,8 @@ const PlayerInfoBox = ({
   randomSides,
   bestOf,
   dueDate,
-}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf" | "dueDate">) => {
+  gameDate,
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf" | "dueDate" | "gameDate">) => {
   let textType = 'Fixed Sides'
   if (bestOf && bestOf > 0 && randomSides) {
     textType = 'Higher seed chooses'
@@ -132,7 +133,11 @@ const PlayerInfoBox = ({
       </FlexRow>
       <Flex style={{ alignItems: 'center' }}>
         <HigherSeedText>{textType}</HigherSeedText>
-        <DueDateText>{' - Due Date: '}{formatDate(new Date(dueDate), "yyyy/MM/dd")}</DueDateText>
+        {gameDate ? (
+          <DueDateText>{' - Game Played: '}{formatDate(new Date(gameDate), "yyyy/MM/dd")}</DueDateText>
+        ) : (
+          <DueDateText>{' - Due Date: '}{formatDate(new Date(dueDate), "yyyy/MM/dd")}</DueDateText>
+        )}
       </Flex>
     </Flex>
   );
@@ -212,6 +217,7 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             randomSides={schedule.randomSides}
             bestOf={schedule.bestOf}
             dueDate={schedule.dueDate}
+            gameDate={schedule.gameDate}
           />
         </ColumnUnstyledLink>
       </PlayerInfo>
@@ -324,7 +330,7 @@ const Schedule = () => {
 
   const scheduleData = dataSchedule?.results;
   const scheduleTotalPages = dataSchedule?.totalPages;
-  const availableTournaments = ongoingTournaments;
+  const availableTournaments = dataSchedule?.userTournaments;
   const currentTournament = selectedTournament || availableTournaments?.find(t => t.id === dataSchedule?.defaultTournament);
   const isUserAdminForTournament = currentTournament?.adminId?.includes(userId);
 
