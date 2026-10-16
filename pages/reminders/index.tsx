@@ -194,10 +194,11 @@ const RemindersContent = () => {
 
   const rows: UpcomingScheduleItem[] = upcomingData ?? [];
 
-  const allSelected = rows.length > 0 && selectedIds.size === rows.length;
-
   const rowKey = (item: UpcomingScheduleItem) =>
     `${item.idUsa}-${item.idUssr}-${item.gameCode}-${item.dueDate}`;
+
+  const unsentRows = rows.filter((item) => !isEmailSent(item));
+  const allUnsentSelected = unsentRows.length > 0 && unsentRows.every((item) => selectedIds.has(rowKey(item)));
 
   const toggleRow = (item: UpcomingScheduleItem) => {
     const key = rowKey(item);
@@ -210,10 +211,10 @@ const RemindersContent = () => {
   };
 
   const toggleAll = () => {
-    if (allSelected) {
+    if (allUnsentSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(rows.map(rowKey)));
+      setSelectedIds(new Set(unsentRows.map(rowKey)));
     }
   };
 
@@ -366,7 +367,7 @@ const RemindersContent = () => {
                   <tr>
                     <th style={{ ...thStyle, width: "40px" }}>
                       <Checkbox
-                        checked={allSelected}
+                        checked={allUnsentSelected}
                         text=""
                         onCheckedChange={() => toggleAll()}
                         css={{ margin: 0 }}
@@ -380,7 +381,14 @@ const RemindersContent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((item) => {
+                  {[...rows]
+                    .sort((a, b) => {
+                      const aSent = isEmailSent(a);
+                      const bSent = isEmailSent(b);
+                      if (aSent === bSent) return 0;
+                      return aSent ? 1 : -1;
+                    })
+                    .map((item) => {
                     const key = rowKey(item);
                     const isSelected = selectedIds.has(key);
                     const sent = isEmailSent(item);
