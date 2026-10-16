@@ -517,7 +517,7 @@ const TournamentDetail = () => {
                     onSelect={(item: DropdownItemType | null) =>
                       setSelectedUser(item?.value || "")
                     }
-                    onBlur={() => {}}
+                    onBlur={() => setSelectedUser("")}
                     placeholder="Type user name or email..."
                     css={{ width: "100%" }}
                     error={false}

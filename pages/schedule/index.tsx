@@ -4,7 +4,6 @@ import Head from "next/head";
 import { Flex } from "components/Atoms";
 import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
-import Link from "next/link";
 import { FlagIcon } from "components/FlagIcon";
 import { useAuth } from "contexts/AuthProviderNew";
 import { DueDateDisplay } from "components/DueDateDisplay";
@@ -17,8 +16,10 @@ import { Pagination } from "components/Pagination";
 import { useSchedules } from "hooks/useSchedule";
 import { ScheduleItem } from "services/schedule.service";
 import { Tournament } from "services/tournaments.service";
-import { userRoles } from "utils/constants";
+import { userRoles, tournamentStatus } from "utils/constants";
+import { useTournamentsByStatus } from "hooks/useTournaments";
 import ProtectedRoute from "components/ProtectedRoute";
+import { format as formatDate } from "date-fns";
 import {
   PlayerInfo,
   ResultsStyleWrapper,
@@ -39,6 +40,7 @@ import {
   SpinnerContainer,
   DeleteButton,
   HigherSeedText,
+  DueDateText,
 } from "components/Schedule/Schedule.styled";
 import { useDeleteSchedule } from "hooks/useSchedule";
 
@@ -96,8 +98,10 @@ const PlayerInfoBox = ({
   countryUssr,
   gameWinner,
   randomSides,
-  bestOf
-}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf">) => {
+  bestOf,
+  dueDate,
+  gameDate,
+}: Pick<ScheduleItem, "nameUsa" | "nameUssr" | "countryUsa" | "countryUssr" | "gameWinner" | "randomSides" | "bestOf" | "dueDate" | "gameDate">) => {
   let textType = 'Fixed Sides'
   if (bestOf && bestOf > 0 && randomSides) {
     textType = 'Higher seed chooses'
@@ -127,7 +131,14 @@ const PlayerInfoBox = ({
           </Text>
         </PlayerInfoContainer>
       </FlexRow>
-      <HigherSeedText>{textType}</HigherSeedText>
+      <Flex style={{ alignItems: 'center' }}>
+        <HigherSeedText>{textType}</HigherSeedText>
+        {gameDate ? (
+          <DueDateText>{' - Game Played: '}{formatDate(new Date(gameDate), "yyyy/MM/dd")}</DueDateText>
+        ) : (
+          <DueDateText>{' - Due Date: '}{formatDate(new Date(dueDate), "yyyy/MM/dd")}</DueDateText>
+        )}
+      </Flex>
     </Flex>
   );
 };
@@ -205,6 +216,8 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
             nameUssr={schedule.nameUssr}
             randomSides={schedule.randomSides}
             bestOf={schedule.bestOf}
+            dueDate={schedule.dueDate}
+            gameDate={schedule.gameDate}
           />
         </ColumnUnstyledLink>
       </PlayerInfo>
@@ -213,16 +226,18 @@ const ScheduleRow = ({ schedule, isAdmin, userId, onDelete, isDeleting }: {
           <Text fontSize="small">OPPONENT PROFILE</Text>
         </UnstyledLink>
       </CheckOpponentProfileCell>
-      <DueDateCell>
-        <DueDateDisplay
-          dueDate={schedule.dueDate}
-          scheduleId={schedule.id}
-          gameDate={schedule.gameDate || ""}
-          admin={isAdmin}
-          onDelete={isAdmin ? onDelete: undefined}
-          isDeleting={isDeleting}
-        />
-      </DueDateCell>
+      {isAdmin && (
+        <DueDateCell>
+          <DueDateDisplay
+            dueDate={schedule.dueDate}
+            scheduleId={schedule.id}
+            gameDate={schedule.gameDate || ""}
+            admin={isAdmin}
+            onDelete={onDelete}
+            isDeleting={isDeleting}
+          />
+        </DueDateCell>
+      )}
     </Flex>
   );
 };
@@ -259,7 +274,7 @@ const SchedulePanel = ({
     return (
       <LoadingContainer>
         <CenteredResultsWrapper>
-          You do not have a schedule available. Report your results using the <Link href="/submit-game">Submit Form</Link>.
+          There are no schedules for this tournament.
         </CenteredResultsWrapper>
       </LoadingContainer>
     );
@@ -300,13 +315,7 @@ const Schedule = () => {
 
   const deleteScheduleMutation = useDeleteSchedule();
 
-  // Only fetch schedules when tournament changes or filters change (not for initial load)
-  // const shouldFetchSchedule = currentPage !== 1 ||
-  //   selectedTournament !== initialTournaments[0] ||
-  //   showFullSchedule ||
-  //   showOnlyPending;
-
-  // const { data: dataDefault } = useUserAvailableTournamentsWithSchedule();
+  const { data: ongoingTournaments } = useTournamentsByStatus([tournamentStatus.ongoing]);
 
   const { data: dataSchedule, isLoading, error, isFetching } = useSchedules({
     userId: selectedUserId,
@@ -366,17 +375,20 @@ const Schedule = () => {
     return index === 0
   }
 
-  let updatedScheduleData = scheduleData?.filter(game => !game.gameResultsId);
-  // if no filters are set
-  const noFilters = !selectedUserId && !showFullSchedule && currentPage === 1;
-  if (noFilters && scheduleData && scheduleData.length > 0) {
-    // split all completed games, order them by completed game date and then add them back
-    const incompletedGames = scheduleData?.filter(game => !game.gameResultsId);
-    // const orderedCompletedGames = incompletedGames?.sort((a, b) => {
-    //   return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
-    // });
-    // updatedScheduleData = [...scheduleData.filter(game => !game.gameDate), ...orderedCompletedGames];
-  }
+  const unplayedGames = (scheduleData ?? [])
+    .filter(game => !game.gameResultsId)
+    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  const playedGames = (scheduleData ?? [])
+    .filter(game => !!game.gameResultsId)
+    .sort((a, b) => {
+      if (a.gameDate && b.gameDate) {
+        return new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime();
+      }
+      return a.gameDate ? -1 : 1;
+    });
+
+  const updatedScheduleData = [...unplayedGames, ...playedGames];
 
   if (isLoading || !updatedScheduleData) {
     return (

@@ -9,7 +9,7 @@ export interface UserTypeaheadProps {
   selectedItem: string | number | null;
   onSelect: (value: DropdownItemType | null) => void;
   placeholder: string;
-  onBlur?: () => void;
+  onBlur?: (inputValue: string) => void;
   css?: React.CSSProperties;
   error?: boolean;
   debounceTime?: number;

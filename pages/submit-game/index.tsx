@@ -103,11 +103,16 @@ const SubmitGameContainer = () => {
         setValue("tournamentName", tournament[0].tournament_name);
       }
 
-      if (idUsa && typeof idUsa === "string") {
+      const isAdminView = randomSides
+        && user?.id
+        && idUsa !== user.id
+        && idUssr !== user.id;
+
+      if (idUsa && typeof idUsa === "string" && !isAdminView) {
         setValue("usaPlayerId", idUsa);
       }
 
-      if (idUssr && typeof idUssr === "string") {
+      if (idUssr && typeof idUssr === "string" && !isAdminView) {
         setValue("ussrPlayerId", idUssr);
       }
     }
@@ -123,19 +128,18 @@ const SubmitGameContainer = () => {
     let ussrPlayerId = "";
 
     if (data.usaPlayerId && data.ussrPlayerId) {
-      // Schedule mode with randomSides - need to assign based on playedAs selection
-      if (randomSides && data.playedAs) {
+      if (isAdminMode) {
+        usaPlayerId = data.usaPlayerId;
+        ussrPlayerId = data.ussrPlayerId;
+      } else if (randomSides && data.playedAs) {
         if (data.playedAs === "1") {
-          // User played as USA
           usaPlayerId = user?.id as string;
           ussrPlayerId = data.usaPlayerId === user?.id ? data.ussrPlayerId : data.usaPlayerId;
         } else if (data.playedAs === "2") {
-          // User played as USSR
           ussrPlayerId = user?.id as string;
           usaPlayerId = data.usaPlayerId === user?.id ? data.ussrPlayerId : data.usaPlayerId;
         }
       } else {
-        // Normal schedule mode - use pre-assigned sides
         usaPlayerId = data.usaPlayerId;
         ussrPlayerId = data.ussrPlayerId;
       }
@@ -271,7 +275,15 @@ const SubmitGameContainer = () => {
   // Determine if we're in schedule mode (coming from schedule with player IDs)
   const usaPlayerId = watch("usaPlayerId");
   const ussrPlayerId = watch("ussrPlayerId");
-  const isScheduleMode = !!(usaPlayerId && ussrPlayerId)
+  const hasScheduleParams = !!(router.query.idUsa && router.query.idUssr);
+  const isScheduleMode = hasScheduleParams || !!(usaPlayerId && ussrPlayerId);
+
+  // Detect if current user is neither player (admin/third-party view)
+  const isAdminMode = isScheduleMode
+    && randomSides
+    && !!user?.id
+    && user.id !== router.query.idUsa
+    && user.id !== router.query.idUssr;
 
   // Get user names for the player IDs in schedule mode
   const usaPlayerName = usersParsed.find(user => user.value === usaPlayerId)?.text;
@@ -288,6 +300,7 @@ const SubmitGameContainer = () => {
       isSubmitting={isSubmitting}
       watch={watch}
       isScheduleMode={isScheduleMode}
+      isAdminMode={isAdminMode}
       usaPlayerName={usaPlayerName}
       ussrPlayerName={ussrPlayerName}
       randomSides={randomSides}

@@ -30,6 +30,7 @@ type SubmitGameFormProps = {
   users: DropdownItemType[];
   watch: UseFormWatch<SubmitGameFormData>;
   isScheduleMode: boolean;
+  isAdminMode: boolean;
   usaPlayerName: string;
   ussrPlayerName: string;
   randomSides: boolean;
@@ -45,6 +46,7 @@ const SubmitGameForm = ({
   isSubmitting,
   watch,
   isScheduleMode,
+  isAdminMode,
   usaPlayerName,
   ussrPlayerName,
   randomSides,
@@ -84,62 +86,100 @@ const SubmitGameForm = ({
                   inputValue={field.value}
                   placeholder="Select Tournament"
                   error={!!errors.tournamentId}
-                  onInputValueChange={() => {}} // Read-only
+                  onInputValueChange={() => {}}
                   disabled
-                />
-              )}
-            />
-            <Controller
-              name="usaPlayerId"
-              control={control}
-              render={({ field }) => (
-                <SizedText
-                  labelText={randomSides ? "Player 1" : "USA Player"}
-                  inputValue={usaPlayerName}
-                  placeholder={randomSides ? "Player 1" : "USA Player"}
-                  onInputValueChange={() => {}} // Read-only
-                  key="usaPlayerId"
-                  disabled
-                  error={false}
                 />
               )}
             />
 
-            <Controller
-              name="ussrPlayerId"
-              control={control}
-              render={({ field }) => (
-                <SizedText
-                  labelText={randomSides ? "Player 2" : "USSR Player"}
-                  inputValue={ussrPlayerName}
-                  placeholder={randomSides ? "Player 2" : "USSR Player"}
-                  onInputValueChange={() => {}} // Read-only
-                  key="ussrPlayerId"
-                  disabled
-                  error={false}
+            {isAdminMode ? (
+              <>
+                <Controller
+                  name="usaPlayerId"
+                  control={control}
+                  rules={{ required: "USA Player is required" }}
+                  render={({ field }) => (
+                    <UserTypeahead
+                      labelText="USA Player"
+                      selectedItem={field.value}
+                      error={!!errors.usaPlayerId}
+                      placeholder="Select USA Player..."
+                      css={{ width: dropdownWidth }}
+                      onBlur={() => {}}
+                      onSelect={(value) => field.onChange(value?.value || "")}
+                    />
+                  )}
                 />
-              )}
-            />
-
-            {randomSides && (
-              <Controller
-                name="playedAs"
-                control={control}
-                rules={{ required: "Please select which side you played as" }}
-                render={({ field }) => (
-                  <DropdownWithLabel
-                    labelText="PlayedAs"
-                    placeholder="My Side"
-                    items={gameSides}
-                    selectedItem={field.value}
-                    selectedValueProperty="value"
-                    selectedInputProperty="text"
-                    error={!!errors.playedAs}
-                    css={{ width: dropdownWidth }}
-                    onSelect={field.onChange}
+                <Controller
+                  name="ussrPlayerId"
+                  control={control}
+                  rules={{ required: "USSR Player is required" }}
+                  render={({ field }) => (
+                    <UserTypeahead
+                      labelText="USSR Player"
+                      selectedItem={field.value}
+                      error={!!errors.ussrPlayerId}
+                      placeholder="Select USSR Player..."
+                      css={{ width: dropdownWidth }}
+                      onBlur={() => {}}
+                      onSelect={(value) => field.onChange(value?.value || "")}
+                    />
+                  )}
+                />
+              </>
+            ) : (
+              <>
+                <Controller
+                  name="usaPlayerId"
+                  control={control}
+                  render={({ field }) => (
+                    <SizedText
+                      labelText={randomSides ? "Player 1" : "USA Player"}
+                      inputValue={usaPlayerName}
+                      placeholder={randomSides ? "Player 1" : "USA Player"}
+                      onInputValueChange={() => {}}
+                      key="usaPlayerId"
+                      disabled
+                      error={false}
+                    />
+                  )}
+                />
+                <Controller
+                  name="ussrPlayerId"
+                  control={control}
+                  render={({ field }) => (
+                    <SizedText
+                      labelText={randomSides ? "Player 2" : "USSR Player"}
+                      inputValue={ussrPlayerName}
+                      placeholder={randomSides ? "Player 2" : "USSR Player"}
+                      onInputValueChange={() => {}}
+                      key="ussrPlayerId"
+                      disabled
+                      error={false}
+                    />
+                  )}
+                />
+                {randomSides && (
+                  <Controller
+                    name="playedAs"
+                    control={control}
+                    rules={{ required: "Please select which side you played as" }}
+                    render={({ field }) => (
+                      <DropdownWithLabel
+                        labelText="PlayedAs"
+                        placeholder="My Side"
+                        items={gameSides}
+                        selectedItem={field.value}
+                        selectedValueProperty="value"
+                        selectedInputProperty="text"
+                        error={!!errors.playedAs}
+                        css={{ width: dropdownWidth }}
+                        onSelect={field.onChange}
+                      />
+                    )}
                   />
                 )}
-              />
+              </>
             )}
           </>
         )}
@@ -287,6 +327,8 @@ const SubmitGameForm = ({
         {errors.root && <Text type="error">{errors.root.message}</Text>}
         {errors.gameCode && <Text type="error">{errors.gameCode.message}</Text>}
         {errors.tournamentId && <Text type="error">{errors.tournamentId.message}</Text>}
+        {errors.usaPlayerId && <Text type="error">{errors.usaPlayerId.message}</Text>}
+        {errors.ussrPlayerId && <Text type="error">{errors.ussrPlayerId.message}</Text>}
         {errors.playedAs && <Text type="error">{errors.playedAs.message}</Text>}
         {errors.opponentWas && <Text type="error">{errors.opponentWas.message}</Text>}
         {errors.gameWinner && <Text type="error">{errors.gameWinner.message}</Text>}

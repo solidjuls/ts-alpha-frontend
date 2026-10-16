@@ -14,7 +14,7 @@ type TypeaheadProps = {
   onSelect: (obj: DropdownItemType | null | undefined) => void;
   selectedValue: DropdownItemType | null | undefined;
   children: ReactNode;
-  onBlur?: () => void;
+  onBlur?: (inputValue: string) => void;
   width?: string;
   error?: boolean;
   id?: string;
@@ -73,7 +73,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
       }
     } else if (Object.prototype.hasOwnProperty.call(changes, "inputValue")) {
       if (changes?.inputValue?.length === 0) {
-        onBlur && onBlur();
+        onBlur && onBlur("");
         setValue(null);
         setSearchTerm("");
       }
@@ -84,7 +84,7 @@ const Typeahead: React.FC<TypeaheadProps> & {
   };
 
   const resetState = () => {
-    onBlur && onBlur();
+    onBlur && onBlur("");
     onSelect(null);
     onChange("");
   };

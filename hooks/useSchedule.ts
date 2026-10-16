@@ -10,7 +10,9 @@ import scheduleService, {
   UploadCsvScheduleParams,
   CsvUploadResponse,
   BatchScheduleItem,
-  CreateScheduleDto
+  CreateScheduleDto,
+  UpcomingScheduleItem,
+  GetUpcomingScheduleParams
 } from '../services/schedule.service';
 
 // Query keys for React Query
@@ -23,6 +25,7 @@ export const SCHEDULE_QUERY_KEYS = {
   byTournament: (tournamentId: string, page: number, pageSize: number) => 
     [...SCHEDULE_QUERY_KEYS.all, 'byTournament', tournamentId, page, pageSize] as const,
   health: () => [...SCHEDULE_QUERY_KEYS.all, 'health'] as const,
+  upcoming: (params: GetUpcomingScheduleParams) => [...SCHEDULE_QUERY_KEYS.all, 'upcoming', params] as const,
 };
 
 // Hook for getting schedules with filters
@@ -180,6 +183,17 @@ export const useCreateSchedulesBatch = () => {
     onError: (error: any) => {
       console.error('Batch schedule creation failed:', error);
     },
+  });
+};
+
+export const useUpcomingSchedules = (params: GetUpcomingScheduleParams) => {
+  return useQuery({
+    queryKey: SCHEDULE_QUERY_KEYS.upcoming(params),
+    queryFn: () => scheduleService.getUpcomingSchedules(params),
+    enabled: !!params.tournamentId,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: 'always',
   });
 };
 

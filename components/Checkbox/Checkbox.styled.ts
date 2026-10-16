@@ -16,6 +16,14 @@ export const StyledCheckbox = styled(Root)`
   &:hover {
     background-color: var(--ussr);
   }
+
+  &[data-disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    &:hover {
+      background-color: transparent;
+    }
+  }
 `;
 
 export const StyledIndicator = styled(Indicator)`

@@ -226,6 +226,12 @@ export const HigherSeedText = styled(Text)`
   margin-left: 12px;
 `;
 
+export const DueDateText = styled(Text)`
+  font-size: small;
+  color: inherit;
+  margin: 0
+`;
+
 export const ColumnUnstyledLink = styled(UnstyledLink)`
   display: flex;
   flex-direction: column;

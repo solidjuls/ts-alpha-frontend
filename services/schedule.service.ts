@@ -28,6 +28,7 @@ export interface ScheduleListResponse {
   currentPage: number;
   totalPages: number;
   defaultTournament: string;
+  userTournaments?: Tournament[];
 }
 
 export interface GetScheduleParams {
@@ -92,6 +93,41 @@ export interface CreateScheduleDto {
   r: boolean;
   gc: string;
   randomSides?: boolean;
+}
+
+export interface UpcomingScheduleItem {
+  idUsa: string;
+  idUssr: string;
+  nameUsa: string;
+  nameUssr: string;
+  emailUsa: string;
+  emailUssr: string;
+  gameCode: string;
+  dueDate: string;
+  playdekUsa: string;
+  playdekUssr: string;
+  timezoneUsa: string;
+  timezoneUssr: string;
+}
+
+export interface ReminderEmailPayload {
+  gameCode: string;
+  daysLeft: number;
+  dueDate: string;
+  usaEmail: string;
+  ussrEmail: string;
+  usaPlayerFullName: string;
+  usaPlaydekName: string;
+  ussrPlayerFullName: string;
+  ussrPlaydekName: string;
+  usaTimezone: string;
+  ussrTimezone: string;
+}
+
+export interface GetUpcomingScheduleParams {
+  tournamentId: string;
+  days: 1 | 5 | 15 | 30;
+  includePast?: boolean;
 }
 
 export interface CsvScheduleRow {
@@ -226,8 +262,23 @@ class ScheduleService {
     return response.data;
   }
 
+  async getUpcomingSchedules(params: GetUpcomingScheduleParams): Promise<UpcomingScheduleItem[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('tournamentId', params.tournamentId);
+    queryParams.append('days', params.days.toString());
+    if (params.includePast) queryParams.append('includePast', 'true');
+
+    const response = await this.axiosInstance.get(`/schedule/upcoming?${queryParams.toString()}`);
+    return response.data;
+  }
+
   async createSchedulesBulk(schedules: CreateScheduleDto[]): Promise<{ message: string }> {
     const response = await this.axiosInstance.put('/schedule/create-schedules-bulk', { data: schedules });
+    return response.data;
+  }
+
+  async sendReminderEmails(payload: ReminderEmailPayload[]): Promise<{ message: string }> {
+    const response = await this.axiosInstance.post('/email/reminders', payload);
     return response.data;
   }
 }

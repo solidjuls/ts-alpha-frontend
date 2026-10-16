@@ -9,11 +9,12 @@ type CheckboxProps = {
   text: string;
   onCheckedChange: (value: boolean) => void;
   css?: any;
+  disabled?: boolean;
 };
 
-const Checkbox = ({ checked, text, onCheckedChange, css }: CheckboxProps) => (
+const Checkbox = ({ checked, text, onCheckedChange, css, disabled }: CheckboxProps) => (
   <Box css={{ display: "flex", alignItems: "center", ...css }}>
-    <StyledCheckbox checked={checked} onCheckedChange={onCheckedChange}>
+    <StyledCheckbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled}>
       <StyledIndicator>
         <CheckIcon width={20} height={20} />
       </StyledIndicator>
