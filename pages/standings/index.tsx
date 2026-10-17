@@ -3,6 +3,8 @@ import Text from "components/Text";
 import { FlagIcon } from "components/FlagIcon";
 import { useState, useMemo } from "react";
 import { useStandings, PlayerStanding } from "hooks/useStandings";
+import { useAuth } from "contexts/AuthProviderNew";
+import { userRoles } from "utils/constants";
 import { Spinner } from "@radix-ui/themes";
 import DropdownMenu from "components/DropdownMenu";
 import {
@@ -35,6 +37,8 @@ const tournamentOptions = [
 ];
  
 const Standings = () => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === userRoles.SUPERADMIN;
   const [tournamentId, setTournamentId] = useState("359");
   const [selectedDivision, setSelectedDivision] = useState<string>("");
 
@@ -63,17 +67,42 @@ const Standings = () => {
   }, {});
 
   for (const key in grouped) {
-    grouped[key].sort((a, b) => {
-      if (b.winRate !== a.winRate) return b.winRate - a.winRate;
-      return b.sos - a.sos;
-    });
+    grouped[key].sort((a, b) => a.standingOrder - b.standingOrder);
   }
 
   // retrieve the first player of each grouped[key]
   const firstPlayers = grouped && Object.values(grouped).map((group) => group[0]);
 
-  // the playoffs players are the firstPlayers, plus the first 67 players inside standings, ordered by playoffOrder. Players are unique
-  const playoffsPlayers = firstPlayers?.concat(standings?.filter((player) => !firstPlayers.includes(player)) || []);
+  // Build playoffs players per division
+  const playoffsByDivision = useMemo(() => {
+    if (!standings || divisions.length === 0) return {};
+    const result: Record<string, PlayerStanding[]> = {};
+    for (const division of divisions) {
+      const divisionPlayers = standings.filter((p) => p.secondaryName === division);
+      const divisionGrouped = divisionPlayers.reduce<Record<string, PlayerStanding[]>>((acc, player) => {
+        if (!acc[player.standingName]) acc[player.standingName] = [];
+        acc[player.standingName].push(player);
+        return acc;
+      }, {});
+      for (const key in divisionGrouped) {
+        divisionGrouped[key].sort((a, b) => a.standingOrder - b.standingOrder);
+      }
+      const divisionFirstPlayers = Object.values(divisionGrouped).map((group) => group[0]);
+      const divisionPlayoffs = divisionFirstPlayers
+        .concat(divisionPlayers.filter((player) => !divisionFirstPlayers.includes(player)))
+        .sort((a, b) => a.playoffOrder - b.playoffOrder);
+      result[division] = divisionPlayoffs;
+    }
+    console.log('Playoff order:', Object.entries(result).flatMap(([division, players]) =>
+      players.map((p) => ({ division, name: p.name, sos: p.sos, playoffOrder: p.playoffOrder }))
+    ));
+    return result;
+  }, [standings, divisions]);
+
+  // forfeit players: standingName === 'Forfeit' AND secondaryName === 'Forfeit'
+  const forfeitPlayers = standings
+    ?.filter((player) => player.standingName === 'Forfeit' && player.secondaryName === 'Forfeit')
+    .sort((a, b) => a.standingOrder - b.standingOrder);
 
   const getPlayoffColorTables = (index: number, playoffOrder: number) => {
     if (index === 0) return 'green';
@@ -179,51 +208,111 @@ const Standings = () => {
           ))}
       </StandingsContainer>
       {grouped &&
-        <div>
-          <h2>Road to playoffs</h2>
-          <TableScroll>
-            <StyledTable>
-              <StyledHeading>
-                <tr>
-                  <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
-                  <StyledHeaderCell>Player</StyledHeaderCell>
-                  <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
-                  <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
-                  <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
-                </tr>
-              </StyledHeading>
-              <tbody>
-                {playoffsPlayers?.map((player, index) => (
-                  <StyledRow key={player.userId} $playoffColor={getPlayoffColorRoad(index, player.playoffOrder)}>
-                    <RankCell>
-                      <Text fontSize="small">{index + 1}</Text>
-                    </RankCell>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+          <div style={{ flex: 1 }}>
+            <h2>Road to playoffs</h2>
+            {divisions.map((division) => {
+              const players = playoffsByDivision[division];
+              if (!players || players.length === 0) return null;
+              return (
+                <div key={division} style={{ marginBottom: '24px' }}>
+                  <h3 style={{ marginBottom: '8px' }}>{division}</h3>
+                  <TableScroll>
+                    <StyledTable>
+                      <StyledHeading>
+                        <tr>
+                          <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
+                          <StyledHeaderCell>Player</StyledHeaderCell>
+                          <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
+                          <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
+                          <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
+                        </tr>
+                      </StyledHeading>
+                      <tbody>
+                        {players.map((player, index) => (
+                          <StyledRow key={player.userId} $playoffColor={getPlayoffColorRoad(index, player.playoffOrder)}>
+                            <RankCell>
+                              <Text fontSize="small">{index + 1}</Text>
+                            </RankCell>
 
-                    <PlayerCell>
-                      <PlayerInfoContainer>
-                        {player.tldCode && <FlagIcon code={player.tldCode} />}
-                        <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
-                      </PlayerInfoContainer>
-                    </PlayerCell>
+                            <PlayerCell>
+                              <PlayerInfoContainer>
+                                {player.tldCode && <FlagIcon code={player.tldCode} />}
+                                <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
+                              </PlayerInfoContainer>
+                            </PlayerCell>
 
-                    <StatCell>
-                      <Text fontSize="small">
-                        {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                      </Text>
-                    </StatCell>
+                            <StatCell>
+                              <Text fontSize="small">
+                                {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                              </Text>
+                            </StatCell>
 
-                    <StatCell>
-                      <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
-                    </StatCell>
+                            <StatCell>
+                              <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
+                            </StatCell>
 
-                    <StatCell>
-                      <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
-                    </StatCell>
-                  </StyledRow>
-                  ))}
-              </tbody>
-            </StyledTable>
-          </TableScroll>
+                            <StatCell>
+                              <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
+                            </StatCell>
+                          </StyledRow>
+                        ))}
+                      </tbody>
+                    </StyledTable>
+                  </TableScroll>
+                </div>
+              );
+            })}
+          </div>
+
+          {isSuperAdmin && forfeitPlayers && forfeitPlayers.length > 0 && (
+            <div style={{ flex: 1 }}>
+              <h2>Forfeits</h2>
+              <TableScroll>
+                <StyledTable>
+                  <StyledHeading>
+                    <tr>
+                      <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
+                      <StyledHeaderCell>Player</StyledHeaderCell>
+                      <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
+                      <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
+                      <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
+                    </tr>
+                  </StyledHeading>
+                  <tbody>
+                    {forfeitPlayers.map((player, index) => (
+                      <StyledRow key={player.userId}>
+                        <RankCell>
+                          <Text fontSize="small">{index + 1}</Text>
+                        </RankCell>
+
+                        <PlayerCell>
+                          <PlayerInfoContainer>
+                            {player.tldCode && <FlagIcon code={player.tldCode} />}
+                            <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
+                          </PlayerInfoContainer>
+                        </PlayerCell>
+
+                        <StatCell>
+                          <Text fontSize="small">
+                            {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                          </Text>
+                        </StatCell>
+
+                        <StatCell>
+                          <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
+                        </StatCell>
+
+                        <StatCell>
+                          <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
+                        </StatCell>
+                      </StyledRow>
+                    ))}
+                  </tbody>
+                </StyledTable>
+              </TableScroll>
+            </div>
+          )}
         </div>
       }
     </PageContainer>
