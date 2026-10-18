@@ -93,9 +93,6 @@ const Standings = () => {
         .sort((a, b) => a.playoffOrder - b.playoffOrder);
       result[division] = divisionPlayoffs;
     }
-    console.log('Playoff order:', Object.entries(result).flatMap(([division, players]) =>
-      players.map((p) => ({ division, name: p.name, sos: p.sos, playoffOrder: p.playoffOrder }))
-    ));
     return result;
   }, [standings, divisions]);
 
@@ -207,63 +204,62 @@ const Standings = () => {
             </StandingGroup>
           ))}
       </StandingsContainer>
-      {grouped &&
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1 }}>
-            <h2>Road to playoffs</h2>
-            {divisions.map((division) => {
-              const players = playoffsByDivision[division];
-              if (!players || players.length === 0) return null;
-              return (
-                <div key={division} style={{ marginBottom: '24px' }}>
-                  <h3 style={{ marginBottom: '8px' }}>{division}</h3>
-                  <TableScroll>
-                    <StyledTable>
-                      <StyledHeading>
-                        <tr>
-                          <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
-                          <StyledHeaderCell>Player</StyledHeaderCell>
-                          <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
-                          <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
-                          <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
-                        </tr>
-                      </StyledHeading>
-                      <tbody>
-                        {players.map((player, index) => (
-                          <StyledRow key={player.userId} $playoffColor={getPlayoffColorRoad(index, player.playoffOrder)}>
-                            <RankCell>
-                              <Text fontSize="small">{index + 1}</Text>
-                            </RankCell>
+      {grouped && (() => {
+        const players = playoffsByDivision[activeDivision];
+        if (!players || players.length === 0) {
+          console.log('No players to render');
+          return null;
+        }
+        return (
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            <div style={{ flex: 1 }}>
+              <h2>Road to playoffs{activeDivision ? ` - ${activeDivision}` : ''}</h2>
+              <div key={activeDivision} style={{ marginBottom: '24px' }}>
+                <TableScroll>
+                  <StyledTable>
+                    <StyledHeading>
+                      <tr>
+                        <StyledHeaderCellCentered>Rank</StyledHeaderCellCentered>
+                        <StyledHeaderCell>Player</StyledHeaderCell>
+                        <StyledHeaderCellCentered>W-L-T</StyledHeaderCellCentered>
+                        <StyledHeaderCellCentered>Win%</StyledHeaderCellCentered>
+                        <StyledHeaderCellCentered>SoS</StyledHeaderCellCentered>
+                      </tr>
+                    </StyledHeading>
+                    <tbody>
+                      {players.map((player, index) => (
+                        <StyledRow key={player.userId} $playoffColor={getPlayoffColorRoad(index, player.playoffOrder)}>
+                          <RankCell>
+                            <Text fontSize="small">{index + 1}</Text>
+                          </RankCell>
 
-                            <PlayerCell>
-                              <PlayerInfoContainer>
-                                {player.tldCode && <FlagIcon code={player.tldCode} />}
-                                <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
-                              </PlayerInfoContainer>
-                            </PlayerCell>
+                          <PlayerCell>
+                            <PlayerInfoContainer>
+                              {player.tldCode && <FlagIcon code={player.tldCode} />}
+                              <Link className="playerName" fontSize="small" href={`/userprofile/${player.userId}`}>{player.name}</Link>
+                            </PlayerInfoContainer>
+                          </PlayerCell>
 
-                            <StatCell>
-                              <Text fontSize="small">
-                                {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
-                              </Text>
-                            </StatCell>
+                          <StatCell>
+                            <Text fontSize="small">
+                              {player.gamesWon}-{player.gamesLost}-{player.gamesTied}
+                            </Text>
+                          </StatCell>
 
-                            <StatCell>
-                              <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
-                            </StatCell>
+                          <StatCell>
+                            <Text fontSize="small">{`${(player.winRate * 100).toFixed(0)}%`}</Text>
+                          </StatCell>
 
-                            <StatCell>
-                              <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
-                            </StatCell>
-                          </StyledRow>
-                        ))}
-                      </tbody>
-                    </StyledTable>
-                  </TableScroll>
-                </div>
-              );
-            })}
-          </div>
+                          <StatCell>
+                            <Text fontSize="small">{`${(player.sos * 100).toFixed(0)}%`}</Text>
+                          </StatCell>
+                        </StyledRow>
+                      ))}
+                    </tbody>
+                  </StyledTable>
+                </TableScroll>
+              </div>
+            </div>
 
           {isSuperAdmin && forfeitPlayers && forfeitPlayers.length > 0 && (
             <div style={{ flex: 1 }}>
@@ -314,7 +310,8 @@ const Standings = () => {
             </div>
           )}
         </div>
-      }
+      );
+      })()}
     </PageContainer>
   );
 };
