@@ -138,6 +138,7 @@ const RemindersContent = () => {
 
   const [days, setDays] = useState<1 | 5 | 15 | 30>(15);
   const [includePast, setIncludePast] = useState(false);
+  const [selectAllIncludingSent, setSelectAllIncludingSent] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -199,6 +200,8 @@ const RemindersContent = () => {
 
   const unsentRows = rows.filter((item) => !isEmailSent(item));
   const allUnsentSelected = unsentRows.length > 0 && unsentRows.every((item) => selectedIds.has(rowKey(item)));
+  const allRowsSelected = rows.length > 0 && rows.every((item) => selectedIds.has(rowKey(item)));
+  const headerCheckboxChecked = selectAllIncludingSent ? allRowsSelected : allUnsentSelected;
 
   const toggleRow = (item: UpcomingScheduleItem) => {
     const key = rowKey(item);
@@ -211,10 +214,18 @@ const RemindersContent = () => {
   };
 
   const toggleAll = () => {
-    if (allUnsentSelected) {
-      setSelectedIds(new Set());
+    if (selectAllIncludingSent) {
+      if (allRowsSelected) {
+        setSelectedIds(new Set());
+      } else {
+        setSelectedIds(new Set(rows.map(rowKey)));
+      }
     } else {
-      setSelectedIds(new Set(unsentRows.map(rowKey)));
+      if (allUnsentSelected) {
+        setSelectedIds(new Set());
+      } else {
+        setSelectedIds(new Set(unsentRows.map(rowKey)));
+      }
     }
   };
 
@@ -318,6 +329,12 @@ const RemindersContent = () => {
               text="Include overdue"
               onCheckedChange={(v) => setIncludePast(v)}
             />
+
+            <Checkbox
+              checked={selectAllIncludingSent}
+              text="Select all (including sent)"
+              onCheckedChange={(v) => setSelectAllIncludingSent(v)}
+            />
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
@@ -367,7 +384,7 @@ const RemindersContent = () => {
                   <tr>
                     <th style={{ ...thStyle, width: "40px" }}>
                       <Checkbox
-                        checked={allUnsentSelected}
+                        checked={headerCheckboxChecked}
                         text=""
                         onCheckedChange={() => toggleAll()}
                         css={{ margin: 0 }}
