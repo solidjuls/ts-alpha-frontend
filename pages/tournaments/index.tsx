@@ -1,5 +1,5 @@
 import { Spinner } from "@radix-ui/themes";
-import { useTournamentsByStatus } from "hooks/useTournaments";
+import { useTournamentsByStatus, useTournaments } from "hooks/useTournaments";
 import { getTournamentStatusNames, tournamentStatus, TournamentStatusType, userRoles } from "utils/constants";
 import Text from "components/Text";
 import { Tournament } from "services/tournaments.service";
@@ -8,6 +8,8 @@ import { dateFormat } from "utils/dates";
 import { useRouter } from "next/router";
 import { ResponsiveContainer } from "components/Layout/ResponsiveContainer";
 import { useIsAuthenticated } from "hooks/useAuth";
+import DropdownMenu from "components/DropdownMenu";
+import { useState } from "react";
 import {
   PageContainer,
   LoadingArea,
@@ -123,19 +125,38 @@ const TournamentMobileCard = ({ tournament }: { tournament: Tournament }) => {
 const Tournaments = () => {
   const { user } = useIsAuthenticated();
   const role = user?.role ?? null;
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
-  const { data, isLoading } = useTournamentsByStatus([
-    tournamentStatus["initial"],
-    tournamentStatus["ongoing"],
-    tournamentStatus["registrationClosed"],
-    tournamentStatus["registrationOpen"],
-  ]);
+  // Use the generic useTournaments hook when a status filter is selected
+  const { data: filteredData, isLoading: isFilteredLoading } = useTournaments(
+    statusFilter ? { status: statusFilter } : undefined
+  );
 
-  const filteredTournaments = data?.filter(
-  (tournament) => tournament.tournament_name !== "Friendly Game"
-);
+  // Use the default hook for non-superadmins or when no filter is selected
+  const { data, isLoading } = useTournamentsByStatus(
+    !statusFilter ? [
+      tournamentStatus["initial"],
+      tournamentStatus["ongoing"],
+      tournamentStatus["registrationClosed"],
+      tournamentStatus["registrationOpen"],
+    ] : []
+  );
 
-  if (isLoading) {
+  // Determine which data to use based on whether a filter is active
+  const tournamentData = statusFilter ? filteredData : data;
+  const loading = statusFilter ? isFilteredLoading : isLoading;
+
+  const filteredTournaments = (tournamentData as Tournament[])?.filter(
+    (tournament) => tournament.tournament_name !== "Friendly Game"
+  );
+
+  // Build dropdown items for all tournament statuses
+  const statusOptions = Object.entries(tournamentStatus).map(([key, value]) => ({
+    value: value.toString(),
+    text: getTournamentStatusNames(value as TournamentStatusType),
+  }));
+
+  if (loading) {
     return (
       <ResponsiveContainer>
         <PageContainer>
@@ -155,11 +176,20 @@ const Tournaments = () => {
 
           <Actions>
             {role === userRoles.SUPERADMIN && (
-              <CreateButton>
-                <UnstyledLink href="/tournament-create" $hoverVariant="alt">
-                  Create New Tournament
-                </UnstyledLink>
-              </CreateButton>
+              <>
+                <DropdownMenu
+                  items={[{ value: "", text: "All Statuses" }, ...statusOptions]}
+                  selectedItem={statusFilter}
+                  onSelect={(value) => setStatusFilter(value)}
+                  placeholder="Filter by Status"
+                  width="200px"
+                />
+                <CreateButton>
+                  <UnstyledLink href="/tournament-create" $hoverVariant="alt">
+                    Create New Tournament
+                  </UnstyledLink>
+                </CreateButton>
+              </>
             )}
           </Actions>
         </PageHeader>
