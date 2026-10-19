@@ -100,6 +100,8 @@ const RecreateFormContainer = () => {
       endTurn: "",
       endMode: "",
       video1: "",
+      insert: false,
+      gameDate: new Date(),
     },
   });
 
@@ -130,7 +132,7 @@ const RecreateFormContainer = () => {
   const normalizeData = (data: RecreateGameFormData): GameRecreate => ({
     oldId: data.oldId || "",
     scheduleId: data.scheduleId || undefined,
-    gameDate: new Date().toISOString(),
+    gameDate: data.insert && data.gameDate ? data.gameDate.toISOString() : new Date().toISOString(),
     tournamentId: data.tournamentId,
     usaPlayerId: data.usaPlayerId || "",
     ussrPlayerId: data.ussrPlayerId || "",
@@ -139,6 +141,7 @@ const RecreateFormContainer = () => {
     endMode: data.endMode,
     endTurn: data.endTurn,
     video1: data.video1 || undefined,
+    insert: data.insert || false,
   });
 
   const onSubmit = async (data: RecreateGameFormData) => {
