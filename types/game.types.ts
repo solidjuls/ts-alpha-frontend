@@ -116,6 +116,7 @@ export const zGameRecreateAPI = zGameAPI.extend({
   oldId: z.string(),
   scheduleId: z.string().optional(),
   gameDate: z.string(),
+  insert: z.boolean().optional(),
 });
 
 export type GameRating = {

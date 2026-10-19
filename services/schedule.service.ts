@@ -40,6 +40,7 @@ export interface GetScheduleParams {
   onlyPending?: boolean;
   orderBy?: 'dueDate' | 'gameDate' | 'tournamentName';
   orderDirection?: 'asc' | 'desc';
+  missingGames?: boolean;
 }
 
 export interface AddScheduleParams {
@@ -169,6 +170,7 @@ class ScheduleService {
     if (params.onlyPending) queryParams.append('onlyPending', 'true');
     if (params.orderBy) queryParams.append('orderBy', params.orderBy);
     if (params.orderDirection) queryParams.append('orderDirection', params.orderDirection);
+    if (params.missingGames) queryParams.append('missingGames', 'true');
 
     const response = await this.axiosInstance.get(`/schedule?${queryParams.toString()}`);
     return response.data;

@@ -12,6 +12,8 @@ export interface PlayerStanding {
   gamesTied: number;
   winRate: number;
   sos: number;
+  standingOrder: number;
+  playoffOrder: number;
 }
 
 export interface StandingsQueryParams {

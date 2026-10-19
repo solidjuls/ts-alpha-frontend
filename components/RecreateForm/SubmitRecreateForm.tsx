@@ -4,8 +4,10 @@ import { Spinner } from "@radix-ui/themes";
 import Text from "components/Text";
 import TextComponent from "./TextComponent";
 import UserTypeahead from "./UserTypeahead";
+import DateComponent from "components/EditFormComponents/DateComponent";
 import { gameWinningOptions, endType, turns } from "utils/constants";
 import { DropdownWithLabel } from "components/EditFormComponents";
+import { Checkbox } from "components/Checkbox";
 import { DropdownItemType } from "types/types";
 import { 
   StyledForm,
@@ -37,6 +39,8 @@ export interface RecreateGameFormData {
   endTurn: string;
   endMode: string;
   video1?: string;
+  insert?: boolean;
+  gameDate?: Date;
 }
 
 export type SubmitGameFormProps = {
@@ -60,8 +64,11 @@ const SubmitRecreateForm = ({
   leagueTypes,
   errors,
   isSubmitting,
+  watch,
 }: SubmitGameFormProps) => {
-  // Consolidate error messages so we don’t render 10+ lines
+  const insertValue = watch('insert');
+  
+  // Consolidate error messages so we don't render 10+ lines
   const errorMessages: string[] = [
     errors.root?.message as string,
     errors.oldId?.message as string,
@@ -109,6 +116,7 @@ const SubmitRecreateForm = ({
                   onInputValueChange={field.onChange}
                   css={dropdownCss}
                   error={!!errors.oldId}
+                  disabled={insertValue}
                 />
               )}
             />
@@ -126,6 +134,7 @@ const SubmitRecreateForm = ({
                   onInputValueChange={field.onChange}
                   css={dropdownCss}
                   error={!!errors.scheduleId}
+                  disabled={insertValue}
                 />
               )}
             />
@@ -293,6 +302,38 @@ const SubmitRecreateForm = ({
               )}
             />
           </FullRow>
+
+          {/* Insert new game checkbox */}
+          <FullRow>
+            <Controller
+              name="insert"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  checked={field.value || false}
+                  text="Insert new game"
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+          </FullRow>
+
+          {/* Game Date - visible only when insert is checked */}
+          {insertValue && (
+            <FullRow>
+              <Controller
+                name="gameDate"
+                control={control}
+                render={({ field }) => (
+                  <DateComponent
+                    labelText="Game Date"
+                    inputValue={field.value || new Date()}
+                    onInputValueChange={field.onChange}
+                  />
+                )}
+              />
+            </FullRow>
+          )}
         </Grid>
 
         <ActionsRow>

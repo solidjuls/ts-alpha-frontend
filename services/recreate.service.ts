@@ -17,7 +17,7 @@ class RecreateService {
   constructor() {
     this.axiosInstance = createAuthenticatedAxios()
   }
-  
+
   async recreateGame(data: RecreateGameRequest): Promise<RecreateGameResponse> {
     const response = await this.axiosInstance.post('/games/recreate', { data });
     return response.data;

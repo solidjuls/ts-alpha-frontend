@@ -310,6 +310,7 @@ const Schedule = () => {
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showMissingGames, setShowMissingGames] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -325,7 +326,8 @@ const Schedule = () => {
     pageSize: 20,
     onlyPending: false,
     orderBy: 'dueDate',
-    orderDirection: 'asc'
+    orderDirection: 'asc',
+    missingGames: showMissingGames || undefined,
   });
 
   const scheduleData = dataSchedule?.results;
@@ -477,7 +479,11 @@ const Schedule = () => {
             )}
 
             {isUserAdminForTournament && showAdminPanel && currentTournament && (
-              <ScheduleFilter tournamentId={currentTournament.id} />
+              <ScheduleFilter 
+                tournamentId={currentTournament.id} 
+                showMissingGames={showMissingGames}
+                onShowMissingGamesChange={setShowMissingGames}
+              />
             )}
 
             {error && (
