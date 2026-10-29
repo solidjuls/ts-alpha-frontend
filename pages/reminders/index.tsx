@@ -263,7 +263,7 @@ const RemindersContent = () => {
 
   const handleSendEmails = async () => {
     const selectedRows = rows.filter(
-      (item) => selectedIds.has(rowKey(item)) && !isEmailSent(item),
+      (item) => selectedIds.has(rowKey(item)),
     );
     if (selectedRows.length === 0) return;
 
