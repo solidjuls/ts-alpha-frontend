@@ -3,15 +3,22 @@ import { useRouter } from "next/router";
 import { Spinner } from "@radix-ui/themes";
 import ProtectedRoute from "components/ProtectedRoute";
 import { userRoles } from "utils/constants";
-import { useScheduleAdmin } from "hooks/useTournaments";
+import { useSchedules } from "hooks/useSchedule";
 import { Backbutton } from "components/Backbutton";
 import ScheduleAdminDataBoxes from "components/ScheduleAdminDataBoxes/ScheduleAdminDataBoxes";
 
+const SCHEDULE_ADMIN_TOURNAMENT_ID = "359";
+
 const ScheduleAdminPage = () => {
   const router = useRouter();
-  const tournamentId = router.query.tournamentId as string;
+  const tournamentId = (router.query.tournamentId as string) || SCHEDULE_ADMIN_TOURNAMENT_ID;
 
-  const { data, isLoading, error } = useScheduleAdmin(tournamentId);
+  const { data, isLoading, error } = useSchedules({
+    tournamentId,
+    fullSchedule: 1,
+    pageSize: 9999,
+    onlyPending: false,
+  });
 
   if (isLoading) {
     return (
@@ -29,9 +36,8 @@ const ScheduleAdminPage = () => {
     );
   }
 
-  if (data) {
-    console.log("Schedule Admin Response:", data);
-  }
+  const schedules = data?.results ?? [];
+  const tournamentName = schedules[0]?.tournamentName || "Schedule Admin";
 
   return (
     <>
@@ -42,10 +48,14 @@ const ScheduleAdminPage = () => {
       </Head>
       <div style={{ padding: "24px" }}>
         <Backbutton />
-        <h1>{data?.tournamentName || "Schedule Admin"}</h1>
+        <h1>{tournamentName}</h1>
 
-        {tournamentId === "359" && data && (
-          <ScheduleAdminDataBoxes data={data} />
+        {tournamentId === SCHEDULE_ADMIN_TOURNAMENT_ID && (
+          <ScheduleAdminDataBoxes
+            schedules={schedules}
+            tournamentId={tournamentId}
+            tournamentName={tournamentName}
+          />
         )}
       </div>
     </>
