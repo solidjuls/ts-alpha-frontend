@@ -513,28 +513,6 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     }
     return result;
   }, [state.schedules, mergedGameCounts]);
-console.log("playersWithMissingOpponents", playersWithMissingOpponents)
-  // Orphan partners (for display in players below target)
-  const orphanPartners = useMemo(() => {
-    const partnerMap = new Map<string, { partnerName: string; gameCode: string } | null>();
-
-    for (const ls of state.schedules) {
-      if (ls.removed) {
-        if (ls.usaPlayer) partnerMap.delete(ls.usaPlayer.userId);
-        if (ls.ussrPlayer) partnerMap.delete(ls.ussrPlayer.userId);
-        continue;
-      }
-      if (ls.usaPlayer && ls.ussrPlayer) {
-        partnerMap.set(ls.usaPlayer.userId, { partnerName: ls.ussrPlayer.fullName, gameCode: ls.gameCode });
-        partnerMap.set(ls.ussrPlayer.userId, { partnerName: ls.usaPlayer.fullName, gameCode: ls.gameCode });
-      } else {
-        const existing = ls.usaPlayer || ls.ussrPlayer;
-        if (existing) partnerMap.set(existing.userId, null);
-      }
-    }
-    return partnerMap;
-  }, [state.schedules]);
-
   // ─── Drag state ─────────────────────────────────────────────────────────
 
   const [activeDragPlayer, setActiveDragPlayer] = useState<PlayerInfo | null>(null);
@@ -725,7 +703,7 @@ console.log("playersWithMissingOpponents", playersWithMissingOpponents)
     }
     setTimeout(() => setPersistMessage(""), 5000);
   };
-console.log("state.schedules", state.schedules)
+
   return (
     <>
       {/* Players With Missing Opponents */}
@@ -735,22 +713,10 @@ console.log("state.schedules", state.schedules)
             Players With Missing Opponents ({playersWithMissingOpponents.length})
           </div>
           {playersWithMissingOpponents.map((p) => {
-            const partner = orphanPartners.has(p.player.userId) ? orphanPartners.get(p.player.userId) : undefined;
+            const totalGames = p.usaGames + p.ussrGames;
             return (
               <div key={p.player.userId} style={rowStyle} title={p.player.fullName}>
-                <div>
-                  {p.player.fullName} — USA {p.usaGames}, USSR {p.ussrGames}
-                  {partner && (
-                    <span style={{ opacity: 0.6 }}> — {partner.gameCode}</span>
-                  )}
-                </div>
-                {partner !== undefined && (
-                  <div style={{ fontSize: "10px", opacity: 0.7, marginLeft: "8px" }}>
-                    {partner
-                      ? `↳ Scheduled with: ${partner.partnerName} (${partner.gameCode})`
-                      : `↳ No opponent yet`}
-                  </div>
-                )}
+                {p.player.fullName} ({totalGames}/{TARGET_GAMES}) — USA {p.usaGames}, USSR {p.ussrGames}
               </div>
             );
           })}
