@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Spinner } from "@radix-ui/themes";
-import { useCreateSchedulesBulk } from "hooks/useSchedule";
+import {
+  DndContext,
+  DragOverlay,
+  useDraggable,
+  useDroppable,
+  DragStartEvent,
+  DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { useCreateSchedulesBulk, useDeleteSchedule, useSchedules } from "hooks/useSchedule";
 import { autoFixSchedules, AutoFixResult } from "utils/autoFixSchedules";
 import {
   ScheduleAdminResponse,
   ScheduleAdminPlayer,
+  ScheduleAdminScheduleWithoutPair,
 } from "services/tournaments.service";
 import { FlagIcon } from "components/FlagIcon";
+import Text from "components/Text";
+import { format as formatDate } from "date-fns";
 
 const boxStyle: React.CSSProperties = {
   flex: 1,
@@ -53,14 +67,414 @@ const btnStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
+// ─── Local schedule state ───────────────────────────────────────────────────
+
+interface LocalSchedule {
+  scheduleId: string;
+  gameCode: string;
+  dueDate: string;
+  usaPlayer: ScheduleAdminPlayer | null;
+  ussrPlayer: ScheduleAdminPlayer | null;
+  removed: boolean;
+}
+
+// ─── Draggable Player Slot ──────────────────────────────────────────────────
+
+const DraggablePlayerSlot: React.FC<{
+  player: ScheduleAdminPlayer;
+  slotId: string;
+  side: "usa" | "ussr";
+}> = ({ player, slotId, side }) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: slotId,
+    data: { player, side },
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "6px",
+        padding: "6px 10px",
+        borderRadius: "6px",
+        border: "1px solid var(--border)",
+        background: isDragging ? "var(--bg-main)" : "var(--bg-card)",
+        cursor: "grab",
+        opacity: isDragging ? 0.4 : 1,
+        minWidth: "160px",
+        transition: "box-shadow 0.15s, transform 0.15s",
+      }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
+      {player.tldCode && <FlagIcon code={player.tldCode} />}
+      <Text fontSize="medium" strong>
+        {player.fullName}
+      </Text>
+      <span style={{ opacity: 0.5, fontSize: "12px" }}>({player.rating})</span>
+    </div>
+  );
+};
+
+// ─── Droppable Empty Slot ───────────────────────────────────────────────────
+
+const DroppableEmptySlot: React.FC<{
+  slotId: string;
+  side: "usa" | "ussr";
+}> = ({ slotId, side }) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: slotId,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "6px 10px",
+        borderRadius: "6px",
+        border: `2px dashed ${isOver ? "var(--usa)" : "var(--border)"}`,
+        background: isOver ? "var(--usa-half)" : "transparent",
+        minWidth: "160px",
+        minHeight: "36px",
+        transition: "border-color 0.15s, background 0.15s",
+      }}
+    >
+      <span style={{ fontSize: "12px", opacity: 0.4, color: "var(--primary-text)" }}>
+        {side === "usa" ? "Drop USA player" : "Drop USSR player"}
+      </span>
+    </div>
+  );
+};
+
+// ─── Drag Overlay (follows cursor) ──────────────────────────────────────────
+
+const DragOverlayPlayer: React.FC<{
+  player: ScheduleAdminPlayer;
+}> = ({ player }) => (
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "6px",
+      padding: "6px 10px",
+      borderRadius: "6px",
+      border: "2px solid var(--usa)",
+      background: "var(--bg-card)",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+      cursor: "grabbing",
+      minWidth: "160px",
+    }}
+  >
+    {player.tldCode && <FlagIcon code={player.tldCode} />}
+    <Text fontSize="medium" strong>
+      {player.fullName}
+    </Text>
+    <span style={{ opacity: 0.5, fontSize: "12px" }}>({player.rating})</span>
+  </div>
+);
+
+// ─── Schedule Row ───────────────────────────────────────────────────────────
+
+const ScheduleRow: React.FC<{
+  schedule: LocalSchedule;
+  onRemove: (scheduleId: string) => void;
+}> = ({ schedule, onRemove }) => {
+  const usaSlotId = `${schedule.scheduleId}-usa`;
+  const ussrSlotId = `${schedule.scheduleId}-ussr`;
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "10px 14px",
+        borderRadius: "8px",
+        border: "1px solid var(--border)",
+        background: schedule.removed ? "var(--bg-main)" : "var(--bg-card)",
+        opacity: schedule.removed ? 0.5 : 1,
+        marginBottom: "8px",
+        gap: "12px",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1 }}>
+        {/* USA slot */}
+        {schedule.usaPlayer ? (
+          <DraggablePlayerSlot
+            player={schedule.usaPlayer}
+            slotId={usaSlotId}
+            side="usa"
+          />
+        ) : (
+          <DroppableEmptySlot slotId={usaSlotId} side="usa" />
+        )}
+
+        <span style={{ fontWeight: 700, color: "var(--primary-text)", fontSize: "14px" }}>
+          vs
+        </span>
+
+        {/* USSR slot */}
+        {schedule.ussrPlayer ? (
+          <DraggablePlayerSlot
+            player={schedule.ussrPlayer}
+            slotId={ussrSlotId}
+            side="ussr"
+          />
+        ) : (
+          <DroppableEmptySlot slotId={ussrSlotId} side="ussr" />
+        )}
+      </div>
+
+      {/* Meta info */}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
+        <span style={{ fontSize: "11px", opacity: 0.6, whiteSpace: "nowrap" }}>
+          {schedule.gameCode}
+        </span>
+        <span style={{ fontSize: "11px", opacity: 0.6, whiteSpace: "nowrap" }}>
+          {formatDate(new Date(schedule.dueDate), "yyyy/MM/dd")}
+        </span>
+        {!schedule.removed && (
+          <button
+            onClick={() => onRemove(schedule.scheduleId)}
+            style={{
+              ...btnStyle,
+              padding: "4px 10px",
+              fontSize: "11px",
+              backgroundColor: "var(--ussr)",
+              color: "var(--alt-text)",
+              border: "none",
+            }}
+          >
+            Remove Schedule
+          </button>
+        )}
+        {schedule.removed && (
+          <span style={{ fontSize: "11px", color: "var(--ussr)", fontWeight: 600 }}>
+            Marked for removal
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ─── Main Component ─────────────────────────────────────────────────────────
+
 interface ScheduleAdminDataBoxesProps {
   data: ScheduleAdminResponse;
 }
 
 const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
   const createSchedulesBulkMutation = useCreateSchedulesBulk();
+  const deleteScheduleMutation = useDeleteSchedule();
   const [autoFixResult, setAutoFixResult] = useState<AutoFixResult | null>(null);
   const [persistMessage, setPersistMessage] = useState("");
+
+  // Fetch full tournament schedules for USA/USSR game counts
+  const { data: fullScheduleData } = useSchedules({
+    tournamentId: data.tournamentId,
+    fullSchedule: 1,
+    pageSize: 9999,
+    onlyPending: false,
+  });
+
+  // Compute USA/USSR game counts per player
+  const playerGameCounts = useMemo(() => {
+    const counts = new Map<string, { usa: number; ussr: number }>();
+    if (fullScheduleData?.results) {
+      for (const game of fullScheduleData.results) {
+        const usaId = game.usaPlayerId || game.idUsa;
+        const ussrId = game.ussrPlayerId || game.idUssr;
+        if (usaId) {
+          const c = counts.get(usaId) || { usa: 0, ussr: 0 };
+          c.usa += 1;
+          counts.set(usaId, c);
+        }
+        if (ussrId) {
+          const c = counts.get(ussrId) || { usa: 0, ussr: 0 };
+          c.ussr += 1;
+          counts.set(ussrId, c);
+        }
+      }
+    }
+    return counts;
+  }, [fullScheduleData]);
+
+  // ─── Local schedule state for drag-and-drop ─────────────────────────────
+
+  const buildInitialSchedules = useCallback(
+    (orphans: ScheduleAdminScheduleWithoutPair[]): LocalSchedule[] => {
+      return orphans.map((o) => ({
+        scheduleId: o.scheduleId,
+        gameCode: o.gameCode,
+        dueDate: o.dueDate,
+        usaPlayer: o.existingPlayer.side === "usa" ? { userId: o.existingPlayer.userId, fullName: o.existingPlayer.fullName, rating: o.existingPlayer.rating, tldCode: o.existingPlayer.tldCode } : null,
+        ussrPlayer: o.existingPlayer.side === "ussr" ? { userId: o.existingPlayer.userId, fullName: o.existingPlayer.fullName, rating: o.existingPlayer.rating, tldCode: o.existingPlayer.tldCode } : null,
+        removed: false,
+      }));
+    },
+    []
+  );
+
+  const [localSchedules, setLocalSchedules] = useState<LocalSchedule[]>(() =>
+    buildInitialSchedules(data.schedulesWithoutPair)
+  );
+
+  // Drag state
+  const [activeDragPlayer, setActiveDragPlayer] = useState<ScheduleAdminPlayer | null>(null);
+  const [activeDragSourceSlotId, setActiveDragSourceSlotId] = useState<string | null>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  const hasChanges = useMemo(() => {
+    const initial = buildInitialSchedules(data.schedulesWithoutPair);
+    if (localSchedules.length !== initial.length) return true;
+    return localSchedules.some((s, i) => {
+      const ini = initial[i];
+      return (
+        s.usaPlayer?.userId !== ini.usaPlayer?.userId ||
+        s.ussrPlayer?.userId !== ini.ussrPlayer?.userId ||
+        s.removed !== ini.removed
+      );
+    });
+  }, [localSchedules, data.schedulesWithoutPair, buildInitialSchedules]);
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    const player = active.data.current?.player as ScheduleAdminPlayer;
+    setActiveDragPlayer(player || null);
+    setActiveDragSourceSlotId(String(active.id));
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragPlayer(null);
+    setActiveDragSourceSlotId(null);
+
+    if (!over) return;
+
+    const sourceSlotId = String(active.id);
+    const destSlotId = String(over.id);
+
+    if (sourceSlotId === destSlotId) return;
+
+    // Parse slot IDs: "{scheduleId}-{side}"
+    const parseSlotId = (slotId: string) => {
+      const parts = slotId.split("-");
+      const side = parts[parts.length - 1] as "usa" | "ussr";
+      const scheduleId = parts.slice(0, -1).join("-");
+      return { scheduleId, side };
+    };
+
+    const source = parseSlotId(sourceSlotId);
+    const dest = parseSlotId(destSlotId);
+
+    setLocalSchedules((prev) => {
+      const next = prev.map((s) => ({ ...s }));
+
+      const sourceSchedule = next.find((s) => s.scheduleId === source.scheduleId);
+      const destSchedule = next.find((s) => s.scheduleId === dest.scheduleId);
+
+      if (!sourceSchedule || !destSchedule) return prev;
+
+      // Get the player from the source slot
+      const sourcePlayer = source.side === "usa" ? sourceSchedule.usaPlayer : sourceSchedule.ussrPlayer;
+      if (!sourcePlayer) return prev;
+
+      // Check destination is empty
+      const destPlayer = dest.side === "usa" ? destSchedule.usaPlayer : destSchedule.ussrPlayer;
+      if (destPlayer) return prev; // Can only drop into empty slots
+
+      // Move player: clear source, fill destination
+      if (source.side === "usa") {
+        sourceSchedule.usaPlayer = null;
+      } else {
+        sourceSchedule.ussrPlayer = null;
+      }
+
+      if (dest.side === "usa") {
+        destSchedule.usaPlayer = sourcePlayer;
+      } else {
+        destSchedule.ussrPlayer = sourcePlayer;
+      }
+
+      return next;
+    });
+  };
+
+  const handleRemoveSchedule = (scheduleId: string) => {
+    setLocalSchedules((prev) =>
+      prev.map((s) => (s.scheduleId === scheduleId ? { ...s, removed: true } : s))
+    );
+  };
+
+  const handleRollback = () => {
+    setLocalSchedules(buildInitialSchedules(data.schedulesWithoutPair));
+    setPersistMessage("");
+  };
+
+  const handleSaveSchedules = async () => {
+    const initial = buildInitialSchedules(data.schedulesWithoutPair);
+
+    // Find schedules to delete (marked as removed)
+    const toDelete = localSchedules.filter((s) => s.removed);
+
+    // Find schedules that changed (player moved)
+    const modified = localSchedules.filter((s, i) => {
+      if (s.removed) return false;
+      const ini = initial[i];
+      return (
+        s.usaPlayer?.userId !== ini.usaPlayer?.userId ||
+        s.ussrPlayer?.userId !== ini.ussrPlayer?.userId
+      );
+    });
+
+    // Find schedules that are now complete (both players filled) and were orphans
+    const newlyComplete = modified.filter((s) => s.usaPlayer && s.ussrPlayer);
+
+    try {
+      const deletePromises = toDelete.map((s) =>
+        deleteScheduleMutation.mutateAsync(s.scheduleId)
+      );
+
+      let bulkPromise: Promise<any> = Promise.resolve();
+      if (newlyComplete.length > 0) {
+        const dtos = newlyComplete.map((s) => ({
+          scheduleId: Number(s.scheduleId),
+          usa: s.usaPlayer!.userId,
+          ussr: s.ussrPlayer!.userId,
+          t: Number(data.tournamentId),
+          d: new Date(s.dueDate),
+          r: false,
+          gc: s.gameCode,
+          randomSides: false,
+        }));
+        bulkPromise = createSchedulesBulkMutation.mutateAsync(dtos);
+      }
+
+      await Promise.all([...deletePromises, bulkPromise]);
+
+      const parts: string[] = [];
+      if (newlyComplete.length > 0) parts.push(`updated ${newlyComplete.length}`);
+      if (toDelete.length > 0) parts.push(`removed ${toDelete.length}`);
+      setPersistMessage(`✅ Saved: ${parts.join(", ")}`);
+
+      // Reset local state to reflect new reality
+      const remaining = localSchedules.filter((s) => !s.removed && !(s.usaPlayer && s.ussrPlayer));
+      setLocalSchedules(remaining);
+    } catch (err: any) {
+      setPersistMessage(`❌ ${err?.response?.data?.message || "Failed to save changes"}`);
+    }
+    setTimeout(() => setPersistMessage(""), 5000);
+  };
+
+  // ─── Auto Fix logic (unchanged) ─────────────────────────────────────────
 
   const handleAutoFix = () => {
     const allPlayers: ScheduleAdminPlayer[] = [];
@@ -174,17 +588,6 @@ const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
     }
   }
 
-  const resolvedOrphanIds = new Set<string>();
-  if (autoFixResult) {
-    for (const o of autoFixResult.filledOrphans) {
-      resolvedOrphanIds.add(o.scheduleId);
-    }
-  }
-
-  const remainingOrphans = data.schedulesWithoutPair.filter(
-    s => !resolvedOrphanIds.has(s.scheduleId)
-  );
-
   const projectedPlayersBelow = data.playersBelowTarget
     .map(p => {
       const additional = previewPlayerGameAdditions.get(p.userId) || 0;
@@ -192,53 +595,113 @@ const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
     })
     .filter(p => p.projectedGames < (data.summary.targetGamesPerPlayer || 20));
 
+  const targetGames = data.summary.targetGamesPerPlayer || 20;
+
   return (
     <>
       {/* Data Boxes */}
       <div style={{ display: "flex", gap: "12px", marginTop: "16px" }}>
-        <div style={boxStyle}>
-          <div style={titleStyle}>Forfeited Players ({data.summary.totalForfeitedPlayers})</div>
-          {data.forfeitedPlayers.map((p) => (
-            <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
-          ))}
-          {data.forfeitedPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
-        </div>
-        <div style={boxStyle}>
+        <div style={{ ...boxStyle, flex: 1, height: "auto", maxHeight: "400px" }}>
           <div style={titleStyle}>
-            Schedules Without Pair ({autoFixResult ? remainingOrphans.length : data.summary.totalSchedulesWithoutPair})
+            Players Below {targetGames} Games ({autoFixResult ? projectedPlayersBelow.length : data.summary.totalPlayersBelowTarget})
             {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
           </div>
-          {(autoFixResult ? remainingOrphans : data.schedulesWithoutPair).map((s) => (
-            <div key={s.scheduleId} style={rowStyle} title={s.existingPlayer.fullName}>
-              {s.existingPlayer.fullName} ({s.existingPlayer.rating}) — {s.gameCode}
-            </div>
-          ))}
-          {(autoFixResult ? remainingOrphans : data.schedulesWithoutPair).length === 0 && (
-            <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
-          )}
-        </div>
-        <div style={boxStyle}>
-          <div style={titleStyle}>Waitlisted Players ({data.summary.totalWaitlistPlayers})</div>
-          {data.waitlistPlayers.map((p) => (
-            <div key={p.userId} style={rowStyle} title={p.fullName}>{p.fullName} ({p.rating})</div>
-          ))}
-          {data.waitlistPlayers.length === 0 && <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>}
-        </div>
-        <div style={boxStyle}>
-          <div style={titleStyle}>
-            Players Below {data.summary.targetGamesPerPlayer ?? 20} Games ({autoFixResult ? projectedPlayersBelow.length : data.summary.totalPlayersBelowTarget})
-            {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
-          </div>
-          {(autoFixResult ? projectedPlayersBelow : data.playersBelowTarget).map((p) => (
-            <div key={p.userId} style={rowStyle} title={p.fullName}>
-              {p.fullName} ({p.rating}) — {autoFixResult ? (p as any).projectedGames : p.currentGames}/{data.summary.targetGamesPerPlayer || 20} games
-            </div>
-          ))}
+          {(autoFixResult ? projectedPlayersBelow : data.playersBelowTarget).map((p) => {
+            const counts = playerGameCounts.get(p.userId) || { usa: 0, ussr: 0 };
+            const games = autoFixResult ? (p as any).projectedGames : p.currentGames;
+            return (
+              <div key={p.userId} style={rowStyle} title={p.fullName}>
+                {p.fullName} ({p.rating}) — {games}/{targetGames} games — USA {counts.usa}, USSR {counts.ussr}
+              </div>
+            );
+          })}
           {(autoFixResult ? projectedPlayersBelow : data.playersBelowTarget).length === 0 && (
             <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
           )}
         </div>
       </div>
+
+      {/* Schedules With Missing Players — Drag & Drop */}
+      <section style={sectionStyle}>
+        <h4 style={{ margin: "0 0 12px 0", color: "var(--primary-text)" }}>
+          Schedules With Missing Players ({localSchedules.filter(s => !s.removed).length})
+        </h4>
+        <p style={{ fontSize: "12px", opacity: 0.6, margin: "0 0 12px 0", color: "var(--primary-text)" }}>
+          Drag players between slots to pair them. Changes are saved locally until you click &quot;Save Schedules&quot;.
+        </p>
+
+        {localSchedules.length === 0 ? (
+          <div style={{ padding: "24px", textAlign: "center", opacity: 0.5, color: "var(--primary-text)" }}>
+            No schedules with missing players.
+          </div>
+        ) : (
+          <>
+            <DndContext
+              sensors={sensors}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                borderRadius: "12px",
+                boxShadow: "var(--shadow-soft)",
+                minHeight: "auto",
+                padding: "8px",
+              }}>
+                {localSchedules.map((schedule) => (
+                  <ScheduleRow
+                    key={schedule.scheduleId}
+                    schedule={schedule}
+                    onRemove={handleRemoveSchedule}
+                  />
+                ))}
+              </div>
+
+              <DragOverlay>
+                {activeDragPlayer ? <DragOverlayPlayer player={activeDragPlayer} /> : null}
+              </DragOverlay>
+            </DndContext>
+
+            {/* Save / Rollback controls */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "12px" }}>
+              <button
+                onClick={handleSaveSchedules}
+                disabled={!hasChanges || createSchedulesBulkMutation.isPending || deleteScheduleMutation.isPending}
+                style={{
+                  ...btnStyle,
+                  backgroundColor: hasChanges ? "var(--usa)" : "var(--bg-card)",
+                  color: hasChanges ? "var(--alt-text)" : "var(--primary-text)",
+                  opacity: !hasChanges ? 0.5 : 1,
+                  cursor: !hasChanges ? "not-allowed" : "pointer",
+                }}
+              >
+                {(createSchedulesBulkMutation.isPending || deleteScheduleMutation.isPending)
+                  ? <Spinner size="2" />
+                  : "Save Schedules"}
+              </button>
+              <button
+                onClick={handleRollback}
+                disabled={!hasChanges}
+                style={{
+                  ...btnStyle,
+                  opacity: !hasChanges ? 0.5 : 1,
+                  cursor: !hasChanges ? "not-allowed" : "pointer",
+                }}
+              >
+                Rollback Changes
+              </button>
+              {persistMessage && (
+                <span style={{ fontSize: "13px", color: persistMessage.includes("✅") ? "var(--usa)" : "var(--ussr)" }}>
+                  {persistMessage}
+                </span>
+              )}
+            </div>
+          </>
+        )}
+      </section>
 
       {/* Auto Fix Schedules */}
       <div style={sectionStyle}>
