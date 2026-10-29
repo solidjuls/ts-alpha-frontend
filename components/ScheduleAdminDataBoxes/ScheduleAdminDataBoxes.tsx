@@ -326,6 +326,67 @@ const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
     buildInitialSchedules(data.schedulesWithoutPair)
   );
 
+  // Compute local game count adjustments from drag-and-drop changes
+  const localGameAdjustments = useMemo(() => {
+    const initial = buildInitialSchedules(data.schedulesWithoutPair);
+    const adjustments = new Map<string, { games: number; usa: number; ussr: number }>();
+
+    for (let i = 0; i < initial.length; i++) {
+      const ini = initial[i];
+      const cur = localSchedules[i];
+      if (!cur) continue;
+
+      // Check USA slot changes
+      if (!ini.usaPlayer && cur.usaPlayer) {
+        // Player added to USA slot
+        const adj = adjustments.get(cur.usaPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
+        adj.games += 1;
+        adj.usa += 1;
+        adjustments.set(cur.usaPlayer.userId, adj);
+      } else if (ini.usaPlayer && !cur.usaPlayer) {
+        // Player removed from USA slot
+        const adj = adjustments.get(ini.usaPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
+        adj.games -= 1;
+        adj.usa -= 1;
+        adjustments.set(ini.usaPlayer.userId, adj);
+      }
+
+      // Check USSR slot changes
+      if (!ini.ussrPlayer && cur.ussrPlayer) {
+        // Player added to USSR slot
+        const adj = adjustments.get(cur.ussrPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
+        adj.games += 1;
+        adj.ussr += 1;
+        adjustments.set(cur.ussrPlayer.userId, adj);
+      } else if (ini.ussrPlayer && !cur.ussrPlayer) {
+        // Player removed from USSR slot
+        const adj = adjustments.get(ini.ussrPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
+        adj.games -= 1;
+        adj.ussr -= 1;
+        adjustments.set(ini.ussrPlayer.userId, adj);
+      }
+    }
+
+    return adjustments;
+  }, [localSchedules, data.schedulesWithoutPair, buildInitialSchedules]);
+
+  // Merge base game counts with local adjustments
+  const mergedGameCounts = useMemo(() => {
+    const merged = new Map<string, { usa: number; ussr: number }>();
+    // Start with base counts
+    for (const [userId, counts] of playerGameCounts) {
+      merged.set(userId, { ...counts });
+    }
+    // Apply local adjustments
+    for (const [userId, adj] of localGameAdjustments) {
+      const existing = merged.get(userId) || { usa: 0, ussr: 0 };
+      existing.usa += adj.usa;
+      existing.ussr += adj.ussr;
+      merged.set(userId, existing);
+    }
+    return merged;
+  }, [playerGameCounts, localGameAdjustments]);
+
   // Drag state
   const [activeDragPlayer, setActiveDragPlayer] = useState<ScheduleAdminPlayer | null>(null);
   const [activeDragSourceSlotId, setActiveDragSourceSlotId] = useState<string | null>(null);
@@ -591,7 +652,8 @@ const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
   const projectedPlayersBelow = data.playersBelowTarget
     .map(p => {
       const additional = previewPlayerGameAdditions.get(p.userId) || 0;
-      return { ...p, projectedGames: p.currentGames + additional };
+      const localAdj = localGameAdjustments.get(p.userId)?.games || 0;
+      return { ...p, projectedGames: p.currentGames + additional + localAdj };
     })
     .filter(p => p.projectedGames < (data.summary.targetGamesPerPlayer || 20));
 
@@ -607,8 +669,9 @@ const ScheduleAdminDataBoxes = ({ data }: ScheduleAdminDataBoxesProps) => {
             {autoFixResult && <span style={{ fontWeight: 400, opacity: 0.6 }}> (after fix)</span>}
           </div>
           {(autoFixResult ? projectedPlayersBelow : data.playersBelowTarget).map((p) => {
-            const counts = playerGameCounts.get(p.userId) || { usa: 0, ussr: 0 };
-            const games = autoFixResult ? (p as any).projectedGames : p.currentGames;
+            const counts = mergedGameCounts.get(p.userId) || { usa: 0, ussr: 0 };
+            const adj = localGameAdjustments.get(p.userId);
+            const games = autoFixResult ? (p as any).projectedGames : p.currentGames + (adj?.games || 0);
             return (
               <div key={p.userId} style={rowStyle} title={p.fullName}>
                 {p.fullName} ({p.rating}) — {games}/{targetGames} games — USA {counts.usa}, USSR {counts.ussr}
