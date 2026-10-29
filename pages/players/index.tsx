@@ -180,8 +180,10 @@ const paginationVisibility = !isFiltered && totalPages > 1;
               }
               setCurrentPage(1);
             }}
-            onBlur={() => {
-              // Keep selected filter; remove this if you truly want to clear on blur
+            onBlur={(inputValue: string) => {
+              if (!inputValue) {
+                setCountriesSelected("");
+              }
             }}
             selectedItem={countriesSelected || ""}
             labelText=""
