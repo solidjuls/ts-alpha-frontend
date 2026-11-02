@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useState, useCallback, useEffect } from "react";
+import { useReducer, useMemo, useState, useEffect } from "react";
 import { Spinner } from "@radix-ui/themes";
 import {
   DndContext,
@@ -99,39 +99,33 @@ type ScheduleAdminAction =
   | { type: "RESTORE_SCHEDULE"; scheduleId: string }
   | { type: "ROLLBACK"; schedules: ScheduleItem[] };
 
-function deriveOrphans(schedules: ScheduleItem[]): LocalSchedule[] {
-  return schedules
-    .filter((s) => {
-      const hasUsa = !!(s.idUsa || s.usaPlayerId);
-      const hasUssr = !!(s.idUssr || s.ussrPlayerId);
-      return hasUsa !== hasUssr;
-    })
-    .map((s) => {
-      const hasUsa = !!(s.idUsa || s.usaPlayerId);
-      return {
-        scheduleId: s.id,
-        gameCode: s.gameCode,
-        dueDate: s.dueDate,
-        usaPlayer: hasUsa
-          ? { userId: s.idUsa || s.usaPlayerId, fullName: s.nameUsa, tldCode: s.countryUsa }
-          : null,
-        ussrPlayer: hasUsa
-          ? null
-          : { userId: s.idUssr || s.ussrPlayerId, fullName: s.nameUssr, tldCode: s.countryUssr },
-        removed: false,
-      };
-    });
+function toLocalSchedules(schedules: ScheduleItem[]): LocalSchedule[] {
+  return schedules.map((s) => {
+    const hasUsa = !!(s.idUsa || s.usaPlayerId);
+    const hasUssr = !!(s.idUssr || s.ussrPlayerId);
+    return {
+      scheduleId: s.id,
+      gameCode: s.gameCode,
+      dueDate: s.dueDate,
+      usaPlayer: hasUsa
+        ? { userId: s.idUsa || s.usaPlayerId, fullName: s.nameUsa, tldCode: s.countryUsa }
+        : null,
+      ussrPlayer: hasUssr
+        ? { userId: s.idUssr || s.ussrPlayerId, fullName: s.nameUssr, tldCode: s.countryUssr }
+        : null,
+      removed: false,
+    };
+  });
 }
 
 function scheduleAdminReducer(
   state: ScheduleAdminState,
   action: ScheduleAdminAction
 ): ScheduleAdminState {
-  console.log("state", state)
   switch (action.type) {
     case "INIT_ORPHANS":
     case "ROLLBACK":
-      return { schedules: deriveOrphans(action.schedules) };
+      return { schedules: toLocalSchedules(action.schedules) };
 
     case "UPDATE_SCHEDULE": {
       const next = state.schedules.map((s) => ({ ...s }));
@@ -356,23 +350,23 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
   const [state, dispatch] = useReducer(
     scheduleAdminReducer,
     schedules,
-    (s) => ({ schedules: deriveOrphans(s) })
+    (s) => ({ schedules: toLocalSchedules(s) })
   );
 
   // Sync when base schedules change (if no local edits)
-  const initialSchedules = useMemo(() => deriveOrphans(schedules), [schedules]);
+  const baseSchedules = useMemo(() => toLocalSchedules(schedules), [schedules]);
 
   const hasChanges = useMemo(() => {
-    if (state.schedules.length !== initialSchedules.length) return true;
+    if (state.schedules.length !== baseSchedules.length) return true;
     return state.schedules.some((s, i) => {
-      const ini = initialSchedules[i];
+      const base = baseSchedules[i];
       return (
-        s.usaPlayer?.userId !== ini.usaPlayer?.userId ||
-        s.ussrPlayer?.userId !== ini.ussrPlayer?.userId ||
-        s.removed !== ini.removed
+        s.usaPlayer?.userId !== base.usaPlayer?.userId ||
+        s.ussrPlayer?.userId !== base.ussrPlayer?.userId ||
+        s.removed !== base.removed
       );
     });
-  }, [state.schedules, initialSchedules]);
+  }, [state.schedules, baseSchedules]);
 
   useEffect(() => {
     if (!hasChanges) {
@@ -380,29 +374,26 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     }
   }, [schedules]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ─── Derived data from base schedules ───────────────────────────────────
+  // ─── Derived data from state.schedules ─────────────────────────────────
 
-  // USA/USSR game counts per player (from ALL schedules, not just orphans)
+  // USA/USSR game counts per player (complete games only — both sides filled, not removed)
   const playerGameCounts = useMemo(() => {
     const counts = new Map<string, { usa: number; ussr: number; fullName: string; tldCode: string }>();
-    for (const game of schedules) {
-      const usaId = game.idUsa || game.usaPlayerId;
-      const ussrId = game.idUssr || game.ussrPlayerId;
-      if (usaId) {
-        const c = counts.get(usaId) || { usa: 0, ussr: 0, fullName: game.nameUsa, tldCode: game.countryUsa };
+    for (const game of state.schedules) {
+      if (game.removed) continue;
+      if (game.usaPlayer && game.ussrPlayer) {
+        const c = counts.get(game.usaPlayer.userId) || { usa: 0, ussr: 0, fullName: game.usaPlayer.fullName, tldCode: game.usaPlayer.tldCode };
         c.usa += 1;
-        counts.set(usaId, c);
-      }
-      if (ussrId) {
-        const c = counts.get(ussrId) || { usa: 0, ussr: 0, fullName: game.nameUssr, tldCode: game.countryUssr };
-        c.ussr += 1;
-        counts.set(ussrId, c);
+        counts.set(game.usaPlayer.userId, c);
+        const c2 = counts.get(game.ussrPlayer.userId) || { usa: 0, ussr: 0, fullName: game.ussrPlayer.fullName, tldCode: game.ussrPlayer.tldCode };
+        c2.ussr += 1;
+        counts.set(game.ussrPlayer.userId, c2);
       }
     }
     return counts;
-  }, [schedules]);
+  }, [state.schedules]);
 
-  // Players below target games
+  // Players below target games (used by auto-fix)
   const playersBelowTarget = useMemo(() => {
     const below: { userId: string; fullName: string; tldCode: string; currentGames: number; gamesNeeded: number }[] = [];
     for (const [userId, data] of playerGameCounts) {
@@ -423,69 +414,19 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
   // Previous opponents map (for auto-fix)
   const previousOpponents = useMemo(() => {
     const map: Record<string, string[]> = {};
-    for (const game of schedules) {
-      const usaId = game.idUsa || game.usaPlayerId;
-      const ussrId = game.idUssr || game.ussrPlayerId;
-      if (usaId && ussrId) {
-        if (!map[usaId]) map[usaId] = [];
-        if (!map[ussrId]) map[ussrId] = [];
-        map[usaId].push(ussrId);
-        map[ussrId].push(usaId);
+    for (const game of state.schedules) {
+      if (game.removed) continue;
+      if (game.usaPlayer && game.ussrPlayer) {
+        if (!map[game.usaPlayer.userId]) map[game.usaPlayer.userId] = [];
+        if (!map[game.ussrPlayer.userId]) map[game.ussrPlayer.userId] = [];
+        map[game.usaPlayer.userId].push(game.ussrPlayer.userId);
+        map[game.ussrPlayer.userId].push(game.usaPlayer.userId);
       }
     }
     return map;
-  }, [schedules]);
+  }, [state.schedules]);
 
-  // ─── Derived data from local state ──────────────────────────────────────
-
-  // Game count adjustments from drag-and-drop (initial vs current local state)
-  const localGameAdjustments = useMemo(() => {
-    const adjustments = new Map<string, { games: number; usa: number; ussr: number }>();
-
-    for (let i = 0; i < initialSchedules.length; i++) {
-      const ini = initialSchedules[i];
-      const cur = state.schedules[i];
-      if (!cur) continue;
-
-      if (!ini.usaPlayer && cur.usaPlayer) {
-        const adj = adjustments.get(cur.usaPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
-        adj.games += 1; adj.usa += 1;
-        adjustments.set(cur.usaPlayer.userId, adj);
-      } else if (ini.usaPlayer && !cur.usaPlayer) {
-        const adj = adjustments.get(ini.usaPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
-        adj.games -= 1; adj.usa -= 1;
-        adjustments.set(ini.usaPlayer.userId, adj);
-      }
-
-      if (!ini.ussrPlayer && cur.ussrPlayer) {
-        const adj = adjustments.get(cur.ussrPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
-        adj.games += 1; adj.ussr += 1;
-        adjustments.set(cur.ussrPlayer.userId, adj);
-      } else if (ini.ussrPlayer && !cur.ussrPlayer) {
-        const adj = adjustments.get(ini.ussrPlayer.userId) || { games: 0, usa: 0, ussr: 0 };
-        adj.games -= 1; adj.ussr -= 1;
-        adjustments.set(ini.ussrPlayer.userId, adj);
-      }
-    }
-    return adjustments;
-  }, [state.schedules, initialSchedules]);
-
-  // Merged game counts (base + local adjustments)
-  const mergedGameCounts = useMemo(() => {
-    const merged = new Map<string, { usa: number; ussr: number }>();
-    for (const [userId, counts] of playerGameCounts) {
-      merged.set(userId, { usa: counts.usa, ussr: counts.ussr });
-    }
-    for (const [userId, adj] of localGameAdjustments) {
-      const existing = merged.get(userId) || { usa: 0, ussr: 0 };
-      existing.usa += adj.usa;
-      existing.ussr += adj.ussr;
-      merged.set(userId, existing);
-    }
-    return merged;
-  }, [playerGameCounts, localGameAdjustments]);
-
-  // Players with missing opponents (from local state — still orphaned, not removed)
+  // Players with missing opponents (orphaned, not removed)
   const playersWithMissingOpponents = useMemo(() => {
     const result: {
       player: PlayerInfo;
@@ -501,7 +442,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       const hasUssr = !!schedule.ussrPlayer;
       if (hasUsa !== hasUssr) {
         const player = (hasUsa ? schedule.usaPlayer : schedule.ussrPlayer)!;
-        const counts = mergedGameCounts.get(player.userId) || { usa: 0, ussr: 0 };
+        const counts = playerGameCounts.get(player.userId) || { usa: 0, ussr: 0 };
         result.push({
           player,
           usaGames: counts.usa,
@@ -512,7 +453,18 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       }
     }
     return result;
-  }, [state.schedules, mergedGameCounts]);
+  }, [state.schedules, playerGameCounts]);
+
+  // Orphan schedules for DND section (not removed, exactly one side empty)
+  const orphanSchedules = useMemo(() => {
+    return state.schedules.filter((s) => {
+      if (s.removed) return false;
+      const hasUsa = !!s.usaPlayer;
+      const hasUssr = !!s.ussrPlayer;
+      return hasUsa !== hasUssr;
+    });
+  }, [state.schedules]);
+
   // ─── Drag state ─────────────────────────────────────────────────────────
 
   const [activeDragPlayer, setActiveDragPlayer] = useState<PlayerInfo | null>(null);
@@ -558,11 +510,11 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     const toDelete = state.schedules.filter((s) => s.removed);
     const newlyComplete = state.schedules.filter((s, i) => {
       if (s.removed) return false;
-      const ini = initialSchedules[i];
-      if (!ini) return false;
+      const base = baseSchedules[i];
+      if (!base) return false;
       return (
-        s.usaPlayer?.userId !== ini.usaPlayer?.userId ||
-        s.ussrPlayer?.userId !== ini.ussrPlayer?.userId
+        s.usaPlayer?.userId !== base.usaPlayer?.userId ||
+        s.ussrPlayer?.userId !== base.ussrPlayer?.userId
       ) && s.usaPlayer && s.ussrPlayer;
     });
 
@@ -729,13 +681,13 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       {/* Schedules With Missing Players — Drag & Drop */}
       <section style={sectionStyle}>
         <h4 style={{ margin: "0 0 12px 0", color: "var(--primary-text)" }}>
-          Schedules With Missing Players ({state.schedules.filter((s) => !s.removed).length})
+          Schedules With Missing Players ({orphanSchedules.length})
         </h4>
         <p style={{ fontSize: "12px", opacity: 0.6, margin: "0 0 12px 0", color: "var(--primary-text)" }}>
           Drag players between slots to pair them. Changes are saved locally until you click &quot;Save Schedules&quot;.
         </p>
 
-        {state.schedules.length === 0 ? (
+        {orphanSchedules.length === 0 ? (
           <div style={{ padding: "24px", textAlign: "center", opacity: 0.5, color: "var(--primary-text)" }}>
             No schedules with missing players.
           </div>
@@ -752,7 +704,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
                 minHeight: "auto",
                 padding: "8px",
               }}>
-                {state.schedules.map((schedule) => (
+                {orphanSchedules.map((schedule) => (
                   <ScheduleRow key={schedule.scheduleId} schedule={schedule} onRemove={handleRemoveSchedule} />
                 ))}
               </div>
