@@ -426,44 +426,47 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     return map;
   }, [state.schedules]);
 
-  // Players with missing opponents (orphaned, not removed)
+  // Players who were originally in orphan schedules (from baseSchedules), with current game counts
   const playersWithMissingOpponents = useMemo(() => {
     const result: {
       player: PlayerInfo;
       usaGames: number;
       ussrGames: number;
-      gameCode: string;
-      scheduleId: string;
     }[] = [];
+    const seen = new Set<string>();
 
-    for (const schedule of state.schedules) {
-      if (schedule.removed) continue;
-      const hasUsa = !!schedule.usaPlayer;
-      const hasUssr = !!schedule.ussrPlayer;
-      if (hasUsa !== hasUssr) {
-        const player = (hasUsa ? schedule.usaPlayer : schedule.ussrPlayer)!;
-        const counts = playerGameCounts.get(player.userId) || { usa: 0, ussr: 0 };
-        result.push({
-          player,
-          usaGames: counts.usa,
-          ussrGames: counts.ussr,
-          gameCode: schedule.gameCode,
-          scheduleId: schedule.scheduleId,
-        });
-      }
-    }
-    return result;
-  }, [state.schedules, playerGameCounts]);
-
-  // Orphan schedules for DND section (not removed, exactly one side empty)
-  const orphanSchedules = useMemo(() => {
-    return state.schedules.filter((s) => {
-      if (s.removed) return false;
+    baseSchedules.forEach((s) => {
       const hasUsa = !!s.usaPlayer;
       const hasUssr = !!s.ussrPlayer;
-      return hasUsa !== hasUssr;
+      if (hasUsa !== hasUssr) {
+        const player = (hasUsa ? s.usaPlayer : s.ussrPlayer)!;
+        if (!seen.has(player.userId)) {
+          const counts = playerGameCounts.get(player.userId) || { usa: 0, ussr: 0 };
+          result.push({
+            player,
+            usaGames: counts.usa,
+            ussrGames: counts.ussr,
+          });
+          seen.add(player.userId);
+        }
+      }
     });
-  }, [state.schedules]);
+    return result;
+  }, [baseSchedules, playerGameCounts]);
+
+  // Schedules that were originally orphans (from baseSchedules), with current state from state.schedules
+  const originalOrphanSchedules = useMemo(() => {
+    return baseSchedules
+      .map((base, i) => {
+        const hasUsa = !!base.usaPlayer;
+        const hasUssr = !!base.ussrPlayer;
+        if (hasUsa !== hasUssr) {
+          return state.schedules[i]; // current state of this originally-orphan schedule
+        }
+        return null;
+      })
+      .filter((s): s is LocalSchedule => s !== null);
+  }, [baseSchedules, state.schedules]);
 
   // ─── Drag state ─────────────────────────────────────────────────────────
 
@@ -681,13 +684,13 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       {/* Schedules With Missing Players — Drag & Drop */}
       <section style={sectionStyle}>
         <h4 style={{ margin: "0 0 12px 0", color: "var(--primary-text)" }}>
-          Schedules With Missing Players ({orphanSchedules.length})
+          Schedules With Missing Players ({originalOrphanSchedules.length})
         </h4>
         <p style={{ fontSize: "12px", opacity: 0.6, margin: "0 0 12px 0", color: "var(--primary-text)" }}>
           Drag players between slots to pair them. Changes are saved locally until you click &quot;Save Schedules&quot;.
         </p>
 
-        {orphanSchedules.length === 0 ? (
+        {originalOrphanSchedules.length === 0 ? (
           <div style={{ padding: "24px", textAlign: "center", opacity: 0.5, color: "var(--primary-text)" }}>
             No schedules with missing players.
           </div>
@@ -704,7 +707,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
                 minHeight: "auto",
                 padding: "8px",
               }}>
-                {orphanSchedules.map((schedule) => (
+                {originalOrphanSchedules.map((schedule) => (
                   <ScheduleRow key={schedule.scheduleId} schedule={schedule} onRemove={handleRemoveSchedule} />
                 ))}
               </div>
