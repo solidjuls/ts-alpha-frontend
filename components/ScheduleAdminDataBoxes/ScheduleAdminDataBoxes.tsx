@@ -97,7 +97,11 @@ type ScheduleAdminAction =
     }
   | { type: "DELETE_SCHEDULE"; scheduleId: string }
   | { type: "RESTORE_SCHEDULE"; scheduleId: string }
-  | { type: "ROLLBACK"; schedules: ScheduleItem[] };
+  | { type: "ROLLBACK"; schedules: ScheduleItem[] }
+  | {
+      type: "APPLY_AUTO_FIX";
+      filledOrphans: { scheduleId: string; opponentId: string; opponentName: string; opponentTld: string; opponentSide: "usa" | "ussr" }[];
+    };
 
 function toLocalSchedules(schedules: ScheduleItem[]): LocalSchedule[] {
   return schedules.map((s) => {
@@ -163,6 +167,22 @@ function scheduleAdminReducer(
           s.scheduleId === action.scheduleId ? { ...s, removed: false } : s
         ),
       };
+
+    case "APPLY_AUTO_FIX": {
+      const next = state.schedules.map((s) => ({ ...s }));
+      for (const fill of action.filledOrphans) {
+        const schedule = next.find((s) => s.scheduleId === fill.scheduleId);
+        if (!schedule) continue;
+        const opponent: PlayerInfo = {
+          userId: fill.opponentId,
+          fullName: fill.opponentName,
+          tldCode: fill.opponentTld,
+        };
+        if (fill.opponentSide === "usa") schedule.usaPlayer = opponent;
+        else schedule.ussrPlayer = opponent;
+      }
+      return { schedules: next };
+    }
 
     default:
       return state;
@@ -343,6 +363,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
   const createSchedulesBulkMutation = useCreateSchedulesBulk();
   const deleteScheduleMutation = useDeleteSchedule();
   const [autoFixResult, setAutoFixResult] = useState<AutoFixResult | null>(null);
+  const [pendingNewPairings, setPendingNewPairings] = useState<AutoFixResult["newPairings"]>([]);
   const [persistMessage, setPersistMessage] = useState("");
 
   // ─── Reducer ────────────────────────────────────────────────────────────
@@ -612,11 +633,35 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       tournamentName,
     });
 
+    // Build player lookup for opponent names
+    const playerLookup = new Map(allPlayers.map((p) => [p.userId, p]));
+
+    // Apply filled orphans to reducer state so changes are visible
+    const fillActions = result.filledOrphans.map((o) => {
+      const opponent = playerLookup.get(o.opponentPlayerId);
+      // The opponent goes to the side opposite the existing player
+      const opponentSide = o.existingPlayerSide === "usa" ? "ussr" : "usa";
+      return {
+        scheduleId: o.scheduleId,
+        opponentId: o.opponentPlayerId,
+        opponentName: opponent?.fullName || "",
+        opponentTld: opponent?.tldCode || "",
+        opponentSide: opponentSide as "usa" | "ussr",
+      };
+    });
+
+    if (fillActions.length > 0) {
+      dispatch({ type: "APPLY_AUTO_FIX", filledOrphans: fillActions });
+    }
+
+    setPendingNewPairings(result.newPairings);
     setAutoFixResult(result);
     setPersistMessage("");
   };
 
   const handleUndoPreview = () => {
+    dispatch({ type: "ROLLBACK", schedules });
+    setPendingNewPairings([]);
     setAutoFixResult(null);
     setPersistMessage("");
   };
@@ -639,7 +684,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       };
     });
 
-    const newSchedules = autoFixResult.newPairings.map((p) => ({
+    const newSchedules = pendingNewPairings.map((p) => ({
       usa: p.usaPlayerId,
       ussr: p.ussrPlayerId,
       t: Number(tournamentId),
@@ -651,6 +696,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
 
     try {
       await createSchedulesBulkMutation.mutateAsync([...updatedSchedules, ...newSchedules]);
+      setPendingNewPairings([]);
       setAutoFixResult(null);
       setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new schedules`);
     } catch (err: any) {
