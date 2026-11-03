@@ -623,11 +623,33 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       }
     }
 
+    // Build playersBelowTarget with accurate game counts for ALL players (including orphans)
+    const enrichedPlayersBelowTarget = playersBelowTarget.map((p) => ({ ...p, rating: 0 }));
+    const belowTargetIds = new Set(playersBelowTarget.map((p) => p.userId));
+    for (const o of orphanedSchedulesForAutoFix) {
+      const pid = o.existingPlayer.userId;
+      if (!belowTargetIds.has(pid)) {
+        const counts = playerGameCounts.get(pid) || { usa: 0, ussr: 0 };
+        const total = counts.usa + counts.ussr;
+        if (total < TARGET_GAMES) {
+          enrichedPlayersBelowTarget.push({
+            userId: pid,
+            fullName: o.existingPlayer.fullName,
+            rating: 0,
+            tldCode: o.existingPlayer.tldCode,
+            currentGames: total,
+            gamesNeeded: TARGET_GAMES - total,
+          });
+          belowTargetIds.add(pid);
+        }
+      }
+    }
+
     const result = autoFixSchedules({
       players: allPlayers,
       previousOpponents,
       schedulesWithoutPair: orphanedSchedulesForAutoFix,
-      playersBelowTarget: playersBelowTarget.map((p) => ({ ...p, rating: 0 })),
+      playersBelowTarget: enrichedPlayersBelowTarget,
       targetGamesPerPlayer: TARGET_GAMES,
       tournamentId,
       tournamentName,
