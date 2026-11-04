@@ -125,6 +125,19 @@ export interface ReminderEmailPayload {
   ussrTimezone: string;
 }
 
+export interface PlayerReminderPayload {
+  gameCode: string;
+  playerName: string;
+  playerEmail: string;
+}
+
+export interface PlayerReminderResult {
+  gameCode: string;
+  playerName: string;
+  success: boolean;
+  error?: string;
+}
+
 export interface GetUpcomingScheduleParams {
   tournamentId: string;
   days: 1 | 5 | 15 | 30;
@@ -281,6 +294,15 @@ class ScheduleService {
 
   async sendReminderEmails(payload: ReminderEmailPayload[]): Promise<{ message: string }> {
     const response = await this.axiosInstance.post('/email/reminders', payload);
+    return response.data;
+  }
+
+  async sendPlayerReminderEmails(payload: PlayerReminderPayload[]): Promise<{
+    success: boolean;
+    total: number;
+    results: PlayerReminderResult[];
+  }> {
+    const response = await this.axiosInstance.post('/email/player-reminder', payload);
     return response.data;
   }
 }

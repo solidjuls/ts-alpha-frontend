@@ -6,7 +6,7 @@ import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
 import { useUpcomingSchedules } from "hooks/useSchedule";
 import { useScheduleAdmin } from "hooks/useTournaments";
-import { UpcomingScheduleItem, ReminderEmailPayload, scheduleService } from "services/schedule.service";
+import { UpcomingScheduleItem, ReminderEmailPayload, PlayerReminderPayload, scheduleService } from "services/schedule.service";
 import {
   PageTitle,
   ResponsiveContainer,
@@ -51,6 +51,48 @@ const saveSentReminders = (map: SentRemindersMap) => {
   if (typeof window === "undefined") return;
   localStorage.setItem(REMINDER_EMAILS_STORAGE_KEY, JSON.stringify(map));
 };
+
+interface PlayerSentRecord {
+  sentAt: string;
+  count: number;
+}
+
+type PlayerSideSentMap = Record<string, { usa?: PlayerSentRecord; ussr?: PlayerSentRecord }>;
+type PlayerSentRemindersMap = Record<ReminderType, PlayerSideSentMap>;
+
+const PLAYER_REMINDER_STORAGE_KEY = "playerReminderSent";
+
+const getEmptyPlayerSentReminders = (): PlayerSentRemindersMap => ({
+  30: {},
+  15: {},
+  5: {},
+  1: {},
+});
+
+const loadPlayerSentReminders = (): PlayerSentRemindersMap => {
+  if (typeof window === "undefined") return getEmptyPlayerSentReminders();
+  try {
+    const raw = localStorage.getItem(PLAYER_REMINDER_STORAGE_KEY);
+    if (!raw) return getEmptyPlayerSentReminders();
+    return { ...getEmptyPlayerSentReminders(), ...JSON.parse(raw) };
+  } catch {
+    return getEmptyPlayerSentReminders();
+  }
+};
+
+const savePlayerSentReminders = (map: PlayerSentRemindersMap) => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(PLAYER_REMINDER_STORAGE_KEY, JSON.stringify(map));
+};
+
+interface PlayerRow {
+  key: string;
+  gameCode: string;
+  dueDate: string;
+  playerName: string;
+  playerEmail: string;
+  side: "usa" | "ussr";
+}
 
 const REMINDER_TOURNAMENT_ID = "359";
 
@@ -143,9 +185,12 @@ const RemindersContent = () => {
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [sentReminders, setSentReminders] = useState<SentRemindersMap>(getEmptySentReminders);
+  const [individualPlayers, setIndividualPlayers] = useState(false);
+  const [playerSentReminders, setPlayerSentReminders] = useState<PlayerSentRemindersMap>(getEmptyPlayerSentReminders);
 
   useEffect(() => {
     setSentReminders(loadSentReminders());
+    setPlayerSentReminders(loadPlayerSentReminders());
   }, []);
 
   const isEmailSent = useCallback(
@@ -164,6 +209,21 @@ const RemindersContent = () => {
       return record.emailSentAt;
     },
     [sentReminders, days],
+  );
+
+  const getPlayerSentRecord = useCallback(
+    (gameCode: string, side: "usa" | "ussr"): PlayerSentRecord | null => {
+      const record = playerSentReminders[days]?.[gameCode]?.[side];
+      return record ?? null;
+    },
+    [playerSentReminders, days],
+  );
+
+  const isPlayerSent = useCallback(
+    (gameCode: string, side: "usa" | "ussr"): boolean => {
+      return getPlayerSentRecord(gameCode, side) !== null;
+    },
+    [getPlayerSentRecord],
   );
 
   const { data: scheduleData } = useScheduleAdmin(REMINDER_TOURNAMENT_ID);
@@ -296,6 +356,90 @@ const RemindersContent = () => {
     }
   };
 
+  const expandToPlayerRows = (items: UpcomingScheduleItem[]): PlayerRow[] => {
+    const result: PlayerRow[] = [];
+    for (const item of items) {
+      result.push(
+        {
+          key: `player-${item.gameCode}-usa`,
+          gameCode: item.gameCode,
+          dueDate: item.dueDate,
+          playerName: item.nameUsa,
+          playerEmail: item.emailUsa,
+          side: "usa",
+        },
+        {
+          key: `player-${item.gameCode}-ussr`,
+          gameCode: item.gameCode,
+          dueDate: item.dueDate,
+          playerName: item.nameUssr,
+          playerEmail: item.emailUssr,
+          side: "ussr",
+        },
+      );
+    }
+    return result;
+  };
+
+  const playerRows = expandToPlayerRows(rows);
+  const unsentPlayerRows = playerRows.filter((p) => !isPlayerSent(p.gameCode, p.side));
+  const allPlayerSelected = playerRows.length > 0 && playerRows.every((p) => selectedIds.has(p.key));
+  const allUnsentPlayerSelected = unsentPlayerRows.length > 0 && unsentPlayerRows.every((p) => selectedIds.has(p.key));
+  const headerCheckboxCheckedIndividual = selectAllIncludingSent ? allPlayerSelected : allUnsentPlayerSelected;
+
+  const handleSendPlayerReminders = async () => {
+    const selected = playerRows.filter((p) => selectedIds.has(p.key));
+    if (selected.length === 0) return;
+
+    setIsSending(true);
+    setSendResult(null);
+    try {
+      const payload: PlayerReminderPayload[] = selected.map((p) => ({
+        gameCode: p.gameCode,
+        playerName: p.playerName,
+        playerEmail: p.playerEmail,
+      }));
+      const response = await scheduleService.sendPlayerReminderEmails(payload);
+      const today = new Date().toISOString().split("T")[0];
+
+      setPlayerSentReminders((prev) => {
+        const next = { ...prev, [days]: { ...prev[days] } };
+        response.results.forEach((result) => {
+          if (!result.success) return;
+          const playerRow = selected.find(
+            (p) => p.gameCode === result.gameCode && p.playerName === result.playerName,
+          );
+          if (!playerRow) return;
+          const existing = next[days][playerRow.gameCode]?.[playerRow.side];
+          const prevCount = existing?.count ?? 0;
+          if (!next[days][playerRow.gameCode]) next[days][playerRow.gameCode] = {};
+          next[days][playerRow.gameCode][playerRow.side] = {
+            sentAt: today,
+            count: prevCount + 1,
+          };
+        });
+        savePlayerSentReminders(next);
+        return next;
+      });
+
+      const successCount = response.results.filter((r) => r.success).length;
+      const failCount = response.results.length - successCount;
+      if (failCount > 0) {
+        setSendResult({
+          type: "success",
+          message: `Sent ${successCount} player reminder(s). ${failCount} failed.`,
+        });
+      } else {
+        setSendResult({ type: "success", message: `Sent ${successCount} player reminder(s).` });
+      }
+      setSelectedIds(new Set());
+    } catch {
+      setSendResult({ type: "error", message: "Failed to send player reminders. Please try again." });
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -335,18 +479,31 @@ const RemindersContent = () => {
               text="Select all (including sent)"
               onCheckedChange={(v) => setSelectAllIncludingSent(v)}
             />
+
+            <Checkbox
+              checked={individualPlayers}
+              text="Send reminder to individual players"
+              onCheckedChange={(v) => {
+                setIndividualPlayers(v);
+                setSelectedIds(new Set());
+              }}
+            />
           </div>
 
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
             <Button
-              onClick={handleSendEmails}
+              onClick={individualPlayers ? handleSendPlayerReminders : handleSendEmails}
               disabled={selectedIds.size === 0 || isSending}
               style={{
                 gap: "8px",
               }}
             >
               {isSending && <Spinner size="1" />}
-              {isSending ? "Sending..." : `Send Emails${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
+              {isSending
+                ? "Sending..."
+                : individualPlayers
+                  ? `Send Player Reminders${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`
+                  : `Send Emails${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
             </Button>
           </div>
 
@@ -384,76 +541,160 @@ const RemindersContent = () => {
                   <tr>
                     <th style={{ ...thStyle, width: "40px" }}>
                       <Checkbox
-                        checked={headerCheckboxChecked}
+                        checked={individualPlayers ? headerCheckboxCheckedIndividual : headerCheckboxChecked}
                         text=""
-                        onCheckedChange={() => toggleAll()}
+                        onCheckedChange={() => {
+                          if (individualPlayers) {
+                            if (selectAllIncludingSent) {
+                              setSelectedIds(allPlayerSelected ? new Set() : new Set(playerRows.map((p) => p.key)));
+                            } else {
+                              setSelectedIds(allUnsentPlayerSelected ? new Set() : new Set(unsentPlayerRows.map((p) => p.key)));
+                            }
+                          } else {
+                            toggleAll();
+                          }
+                        }}
                         css={{ margin: 0 }}
                       />
                     </th>
-                    <th style={thStyle}>USA</th>
-                    <th style={thStyle}>USSR</th>
-                    <th style={thStyle}>Game Code</th>
-                    <th style={thStyle}>Due Date</th>
-                    <th style={thStyle}>Status</th>
+                    {individualPlayers ? (
+                      <>
+                        <th style={thStyle}>Player</th>
+                        <th style={thStyle}>Side</th>
+                        <th style={thStyle}>Game Code</th>
+                        <th style={thStyle}>Due Date</th>
+                        <th style={thStyle}>Status</th>
+                      </>
+                    ) : (
+                      <>
+                        <th style={thStyle}>USA</th>
+                        <th style={thStyle}>USSR</th>
+                        <th style={thStyle}>Game Code</th>
+                        <th style={thStyle}>Due Date</th>
+                        <th style={thStyle}>Status</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
-                  {[...rows]
-                    .sort((a, b) => {
-                      const aSent = isEmailSent(a);
-                      const bSent = isEmailSent(b);
-                      if (aSent === bSent) return 0;
-                      return aSent ? 1 : -1;
-                    })
-                    .map((item) => {
-                    const key = rowKey(item);
-                    const isSelected = selectedIds.has(key);
-                    const sent = isEmailSent(item);
-                    const sentDate = getSentDate(item);
-                    return (
-                      <tr
-                        key={key}
-                        style={{
-                          backgroundColor: sent ? rowSentBg : isSelected ? rowHoverBg : undefined,
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isSelected && !sent) e.currentTarget.style.backgroundColor = rowHoverBg;
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isSelected && !sent) e.currentTarget.style.backgroundColor = "";
-                        }}
-                      >
-                        <td style={tdStyle}>
-                          <Checkbox
-                            checked={isSelected}
-                            text=""
-                            onCheckedChange={() => toggleRow(item)}
-                            css={{ margin: 0 }}
-                            disabled={sent}
-                          />
-                        </td>
-                        <td style={tdStyle}>
-                          <div style={nameStyle}>{item.nameUsa}</div>
-                          <div style={emailStyle}>{item.emailUsa}</div>
-                        </td>
-                        <td style={tdStyle}>
-                          <div style={nameStyle}>{item.nameUssr}</div>
-                          <div style={emailStyle}>{item.emailUssr}</div>
-                        </td>
-                        <td style={tdStyle}>{item.gameCode}</td>
-                        <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{formatDueDate(item.dueDate)}</td>
-                        <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
-                          {sent ? (
-                            <span style={{ color: rowSentColor, fontSize: "13px" }}>
-                              Sent {sentDate ? formatDueDate(sentDate) : ""}
-                            </span>
-                          ) : (
-                            <span style={{ opacity: 0.5, fontSize: "13px" }}>Not sent</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {individualPlayers
+                    ? [...playerRows]
+                        .sort((a, b) => {
+                          const aSent = isPlayerSent(a.gameCode, a.side);
+                          const bSent = isPlayerSent(b.gameCode, b.side);
+                          if (aSent === bSent) return 0;
+                          return aSent ? 1 : -1;
+                        })
+                        .map((player) => {
+                          const sent = isPlayerSent(player.gameCode, player.side);
+                          const sentRecord = getPlayerSentRecord(player.gameCode, player.side);
+                          const isSelected = selectedIds.has(player.key);
+                          return (
+                            <tr
+                              key={player.key}
+                              style={{
+                                backgroundColor: sent ? rowSentBg : isSelected ? rowHoverBg : undefined,
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSelected && !sent) e.currentTarget.style.backgroundColor = rowHoverBg;
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSelected && !sent) e.currentTarget.style.backgroundColor = "";
+                              }}
+                            >
+                              <td style={tdStyle}>
+                                <Checkbox
+                                  checked={isSelected}
+                                  text=""
+                                  onCheckedChange={() => {
+                                    setSelectedIds((prev) => {
+                                      const next = new Set(prev);
+                                      if (next.has(player.key)) next.delete(player.key);
+                                      else next.add(player.key);
+                                      return next;
+                                    });
+                                  }}
+                                  css={{ margin: 0 }}
+                                  disabled={sent && !selectAllIncludingSent}
+                                />
+                              </td>
+                              <td style={tdStyle}>
+                                <div style={nameStyle}>{player.playerName}</div>
+                                <div style={emailStyle}>{player.playerEmail}</div>
+                              </td>
+                              <td style={{ ...tdStyle, textTransform: "uppercase", fontSize: "12px", fontWeight: 600 }}>
+                                {player.side}
+                              </td>
+                              <td style={tdStyle}>{player.gameCode}</td>
+                              <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{formatDueDate(player.dueDate)}</td>
+                              <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                                {sent && sentRecord ? (
+                                  <span style={{ color: rowSentColor, fontSize: "13px" }}>
+                                    Sent {sentRecord.count}x — {formatDueDate(sentRecord.sentAt)}
+                                  </span>
+                                ) : (
+                                  <span style={{ opacity: 0.5, fontSize: "13px" }}>Not sent</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                    : [...rows]
+                        .sort((a, b) => {
+                          const aSent = isEmailSent(a);
+                          const bSent = isEmailSent(b);
+                          if (aSent === bSent) return 0;
+                          return aSent ? 1 : -1;
+                        })
+                        .map((item) => {
+                          const key = rowKey(item);
+                          const isSelected = selectedIds.has(key);
+                          const sent = isEmailSent(item);
+                          const sentDate = getSentDate(item);
+                          return (
+                            <tr
+                              key={key}
+                              style={{
+                                backgroundColor: sent ? rowSentBg : isSelected ? rowHoverBg : undefined,
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSelected && !sent) e.currentTarget.style.backgroundColor = rowHoverBg;
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSelected && !sent) e.currentTarget.style.backgroundColor = "";
+                              }}
+                            >
+                              <td style={tdStyle}>
+                                <Checkbox
+                                  checked={isSelected}
+                                  text=""
+                                  onCheckedChange={() => toggleRow(item)}
+                                  css={{ margin: 0 }}
+                                  disabled={sent}
+                                />
+                              </td>
+                              <td style={tdStyle}>
+                                <div style={nameStyle}>{item.nameUsa}</div>
+                                <div style={emailStyle}>{item.emailUsa}</div>
+                              </td>
+                              <td style={tdStyle}>
+                                <div style={nameStyle}>{item.nameUssr}</div>
+                                <div style={emailStyle}>{item.emailUssr}</div>
+                              </td>
+                              <td style={tdStyle}>{item.gameCode}</td>
+                              <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>{formatDueDate(item.dueDate)}</td>
+                              <td style={{ ...tdStyle, whiteSpace: "nowrap" }}>
+                                {sent ? (
+                                  <span style={{ color: rowSentColor, fontSize: "13px" }}>
+                                    Sent {sentDate ? formatDueDate(sentDate) : ""}
+                                  </span>
+                                ) : (
+                                  <span style={{ opacity: 0.5, fontSize: "13px" }}>Not sent</span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                 </tbody>
               </table>
             </div>
