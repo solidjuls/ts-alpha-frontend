@@ -6,7 +6,7 @@ import { useAuth } from "contexts/AuthProviderNew";
 import { userRoles } from "utils/constants";
 import { useUpcomingSchedules } from "hooks/useSchedule";
 import { useScheduleAdmin } from "hooks/useTournaments";
-import { UpcomingScheduleItem, ReminderEmailPayload, PlayerReminderPayload, scheduleService } from "services/schedule.service";
+import { UpcomingScheduleItem, ReminderEmailPayload, PlayerReminderPayload, PlayerReminderRequest, scheduleService } from "services/schedule.service";
 import {
   PageTitle,
   ResponsiveContainer,
@@ -185,8 +185,9 @@ const RemindersContent = () => {
   const [isSending, setIsSending] = useState(false);
   const [sendResult, setSendResult] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [sentReminders, setSentReminders] = useState<SentRemindersMap>(getEmptySentReminders);
-  const [individualPlayers, setIndividualPlayers] = useState(false);
+  const [individualMode, setIndividualMode] = useState<"none" | "ghostOp" | "bothOp">("none");
   const [playerSentReminders, setPlayerSentReminders] = useState<PlayerSentRemindersMap>(getEmptyPlayerSentReminders);
+  const [showOnlyDue, setShowOnlyDue] = useState(false);
 
   useEffect(() => {
     setSentReminders(loadSentReminders());
@@ -253,7 +254,17 @@ const RemindersContent = () => {
     );
   }
 
-  const rows: UpcomingScheduleItem[] = upcomingData ?? [];
+  const allRows: UpcomingScheduleItem[] = upcomingData ?? [];
+
+  const isPastDue = (item: UpcomingScheduleItem): boolean => {
+    const due = new Date(item.dueDate);
+    due.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return due.getTime() < today.getTime();
+  };
+
+  const rows = showOnlyDue ? allRows.filter(isPastDue) : allRows;
 
   const rowKey = (item: UpcomingScheduleItem) =>
     `${item.idUsa}-${item.idUssr}-${item.gameCode}-${item.dueDate}`;
@@ -399,7 +410,12 @@ const RemindersContent = () => {
         playerName: p.playerName,
         playerEmail: p.playerEmail,
       }));
-      const response = await scheduleService.sendPlayerReminderEmails(payload);
+      const request: PlayerReminderRequest = {
+        data: payload,
+        ghostOp: individualMode === "ghostOp",
+        bothOp: individualMode === "bothOp",
+      };
+      const response = await scheduleService.sendPlayerReminderEmails(request);
       const today = new Date().toISOString().split("T")[0];
 
       setPlayerSentReminders((prev) => {
@@ -475,16 +491,36 @@ const RemindersContent = () => {
             />
 
             <Checkbox
+              checked={showOnlyDue}
+              text="Show only due games"
+              onCheckedChange={(v) => {
+                setShowOnlyDue(v);
+                setSelectedIds(new Set());
+              }}
+            />
+
+            <Checkbox
               checked={selectAllIncludingSent}
               text="Select all (including sent)"
               onCheckedChange={(v) => setSelectAllIncludingSent(v)}
             />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", marginBottom: "12px" }}>
+            <Checkbox
+              checked={individualMode === "ghostOp"}
+              text="Send reminder to individual players (ghost opponents)"
+              onCheckedChange={(v) => {
+                setIndividualMode(v ? "ghostOp" : "none");
+                setSelectedIds(new Set());
+              }}
+            />
 
             <Checkbox
-              checked={individualPlayers}
-              text="Send reminder to individual players"
+              checked={individualMode === "bothOp"}
+              text="Send reminder to individual players (both opponents missing)"
               onCheckedChange={(v) => {
-                setIndividualPlayers(v);
+                setIndividualMode(v ? "bothOp" : "none");
                 setSelectedIds(new Set());
               }}
             />
@@ -492,7 +528,7 @@ const RemindersContent = () => {
 
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "12px" }}>
             <Button
-              onClick={individualPlayers ? handleSendPlayerReminders : handleSendEmails}
+              onClick={individualMode !== "none" ? handleSendPlayerReminders : handleSendEmails}
               disabled={selectedIds.size === 0 || isSending}
               style={{
                 gap: "8px",
@@ -501,7 +537,7 @@ const RemindersContent = () => {
               {isSending && <Spinner size="1" />}
               {isSending
                 ? "Sending..."
-                : individualPlayers
+                : individualMode !== "none"
                   ? `Send Player Reminders${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`
                   : `Send Emails${selectedIds.size > 0 ? ` (${selectedIds.size})` : ""}`}
             </Button>
@@ -541,10 +577,10 @@ const RemindersContent = () => {
                   <tr>
                     <th style={{ ...thStyle, width: "40px" }}>
                       <Checkbox
-                        checked={individualPlayers ? headerCheckboxCheckedIndividual : headerCheckboxChecked}
+                        checked={individualMode !== "none" ? headerCheckboxCheckedIndividual : headerCheckboxChecked}
                         text=""
                         onCheckedChange={() => {
-                          if (individualPlayers) {
+                          if (individualMode !== "none") {
                             if (selectAllIncludingSent) {
                               setSelectedIds(allPlayerSelected ? new Set() : new Set(playerRows.map((p) => p.key)));
                             } else {
@@ -557,7 +593,7 @@ const RemindersContent = () => {
                         css={{ margin: 0 }}
                       />
                     </th>
-                    {individualPlayers ? (
+                    {individualMode !== "none" ? (
                       <>
                         <th style={thStyle}>Player</th>
                         <th style={thStyle}>Side</th>
@@ -577,7 +613,7 @@ const RemindersContent = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {individualPlayers
+                  {individualMode !== "none"
                     ? [...playerRows]
                         .sort((a, b) => {
                           const aSent = isPlayerSent(a.gameCode, a.side);

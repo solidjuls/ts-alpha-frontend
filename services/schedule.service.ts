@@ -131,6 +131,12 @@ export interface PlayerReminderPayload {
   playerEmail: string;
 }
 
+export interface PlayerReminderRequest {
+  data: PlayerReminderPayload[];
+  ghostOp: boolean;
+  bothOp: boolean;
+}
+
 export interface PlayerReminderResult {
   gameCode: string;
   playerName: string;
@@ -297,12 +303,12 @@ class ScheduleService {
     return response.data;
   }
 
-  async sendPlayerReminderEmails(payload: PlayerReminderPayload[]): Promise<{
+  async sendPlayerReminderEmails(request: PlayerReminderRequest): Promise<{
     success: boolean;
     total: number;
     results: PlayerReminderResult[];
   }> {
-    const response = await this.axiosInstance.post('/email/player-reminder', payload);
+    const response = await this.axiosInstance.post('/email/player-reminder', request);
     return response.data;
   }
 }
