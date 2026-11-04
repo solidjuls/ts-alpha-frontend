@@ -72,7 +72,7 @@ export function autoFixSchedules(input: AutoFixInput): AutoFixResult {
   for (const s of schedulesWithoutPair) {
     const pid = s.existingPlayer.userId;
     if (!gameCount.has(pid)) {
-      gameCount.set(pid, targetGamesPerPlayer - 1);
+      gameCount.set(pid, 0);
     }
   }
 
@@ -107,6 +107,9 @@ export function autoFixSchedules(input: AutoFixInput): AutoFixResult {
   for (const orphan of sortedOrphans) {
     const existingPlayer = orphan.existingPlayer;
     const existingId = existingPlayer.userId;
+
+    // Skip if existing player already at target
+    if ((gameCount.get(existingId) ?? 0) >= targetGamesPerPlayer) continue;
 
     let bestOpponent: ScheduleAdminPlayer | null = null;
     let bestDiff = Infinity;

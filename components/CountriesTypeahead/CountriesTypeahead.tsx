@@ -9,7 +9,7 @@ export interface CountriesTypeaheadProps {
   selectedItem: string | number | null;
   onSelect: (value: DropdownItemType | null) => void;
   placeholder: string;
-  onBlur?: () => void;
+  onBlur?: (inputValue: string) => void;
   width?: string;
   css?: any;
   error?: boolean;

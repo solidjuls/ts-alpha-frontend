@@ -80,6 +80,14 @@ export interface UpdatePasswordData {
   confirmPassword: string;
 }
 
+export interface ForfeitedPlayer {
+  id: string;
+  name: string;
+  email: string;
+  totalForfeits: number;
+  tournamentNames: string;
+}
+
 class UsersService {
   private axiosInstance: AxiosInstance;
 
@@ -151,6 +159,13 @@ class UsersService {
   async updatePassword(passwordData: UpdatePasswordData): Promise<{ message: string }> {
     const response = await this.axiosInstance.post('/users/update-password', passwordData);
     return response.data;
+  }
+
+  // Get forfeited players (optionally filtered by tournament)
+  async getForfeitedPlayers(tournamentId?: string): Promise<ForfeitedPlayer[]> {
+    const params = tournamentId ? `?tournamentId=${tournamentId}` : '';
+    const response = await this.axiosInstance.get(`/users/forfeited-players${params}`);
+    return response.data.players;
   }
 }
 
