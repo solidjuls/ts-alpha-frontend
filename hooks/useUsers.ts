@@ -152,3 +152,13 @@ export const usePrefetchUserById = () => {
     });
   };
 };
+
+// Hook to get forfeited players (optionally filtered by tournament)
+export const useForfeitedPlayers = (tournamentId?: string) => {
+  return useQuery({
+    queryKey: [...USERS_QUERY_KEYS.all, 'forfeited', tournamentId || 'all'] as const,
+    queryFn: () => usersService.getForfeitedPlayers(tournamentId),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+};
