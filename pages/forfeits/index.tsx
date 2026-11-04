@@ -6,6 +6,8 @@ import { useForfeitedPlayers } from "hooks/useUsers";
 import { Spinner } from "@radix-ui/themes";
 import DropdownMenu from "components/DropdownMenu";
 import { Button } from "components/Button";
+import ProtectedRoute from "components/ProtectedRoute";
+import { userRoles } from "utils/constants";
 import { Tournament } from "services/tournaments.service";
 import {
   PageContainer,
@@ -112,4 +114,10 @@ const Forfeits = () => {
   );
 };
 
-export default Forfeits;
+const ForfeitsPage = () => (
+  <ProtectedRoute requiredRole={userRoles.SUPERADMIN}>
+    <Forfeits />
+  </ProtectedRoute>
+);
+
+export default ForfeitsPage;
