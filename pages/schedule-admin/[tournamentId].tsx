@@ -63,7 +63,7 @@ const ScheduleAdminPage = () => {
 };
 
 const WrappedScheduleAdminPage = () => (
-  <ProtectedRoute requiredRole={userRoles.PLAYER}>
+  <ProtectedRoute requiredRole={userRoles.ADMIN}>
     <ScheduleAdminPage />
   </ProtectedRoute>
 );
