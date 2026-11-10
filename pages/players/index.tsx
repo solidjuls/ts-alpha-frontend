@@ -157,12 +157,12 @@ const paginationVisibility = !isFiltered && totalPages > 1;
       <FilterPanelStyled>
         {/* Player multi-select */}
         <MultiSelect
-          setSelectedValues={(value: any) => {
+          setSelectedValues={(value) => {
             setPlayersSelected(value);
             setCurrentPage(1);
           }}
           items={userItems}
-          selectedValues={playersSelected as any}
+          selectedValues={playersSelected}
           placeholder="Select Players..."
         />
 

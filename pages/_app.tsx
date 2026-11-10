@@ -3,9 +3,6 @@ import type { AppProps } from "next/app";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 
-import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as needed
-import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
-import "primeicons/primeicons.css"; // PrimeIcons CSS
 import "components/Playoffs/Playoffs.css"; // Playoffs component styles
 import GlobalStyles from "styles/globalStyles";
 import "@radix-ui/themes/styles.css";
