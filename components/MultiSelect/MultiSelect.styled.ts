@@ -42,6 +42,8 @@ export const StyledContent = styled(DropdownMenu.Content)`
   padding: 4px;
   width: var(--radix-popper-anchor-width);
   min-width: 250px;
+  max-height: 260px;
+  overflow-y: auto;
   box-sizing: border-box;
 `;
 
