@@ -16,7 +16,26 @@ import { jwtVerify } from "jose";
  * - Maintenance mode (using Authorization header from requests)
  */
 
+const BLOCKED_PATHS = [
+  "/wp-admin",
+  "/wp-login",
+  "/wp-content",
+  "/wp-includes",
+  "/xmlrpc.php",
+  "/.env",
+  "/.git",
+  "/phpmyadmin",
+  "/administrator",
+  "/wp-json",
+];
+
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (BLOCKED_PATHS.some((p) => pathname.startsWith(p))) {
+    return new NextResponse(null, { status: 403 });
+  }
+
   const maintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
   // Handle maintenance mode
