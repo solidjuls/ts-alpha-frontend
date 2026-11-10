@@ -4849,6 +4849,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flag-icons@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "flag-icons@npm:7.6.0"
+  checksum: 10c0/f5b32155b903ed56ddd2d452166a27d6fff89e082ad1cd32c7891b6fe04b71f73ac2feffd06642173bd3d5fd7bf9a6a0e6b36539463d23b8d36031b135636de3
+  languageName: node
+  linkType: hard
+
 "flat-cache@npm:^3.0.4":
   version: 3.2.0
   resolution: "flat-cache@npm:3.2.0"
@@ -8630,6 +8637,7 @@ __metadata:
     eslint: "npm:7"
     eslint-config-next: "npm:12.0.4"
     eslint-config-prettier: "npm:^9.1.0"
+    flag-icons: "npm:^7.6.0"
     jose: "npm:^5.9.3"
     jsonwebtoken: "npm:^8.5.1"
     jwt-decode: "npm:^4.0.0"

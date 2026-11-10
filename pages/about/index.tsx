@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useState} from "react";
 import { TopPlayerRating } from "components/TopPlayerRating";
 import Image from "next/image";
+import flagSvgMap from "components/FlagIcon/flagSvgMap";
 import { 
   BaseCard,
   CardInner,
@@ -563,7 +564,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Korean Speaker">
                 <FlagWrap>
-                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                  <Image src={flagSvgMap["KR"]} width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
                 </FlagWrap>
                 KR
               </LanguagePill>
@@ -587,7 +588,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="French Speaker">
                 <FlagWrap>
-                  <Image src="/flags/FR.png" width={WIDTH} height={HEIGHT} alt="French Speaker" />
+                  <Image src={flagSvgMap["FR"]} width={WIDTH} height={HEIGHT} alt="French Speaker" />
                 </FlagWrap>
                 FR
               </LanguagePill>
@@ -615,7 +616,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Hebrew Speaker">
                 <FlagWrap>
-                  <Image src="/flags/IL.png" width={WIDTH} height={HEIGHT} alt="Hebrew Speaker" />
+                  <Image src={flagSvgMap["IL"]} width={WIDTH} height={HEIGHT} alt="Hebrew Speaker" />
                 </FlagWrap>
                 IL
               </LanguagePill>
@@ -687,7 +688,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Korean Speaker">
                 <FlagWrap>
-                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                  <Image src={flagSvgMap["KR"]} width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
                 </FlagWrap>
                 KR
               </LanguagePill>
@@ -724,7 +725,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="French Speaker">
                 <FlagWrap>
-                  <Image src="/flags/FR.png" width={WIDTH} height={HEIGHT} alt="French Speaker" />
+                  <Image src={flagSvgMap["FR"]} width={WIDTH} height={HEIGHT} alt="French Speaker" />
                 </FlagWrap>
                 FR
               </LanguagePill>
@@ -771,7 +772,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="French Speaker">
                 <FlagWrap>
-                  <Image src="/flags/FR.png" width={WIDTH} height={HEIGHT} alt="French Speaker" />
+                  <Image src={flagSvgMap["FR"]} width={WIDTH} height={HEIGHT} alt="French Speaker" />
                 </FlagWrap>
                 FR
               </LanguagePill>
@@ -786,7 +787,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Spanish Speaker">
                 <FlagWrap>
-                  <Image src="/flags/ES.png" width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+                  <Image src={flagSvgMap["ES"]} width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
                 </FlagWrap>
                 ES
               </LanguagePill>
@@ -859,7 +860,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -874,7 +875,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Russian Speaker">
                 <FlagWrap>
-                  <Image src="/flags/BY.png" width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
+                  <Image src={flagSvgMap["BY"]} width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
                 </FlagWrap>
                 BY
               </LanguagePill>
@@ -911,7 +912,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Korean Speaker">
                 <FlagWrap>
-                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                  <Image src={flagSvgMap["KR"]} width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
                 </FlagWrap>
                 KR
               </LanguagePill>
@@ -935,7 +936,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -955,7 +956,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -1001,7 +1002,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Spanish Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CAT.png" width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+                  <Image src={flagSvgMap["CAT"]} width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
                 </FlagWrap>
                 CAT
               </LanguagePill>
@@ -1052,7 +1053,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Turkish Speaker">
                 <FlagWrap>
-                  <Image src="/flags/TR.png" width={WIDTH} height={HEIGHT} alt="Turkish Speaker" />
+                  <Image src={flagSvgMap["TR"]} width={WIDTH} height={HEIGHT} alt="Turkish Speaker" />
                 </FlagWrap>
                 TR
               </LanguagePill>
@@ -1095,7 +1096,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -1110,7 +1111,7 @@ const AboutPage = () => (
               </ExternalLink>
               <LanguagePill title="Korean Speaker">
                 <FlagWrap>
-                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                  <Image src={flagSvgMap["KR"]} width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
                 </FlagWrap>
                 KR
               </LanguagePill>
@@ -1134,7 +1135,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Spanish Speaker">
                 <FlagWrap>
-                  <Image src="/flags/ES.png" width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+                  <Image src={flagSvgMap["ES"]} width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
                 </FlagWrap>
                 ES
               </LanguagePill>
@@ -1153,7 +1154,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -1187,7 +1188,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/HK.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["HK"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 HK
               </LanguagePill>
@@ -1202,7 +1203,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Spanish Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CAT.png" width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
+                  <Image src={flagSvgMap["CAT"]} width={WIDTH} height={HEIGHT} alt="Spanish Speaker" />
                 </FlagWrap>
                 CAT
               </LanguagePill>
@@ -1222,7 +1223,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/HK.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["HK"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 HK
               </LanguagePill>
@@ -1305,7 +1306,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Russian Speaker">
                 <FlagWrap>
-                  <Image src="/flags/RU.png" width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
+                  <Image src={flagSvgMap["RU"]} width={WIDTH} height={HEIGHT} alt="Russian Speaker" />
                 </FlagWrap>
                 RU
               </LanguagePill>
@@ -1333,7 +1334,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Chinese Speaker">
                 <FlagWrap>
-                  <Image src="/flags/CN.png" width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
+                  <Image src={flagSvgMap["CN"]} width={WIDTH} height={HEIGHT} alt="Chinese Speaker" />
                 </FlagWrap>
                 CN
               </LanguagePill>
@@ -1348,7 +1349,7 @@ const AboutPage = () => (
               </ExternalLink>{" "}
               <LanguagePill title="Korean Speaker">
                 <FlagWrap>
-                  <Image src="/flags/KR.png" width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
+                  <Image src={flagSvgMap["KR"]} width={WIDTH} height={HEIGHT} alt="Korean Speaker" />
                 </FlagWrap>
                 KR
               </LanguagePill>
