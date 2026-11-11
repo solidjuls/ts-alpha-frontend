@@ -602,6 +602,17 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
   }, [state.schedules]);
 
   const handleAutoFix = () => {
+    // Debug: Log playerGameCounts for orphan players
+    const orphanPlayerIds = new Set(orphanedSchedulesForAutoFix.map(o => o.existingPlayer.userId));
+    console.log('[AutoFix Debug] Orphan player IDs:', [...orphanPlayerIds]);
+    console.log('[AutoFix Debug] playerGameCounts for orphan players:');
+    for (const pid of orphanPlayerIds) {
+      const counts = playerGameCounts.get(pid);
+      const total = counts ? counts.usa + counts.ussr : 0;
+      const orphanSchedules = orphanedSchedulesForAutoFix.filter(o => o.existingPlayer.userId === pid);
+      console.log(`  ${pid}: usa=${counts?.usa || 0}, ussr=${counts?.ussr || 0}, total=${total}, orphans=${orphanSchedules.length}`);
+    }
+
     const allPlayers: { userId: string; fullName: string; rating: number; tldCode: string }[] = [];
     const playerIds = new Set<string>();
 
@@ -624,8 +635,13 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     }
 
     // Build playersBelowTarget with accurate game counts for ALL players (including orphans)
-    const enrichedPlayersBelowTarget = playersBelowTarget.map((p) => ({ ...p, rating: 0 }));
-    const belowTargetIds = new Set(playersBelowTarget.map((p) => p.userId));
+    // Only include players who have orphan schedules — players with completed games but no
+    // orphan schedules have forfeited and should not be paired as opponents
+    const playersWithOrphans = new Set(orphanedSchedulesForAutoFix.map(o => o.existingPlayer.userId));
+    const enrichedPlayersBelowTarget = playersBelowTarget
+      .filter(p => playersWithOrphans.has(p.userId))
+      .map((p) => ({ ...p, rating: 0 }));
+    const belowTargetIds = new Set(enrichedPlayersBelowTarget.map((p) => p.userId));
     for (const o of orphanedSchedulesForAutoFix) {
       const pid = o.existingPlayer.userId;
       if (!belowTargetIds.has(pid)) {
@@ -644,6 +660,8 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
         }
       }
     }
+
+    console.log('[AutoFix Debug] enrichedPlayersBelowTarget:', enrichedPlayersBelowTarget.map(p => `${p.fullName}(${p.currentGames})`).join(', '));
 
     const result = autoFixSchedules({
       players: allPlayers,
@@ -674,6 +692,11 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
 
     if (fillActions.length > 0) {
       dispatch({ type: "APPLY_AUTO_FIX", filledOrphans: fillActions });
+    }
+
+    // Remove orphans that were paired with other orphans (their player was moved)
+    for (const removedId of result.removedOrphanIds) {
+      dispatch({ type: "DELETE_SCHEDULE", scheduleId: removedId });
     }
 
     setPendingNewPairings(result.newPairings);
@@ -716,11 +739,19 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
       randomSides: p.randomSides,
     }));
 
+    // Delete orphans that were paired with other orphans (their player was moved)
+    const deletePromises = autoFixResult.removedOrphanIds.map((id) =>
+      deleteScheduleMutation.mutateAsync(Number(id))
+    );
+
     try {
-      await createSchedulesBulkMutation.mutateAsync([...updatedSchedules, ...newSchedules]);
+      await Promise.all([
+        ...deletePromises,
+        createSchedulesBulkMutation.mutateAsync([...updatedSchedules, ...newSchedules]),
+      ]);
       setPendingNewPairings([]);
       setAutoFixResult(null);
-      setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new schedules`);
+      setPersistMessage(`Persisted ${updatedSchedules.length} updated + ${newSchedules.length} new + ${deletePromises.length} deleted schedules`);
     } catch (err: any) {
       setPersistMessage(err?.response?.data?.message || "Failed to persist schedules");
     }
