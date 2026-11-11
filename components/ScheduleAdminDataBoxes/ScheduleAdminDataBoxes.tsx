@@ -101,6 +101,10 @@ type ScheduleAdminAction =
   | {
       type: "APPLY_AUTO_FIX";
       filledOrphans: { scheduleId: string; opponentId: string; opponentName: string; opponentTld: string; opponentSide: "usa" | "ussr" }[];
+    }
+  | {
+      type: "ADD_NEW_SCHEDULES";
+      newSchedules: { scheduleId: string; gameCode: string; dueDate: string; usaPlayer: PlayerInfo; ussrPlayer: PlayerInfo }[];
     };
 
 function toLocalSchedules(schedules: ScheduleItem[]): LocalSchedule[] {
@@ -189,6 +193,18 @@ function scheduleAdminReducer(
         else schedule.ussrPlayer = opponent;
       }
       return { schedules: next };
+    }
+
+    case "ADD_NEW_SCHEDULES": {
+      const newLocalSchedules: LocalSchedule[] = action.newSchedules.map((s) => ({
+        scheduleId: s.scheduleId,
+        gameCode: s.gameCode,
+        dueDate: s.dueDate,
+        usaPlayer: s.usaPlayer,
+        ussrPlayer: s.ussrPlayer,
+        removed: false,
+      }));
+      return { schedules: [...state.schedules, ...newLocalSchedules] };
     }
 
     default:
@@ -379,6 +395,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
   const [autoFixResult, setAutoFixResult] = useState<AutoFixResult | null>(null);
   const [pendingNewPairings, setPendingNewPairings] = useState<AutoFixResult["newPairings"]>([]);
   const [persistMessage, setPersistMessage] = useState("");
+  const [newlyCreatedSchedules, setNewlyCreatedSchedules] = useState<LocalSchedule[]>([]);
 
   // ─── Reducer ────────────────────────────────────────────────────────────
 
@@ -390,6 +407,12 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
 
   // Sync when base schedules change (if no local edits)
   const baseSchedules = useMemo(() => toLocalSchedules(schedules), [schedules]);
+
+  // Get current state of newly created schedules from state.schedules (reflects DND updates)
+  const currentNewlyCreatedSchedules = useMemo(() => {
+    const newIds = new Set(newlyCreatedSchedules.map(s => s.scheduleId));
+    return state.schedules.filter(s => newIds.has(s.scheduleId));
+  }, [state.schedules, newlyCreatedSchedules]);
 
   const hasChanges = useMemo(() => {
     if (state.schedules.length !== baseSchedules.length) return true;
@@ -445,6 +468,13 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     }
     return below.sort((a, b) => a.currentGames - b.currentGames);
   }, [playerGameCounts]);
+
+  // Players needing more games (excluding 0-game players and hardcoded forfeited players)
+  // Hardcoded forfeited player IDs: Joseph Leone (2203), Tim Engelhardt (3209), Tomas Tvaroh (2780), Alex Lee (2996), Pawel Sokol (2983)
+  const playersNeedingGames = useMemo(() => {
+    const FORFEITED_PLAYER_IDS = new Set(["2203", "3209", "2780", "2996", "2983"]);
+    return playersBelowTarget.filter(p => p.currentGames > 0 && !FORFEITED_PLAYER_IDS.has(p.userId));
+  }, [playersBelowTarget]);
 
   // Previous opponents map (for auto-fix)
   const previousOpponents = useMemo(() => {
@@ -718,6 +748,126 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     setPersistMessage("");
   };
 
+  // Generate random game code: letter + 3 numbers (e.g., C365)
+  const generateGameCode = (): string => {
+    const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+    const numbers = String(Math.floor(100 + Math.random() * 900));
+    return `${letter}${numbers}`;
+  };
+
+  const handleCreateMissingSchedules = () => {
+    if (playersNeedingGames.length < 2) {
+      console.log("[CreateMissing] Not enough players to create pairings");
+      return;
+    }
+
+    // Build game count map
+    const gameCount = new Map<string, number>();
+    for (const p of playersNeedingGames) {
+      gameCount.set(p.userId, p.currentGames);
+    }
+
+    // Build previous opponents map
+    const prevOpponents = new Set<string>();
+    for (const game of state.schedules) {
+      if (game.removed) continue;
+      if (game.usaPlayer && game.ussrPlayer) {
+        const key = game.usaPlayer.userId < game.ussrPlayer.userId
+          ? `${game.usaPlayer.userId}:${game.ussrPlayer.userId}`
+          : `${game.ussrPlayer.userId}:${game.usaPlayer.userId}`;
+        prevOpponents.add(key);
+      }
+    }
+
+    const pairKey = (a: string, b: string) => a < b ? `${a}:${b}` : `${b}:${a}`;
+
+    // Create pairings
+    const newSchedules: { scheduleId: string; gameCode: string; dueDate: string; usaPlayer: PlayerInfo; ussrPlayer: PlayerInfo }[] = [];
+    const players = [...playersNeedingGames].sort((a, b) => a.currentGames - b.currentGames);
+    
+    // Keep pairing until no more valid pairs can be made
+    let paired = true;
+    while (paired) {
+      paired = false;
+      
+      // Find the player with most games needed
+      const sortedPlayers = players
+        .filter(p => (gameCount.get(p.userId) ?? 0) < TARGET_GAMES)
+        .sort((a, b) => {
+          const neededA = TARGET_GAMES - (gameCount.get(a.userId) ?? 0);
+          const neededB = TARGET_GAMES - (gameCount.get(b.userId) ?? 0);
+          return neededB - neededA;
+        });
+
+      if (sortedPlayers.length < 2) break;
+
+      // Try to find a pair for the first player
+      const player1 = sortedPlayers[0];
+      let player2: typeof sortedPlayers[0] | null = null;
+
+      for (let i = 1; i < sortedPlayers.length; i++) {
+        const candidate = sortedPlayers[i];
+        const pk = pairKey(player1.userId, candidate.userId);
+        if (!prevOpponents.has(pk)) {
+          player2 = candidate;
+          break;
+        }
+      }
+
+      if (player2) {
+        // Determine sides by rating (or alphabetically if equal)
+        const player1Info: PlayerInfo = { userId: player1.userId, fullName: player1.fullName, tldCode: player1.tldCode };
+        const player2Info: PlayerInfo = { userId: player2.userId, fullName: player2.fullName, tldCode: player2.tldCode };
+        
+        // Higher rated player gets USA
+        const usaPlayer = player1Info;
+        const ussrPlayer = player2Info;
+
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+
+        newSchedules.push({
+          scheduleId: `new-${Date.now()}-${newSchedules.length}`,
+          gameCode: generateGameCode(),
+          dueDate: dueDate.toISOString(),
+          usaPlayer,
+          ussrPlayer,
+        });
+
+        // Update game counts and previous opponents
+        gameCount.set(player1.userId, (gameCount.get(player1.userId) ?? 0) + 1);
+        gameCount.set(player2.userId, (gameCount.get(player2.userId) ?? 0) + 1);
+        prevOpponents.add(pairKey(player1.userId, player2.userId));
+        paired = true;
+      }
+    }
+
+    if (newSchedules.length > 0) {
+      // Convert to LocalSchedule for DND display
+      const newLocalSchedules: LocalSchedule[] = newSchedules.map(s => ({
+        scheduleId: s.scheduleId,
+        gameCode: s.gameCode,
+        dueDate: s.dueDate,
+        usaPlayer: s.usaPlayer,
+        ussrPlayer: s.ussrPlayer,
+        removed: false,
+      }));
+      
+      dispatch({ type: "ADD_NEW_SCHEDULES", newSchedules });
+      setNewlyCreatedSchedules(prev => [...prev, ...newLocalSchedules]);
+      setPendingNewPairings([...pendingNewPairings, ...newSchedules.map(s => ({
+        usaPlayerId: s.usaPlayer.userId,
+        ussrPlayerId: s.ussrPlayer.userId,
+        gameCode: s.gameCode,
+        randomSides: false,
+        dueDate: s.dueDate,
+      }))]);
+      console.log(`[CreateMissing] Created ${newSchedules.length} new schedules`);
+    } else {
+      console.log("[CreateMissing] No valid pairings could be created");
+    }
+  };
+
   const handleUndoPreview = () => {
     dispatch({ type: "ROLLBACK", schedules });
     setPendingNewPairings([]);
@@ -792,6 +942,36 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
             <div style={{ ...rowStyle, opacity: 0.5 }}>None</div>
           )}
         </div>
+
+        {/* Players Needing More Games */}
+        <div style={{ ...boxStyle, flex: 1, height: "auto", maxHeight: "400px" }}>
+          <div style={titleStyle}>
+            Players Needing More Games ({playersNeedingGames.length})
+          </div>
+          {playersNeedingGames.map((p) => (
+            <div key={p.userId} style={rowStyle} title={p.fullName}>
+              {p.fullName} ({p.currentGames}/{TARGET_GAMES}) — needs {p.gamesNeeded} more
+            </div>
+          ))}
+          {playersNeedingGames.length === 0 && (
+            <div style={{ ...rowStyle, opacity: 0.5 }}>All players at target</div>
+          )}
+          <button
+            onClick={handleCreateMissingSchedules}
+            disabled={playersNeedingGames.length < 2}
+            style={{
+              ...btnStyle,
+              marginTop: "8px",
+              width: "100%",
+              backgroundColor: playersNeedingGames.length >= 2 ? "var(--usa)" : "var(--bg-main)",
+              color: playersNeedingGames.length >= 2 ? "var(--alt-text)" : "var(--primary-text)",
+              opacity: playersNeedingGames.length < 2 ? 0.5 : 1,
+              cursor: playersNeedingGames.length < 2 ? "not-allowed" : "pointer",
+            }}
+          >
+            Create Missing Schedules
+          </button>
+        </div>
       </div>
 
       {/* Schedules With Missing Players — Drag & Drop */}
@@ -859,6 +1039,84 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
           </>
         )}
       </section>
+
+      {/* Newly Created Schedules — Drag & Drop */}
+      {newlyCreatedSchedules.length > 0 && (
+        <section style={sectionStyle}>
+          <h4 style={{ margin: "0 0 12px 0", color: "var(--primary-text)" }}>
+            Newly Created Schedules ({currentNewlyCreatedSchedules.length})
+          </h4>
+          <p style={{ fontSize: "12px", opacity: 0.6, margin: "0 0 12px 0", color: "var(--primary-text)" }}>
+            Drag players to swap. Click &quot;Persist New Schedules&quot; to save them.
+          </p>
+          <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              backgroundColor: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              borderRadius: "12px",
+              boxShadow: "var(--shadow-soft)",
+              minHeight: "auto",
+              padding: "8px",
+            }}>
+              {currentNewlyCreatedSchedules.map((schedule) => (
+                <ScheduleRow key={schedule.scheduleId} schedule={schedule} onRemove={(id) => {
+                  setNewlyCreatedSchedules(prev => prev.filter(s => s.scheduleId !== id));
+                  dispatch({ type: "DELETE_SCHEDULE", scheduleId: id });
+                }} />
+              ))}
+            </div>
+            <DragOverlay>
+              {activeDragPlayer ? <DragOverlayPlayer player={activeDragPlayer} /> : null}
+            </DragOverlay>
+          </DndContext>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "12px" }}>
+            <button
+              onClick={async () => {
+                try {
+                  const dtos = currentNewlyCreatedSchedules.filter(s => !s.removed).map((s) => ({
+                    usa: s.usaPlayer!.userId,
+                    ussr: s.ussrPlayer!.userId,
+                    t: Number(tournamentId),
+                    d: new Date(s.dueDate),
+                    r: false,
+                    gc: s.gameCode,
+                    randomSides: false,
+                  }));
+                  await createSchedulesBulkMutation.mutateAsync(dtos);
+                  setNewlyCreatedSchedules([]);
+                  setPendingNewPairings([]);
+                  setPersistMessage(`✅ Created ${dtos.length} new schedules`);
+                } catch (err: any) {
+                  setPersistMessage(err?.response?.data?.message || "Failed to create schedules");
+                }
+                setTimeout(() => setPersistMessage(""), 5000);
+              }}
+              disabled={createSchedulesBulkMutation.isPending}
+              style={{ ...btnStyle, backgroundColor: "var(--usa)", color: "var(--alt-text)", opacity: createSchedulesBulkMutation.isPending ? 0.5 : 1 }}
+            >
+              {createSchedulesBulkMutation.isPending ? <Spinner size="2" /> : "Persist New Schedules"}
+            </button>
+            <button
+              onClick={() => {
+                // Remove newly created schedules from state
+                newlyCreatedSchedules.forEach(s => dispatch({ type: "DELETE_SCHEDULE", scheduleId: s.scheduleId }));
+                setNewlyCreatedSchedules([]);
+                setPendingNewPairings([]);
+              }}
+              style={{ ...btnStyle, backgroundColor: "var(--ussr)", color: "var(--alt-text)" }}
+            >
+              Discard
+            </button>
+            {persistMessage && (
+              <span style={{ fontSize: "13px", color: persistMessage.includes("✅") ? "var(--usa)" : "var(--ussr)" }}>
+                {persistMessage}
+              </span>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Auto Fix Schedules */}
       <div style={sectionStyle}>
