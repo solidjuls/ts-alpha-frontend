@@ -881,6 +881,53 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
             {autoFixResult.warnings.map((w, i) => <div key={i}>⚠️ {w}</div>)}
           </div>
         )}
+
+        {autoFixResult && (
+          <div style={{ marginTop: "12px" }}>
+            <div style={{ fontSize: "12px", color: "var(--secondary-text)", marginBottom: "4px" }}>
+              Summary (for WhatsApp):
+            </div>
+            <textarea
+              readOnly
+              rows={Math.min(10, (autoFixResult.filledOrphans.length + autoFixResult.removedOrphanIds.length) || 3)}
+              style={{
+                width: "100%",
+                fontSize: "13px",
+                padding: "8px",
+                borderRadius: "4px",
+                border: "1px solid var(--border)",
+                backgroundColor: "var(--bg-card)",
+                color: "var(--primary-text)",
+                resize: "vertical",
+                fontFamily: "inherit",
+              }}
+              value={(() => {
+                const lines: string[] = [];
+                // Build player lookup from all schedules
+                const playerLookup = new Map<string, string>();
+                for (const s of state.schedules) {
+                  if (s.usaPlayer) playerLookup.set(s.usaPlayer.userId, s.usaPlayer.fullName);
+                  if (s.ussrPlayer) playerLookup.set(s.ussrPlayer.userId, s.ussrPlayer.fullName);
+                }
+                for (const filled of autoFixResult.filledOrphans) {
+                  const existingName = playerLookup.get(filled.existingPlayerId);
+                  const opponentName = playerLookup.get(filled.opponentPlayerId);
+                  if (existingName && opponentName) {
+                    lines.push(`${existingName} has been paired with ${opponentName}`);
+                  }
+                }
+                // Look up gameCode from baseSchedules (original data, not modified state)
+                for (const removedId of autoFixResult.removedOrphanIds) {
+                  const removedSchedule = baseSchedules.find(o => String(o.scheduleId) === removedId);
+                  if (removedSchedule) {
+                    lines.push(`Game ${removedSchedule.gameCode} removed`);
+                  }
+                }
+                return lines.join("\n");
+              })()}
+            />
+          </div>
+        )}
       </div>
     </>
   );
