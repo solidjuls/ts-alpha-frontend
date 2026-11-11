@@ -143,13 +143,20 @@ function scheduleAdminReducer(
 
       const destPlayer =
         action.dest.side === "usa" ? destSchedule.usaPlayer : destSchedule.ussrPlayer;
-      if (destPlayer) return state;
 
+      // Clear source slot
       if (action.source.side === "usa") sourceSchedule.usaPlayer = null;
       else sourceSchedule.ussrPlayer = null;
 
+      // Move source player to destination
       if (action.dest.side === "usa") destSchedule.usaPlayer = sourcePlayer;
       else destSchedule.ussrPlayer = sourcePlayer;
+
+      // If destination had a player, swap them to the source slot
+      if (destPlayer) {
+        if (action.source.side === "usa") sourceSchedule.usaPlayer = destPlayer;
+        else sourceSchedule.ussrPlayer = destPlayer;
+      }
 
       return { schedules: next };
     }
@@ -196,14 +203,21 @@ const DraggablePlayerSlot: React.FC<{
   slotId: string;
   side: "usa" | "ussr";
 }> = ({ player, slotId, side }) => {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef: setDragNodeRef, isDragging } = useDraggable({
     id: slotId,
     data: { player, side },
   });
+  const { setNodeRef: setDropNodeRef, isOver } = useDroppable({ id: slotId });
+
+  // Combine refs so the element is both draggable and droppable
+  const setRefs = (node: HTMLElement | null) => {
+    setDragNodeRef(node);
+    setDropNodeRef(node);
+  };
 
   return (
     <div
-      ref={setNodeRef}
+      ref={setRefs}
       {...listeners}
       {...attributes}
       style={{
@@ -212,12 +226,12 @@ const DraggablePlayerSlot: React.FC<{
         gap: "6px",
         padding: "6px 10px",
         borderRadius: "6px",
-        border: "1px solid var(--border)",
-        background: isDragging ? "var(--bg-main)" : "var(--bg-card)",
+        border: `1px solid ${isOver ? "var(--usa)" : "var(--border)"}`,
+        background: isDragging ? "var(--bg-main)" : isOver ? "var(--usa-half)" : "var(--bg-card)",
         cursor: "grab",
         opacity: isDragging ? 0.4 : 1,
         minWidth: "160px",
-        transition: "box-shadow 0.15s, transform 0.15s",
+        transition: "box-shadow 0.15s, transform 0.15s, border-color 0.15s, background 0.15s",
       }}
       onMouseDown={(e) => e.preventDefault()}
     >
