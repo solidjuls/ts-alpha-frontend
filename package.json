@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "ts:check": "tsc",
+    "generate:api-types": "node scripts/generate-api-types.js",
     "deploy:preview": "dotenv -e .env.preview -- next build && firebase hosting:channel:deploy preview",
     "deploy:production": "next build && firebase deploy --only hosting"
   },
