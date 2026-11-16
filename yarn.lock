@@ -137,7 +137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.14.8, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.21.0":
   version: 7.29.2
   resolution: "@babel/runtime@npm:7.29.2"
   checksum: 10c0/30b80a0140d16467792e1bbeb06f655b0dab70407da38dfac7fedae9c859f9ae9d846ef14ad77bd3814c064295fe9b1bc551f1541ea14646ae9f22b71a8bc17a
@@ -2333,15 +2333,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.4.1":
-  version: 4.4.12
-  resolution: "@types/react-transition-group@npm:4.4.12"
-  peerDependencies:
-    "@types/react": "*"
-  checksum: 10c0/0441b8b47c69312c89ec0760ba477ba1a0808a10ceef8dc1c64b1013ed78517332c30f18681b0ec0b53542731f1ed015169fed1d127cc91222638ed955478ec7
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*":
   version: 19.2.14
   resolution: "@types/react@npm:19.2.14"
@@ -3418,16 +3409,6 @@ __metadata:
   dependencies:
     esutils: "npm:^2.0.2"
   checksum: 10c0/c96bdccabe9d62ab6fea9399fdff04a66e6563c1d6fb3a3a063e8d53c3bb136ba63e84250bbf63d00086a769ad53aef92d2bd483f03f837fc97b71cbee6b2520
-  languageName: node
-  linkType: hard
-
-"dom-helpers@npm:^5.0.1":
-  version: 5.2.1
-  resolution: "dom-helpers@npm:5.2.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.8.7"
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/f735074d66dd759b36b158fa26e9d00c9388ee0e8c9b16af941c38f014a37fc80782de83afefd621681b19ac0501034b4f1c4a3bff5caa1b8667f0212b5e124c
   languageName: node
   linkType: hard
 
@@ -5710,30 +5691,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"primeicons@npm:^7.0.0":
-  version: 7.0.0
-  resolution: "primeicons@npm:7.0.0"
-  checksum: 10c0/a7f6344d6db49e785d2040b35f8cae761d15bb8f8ee70ade8981d45438245414e913fe7235921122aade2b0a11a032c98b44dc527be2da11aa791ff145099c06
-  languageName: node
-  linkType: hard
-
-"primereact@npm:^10.8.3":
-  version: 10.9.7
-  resolution: "primereact@npm:10.9.7"
-  dependencies:
-    "@types/react-transition-group": "npm:^4.4.1"
-    react-transition-group: "npm:^4.4.1"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/03ccaae80a1d7c88113c4e7518edffe29c04bed605e5d67b4c18e761c4470d0cb845b51ff572bb0ec8ab171675dee7609d15c39f5727016b68de412ec8e5fe3a
-  languageName: node
-  linkType: hard
-
 "prisma@npm:^6.6.0":
   version: 6.19.2
   resolution: "prisma@npm:6.19.2"
@@ -6036,21 +5993,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/841938ff16d16a6b76895f4cb2e1fea957e5fe3b30febbf03a54892dae1c9153f2383e231dea0b3ba41192ad2f2849448fa859caccd288943bce32639e971bee
-  languageName: node
-  linkType: hard
-
-"react-transition-group@npm:^4.4.1":
-  version: 4.4.5
-  resolution: "react-transition-group@npm:4.4.5"
-  dependencies:
-    "@babel/runtime": "npm:^7.5.5"
-    dom-helpers: "npm:^5.0.1"
-    loose-envify: "npm:^1.4.0"
-    prop-types: "npm:^15.6.2"
-  peerDependencies:
-    react: ">=16.6.0"
-    react-dom: ">=16.6.0"
-  checksum: 10c0/2ba754ba748faefa15f87c96dfa700d5525054a0141de8c75763aae6734af0740e77e11261a1e8f4ffc08fd9ab78510122e05c21c2d79066c38bb6861a886c82
   languageName: node
   linkType: hard
 
@@ -6790,8 +6732,6 @@ __metadata:
     openapi-typescript: "npm:^7.13.0"
     papaparse: "npm:^5.5.3"
     prettier: "npm:^3.3.3"
-    primeicons: "npm:^7.0.0"
-    primereact: "npm:^10.8.3"
     prisma: "npm:^6.6.0"
     react: "npm:18.3.1"
     react-day-picker: "npm:^7.4.10"
