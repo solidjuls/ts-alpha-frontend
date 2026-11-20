@@ -135,7 +135,8 @@ export const useDeleteSchedule = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => scheduleService.deleteSchedule(id),
+    mutationFn: ({ id, tournamentId }: { id: string | number; tournamentId?: string | number }) =>
+      scheduleService.deleteSchedule(String(id), tournamentId),
     onSuccess: () => {
       // Invalidate and refetch schedule queries
       queryClient.invalidateQueries({ queryKey: SCHEDULE_QUERY_KEYS.all });

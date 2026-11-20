@@ -24,9 +24,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Compress text-based assets
+# Security headers on all responses
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com; frame-src https://www.google.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://twilight-struggle-backend-test-346529809697.us-central1.run.app"

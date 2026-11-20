@@ -362,7 +362,7 @@ const Schedule = () => {
   const handleDeleteSchedule = async (id: string) => {
     setDeletingId(id);
     try {
-      await deleteScheduleMutation.mutateAsync(id);
+      await deleteScheduleMutation.mutateAsync({ id, tournamentId: currentTournament?.id });
     } catch (error) {
       console.error("Failed to delete schedule:", error);
     } finally {

@@ -587,7 +587,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
     });
 
     try {
-      const deletePromises = toDelete.map((s) => deleteScheduleMutation.mutateAsync(s.scheduleId));
+      const deletePromises = toDelete.map((s) => deleteScheduleMutation.mutateAsync({ id: s.scheduleId, tournamentId }));
       let bulkPromise: Promise<any> = Promise.resolve();
       if (newlyComplete.length > 0) {
         const dtos = newlyComplete.map((s) => ({
@@ -905,7 +905,7 @@ const ScheduleAdminDataBoxes = ({ schedules, tournamentId, tournamentName }: Sch
 
     // Delete orphans that were paired with other orphans (their player was moved)
     const deletePromises = autoFixResult.removedOrphanIds.map((id) =>
-      deleteScheduleMutation.mutateAsync(Number(id))
+      deleteScheduleMutation.mutateAsync({ id: Number(id), tournamentId })
     );
 
     try {

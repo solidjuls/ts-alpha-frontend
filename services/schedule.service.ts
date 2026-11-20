@@ -261,8 +261,9 @@ class ScheduleService {
     return response.data;
   }
 
-  async deleteSchedule(id: string): Promise<{ message: string }> {
-    const response = await this.axiosInstance.delete(`/schedule/${id}`);
+  async deleteSchedule(id: string, tournamentId?: string | number): Promise<{ message: string }> {
+    const params = tournamentId ? `?tournamentId=${tournamentId}` : "";
+    const response = await this.axiosInstance.delete(`/schedule/${id}${params}`);
     return response.data;
   }
 

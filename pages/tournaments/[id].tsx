@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Spinner } from "@radix-ui/themes";
+import DOMPurify from "dompurify";
 import Link from "next/link";
 import { DetailContainer } from "components/DetailContainer";
 import { DisplayInfo } from "components/DisplayInfo";
@@ -431,7 +432,7 @@ const TournamentDetail = () => {
                 <FullWidth>
                   <StyledLabel>Description</StyledLabel>
                   <DescriptionBox
-                    dangerouslySetInnerHTML={{ __html: tournament.description }}
+                    dangerouslySetInnerHTML={{ __html: typeof window !== "undefined" ? DOMPurify.sanitize(tournament.description) : tournament.description }}
                   />
                 </FullWidth>
               )}

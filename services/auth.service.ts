@@ -4,6 +4,7 @@ import { getToken, setToken, removeToken } from '../utils/cookies';
 // Create axios instance for NestJS backend
 const authApi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,6 +39,7 @@ authApi.interceptors.response.use(
 export interface LoginRequest {
   mail: string;
   pwd: string;
+  rememberMe?: boolean;
 }
 
 export interface ImpersonateRequest {
