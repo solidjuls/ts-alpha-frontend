@@ -2333,6 +2333,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-google-recaptcha@npm:^2.1.9":
+  version: 2.1.9
+  resolution: "@types/react-google-recaptcha@npm:2.1.9"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10c0/12b1806ef4083524cf108fb7c83f7438feb5746e672af2589a2645de26d2ac1ed0f4b687a1e7d482f51a92a75850c074a8696396c1024a3f80e8902a780d4f95
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*":
   version: 19.2.14
   resolution: "@types/react@npm:19.2.14"
@@ -5715,7 +5724,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -5837,6 +5846,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-async-script@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "react-async-script@npm:1.2.0"
+  dependencies:
+    hoist-non-react-statics: "npm:^3.3.0"
+    prop-types: "npm:^15.5.0"
+  peerDependencies:
+    react: ">=16.4.1"
+  checksum: 10c0/89450912110c380abc08258ce17d2fb18d31d6b7179a74f6bc504c0761a4ca271edb671e402fa8e5ea4250b5c17fa953af80a9f1c4ebb26c9e81caee8476c903
+  languageName: node
+  linkType: hard
+
 "react-day-picker@npm:^7.4.10":
   version: 7.4.10
   resolution: "react-day-picker@npm:7.4.10"
@@ -5857,6 +5878,18 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
   checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
+  languageName: node
+  linkType: hard
+
+"react-google-recaptcha@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "react-google-recaptcha@npm:3.1.0"
+  dependencies:
+    prop-types: "npm:^15.5.0"
+    react-async-script: "npm:^1.2.0"
+  peerDependencies:
+    react: ">=16.4.1"
+  checksum: 10c0/5ecaa6b88f238defd939012cb2671b4cbda59fe03f059158994b8c5215db482412e905eae6a67d23cef220d77cfe0430ab91ce7849d476515cda72f3a8a0a746
   languageName: node
   linkType: hard
 
@@ -6705,6 +6738,7 @@ __metadata:
     "@types/bcryptjs": "npm:^2.4.2"
     "@types/node": "npm:20.14.12"
     "@types/papaparse": "npm:^5.5.2"
+    "@types/react-google-recaptcha": "npm:^2.1.9"
     "@types/styled-components": "npm:^5.1.34"
     axios: "npm:^1.7.5"
     babel-plugin-styled-components: "npm:^2.1.4"
@@ -6736,6 +6770,7 @@ __metadata:
     react: "npm:18.3.1"
     react-day-picker: "npm:^7.4.10"
     react-dom: "npm:18.3.1"
+    react-google-recaptcha: "npm:^3.1.0"
     react-hook-form: "npm:^7.66.0"
     react-intl: "npm:^6.6.8"
     react-redux: "npm:^9.1.2"

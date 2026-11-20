@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FormattedMessage } from "react-intl";
 import { Spinner } from "@radix-ui/themes";
+import ReCAPTCHA from "react-google-recaptcha";
 import { useCreateUser } from "hooks/useUsers";
 import { Label } from "components/Label";
 import { DropdownWithLabel } from "components/EditFormComponents";
@@ -23,6 +24,7 @@ import {
   StyledInput,
   StyledPasswordInput,
   HelpText,
+  RecaptchaWrapper,
   SubmitButton,
   FooterRow,
   InlineLink,
@@ -31,8 +33,11 @@ import {
   AlertTitle
 } from "styles/register.styled";
 
+const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+
 const RegisterFormComponent: React.FC = () => {
   const router = useRouter();
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -79,6 +84,10 @@ const RegisterFormComponent: React.FC = () => {
       errors.push("Passwords do not match");
     }
 
+    if (recaptchaSiteKey && !recaptchaRef.current?.getValue()) {
+      errors.push("Please complete the reCAPTCHA");
+    }
+
     setValidationErrors(errors);
     return errors.length === 0;
   };
@@ -88,6 +97,8 @@ const RegisterFormComponent: React.FC = () => {
     if (!validateForm()) return;
 
     try {
+      const recaptchaToken = recaptchaRef.current?.getValue() || undefined;
+
       await createMutation.mutateAsync({
         first_name: formData.firstName.trim(),
         last_name: formData.lastName.trim(),
@@ -100,9 +111,11 @@ const RegisterFormComponent: React.FC = () => {
         preferredGameDuration: formData.preferredGameDuration.trim() || undefined,
         city: formData.cityId ? Number(formData.cityId) : undefined,
         country: formData.countryId ? Number(formData.countryId) : undefined,
+        recaptchaToken,
       });
       router.push("/login?registered=1");
     } catch (error) {
+      recaptchaRef.current?.reset();
       console.error("Registration error:", error);
     }
   };
@@ -295,6 +308,18 @@ const RegisterFormComponent: React.FC = () => {
               ))}
             </AlertList>
           </Alert>
+        )}
+
+        {recaptchaSiteKey && (
+          <RecaptchaWrapper>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={recaptchaSiteKey}
+              onExpired={() => {
+                if (validationErrors.length > 0) setValidationErrors([]);
+              }}
+            />
+          </RecaptchaWrapper>
         )}
 
         <SubmitButton type="submit" disabled={createMutation.isPending}>
