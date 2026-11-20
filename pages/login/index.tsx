@@ -108,9 +108,6 @@ const LoginFormComponent: React.FC = () => {
     loginMutation.error?.response?.data?.message ||
     loginMutation.error?.message;
 
-  const isEmailNotVerified =
-    loginMutation.error?.response?.data?.code === "EMAIL_NOT_VERIFIED";
-
   return (
     <Card>
       <Title>Login</Title>
@@ -165,11 +162,6 @@ const LoginFormComponent: React.FC = () => {
         {errorMessage && (
           <Message $variant="error">
             {errorMessage}
-            {isEmailNotVerified && (
-              <div style={{ marginTop: 8 }}>
-                <Link href="/email-verify">Click here to verify your email</Link>
-              </div>
-            )}
           </Message>
         )}
 
@@ -179,7 +171,6 @@ const LoginFormComponent: React.FC = () => {
 
         <Links>
           <Link href="/reset-password">Forgot your password?</Link>
-          <Link href="/email-verify">Need to verify your email?</Link>
           <Link href="/register" passHref>
           <PrimaryButton>
             Create Account
