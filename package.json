@@ -2,7 +2,7 @@
   "name": "ts-alpha-frontend",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "format:fix": "prettier --write --ignore-path .gitignore .",
     "build": "next build",
     "start": "next start",
