@@ -1,9 +1,12 @@
 name: Deploy Production (Netlify)
 
 on:
-  push:
-    branches:
-      - gc-deploy
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch, tag, or commit SHA to deploy (defaults to gc-deploy)"
+        required: false
+        default: "gc-deploy"
 
 concurrency:
   group: netlify-production
@@ -14,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
