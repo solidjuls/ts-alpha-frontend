@@ -354,6 +354,7 @@ const flagSvgMap: Record<string, string> = {
   "FR": fr,
   "GA": ga,
   "GB": gb,
+  "UK": gb,
   "GD": gd,
   "GE": ge,
   "GF": gf,
