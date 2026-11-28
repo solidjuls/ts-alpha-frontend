@@ -407,7 +407,11 @@ const GlobalStyles = createGlobalStyle`
   /* ============================
     Hide Netlify Badge
   ============================ */
-    #nl-badge {
+    .nl-wrap,
+    .nl-badge,
+    .nl-card,
+    [id*="nl-badge"],
+    [id*="nl-card"] {
       display: none !important;
     }
 
