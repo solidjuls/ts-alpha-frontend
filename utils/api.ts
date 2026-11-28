@@ -8,6 +8,7 @@ import { getToken } from './cookies';
 export const createAuthenticatedAxios = (baseURL?: string): AxiosInstance => {
   const instance = axios.create({
     baseURL: baseURL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4002/api',
+    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
     },

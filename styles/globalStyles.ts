@@ -402,7 +402,18 @@ const GlobalStyles = createGlobalStyle`
 
   /* ============================
     Mobile Styles
-  ============================ */ 
+  ============================ */
+
+  /* ============================
+    Hide Netlify Badge
+  ============================ */
+    .nl-wrap,
+    .nl-badge,
+    .nl-card,
+    [id*="nl-badge"],
+    [id*="nl-card"] {
+      display: none !important;
+    }
 
 `;
 

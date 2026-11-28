@@ -26,30 +26,27 @@ import {
 
 
 /* =========================
-   localStorage helpers
+   localStorage helpers (email only — never store passwords)
    ========================= */
 
-const saveCredentials = (mail: string, password: string) => {
+const EMAIL_KEY = "mail";
+
+const saveEmail = (mail: string) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem("mail", mail);
-    localStorage.setItem("password", password);
+    localStorage.setItem(EMAIL_KEY, mail);
   }
 };
 
-const getCredentials = (): { mail: string | null; password: string | null } => {
+const getSavedEmail = (): string | null => {
   if (typeof window !== "undefined") {
-    return {
-      mail: localStorage.getItem("mail"),
-      password: localStorage.getItem("password"),
-    };
+    return localStorage.getItem(EMAIL_KEY);
   }
-  return { mail: null, password: null };
+  return null;
 };
 
-const clearCredentials = () => {
+const clearSavedEmail = () => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("mail");
-    localStorage.removeItem("password");
+    localStorage.removeItem(EMAIL_KEY);
   }
 };
 
@@ -68,10 +65,9 @@ const LoginFormComponent: React.FC = () => {
   const showRegistrationSuccess = router.query.registered === "1";
 
   useEffect(() => {
-    const credentials = getCredentials();
-    if (credentials.mail && credentials.password) {
-      setMail(credentials.mail);
-      setPwd(credentials.password);
+    const savedEmail = getSavedEmail();
+    if (savedEmail) {
+      setMail(savedEmail);
     }
   }, []);
 
@@ -93,28 +89,24 @@ const LoginFormComponent: React.FC = () => {
     if (!validate()) return;
 
     try {
-      await loginMutation.mutateAsync({ mail: mail.trim(), pwd });
+      await loginMutation.mutateAsync({ mail: mail.trim(), pwd, rememberMe: saveCred });
 
-      if (saveCred) saveCredentials(mail, pwd);
-      else clearCredentials();
+      if (saveCred) saveEmail(mail.trim());
+      else clearSavedEmail();
     } catch (error) {
-      // keep existing behavior; message shown below from mutation error
       console.error("Login error:", error);
     }
   };
 
   const handleRememberMeChange = (checked: boolean) => {
     setSaveCred(checked);
-    if (!checked) clearCredentials();
+    if (!checked) clearSavedEmail();
   };
 
   const errorMessage =
     validationError ||
     loginMutation.error?.response?.data?.message ||
     loginMutation.error?.message;
-
-  const isEmailNotVerified =
-    loginMutation.error?.response?.data?.code === "EMAIL_NOT_VERIFIED";
 
   return (
     <Card>
@@ -170,11 +162,6 @@ const LoginFormComponent: React.FC = () => {
         {errorMessage && (
           <Message $variant="error">
             {errorMessage}
-            {isEmailNotVerified && (
-              <div style={{ marginTop: 8 }}>
-                <Link href="/email-verify">Click here to verify your email</Link>
-              </div>
-            )}
           </Message>
         )}
 
@@ -184,7 +171,6 @@ const LoginFormComponent: React.FC = () => {
 
         <Links>
           <Link href="/reset-password">Forgot your password?</Link>
-          <Link href="/email-verify">Need to verify your email?</Link>
           <Link href="/register" passHref>
           <PrimaryButton>
             Create Account

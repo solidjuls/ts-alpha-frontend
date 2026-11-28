@@ -59,6 +59,7 @@ export interface CreateUserData {
   preferredGameDuration?: string;
   city?: number;
   country?: number;
+  recaptchaToken?: string;
 }
 
 export interface UpdateUserData {

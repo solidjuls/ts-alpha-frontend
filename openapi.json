@@ -1,0 +1,3988 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "AppController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/impersonate": {
+      "post": {
+        "operationId": "AuthController_impersonate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpersonateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/profile": {
+      "get": {
+        "operationId": "AuthController_getProfile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/reset-password-request": {
+      "post": {
+        "operationId": "AuthController_resetPasswordRequest",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/email-verify": {
+      "post": {
+        "operationId": "AuthController_requestEmailVerification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailVerifyResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/email-verify/confirm": {
+      "post": {
+        "operationId": "AuthController_confirmEmailVerification",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailVerifyResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/health": {
+      "get": {
+        "operationId": "AuthController_healthCheck",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/email/test": {
+      "post": {
+        "operationId": "EmailController_sendTestEmail",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
+        ]
+      }
+    },
+    "/email/send": {
+      "post": {
+        "operationId": "EmailController_sendEmail",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
+        ]
+      }
+    },
+    "/email/reminders": {
+      "post": {
+        "operationId": "EmailController_sendReminders",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
+        ]
+      }
+    },
+    "/email/player-reminder": {
+      "post": {
+        "operationId": "EmailController_sendPlayerReminder",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
+        ]
+      }
+    },
+    "/email/overdue-games": {
+      "get": {
+        "operationId": "EmailController_getOverdueGames",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Email"
+        ]
+      }
+    },
+    "/tournaments": {
+      "get": {
+        "operationId": "TournamentsController_getTournaments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": false,
+            "in": "query",
+            "description": "Tournament ID filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Tournament status filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "players",
+            "required": false,
+            "in": "query",
+            "description": "Players filter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "post": {
+        "operationId": "TournamentsController_updateTournamentOrRegister",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "put": {
+        "operationId": "TournamentsController_updateTournamentFull",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTournamentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "patch": {
+        "operationId": "TournamentsController_createTournament",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTournamentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}": {
+      "delete": {
+        "operationId": "TournamentsController_deleteTournament",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/unregister": {
+      "delete": {
+        "operationId": "TournamentsController_unregisterFromTournament",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/forfeit": {
+      "patch": {
+        "operationId": "TournamentsController_forfeitPlayer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/admins": {
+      "get": {
+        "operationId": "TournamentsController_getTournamentAdmins",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "post": {
+        "operationId": "TournamentsController_addTournamentAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTournamentAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "delete": {
+        "operationId": "TournamentsController_removeTournamentAdmin",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveTournamentAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/waitlist": {
+      "get": {
+        "operationId": "TournamentsController_getWaitlistPlayers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "post": {
+        "operationId": "TournamentsController_addToWaitlist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      },
+      "delete": {
+        "operationId": "TournamentsController_removeFromWaitlist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/waitlist/toggle": {
+      "patch": {
+        "operationId": "TournamentsController_toggleWaitlist",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/user/registered": {
+      "get": {
+        "operationId": "TournamentsController_getUserRegisteredTournaments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TournamentDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/user/admin": {
+      "get": {
+        "operationId": "TournamentsController_getUserAdminTournaments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TournamentDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/user/available-with-schedule": {
+      "get": {
+        "operationId": "TournamentsController_getUserAvailableTournamentsWithSchedule",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/status": {
+      "patch": {
+        "operationId": "TournamentsController_updateTournamentStatus",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTournamentStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/bulk-register": {
+      "post": {
+        "operationId": "TournamentsController_bulkRegisterUsers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/generate-schedule": {
+      "post": {
+        "operationId": "TournamentsController_generateRandomSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/generate-result-text": {
+      "get": {
+        "operationId": "TournamentsController_getGameResultsForTextGeneration",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "video",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/ongoing-without-schedule": {
+      "get": {
+        "operationId": "TournamentsController_getOngoingTournamentsWithoutSchedule",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/get-players-ratings": {
+      "post": {
+        "operationId": "TournamentsController_getPlayersRatings",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/health": {
+      "get": {
+        "operationId": "TournamentsController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/migrate": {
+      "post": {
+        "operationId": "TournamentsController_migrateRegistrationUserIds",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/tournaments/{id}/subtournament": {
+      "post": {
+        "operationId": "TournamentsController_createSubtournament",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubtournamentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Tournaments"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_getUsers",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tournament ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Page size",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeEmail",
+            "required": false,
+            "in": "query",
+            "description": "Include email in response",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "t",
+            "required": false,
+            "in": "query",
+            "description": "Legacy: tournament ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Legacy: page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pso",
+            "required": false,
+            "in": "query",
+            "description": "Legacy: sort order",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_updateUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_createUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/forfeited-players": {
+      "get": {
+        "operationId": "UsersController_getForfeitedPlayers",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UsersController_getUserById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/update-password": {
+      "post": {
+        "operationId": "UsersController_updatePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/{id}/ban": {
+      "patch": {
+        "operationId": "UsersController_banUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BanUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/users/health": {
+      "get": {
+        "operationId": "UsersController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/schedule": {
+      "get": {
+        "operationId": "ScheduleController_getSchedules",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "User ID to filter schedules",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tournamentId",
+            "required": false,
+            "in": "query",
+            "description": "Tournament ID to filter schedules",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "onlyPending",
+            "required": false,
+            "in": "query",
+            "description": "Filter only pending games (without results) - 'true' or 'false'",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderBy",
+            "required": false,
+            "in": "query",
+            "description": "Field to order by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "dueDate",
+                "gameDate",
+                "tournamentName"
+              ]
+            }
+          },
+          {
+            "name": "orderDirection",
+            "required": false,
+            "in": "query",
+            "description": "Order direction",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "fullSchedule",
+            "required": false,
+            "in": "query",
+            "description": "View full tournament schedule",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "missingGames",
+            "required": false,
+            "in": "query",
+            "description": "Admin: return all unplayed games (game_results_id is null)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "uid",
+            "required": false,
+            "in": "query",
+            "description": "userId (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "t",
+            "required": false,
+            "in": "query",
+            "description": "Tournament IDs, comma-separated (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "u",
+            "required": false,
+            "in": "query",
+            "description": "User filter (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pso",
+            "required": false,
+            "in": "query",
+            "description": "Page size (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "a",
+            "required": false,
+            "in": "query",
+            "description": "Admin view flag, 1 or 0 (legacy)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "post": {
+        "operationId": "ScheduleController_updateScheduleOrSubmit",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "put": {
+        "operationId": "ScheduleController_addSchedule",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScheduleUpdateResult"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      },
+      "patch": {
+        "operationId": "ScheduleController_replaceOrDeletePlayer",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/upcoming": {
+      "get": {
+        "operationId": "ScheduleController_getUpcomingSchedules",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "query",
+            "description": "Tournament ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "days",
+            "required": true,
+            "in": "query",
+            "description": "Number of days to look ahead",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "5",
+                "15",
+                "30"
+              ]
+            }
+          },
+          {
+            "name": "includePast",
+            "required": false,
+            "in": "query",
+            "description": "Whether to include past schedules",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UpcomingScheduleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/players-with-missing-games": {
+      "get": {
+        "operationId": "ScheduleController_playersWithMissingGames",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/create-schedules-bulk": {
+      "put": {
+        "operationId": "ScheduleController_addSchedulesBulk",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/{id}": {
+      "delete": {
+        "operationId": "ScheduleController_deleteSchedule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/upload-csv": {
+      "post": {
+        "operationId": "ScheduleController_uploadCsvSchedule",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/schedule/health": {
+      "get": {
+        "operationId": "ScheduleController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedule"
+        ]
+      }
+    },
+    "/games": {
+      "get": {
+        "operationId": "GamesController_getGames",
+        "parameters": [
+          {
+            "name": "id",
+            "required": false,
+            "in": "query",
+            "description": "Game ID filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userFilter",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated user IDs to filter by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "toFilter",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated tournament IDs to filter by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "video",
+            "required": false,
+            "in": "query",
+            "description": "Set to \"true\" to filter games with videos",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/top/{count}": {
+      "get": {
+        "operationId": "GamesController_getTopGames",
+        "parameters": [
+          {
+            "name": "count",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/chart-data": {
+      "get": {
+        "operationId": "GamesController_getChartData",
+        "parameters": [
+          {
+            "name": "type",
+            "required": true,
+            "in": "query",
+            "description": "Chart type filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "User ID to fetch chart data for",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": true,
+            "in": "query",
+            "description": "Start date for the chart range (ISO string)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/{id}": {
+      "get": {
+        "operationId": "GamesController_getGameById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/submit": {
+      "post": {
+        "operationId": "GamesController_submitGame",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitGameRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/recreate": {
+      "post": {
+        "operationId": "GamesController_recreateGame",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/{id}/resync": {
+      "post": {
+        "operationId": "GamesController_resyncGame",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/games/health": {
+      "get": {
+        "operationId": "GamesController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Games"
+        ]
+      }
+    },
+    "/rating": {
+      "get": {
+        "operationId": "RatingController_getPlayerRatings",
+        "parameters": [
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number (legacy parameter)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pso",
+            "required": false,
+            "in": "query",
+            "description": "Page size (legacy parameter)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "playerFilter",
+            "required": false,
+            "in": "query",
+            "description": "Comma-separated player IDs to filter by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "countrySelected",
+            "required": false,
+            "in": "query",
+            "description": "Country ID to filter by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "playdeck",
+            "required": false,
+            "in": "query",
+            "description": "Playdek name filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderDirection",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction for results",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayerRatingListResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Rating"
+        ]
+      }
+    },
+    "/rating/history": {
+      "get": {
+        "operationId": "RatingController_getRatingHistory",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "User ID to fetch rating history for",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": true,
+            "in": "query",
+            "description": "Start date as a timestamp/number",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Rating"
+        ]
+      }
+    },
+    "/rating/health": {
+      "get": {
+        "operationId": "RatingController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Rating"
+        ]
+      }
+    },
+    "/playoffs/health": {
+      "get": {
+        "operationId": "PlayoffsController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/playoffs": {
+      "post": {
+        "operationId": "PlayoffsController_createPlayoffBracket",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePlayoffBracketResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      },
+      "put": {
+        "operationId": "PlayoffsController_updatePlayoffBracket",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePlayoffBracketResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/playoffs/winner": {
+      "put": {
+        "operationId": "PlayoffsController_updatePlayoffWinner",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlayoffWinnerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdatePlayoffWinnerResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/playoffs/getAll": {
+      "get": {
+        "operationId": "PlayoffsController_getAllPlayoffs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayoffSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/playoffs/{tournamentId}": {
+      "get": {
+        "operationId": "PlayoffsController_getPlayoffBracket",
+        "parameters": [
+          {
+            "name": "tournamentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayoffBracketResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/playoffs/schedule": {
+      "post": {
+        "operationId": "PlayoffsController_createPlayoffSchedule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlayoffScheduleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatePlayoffScheduleResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Playoffs"
+        ]
+      }
+    },
+    "/countries": {
+      "get": {
+        "operationId": "CountriesController_getCountries",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query (minimum 3 characters)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CountryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      }
+    },
+    "/countries/health": {
+      "get": {
+        "operationId": "CountriesController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Countries"
+        ]
+      }
+    },
+    "/cities": {
+      "get": {
+        "operationId": "CitiesController_getCities",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query (minimum 3 characters)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CityDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Cities"
+        ]
+      }
+    },
+    "/cities/health": {
+      "get": {
+        "operationId": "CitiesController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cities"
+        ]
+      }
+    },
+    "/standings": {
+      "get": {
+        "operationId": "StandingsController_getStandings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "query",
+            "description": "Tournament ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "division",
+            "required": false,
+            "in": "query",
+            "description": "Division name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlayerStandingDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Standings"
+        ]
+      }
+    },
+    "/standings/health": {
+      "get": {
+        "operationId": "StandingsController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Standings"
+        ]
+      }
+    },
+    "/hall-of-fame": {
+      "get": {
+        "operationId": "HallOfFameController_getHallOfFame",
+        "parameters": [
+          {
+            "name": "season",
+            "required": false,
+            "in": "query",
+            "description": "Season filter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "league",
+            "required": false,
+            "in": "query",
+            "description": "League type filter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HallOfFameEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "HallOfFame"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Twilight Struggle API",
+    "description": "API contract for the Twilight Struggle backend",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "mail": {
+            "type": "string",
+            "description": "User email address"
+          },
+          "pwd": {
+            "type": "string",
+            "description": "User password"
+          }
+        },
+        "required": [
+          "mail",
+          "pwd"
+        ]
+      },
+      "ImpersonateDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email of the user to impersonate"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "mail": {
+            "type": "string",
+            "description": "User email address"
+          },
+          "token": {
+            "type": "string",
+            "description": "Password reset token"
+          },
+          "pwd": {
+            "type": "string",
+            "description": "Current password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password"
+          }
+        }
+      },
+      "EmailVerifyResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the verification was successful"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "UpdateTournamentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "tournamentName": {
+            "type": "string",
+            "description": "Tournament name"
+          },
+          "status": {
+            "type": "number",
+            "description": "Tournament status"
+          },
+          "waitlist": {
+            "type": "boolean",
+            "description": "Whether the tournament has a waitlist"
+          },
+          "startingDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Tournament starting date"
+          },
+          "description": {
+            "type": "string",
+            "description": "Tournament description"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "CreateTournamentDto": {
+        "type": "object",
+        "properties": {
+          "tournamentName": {
+            "type": "string",
+            "description": "Tournament name"
+          },
+          "status": {
+            "type": "number",
+            "description": "Tournament status"
+          },
+          "waitlist": {
+            "type": "boolean",
+            "description": "Whether the tournament has a waitlist"
+          },
+          "admins": {
+            "type": "string",
+            "description": "Admin user IDs"
+          },
+          "startingDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Tournament starting date"
+          },
+          "description": {
+            "type": "string",
+            "description": "Tournament description"
+          }
+        },
+        "required": [
+          "tournamentName",
+          "status"
+        ]
+      },
+      "AddTournamentAdminDto": {
+        "type": "object",
+        "properties": {
+          "tournamentId": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID to add as admin"
+          }
+        },
+        "required": [
+          "tournamentId",
+          "userId"
+        ]
+      },
+      "RemoveTournamentAdminDto": {
+        "type": "object",
+        "properties": {
+          "tournamentId": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID to remove as admin"
+          }
+        },
+        "required": [
+          "tournamentId",
+          "userId"
+        ]
+      },
+      "TournamentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique tournament identifier"
+          },
+          "tournament_name": {
+            "type": "string",
+            "description": "Tournament name"
+          },
+          "status_id": {
+            "type": "number",
+            "description": "Tournament status ID"
+          },
+          "waitlist": {
+            "type": "boolean",
+            "description": "Whether the tournament has a waitlist"
+          },
+          "starting_date": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Tournament starting date"
+          },
+          "adminId": {
+            "description": "Array of admin user IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "adminName": {
+            "description": "Array of admin names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Tournament description"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last update timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "tournament_name",
+          "status_id",
+          "waitlist",
+          "adminId",
+          "adminName"
+        ]
+      },
+      "UpdateTournamentStatusDto": {
+        "type": "object",
+        "properties": {
+          "tournamentId": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "status": {
+            "type": "number",
+            "description": "New status (2=START_REGISTRATION, 3=CLOSE_REGISTRATION, 4=START_TOURNAMENT, 5=CLOSE_TOURNAMENT)"
+          }
+        },
+        "required": [
+          "tournamentId",
+          "status"
+        ]
+      },
+      "CreateSubtournamentDto": {
+        "type": "object",
+        "properties": {
+          "tournamentName": {
+            "type": "string",
+            "description": "Subtournament name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Subtournament description"
+          },
+          "startingDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Subtournament starting date"
+          }
+        },
+        "required": [
+          "tournamentName"
+        ]
+      },
+      "UserDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User ID"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "playdek_name": {
+            "type": "string",
+            "description": "Playdek username"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "description": "Discord user ID"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "last_login_at": {
+            "type": "string",
+            "description": "Last login timestamp"
+          },
+          "preferred_gaming_platform": {
+            "type": "string",
+            "description": "Preferred gaming platform"
+          },
+          "preferred_game_duration": {
+            "type": "string",
+            "description": "Preferred game duration"
+          },
+          "timezone_id": {
+            "type": "string",
+            "description": "Timezone ID"
+          },
+          "cities": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
+          },
+          "countries": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "country_name": {
+                "type": "string"
+              },
+              "tld_code": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "country_name",
+              "tld_code"
+            ]
+          },
+          "rating": {
+            "type": "number",
+            "description": "Player rating"
+          }
+        },
+        "required": [
+          "id",
+          "first_name",
+          "last_name",
+          "playdek_name",
+          "email"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "First name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "playdek_name": {
+            "type": "string",
+            "description": "Playdek username"
+          },
+          "discord_user_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Discord user ID"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "preferredGamingPlatform": {
+            "type": "string",
+            "description": "Preferred gaming platform"
+          },
+          "preferredGameDuration": {
+            "type": "string",
+            "description": "Preferred game duration"
+          },
+          "city": {
+            "type": "number",
+            "description": "City ID"
+          },
+          "country": {
+            "type": "number",
+            "description": "Country ID"
+          },
+          "password": {
+            "type": "string",
+            "description": "New password"
+          }
+        }
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "playdek_name": {
+            "type": "string",
+            "description": "Playdek username"
+          },
+          "email": {
+            "type": "string",
+            "description": "User email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password"
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Phone number"
+          },
+          "preferredGamingPlatform": {
+            "type": "string",
+            "description": "Preferred gaming platform"
+          },
+          "preferredGameDuration": {
+            "type": "string",
+            "description": "Preferred game duration"
+          },
+          "city": {
+            "type": "number",
+            "description": "City ID"
+          },
+          "country": {
+            "type": "number",
+            "description": "Country ID"
+          }
+        },
+        "required": [
+          "first_name",
+          "last_name",
+          "playdek_name",
+          "email",
+          "password"
+        ]
+      },
+      "UpdatePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "description": "Current password"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirm new password"
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword",
+          "confirmPassword"
+        ]
+      },
+      "BanUserDto": {
+        "type": "object",
+        "properties": {
+          "banned": {
+            "type": "boolean",
+            "description": "Whether user is banned"
+          }
+        },
+        "required": [
+          "banned"
+        ]
+      },
+      "ScheduleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Schedule entry ID"
+          },
+          "gameWinner": {
+            "type": "string",
+            "nullable": true,
+            "description": "Winner of the game"
+          },
+          "gameDate": {
+            "type": "string",
+            "nullable": true,
+            "description": "Date the game was played"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Due date for the game"
+          },
+          "randomSides": {
+            "type": "boolean",
+            "description": "Whether sides are randomly assigned"
+          },
+          "bestOf": {
+            "type": "number",
+            "nullable": true,
+            "description": "Best of series length"
+          },
+          "gameCode": {
+            "type": "string",
+            "description": "Game code identifier"
+          },
+          "gameResultsId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Game results ID"
+          },
+          "nameUsa": {
+            "type": "string",
+            "description": "USA player name"
+          },
+          "nameUssr": {
+            "type": "string",
+            "description": "USSR player name"
+          },
+          "idUsa": {
+            "type": "string",
+            "description": "USA player user ID"
+          },
+          "idUssr": {
+            "type": "string",
+            "description": "USSR player user ID"
+          },
+          "countryUsa": {
+            "type": "string",
+            "nullable": true,
+            "description": "USA player country"
+          },
+          "countryUssr": {
+            "type": "string",
+            "nullable": true,
+            "description": "USSR player country"
+          },
+          "tournamentName": {
+            "type": "string",
+            "description": "Tournament name"
+          },
+          "tournamentId": {
+            "type": "string",
+            "description": "Tournament ID"
+          }
+        },
+        "required": [
+          "id",
+          "dueDate",
+          "gameCode",
+          "nameUsa",
+          "nameUssr",
+          "idUsa",
+          "idUssr",
+          "tournamentName",
+          "tournamentId"
+        ]
+      },
+      "ScheduleListResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "List of schedule entries",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScheduleDto"
+            }
+          },
+          "totalRows": {
+            "type": "number",
+            "description": "Total number of rows"
+          },
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages"
+          },
+          "userTournaments": {
+            "description": "User tournaments",
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "defaultTournament": {
+            "type": "string",
+            "description": "Default tournament ID"
+          }
+        },
+        "required": [
+          "results",
+          "totalRows",
+          "currentPage",
+          "totalPages"
+        ]
+      },
+      "UpcomingScheduleDto": {
+        "type": "object",
+        "properties": {
+          "idUsa": {
+            "type": "string",
+            "description": "USA player user ID"
+          },
+          "idUssr": {
+            "type": "string",
+            "description": "USSR player user ID"
+          },
+          "nameUsa": {
+            "type": "string",
+            "description": "USA player name"
+          },
+          "nameUssr": {
+            "type": "string",
+            "description": "USSR player name"
+          },
+          "emailUsa": {
+            "type": "string",
+            "description": "USA player email"
+          },
+          "emailUssr": {
+            "type": "string",
+            "description": "USSR player email"
+          },
+          "playdekUsa": {
+            "type": "string",
+            "description": "USA player Playdek identifier"
+          },
+          "playdekUssr": {
+            "type": "string",
+            "description": "USSR player Playdek identifier"
+          },
+          "timezoneUsa": {
+            "type": "string",
+            "description": "USA player timezone"
+          },
+          "timezoneUssr": {
+            "type": "string",
+            "description": "USSR player timezone"
+          },
+          "gameCode": {
+            "type": "string",
+            "description": "Game code"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Due date for the game"
+          }
+        },
+        "required": [
+          "idUsa",
+          "idUssr",
+          "nameUsa",
+          "nameUssr",
+          "emailUsa",
+          "emailUssr",
+          "playdekUsa",
+          "playdekUssr",
+          "timezoneUsa",
+          "timezoneUssr",
+          "gameCode",
+          "dueDate"
+        ]
+      },
+      "ScheduleUpdateResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Schedule entry ID"
+          },
+          "tournaments_id": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "game_code": {
+            "type": "string",
+            "description": "Game code"
+          },
+          "usa_player_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "USA player ID"
+          },
+          "ussr_player_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "USSR player ID"
+          },
+          "due_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Due date"
+          },
+          "game_results_id": {
+            "format": "int64",
+            "type": "integer",
+            "nullable": true,
+            "description": "Game results ID"
+          },
+          "created_at": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Creation timestamp"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Last update timestamp"
+          },
+          "best_of": {
+            "type": "number",
+            "nullable": true,
+            "description": "Best of series length"
+          }
+        },
+        "required": [
+          "id",
+          "tournaments_id",
+          "game_code",
+          "due_date"
+        ]
+      },
+      "GameRatingDto": {
+        "type": "object",
+        "properties": {
+          "rating": {
+            "type": "number",
+            "description": "Current rating after the game"
+          },
+          "previousRating": {
+            "type": "number",
+            "description": "Rating before the game"
+          }
+        },
+        "required": [
+          "rating",
+          "previousRating"
+        ]
+      },
+      "GameDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Game unique identifier"
+          },
+          "usaPlayerId": {
+            "type": "string",
+            "description": "USA player user ID"
+          },
+          "ussrPlayerId": {
+            "type": "string",
+            "description": "USSR player user ID"
+          },
+          "usaRatingDifference": {
+            "type": "number",
+            "description": "Rating difference for the USA player after this game"
+          },
+          "ussrRatingDifference": {
+            "type": "number",
+            "description": "Rating difference for the USSR player after this game"
+          },
+          "tournamentId": {
+            "type": "string",
+            "description": "Tournament ID the game belongs to"
+          },
+          "game_code": {
+            "type": "string",
+            "description": "Game code (e.g. scenario or ruleset identifier)"
+          },
+          "reported_at": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date the game was reported"
+          },
+          "gameWinner": {
+            "type": "string",
+            "description": "Game winner: \"1\" (USA), \"2\" (USSR), or \"3\" (Draw)"
+          },
+          "endTurn": {
+            "type": "number",
+            "nullable": true,
+            "description": "Turn number when the game ended"
+          },
+          "endMode": {
+            "type": "string",
+            "nullable": true,
+            "description": "Mode/manner in which the game ended"
+          },
+          "gameDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Date the game was played"
+          },
+          "video1": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional first video URL"
+          },
+          "videoURL": {
+            "type": "string",
+            "description": "Game video URL"
+          },
+          "reporter_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "ID of the user who reported the game"
+          },
+          "usaCountryCode": {
+            "type": "string",
+            "description": "USA player country code"
+          },
+          "ussrCountryCode": {
+            "type": "string",
+            "description": "USSR player country code"
+          },
+          "usaPlayer": {
+            "type": "string",
+            "description": "USA player display name"
+          },
+          "ussrPlayer": {
+            "type": "string",
+            "description": "USSR player display name"
+          },
+          "ratingsUSA": {
+            "description": "USA player rating details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameRatingDto"
+              }
+            ]
+          },
+          "ratingsUSSR": {
+            "description": "USSR player rating details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GameRatingDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "usaPlayerId",
+          "ussrPlayerId",
+          "usaRatingDifference",
+          "ussrRatingDifference",
+          "tournamentId",
+          "game_code",
+          "reported_at",
+          "gameWinner",
+          "endTurn",
+          "endMode",
+          "gameDate",
+          "video1",
+          "videoURL",
+          "reporter_id",
+          "usaCountryCode",
+          "ussrCountryCode",
+          "usaPlayer",
+          "ussrPlayer",
+          "ratingsUSA",
+          "ratingsUSSR"
+        ]
+      },
+      "GameListResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "List of games",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GameDto"
+            }
+          },
+          "totalRows": {
+            "type": "number",
+            "description": "Total number of matching rows"
+          }
+        },
+        "required": [
+          "results",
+          "totalRows"
+        ]
+      },
+      "SubmitGameDto": {
+        "type": "object",
+        "properties": {
+          "scheduleId": {
+            "type": "string",
+            "description": "Schedule ID associated with this game"
+          },
+          "gameWinner": {
+            "enum": [
+              "1",
+              "2",
+              "3"
+            ],
+            "type": "string",
+            "description": "Game winner: \"1\" (USA), \"2\" (USSR), or \"3\" (Draw)"
+          },
+          "gameCode": {
+            "type": "string",
+            "description": "Game code identifier"
+          },
+          "tournamentId": {
+            "type": "string",
+            "description": "Tournament ID"
+          },
+          "usaPlayerId": {
+            "type": "string",
+            "description": "USA player user ID"
+          },
+          "ussrPlayerId": {
+            "type": "string",
+            "description": "USSR player user ID"
+          },
+          "endTurn": {
+            "type": "string",
+            "description": "Turn number when the game ended"
+          },
+          "endMode": {
+            "type": "string",
+            "description": "End mode/manner of the game"
+          },
+          "video1": {
+            "type": "string",
+            "description": "Optional video URL"
+          }
+        },
+        "required": [
+          "gameWinner",
+          "gameCode",
+          "tournamentId",
+          "usaPlayerId",
+          "ussrPlayerId",
+          "endTurn",
+          "endMode"
+        ]
+      },
+      "SubmitGameRequestDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "description": "Game submission data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SubmitGameDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "PlayerRatingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Player user ID"
+          },
+          "rank": {
+            "type": "number",
+            "description": "Player rank in the leaderboard"
+          },
+          "name": {
+            "type": "string",
+            "description": "Player display name"
+          },
+          "first_name": {
+            "type": "string",
+            "description": "Player first name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Player last name"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "Player country code"
+          },
+          "country_name": {
+            "type": "string",
+            "description": "Player country name"
+          },
+          "rating": {
+            "type": "number",
+            "description": "Player rating value"
+          },
+          "playdek_name": {
+            "type": "string",
+            "description": "Player Playdek username"
+          }
+        },
+        "required": [
+          "id",
+          "rank",
+          "name",
+          "first_name",
+          "last_name",
+          "rating"
+        ]
+      },
+      "PlayerRatingListResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "description": "List of player ratings",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlayerRatingDto"
+            }
+          },
+          "totalRows": {
+            "type": "number",
+            "description": "Total number of matching rows"
+          },
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages"
+          }
+        },
+        "required": [
+          "results",
+          "totalRows",
+          "currentPage",
+          "totalPages"
+        ]
+      },
+      "CreatePlayoffBracketResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation success status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Result message"
+          },
+          "bracketEntriesCreated": {
+            "type": "number",
+            "description": "Number of bracket entries created"
+          },
+          "schedulesCreated": {
+            "type": "number",
+            "description": "Number of schedules created"
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "bracketEntriesCreated",
+          "schedulesCreated"
+        ]
+      },
+      "UpdatePlayoffBracketResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation success status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Result message"
+          },
+          "updatedEntries": {
+            "type": "number",
+            "description": "Number of bracket entries updated"
+          }
+        },
+        "required": [
+          "success",
+          "message",
+          "updatedEntries"
+        ]
+      },
+      "UpdatePlayoffWinnerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Bracket entry ID"
+          },
+          "winnerUserId": {
+            "type": "boolean",
+            "description": "User ID of the winner"
+          }
+        },
+        "required": [
+          "id",
+          "winnerUserId"
+        ]
+      },
+      "UpdatePlayoffWinnerResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation success status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Result message"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "PlayoffSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Playoff tournament ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Playoff tournament name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "PlayoffBracketResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Bracket entry ID"
+          },
+          "tournamentId": {
+            "type": "string",
+            "description": "Tournament ID"
+          },
+          "userId": {
+            "type": "number",
+            "nullable": true,
+            "description": "Player user ID"
+          },
+          "seed": {
+            "type": "number",
+            "description": "Seed number in bracket"
+          },
+          "playoffSquare": {
+            "type": "string",
+            "description": "Current playoff square identifier"
+          },
+          "nextSquare": {
+            "type": "string",
+            "description": "Next bracket square identifier"
+          },
+          "userName": {
+            "type": "string",
+            "description": "Player display name"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "Player country code"
+          },
+          "winnerUserId": {
+            "type": "boolean",
+            "description": "Whether this user is the winner"
+          }
+        },
+        "required": [
+          "id",
+          "tournamentId",
+          "seed",
+          "playoffSquare",
+          "nextSquare",
+          "winnerUserId"
+        ]
+      },
+      "CreatePlayoffScheduleDto": {
+        "type": "object",
+        "properties": {
+          "usaPlayerId": {
+            "type": "string",
+            "description": "USA player user ID"
+          },
+          "ussrPlayerId": {
+            "type": "string",
+            "description": "USSR player user ID"
+          },
+          "usaSeed": {
+            "type": "string",
+            "description": "USA player seed"
+          },
+          "ussrSeed": {
+            "type": "string",
+            "description": "USSR player seed"
+          },
+          "randomSides": {
+            "type": "boolean",
+            "description": "Whether to randomize sides"
+          },
+          "tournamentId": {
+            "type": "number",
+            "description": "Tournament ID"
+          },
+          "tournamentName": {
+            "type": "string",
+            "description": "Tournament name"
+          },
+          "gameCode": {
+            "type": "string",
+            "description": "Game code identifier"
+          },
+          "due_date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Due date for the match"
+          },
+          "bo": {
+            "type": "string",
+            "description": "Best of format (e.g., bo3, bo5)"
+          }
+        },
+        "required": [
+          "usaPlayerId",
+          "ussrPlayerId",
+          "usaSeed",
+          "ussrSeed",
+          "randomSides",
+          "tournamentId",
+          "tournamentName",
+          "gameCode",
+          "due_date",
+          "bo"
+        ]
+      },
+      "CreatePlayoffScheduleResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Operation success status"
+          },
+          "message": {
+            "type": "string",
+            "description": "Result message"
+          },
+          "scheduleId": {
+            "type": "number",
+            "description": "Created schedule ID"
+          },
+          "emailSent": {
+            "type": "boolean",
+            "description": "Whether reminder email was sent"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "CountryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique country identifier"
+          },
+          "country_name": {
+            "type": "string",
+            "description": "Country name"
+          },
+          "tld_code": {
+            "type": "string",
+            "description": "Top-level domain code"
+          }
+        },
+        "required": [
+          "id",
+          "country_name",
+          "tld_code"
+        ]
+      },
+      "CityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique city identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "City name"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "PlayerStandingDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "Player user ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Player display name"
+          },
+          "secondaryName": {
+            "type": "string",
+            "description": "Secondary name (country)"
+          },
+          "standingName": {
+            "type": "string",
+            "description": "Standing group name"
+          },
+          "tldCode": {
+            "type": "string",
+            "description": "Top-level domain country code"
+          },
+          "gamesWon": {
+            "type": "number",
+            "description": "Number of games won"
+          },
+          "gamesLost": {
+            "type": "number",
+            "description": "Number of games lost"
+          },
+          "gamesTied": {
+            "type": "number",
+            "description": "Number of games tied"
+          },
+          "winRate": {
+            "type": "number",
+            "description": "Win rate percentage"
+          },
+          "sos": {
+            "type": "number",
+            "description": "Strength of schedule score"
+          },
+          "standingOrder": {
+            "type": "number",
+            "description": "Standing order within group (1-based)"
+          },
+          "playoffOrder": {
+            "type": "number",
+            "description": "Playoff order within secondary name (1-based)"
+          }
+        },
+        "required": [
+          "userId",
+          "name",
+          "standingName",
+          "tldCode",
+          "gamesWon",
+          "gamesLost",
+          "gamesTied",
+          "winRate",
+          "sos",
+          "standingOrder",
+          "playoffOrder"
+        ]
+      },
+      "PlayerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Player user ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Player display name"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "HallOfFameEntryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Hall of fame entry ID"
+          },
+          "season": {
+            "type": "string",
+            "description": "Season identifier"
+          },
+          "league_type": {
+            "type": "string",
+            "description": "League type"
+          },
+          "link": {
+            "type": "string",
+            "nullable": true,
+            "description": "Link to tournament or replay"
+          },
+          "players": {
+            "type": "number",
+            "nullable": true,
+            "description": "Number of players"
+          },
+          "winner_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Winner user ID"
+          },
+          "second_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Second place user ID"
+          },
+          "third_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Third place user ID"
+          },
+          "flag1": {
+            "type": "string",
+            "nullable": true,
+            "description": "Winner country flag code"
+          },
+          "flag2": {
+            "type": "string",
+            "nullable": true,
+            "description": "Second place country flag code"
+          },
+          "flag3": {
+            "type": "string",
+            "nullable": true,
+            "description": "Third place country flag code"
+          },
+          "winner": {
+            "nullable": true,
+            "description": "Winner player details",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayerDto"
+              }
+            ]
+          },
+          "second": {
+            "nullable": true,
+            "description": "Second place player details",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayerDto"
+              }
+            ]
+          },
+          "third": {
+            "nullable": true,
+            "description": "Third place player details",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlayerDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "season",
+          "league_type"
+        ]
+      }
+    }
+  }
+}

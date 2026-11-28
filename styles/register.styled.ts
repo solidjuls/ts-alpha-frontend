@@ -128,6 +128,12 @@ export const FooterRow = styled.div`
   color: var(--primary-text);
 `;
 
+export const RecaptchaWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
+`;
+
 export const SubmitButton = styled(Button)`
   width: 100%;
 `;

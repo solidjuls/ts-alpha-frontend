@@ -3,9 +3,6 @@ import type { AppProps } from "next/app";
 import { Theme } from "@radix-ui/themes";
 import { IntlContextProvider } from "contexts/IntlContext";
 
-import "primereact/resources/themes/saga-blue/theme.css"; // Change the theme as needed
-import "primereact/resources/primereact.min.css"; // Core PrimeReact CSS
-import "primeicons/primeicons.css"; // PrimeIcons CSS
 import "components/Playoffs/Playoffs.css"; // Playoffs component styles
 import GlobalStyles from "styles/globalStyles";
 import "@radix-ui/themes/styles.css";
@@ -15,6 +12,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { theme } from "../theme";
 import Layout from "components/Layout";
+import { MaintenanceGuard } from "components/MaintenanceGuard";
 
 function App({ Component, pageProps }: AppProps) {
   const [queryClient] = useState(() => new QueryClient({
@@ -33,10 +31,12 @@ function App({ Component, pageProps }: AppProps) {
           <StyledThemeProvider theme={theme}>
             {/* @ts-ignore */}
             <Theme>
-              <Layout>
-                <GlobalStyles/>
-                <Component {...pageProps} />
-              </Layout>
+              <MaintenanceGuard>
+                <Layout>
+                  <GlobalStyles/>
+                  <Component {...pageProps} />
+                </Layout>
+              </MaintenanceGuard>
             </Theme>
           </StyledThemeProvider>
         </IntlContextProvider>
